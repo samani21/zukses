@@ -202,6 +202,7 @@ export const ButtonAuth = styled.button`
     width: 100%;
     padding: 7px;
     margin-top: 20px;
+    cursor: pointer;
 `;
 
 export const ForgetPassword = styled.div`
@@ -282,4 +283,75 @@ export const TextFooter = styled.div`
         color: var(--primary-color-text);
         cursor: pointer;
     }
+`
+interface ModalAgreementContainerProps {
+    open: boolean;
+}
+
+export const ModalAgreementContainer = styled.div<ModalAgreementContainerProps>`
+    position: absolute;
+    top: 0;
+    width: 100%;
+    left: 0;
+    height: 100dvh;
+    background: rgba(0, 0, 0, .4);
+    display: ${(props) => props?.open ? "flex" : "none"};
+    justify-content: center;
+    align-items: center;
+`;
+
+export const ModalContainer = styled.div`
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 9px rgba(0, 0, 0, .12);
+    box-sizing: border-box;
+    padding: 24px;
+    text-align: center;
+    width: 500px;
+    @media (max-width: 510px) {
+        width: 100%;
+    }
+`;
+
+export const TitleModal = styled.div`
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 2rem;
+    margin-bottom: 16px;
+`;
+
+export const ContentModal = styled.div`
+    color: rgba(0, 0, 0, .7);
+    span{
+        color: #4080ee;
+    }
+`;
+
+export const ButtonModalContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+`;
+
+export const ButtonCancel = styled.div`
+    border: 1px solid rgba(0, 0, 0, .09);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .03);
+    color: #555;
+    font-size: 1rem;
+    min-width: 82px;
+    padding: 5px;
+    cursor: pointer;
+`;
+
+export const ButtonAgree = styled.div`
+    background-color: var(--primary-color-text);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .09);
+    color: #fff;
+    font-size: 1rem;
+    min-width: 82px;
+    margin-left: .625rem;
+    padding: 5px;
+    cursor: pointer;
 `

@@ -5,7 +5,7 @@ import React, { ReactNode } from 'react';
 
 interface AuthLayoutProps {
     children: ReactNode;
-    mode?: 'register' | 'login';
+    mode?: 'register' | 'login' | 'verification';
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
