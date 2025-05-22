@@ -1,12 +1,10 @@
 import { AuthWith, ButtonAuth, CardAuth, CardContainer, ContentCard, Facebook, ForgetPassword, Google, HeadCard, IconPassword, IconSocial, InputAuth, Line, OrContainer, Rectangle, RightHeaderCard, SwitchLogo, TextFooter, TextSwtichAuth, TitleAuth, WrapperInput } from 'components/Auth'
 import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import AuthLayout from '.'
 
-type Props = {}
 
-const Login = (props: Props) => {
-    const [showPassword, setShowPassword] = useState<Boolean>(false);
+const Login = () => {
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     return (
         <AuthLayout mode="login">
             <CardContainer>
@@ -49,7 +47,7 @@ const Login = (props: Props) => {
                             </Google>
                         </AuthWith>
                         <TextFooter>
-                            Baru di Shopee? <span>Daftar</span>
+                            Baru di Shopee? <span onClick={() => window.location.href = 'http://localhost:3000/auth/register'}>Daftar</span>
                         </TextFooter>
                     </ContentCard>
                 </CardAuth>

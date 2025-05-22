@@ -18,11 +18,8 @@ import {
 import React, { useState } from 'react';
 import AuthLayout from '.';
 
-type Props = {}
-
-const Register = (props: Props) => {
+const Register = () => {
     const [phone, setPhone] = useState('');
-    const [showIcon, setShowIcon] = useState<Boolean>(false);
 
     const normalizePhone = (input: string) => {
         const digits = input.replace(/\D/g, '');
@@ -40,7 +37,6 @@ const Register = (props: Props) => {
 
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setPhone(e.target.value);
-        setShowIcon(false); // sembunyikan ikon jika sedang edit
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -48,7 +44,6 @@ const Register = (props: Props) => {
         const normalized = normalizePhone(phone);
         const formatted = formatPhone(normalized);
         setPhone(formatted); // tampilkan hasil format di input
-        setShowIcon(true); // tampilkan ikon centang
     };
 
     return (
@@ -90,7 +85,7 @@ const Register = (props: Props) => {
                             </ButtonAuth>
                         </form>
                         <TextFooter>
-                            Baru di Shopee? <span>Daftar</span>
+                           Punya akun? <span onClick={() => window.location.href = 'http://localhost:3000/auth/login'}>Log in</span>
                         </TextFooter>
                     </ContentCard>
                 </CardAuth>

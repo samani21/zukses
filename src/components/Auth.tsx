@@ -1,4 +1,5 @@
-import styled from "styled-components";
+import styled from '@emotion/styled'
+
 
 export const AuthContainer = styled.div`
     height: 100dvh;
@@ -279,5 +280,6 @@ export const TextFooter = styled.div`
     margin-top: 10px;
     span{
         color: var(--primary-color-text);
+        cursor: pointer;
     }
 `
