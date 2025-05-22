@@ -42,6 +42,9 @@ export const TextLogin = styled.div`
     color: #222;
     font-size: 1.5rem;
     font-family: "Roboto", sans-serif;
+    @media (max-width: 990px) {
+        display: none;
+    }
 `;
 
 export const TextHelper = styled.div`
@@ -355,3 +358,36 @@ export const ButtonAgree = styled.div`
     padding: 5px;
     cursor: pointer;
 `
+
+export const BackContainer = styled.div`
+    text-align: center ;
+`;
+
+export const IconInModal = styled.img`
+    
+`;
+
+export const TextHeaderCard = styled.div`
+    width: 100%;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 2rem;
+    text-align: center;
+`;
+
+export const TextContent = styled.div`
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    color: rgba(0, 0, 0, .7);
+    span{
+        color: #4080ee;
+    }
+`;
+
+export const WhatsAppContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+`;

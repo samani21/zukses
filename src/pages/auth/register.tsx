@@ -73,6 +73,7 @@ const Register = () => {
             localStorage.setItem('is_active', '0'); // ubah angka jadi string
             localStorage.setItem('user', JSON.stringify(res?.data?.data)); // ubah objek jadi string
             localStorage.setItem('token', res?.data?.token || ''); // pastikan string (fallback kalau undefined)
+            window.location.href = 'http://localhost:3000/auth/verification'
         } else {
 
         }
