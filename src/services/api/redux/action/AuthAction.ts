@@ -3,7 +3,7 @@ export const getUserInfo = () => {
         const jsonValue = localStorage.getItem("user");
         return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (e) {
-        // console.log(e);
+        console.error(e);
         return false;
     }
 };

@@ -18,9 +18,6 @@ const Verification = () => {
     const [otp, setOtp] = useState('');
     const [user, setUser] = useState<{ whatsapp?: string } | null>(null);
 
-    const handleChange = (value: string) => {
-        setOtp(value);
-    };
 
     const formatPhoneNumber = (raw: string): string => {
         const phone = raw.replace(/\D/g, '');

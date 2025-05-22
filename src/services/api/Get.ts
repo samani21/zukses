@@ -7,7 +7,7 @@ const urlMap: Record<URLType, string> = {
     zukses: Zukses
 };
 
-const Get = <T = any>(url: URLType, path: string, token?: string): Promise<T> => {
+const Get = <T = unknown>(url: URLType, path: string, token?: string): Promise<T> => {
     const baseUrl = urlMap[url];
     const config = token
         ? {

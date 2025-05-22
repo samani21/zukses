@@ -11,5 +11,5 @@ export interface RegisterResponse {
     data: UserData;
     expires_in?: number;
     token_type?: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }

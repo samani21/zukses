@@ -7,10 +7,10 @@ const urlMap: Record<URLType, string> = {
     zukses: Zukses
 };
 
-const Post = <T = any>(
+const Post = <T = unknown>(
     url: URLType,
     path: string,
-    data: any,
+    data: unknown,
     token?: string
 ): Promise<AxiosResponse<T>> => {
     const baseUrl = urlMap[url];
