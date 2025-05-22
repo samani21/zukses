@@ -20,7 +20,7 @@ import React, { useState } from 'react';
 import AuthLayout from '.';
 import ModalAgreement from './ModalAgreement';
 import Post from 'services/api/Post';
-import { RegisterResponse } from 'services/api/types';
+import { UserData } from 'services/api/types';
 
 const Register = () => {
     const [phone, setPhone] = useState('');
@@ -139,3 +139,11 @@ const Register = () => {
 };
 
 export default Register;
+
+export interface RegisterResponse {
+    token: string;
+    data: UserData;
+    expires_in?: number;
+    token_type?: string;
+    [key: string]: unknown;
+}
