@@ -3,39 +3,18 @@ import React, { useState } from 'react'
 import AuthLayout from '.'
 import Post from 'services/api/Post'
 import { RegisterResponse } from 'services/api/types'
+import { useRouter } from 'next/router'
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
-
+    const router = useRouter();
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-
         // Reset error dulu
         setError(null)
-
-        // // Validasi input required
-        // if (!email || !password) {
-        //     setError('Email dan Password harus diisi.')
-        //     return
-        // }
-
-        // // Simulasi cek akun/password (misal akun hardcoded)
-        // if (email !== 'user@example.com') {
-        //     setError('Akun tidak terdaftar.')
-        //     return
-        // }
-
-        // if (password !== '123456') {
-        //     setError('Password salah.')
-        //     return
-        // }
-
-        // Jika lolos validasi
-
-
         try {
             const formData = new FormData();
             formData.append('password', password);
@@ -58,7 +37,6 @@ const Login = () => {
                 console.error('Unexpected error', err);
             }
         }
-
     }
 
     return (
@@ -105,7 +83,7 @@ const Login = () => {
                             </ButtonAuth>
                         </form>
 
-                        <ForgetPassword>Lupa Password</ForgetPassword>
+                        <ForgetPassword onClick={() => router.replace('/auth/reset')}>Lupa Password</ForgetPassword>
 
                         <OrContainer>
                             <Line />
@@ -130,7 +108,7 @@ const Login = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
-        </AuthLayout>
+        </AuthLayout >
     )
 }
 

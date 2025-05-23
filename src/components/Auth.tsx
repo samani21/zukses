@@ -405,3 +405,11 @@ export const ListAlert = styled.div`
     gap: 10px;
     margin-bottom: 10px;
 `;
+
+export const OptionReset = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+`

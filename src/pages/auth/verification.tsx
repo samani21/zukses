@@ -90,7 +90,7 @@ const Verification = () => {
         if (res?.data?.status === 'success') {
             const data = {
                 name: fetchedUser?.name,
-                email: fetchedUser?.name,
+                email: fetchedUser?.email,
                 role: fetchedUser?.role,
                 whatsapp: fetchedUser?.whatsapp,
                 is_active: 1
