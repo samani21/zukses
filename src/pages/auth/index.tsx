@@ -26,7 +26,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
                 router.replace('/');
             }
         } else {
-            router.replace('/auth/register');
+            if (mode === 'login') {
+                router.replace('/auth/login');
+            } else {
+                router.replace('/auth/register');
+            }
+
         }
 
         setCheckedAuth(true); // Mark auth check as complete
