@@ -13,11 +13,59 @@ import {
     WhatsAppContainer,
 } from 'components/Auth';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import Post from 'services/api/Post';
+import { Response } from 'services/api/types';
 
 const Verification = () => {
     const [otp, setOtp] = useState('');
-    const [user, setUser] = useState<{ whatsapp?: string } | null>(null);
+    const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
+    const [counter, setCounter] = useState(0);
+    const [canResend, setCanResend] = useState(false);
+    useEffect(() => {
+        const timeOtp = localStorage.getItem('timeOtp');
+        if (timeOtp) {
+            const now = Math.floor(Date.now() / 1000); // current time in seconds
+            const diff = parseInt(timeOtp) - now;
+            if (diff > 0) {
+                setCounter(diff);
+                setCanResend(false);
+            } else {
+                setCanResend(true);
+            }
+        } else {
+            setCanResend(true); // if no timeOtp found
+        }
+    }, []);
 
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (!canResend && counter > 0) {
+            timer = setTimeout(() => {
+                setCounter(prev => {
+                    if (prev <= 1) {
+                        setCanResend(true);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [counter, canResend]);
+
+    const handleResend = async () => {
+        // Simulasi: Kirim OTP dan simpan waktu sekarang + 60 detik
+        const formData = new FormData();
+        formData.append('whatsapp', user?.whatsapp ? user?.whatsapp : '');
+        const res = await Post<Response>('zukses', `otp/${user?.id}/request`, formData);
+        console.log('res', res)
+        if (res?.data?.status === 'success') {
+            const now = Math.floor(Date.now() / 1000);
+            localStorage.setItem('timeOtp', now.toString());
+            setCounter(60);
+            setCanResend(false);
+        }
+    };
 
     const formatPhoneNumber = (raw: string): string => {
         const phone = raw.replace(/\D/g, '');
@@ -33,9 +81,14 @@ const Verification = () => {
         return `(+62) ${prefix}${masked}${suffix}`;
     };
 
-    const handleSubmit = () => {
-        alert(`OTP Submitted: ${otp}`);
-        // Tambahkan proses validasi/submit ke backend di sini
+    const handleSubmit = async () => {
+        const formData = new FormData();
+        formData.append('otp', otp);
+        const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
+        console.log('res', res)
+        if (res?.data?.status === 'success') {
+            localStorage.removeItem('is_active');
+        }
     };
 
     useEffect(() => {
@@ -79,9 +132,18 @@ const Verification = () => {
 
                         <TextContent>
                             Tidak menerima Kode OTP?
-                            <br></br>
-                            <span>Kirim Ulanag</span> atau coba <span>Metode Lain</span>
+                            <br />
+                            {canResend ? (
+                                <span onClick={handleResend}>
+                                    Kirim Ulang
+                                </span>
+                            ) : (
+                                <span style={{ color: 'gray' }}>
+                                    Kirim Ulang dalam {counter} detik
+                                </span>
+                            )} atau coba <span>Metode Lain</span>
                         </TextContent>
+
                         <ButtonAuth onClick={handleSubmit}>
                             Lanjut
                         </ButtonAuth>

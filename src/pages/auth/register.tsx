@@ -73,6 +73,14 @@ const Register = () => {
             localStorage.setItem('is_active', '0'); // ubah angka jadi string
             localStorage.setItem('user', JSON.stringify(res?.data?.data)); // ubah objek jadi string
             localStorage.setItem('token', res?.data?.token || ''); // pastikan string (fallback kalau undefined)
+            // Waktu sekarang dalam detik
+            const nowInSeconds = Math.floor(Date.now() / 1000);
+
+            // Tambah 2 menit (120 detik)
+            const twoMinutesLater = nowInSeconds + 60;
+
+            // Simpan ke localStorage
+            localStorage.setItem('timeOtp', twoMinutesLater.toString());
             window.location.href = 'http://localhost:3000/auth/verification'
         } else {
 
