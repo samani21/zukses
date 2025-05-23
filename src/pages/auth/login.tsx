@@ -4,6 +4,7 @@ import AuthLayout from '.'
 import Post from 'services/api/Post'
 import { RegisterResponse } from 'services/api/types'
 import { useRouter } from 'next/router'
+import { AxiosError } from 'axios'
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false)
@@ -26,15 +27,15 @@ const Login = () => {
                 localStorage.setItem('token', res?.data?.token || '');
                 window.location.href = 'http://localhost:3000/'
             }
-        } catch (err: any) {
-            // Tangani error 422 dan tampilkan ke user
-            if (err.response?.status === 422) {
-                const errorMessage = err.response.data.message || 'Data tidak valid';
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+
+            if (error.response?.status === 422) {
+                const errorMessage = error.response.data?.message || 'Data tidak valid';
                 console.log('error', errorMessage);
-                // Tampilkan ke form, contoh:
                 setError(errorMessage);
             } else {
-                console.error('Unexpected error', err);
+                console.error('Unexpected error', error);
             }
         }
     }

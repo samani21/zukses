@@ -6,7 +6,6 @@ import {
     HeadCard,
     InputAuth,
     WrapperInput,
-    TitleAuth,
     IconInModal,
     TextHeaderCard,
     TextContent,
@@ -18,6 +17,7 @@ import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
 import Post from 'services/api/Post';
 import { useRouter } from 'next/router';
+import { AxiosError } from 'axios';
 
 const Reset = () => {
     const [email, setEmail] = useState('')
@@ -62,15 +62,16 @@ const Reset = () => {
                 setIsEmailValid(isValid);
                 setNextReset(true)
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+
             // Tangani error 422 dan tampilkan ke user
-            if (err.response?.status === 422) {
-                const errorMessage = err.response.data.message || 'Data tidak valid';
+            if (error.response?.status === 422) {
+                const errorMessage = error.response.data?.message || 'Data tidak valid';
                 console.log('error', errorMessage);
-                // Tampilkan ke form, contoh:
                 setError(errorMessage);
             } else {
-                console.error('Unexpected error', err);
+                console.error('Unexpected error', error);
             }
         }
     };

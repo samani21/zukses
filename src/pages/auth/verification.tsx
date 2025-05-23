@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import AuthLayout from '.';
 import { OtpInput } from 'reactjs-otp-input';
 import {
@@ -81,12 +81,13 @@ const Verification = () => {
         return `(+62) ${prefix}${masked}${suffix}`;
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
         const fetchedUser = getUserInfo();
         const formData = new FormData();
         formData.append('otp', otp);
         const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
-        console.log('res', res)
+        console.log('res', res);
+
         if (res?.data?.status === 'success') {
             const data = {
                 name: fetchedUser?.name,
@@ -94,17 +95,17 @@ const Verification = () => {
                 role: fetchedUser?.role,
                 whatsapp: fetchedUser?.whatsapp,
                 is_active: 1
-            }
-            localStorage.setItem('user', JSON.stringify(data))
-            window.location.href = 'http://localhost:3000/auth/change-password'
+            };
+            localStorage.setItem('user', JSON.stringify(data));
+            window.location.href = 'http://localhost:3000/auth/change-password';
         }
-    };
+    }, [otp, user]);
 
     useEffect(() => {
         if (otp.length === 6) {
             handleSubmit();
         }
-    }, [otp]);
+    }, [otp, handleSubmit]);
 
     useEffect(() => {
         const fetchedUser = getUserInfo();

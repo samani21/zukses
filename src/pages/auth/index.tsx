@@ -15,7 +15,6 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
     const router = useRouter();
     const [checkedAuth, setCheckedAuth] = useState(false);
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const user = localStorage.getItem('user');
         const fetchedUser = getUserInfo();
         if (user) {
