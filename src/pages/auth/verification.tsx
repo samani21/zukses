@@ -97,7 +97,7 @@ const Verification = () => {
                 is_active: 1
             };
             localStorage.setItem('user', JSON.stringify(data));
-            window.location.href = 'http://localhost:3000/auth/change-password';
+            window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/change-password';
         }
     }, [otp, user]);
 

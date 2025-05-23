@@ -75,7 +75,7 @@ const ChangePassword = () => {
                 whatsapp: fetchedUser?.whatsapp,
             }
             localStorage.setItem('user', JSON.stringify(data))
-            window.location.href = 'http://localhost:3000/'
+            window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/'
         } else {
 
         }

@@ -25,7 +25,7 @@ const Login = () => {
             if (res?.data?.status == 'success') {
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
                 localStorage.setItem('token', res?.data?.token || '');
-                window.location.href = 'http://localhost:3000/'
+                window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/'
             }
         } catch (err: unknown) {
             const error = err as AxiosError<{ message?: string }>;
@@ -104,7 +104,7 @@ const Login = () => {
                         </AuthWith>
 
                         <TextFooter>
-                            Baru di Shopee? <span onClick={() => window.location.href = 'http://localhost:3000/auth/register'}>Daftar</span>
+                            Baru di Shopee? <span onClick={() => window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/register'}>Daftar</span>
                         </TextFooter>
                     </ContentCard>
                 </CardAuth>

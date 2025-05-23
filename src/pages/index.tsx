@@ -23,7 +23,7 @@ export default function Home() {
     setLogin(true)
   }
   const handleLogin = () => {
-    window.location.href = 'http://localhost:3000/auth/login'
+    window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/login'
   }
 
   return (

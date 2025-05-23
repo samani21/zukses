@@ -79,7 +79,7 @@ const Register = () => {
 
             // Simpan ke localStorage
             localStorage.setItem('timeOtp', twoMinutesLater.toString());
-            window.location.href = 'http://localhost:3000/auth/verification'
+            window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/verification'
         } else {
 
         }
@@ -130,7 +130,7 @@ const Register = () => {
                         </form>
                         <TextFooter>
                             Punya akun?{' '}
-                            <span onClick={() => window.location.href = 'http://localhost:3000/auth/login'}>
+                            <span onClick={() => window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/login'}>
                                 Log in
                             </span>
                         </TextFooter>
