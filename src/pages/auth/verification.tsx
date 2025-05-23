@@ -82,12 +82,21 @@ const Verification = () => {
     };
 
     const handleSubmit = async () => {
+        const fetchedUser = getUserInfo();
         const formData = new FormData();
         formData.append('otp', otp);
         const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
         console.log('res', res)
         if (res?.data?.status === 'success') {
-            localStorage.removeItem('is_active');
+            const data = {
+                name: fetchedUser?.name,
+                email: fetchedUser?.name,
+                role: fetchedUser?.role,
+                whatsapp: fetchedUser?.whatsapp,
+                is_active: 1
+            }
+            localStorage.setItem('user', JSON.stringify(data))
+            window.location.href = 'http://localhost:3000/auth/change-password'
         }
     };
 
@@ -145,7 +154,7 @@ const Verification = () => {
                         </TextContent>
 
                         <ButtonAuth onClick={handleSubmit}>
-                            Lanjut
+                            LANJUT
                         </ButtonAuth>
                     </ContentCard>
                 </CardAuth>

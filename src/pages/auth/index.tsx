@@ -4,25 +4,26 @@ import {
 } from 'components/Auth';
 import { useRouter } from 'next/router';
 import React, { ReactNode, useEffect, useState } from 'react';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
 interface AuthLayoutProps {
     children: ReactNode;
-    mode?: 'register' | 'login' | 'verification';
+    mode?: 'register' | 'login' | 'verification' | 'change-password';
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
     const router = useRouter();
     const [checkedAuth, setCheckedAuth] = useState(false);
-
     useEffect(() => {
-        const isActive = localStorage.getItem('is_active');
         const token = localStorage.getItem('token');
-
+        const fetchedUser = getUserInfo();
         if (token) {
-            if (isActive === '0' && router.pathname !== '/auth/verification') {
+            if (fetchedUser?.is_active == 1) {
+                router.replace('/auth/change-password');
+            } else if (fetchedUser?.is_active === 0) {
                 router.replace('/auth/verification');
-            } else if (isActive !== '0' && router.pathname !== '/auth/register' && mode === 'register') {
-                router.replace('/auth/register');
+            } else {
+                router.replace('/');
             }
         } else {
             router.replace('/auth/register');

@@ -65,12 +65,10 @@ const Register = () => {
     const handleRegister = async () => {
         const formData = new FormData();
         formData.append('whatsapp', whatsapp);
-        formData.append('password', whatsapp);
+        formData.append('password', "ZUKSES");
         formData.append('email', whatsapp);
         const res = await Post<RegisterResponse>('zukses', 'auth/register-with-whatsapp', formData);
-        console.log('res', res)
         if (res?.data?.status == 'success') {
-            localStorage.setItem('is_active', '0'); // ubah angka jadi string
             localStorage.setItem('user', JSON.stringify(res?.data?.data)); // ubah objek jadi string
             localStorage.setItem('token', res?.data?.token || ''); // pastikan string (fallback kalau undefined)
             // Waktu sekarang dalam detik

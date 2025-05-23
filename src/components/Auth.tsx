@@ -391,3 +391,17 @@ export const WhatsAppContainer = styled.div`
     align-items: center;
     gap: 10px;
 `;
+
+export const AlertChangePassword = styled.div`
+    margin-top: 10px;
+    font-size: 14px;
+    color: #45ca32;
+`;
+
+export const ListAlert = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+`;

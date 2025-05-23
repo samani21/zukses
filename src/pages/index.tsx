@@ -6,14 +6,18 @@ const Container = styled.div`
   margin-top: 50px;
 `;
 
-const Title = styled.h1`
-  color: #0070f3;
-`;
+
 
 export default function Home() {
-    return (
-        <Container>
-            <Title>Halo, Styled Components Tanpa Babel!</Title>
-        </Container>
-    );
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+  return (
+    <Container>
+      <div onClick={handleLogout}>
+        Logout
+      </div>
+    </Container>
+  );
 }
