@@ -19,12 +19,14 @@ import {
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { RegisterResponse } from 'services/api/types';
+import { useRouter } from 'next/router';
 
 const ChangePassword = () => {
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string>('');
+    const router = useRouter()
     const [validations, setValidations] = useState({
         hasLowercase: false,
         hasUppercase: false,
@@ -84,18 +86,24 @@ const ChangePassword = () => {
                 whatsapp: fetchedUser?.whatsapp,
             };
             localStorage.setItem('user', JSON.stringify(data));
-            window.location.href = 'http://localhost:3000/';
+            router.replace('/auth')
         } else {
             setError('Terjadi kesalahan saat mengganti password.');
         }
     };
+
+    const handleBack = () => {
+        router.replace('/auth/register');
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+    }
 
     return (
         <AuthLayout mode="change-password">
             <CardContainer>
                 <CardAuth style={{ top: '160px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
-                        <IconInModal src="/icon/arrow-left-line.svg" />
+                        <IconInModal src="/icon/arrow-left-line.svg" onClick={handleBack} />
                         <TextHeaderCard>Atur Password Kamu</TextHeaderCard>
                     </HeadCard>
                     <ContentCard>

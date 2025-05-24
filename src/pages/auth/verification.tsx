@@ -15,12 +15,14 @@ import {
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
+import { useRouter } from 'next/router';
 
 const Verification = () => {
     const [otp, setOtp] = useState('');
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
     const [counter, setCounter] = useState(0);
     const [canResend, setCanResend] = useState(false);
+    const router = useRouter();
     useEffect(() => {
         const timeOtp = localStorage.getItem('timeOtp');
         if (timeOtp) {
@@ -89,15 +91,8 @@ const Verification = () => {
         console.log('res', res);
 
         if (res?.data?.status === 'success') {
-            const data = {
-                name: fetchedUser?.name,
-                email: fetchedUser?.email,
-                role: fetchedUser?.role,
-                whatsapp: fetchedUser?.whatsapp,
-                is_active: 1
-            };
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
-            window.location.href = 'http://localhost:3000/auth/change-password';
+            router.replace('/auth/change-password');
         }
     }, [otp, user]);
 
@@ -112,12 +107,17 @@ const Verification = () => {
         setUser(fetchedUser);
     }, []);
 
+    const handleBack = () => {
+        router.replace('/auth/login');
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+    }
     return (
         <AuthLayout mode="verification">
             <CardContainer>
                 <CardAuth style={{ top: '220px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
-                        <IconInModal src="/icon/arrow-left-line.svg" />
+                        <IconInModal src="/icon/arrow-left-line.svg" onClick={handleBack} />
                         <TextHeaderCard>Masukkan Kode OTP</TextHeaderCard>
                     </HeadCard>
                     <ContentCard>

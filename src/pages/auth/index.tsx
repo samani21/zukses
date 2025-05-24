@@ -16,6 +16,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
     const [checkedAuth, setCheckedAuth] = useState(false);
     useEffect(() => {
         const user = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
         const fetchedUser = getUserInfo();
         if (user) {
             if (fetchedUser?.is_active == 1) {
@@ -27,7 +28,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
                     router.replace('/auth/verification-reset-password');
                 }
             } else {
-                router.replace('/');
+                if (token) {
+                    router.replace('/');
+                } else {
+                    router.replace('/auth/login');
+                    localStorage.removeItem('user');
+                }
             }
         } else {
             if (mode === 'login') {
