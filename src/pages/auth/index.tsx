@@ -57,7 +57,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
             <NavAuth>
                 <HeaderContainer>
                     <HeaderLeft>
-                        <LogoHeader src='/logo/shopee.png' />
+                        <LogoHeader src='https://karirlab-prod-bucket.s3.ap-southeast-1.amazonaws.com/files/privates/R86w3cB8gfPXqAPClfTGMhhebdT9pEMDOuNIrNoV.png' />
                         <TextLogin>{mode === 'register' ? "Daftar" : "Log in"}</TextLogin>
                     </HeaderLeft>
                     <TextHelper>Butuh bantuan?</TextHelper>
