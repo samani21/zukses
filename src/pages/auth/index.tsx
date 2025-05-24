@@ -8,7 +8,7 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
 interface AuthLayoutProps {
     children: ReactNode;
-    mode?: 'register' | 'login' | 'verification' | 'change-password' | 'reset';
+    mode?: 'register' | 'login' | 'verification' | 'change-password' | 'reset' | 'verification-reset-password';
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
@@ -16,14 +16,24 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
     const [checkedAuth, setCheckedAuth] = useState(false);
     useEffect(() => {
         const user = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
         const fetchedUser = getUserInfo();
         if (user) {
             if (fetchedUser?.is_active == 1) {
                 router.replace('/auth/change-password');
             } else if (fetchedUser?.is_active === 0) {
-                router.replace('/auth/verification');
+                if (mode === 'verification') {
+                    router.replace('/auth/verification');
+                } else {
+                    router.replace('/auth/verification-reset-password');
+                }
             } else {
-                router.replace('/');
+                if (token) {
+                    router.replace('/');
+                } else {
+                    router.replace('/auth/login');
+                    localStorage.removeItem('user');
+                }
             }
         } else {
             if (mode === 'login') {

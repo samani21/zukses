@@ -1,4 +1,29 @@
-import { AuthWith, ButtonAuth, CardAuth, CardContainer, ContentCard, Facebook, ForgetPassword, Google, HeadCard, IconPassword, IconSocial, InputAuth, Line, OrContainer, Rectangle, RightHeaderCard, SwitchLogo, TextFooter, TextSwtichAuth, TitleAuth, WrapperInput } from 'components/Auth'
+import {
+    AlertLogin,
+    AuthWith,
+    ButtonAuth,
+    CardAuth,
+    CardContainer,
+    ContentCard,
+    Facebook,
+    ForgetPassword,
+    Google,
+    HeadCard,
+    IconInModal,
+    IconPassword,
+    IconSocial,
+    InputAuth,
+    Line,
+    OrContainer,
+    Rectangle,
+    RightHeaderCard,
+    SwitchLogo,
+    TextFooter,
+    TextSwtichAuth,
+    TitleAuth,
+    WrapperInput,
+} from 'components/Auth'
+
 import React, { useState } from 'react'
 import AuthLayout from '.'
 import Post from 'services/api/Post'
@@ -12,20 +37,68 @@ const Login = () => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
     const router = useRouter();
+
+    const formatToIndoPhoneRaw = (input: string): string => {
+        const phone = input.trim().replace(/\D/g, ''); // hanya angka
+        if (phone.startsWith('0')) {
+            return '62' + phone.slice(1);
+        } else if (phone.startsWith('62')) {
+            return phone;
+        } else if (phone.startsWith('+62')) {
+            return phone.slice(1); // hilangkan +
+        }
+        return '62' + phone;
+    };
+
+    // Format tampilan input menjadi: (+62) 812 7887 9032
+    const formatPhoneForDisplay = (raw: string): string => {
+        let digits = raw.replace(/\D/g, '');
+
+        if (digits.startsWith('0')) {
+            digits = digits.slice(1);
+        } else if (digits.startsWith('62')) {
+            digits = digits.slice(2);
+        } else if (digits.startsWith('+62')) {
+            digits = digits.slice(3);
+        }
+
+        // Pisah: (812) 7887 9032
+        const part1 = digits.slice(0, 3);      // 812
+        const part2 = digits.slice(3, 7);      // 7887
+        const part3 = digits.slice(7, 11);     // 9032
+
+        let result = `(+62)`;
+        if (part1) result += ` ${part1}`;
+        if (part2) result += ` ${part2}`;
+        if (part3) result += ` ${part3}`;
+        return result;
+    };
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Reset error dulu
         setError(null)
+
+        const isEmail = email.includes('@');
+        let rawToSend = email;
+
+        if (!isEmail) {
+            rawToSend = formatToIndoPhoneRaw(email);
+            const displayFormat = formatPhoneForDisplay(email);
+            setEmail(displayFormat); // Update tampilan input
+        }
+
         try {
             const formData = new FormData();
+            formData.append('email', rawToSend); // tetap kirim format 62xxxxxxxxxx
             formData.append('password', password);
-            formData.append('email', email);
+
             const res = await Post<RegisterResponse>('zukses', 'auth/login', formData);
             console.log('res', res)
-            if (res?.data?.status == 'success') {
+
+            if (res?.data?.status === 'success') {
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
                 localStorage.setItem('token', res?.data?.token || '');
-                window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/'
+                window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/';
             }
         } catch (err: unknown) {
             const error = err as AxiosError<{ message?: string }>;
@@ -38,8 +111,12 @@ const Login = () => {
                 console.error('Unexpected error', error);
             }
         }
-    }
+    };
 
+
+    const handleLoginGoogle = () => {
+        window.location.href = 'https://zukses.id/v1/auth/google';
+    }
     return (
         <AuthLayout mode="login">
             <CardContainer>
@@ -55,9 +132,10 @@ const Login = () => {
                     <ContentCard>
                         <form onSubmit={handleLogin}>
                             {error && (
-                                <div style={{ color: 'red', marginTop: '8px', fontSize: '14px' }}>
+                                <AlertLogin>
+                                    <IconInModal src='/icon/alert-error.svg' width={15} />
                                     {error}
-                                </div>
+                                </AlertLogin>
                             )}
 
                             <WrapperInput style={{ marginTop: "0px" }}>
@@ -84,7 +162,11 @@ const Login = () => {
                             </ButtonAuth>
                         </form>
 
-                        <ForgetPassword onClick={() => router.replace('/auth/reset')}>Lupa Password</ForgetPassword>
+                        <ForgetPassword>
+                            <p onClick={() => router.replace('/auth/reset')} style={{ cursor: "pointer" }}>
+                                Lupa Password
+                            </p>
+                        </ForgetPassword>
 
                         <OrContainer>
                             <Line />
@@ -97,7 +179,7 @@ const Login = () => {
                                 <IconSocial src='/icon/facebook.png' width={20} />
                                 Facebook
                             </Facebook>
-                            <Google>
+                            <Google onClick={handleLoginGoogle}>
                                 <IconSocial src='/icon/google.webp' width={30} />
                                 Google
                             </Google>
@@ -109,7 +191,7 @@ const Login = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
-        </AuthLayout >
+        </AuthLayout>
     )
 }
 

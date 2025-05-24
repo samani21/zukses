@@ -6,6 +6,10 @@ export default function Home() {
   const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string, role?: string, name?: string } | null>(null);
   const [login, setLogin] = useState<boolean>(false)
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      localStorage.removeItem('user');
+    }
     const fetchedUser = getUserInfo();
     setUser(fetchedUser);
   }, []);
@@ -17,6 +21,7 @@ export default function Home() {
       setLogin(true)
     }
   }, [user]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

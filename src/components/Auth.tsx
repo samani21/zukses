@@ -212,6 +212,7 @@ export const ForgetPassword = styled.div`
     font-size: .75rem; 
     color: #05a ;
     margin-top: 10px;
+    width: 100px;
 `;
 
 export const OrContainer = styled.div`
@@ -413,3 +414,16 @@ export const OptionReset = styled.div`
     gap: 10px;
     color: #555;
 `
+
+export const AlertLogin = styled.div`
+    background-color: #fff9fa;
+    border: 1px solid rgba(255, 66, 79, .2);
+    margin-top: -10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    font-size: 14px;
+`;

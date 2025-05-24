@@ -17,12 +17,12 @@ import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 import { useRouter } from 'next/router';
 
-const Verification = () => {
+const VerificationResetPassword = () => {
     const [otp, setOtp] = useState('');
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
     const [counter, setCounter] = useState(0);
-    const [canResend, setCanResend] = useState(false);
     const router = useRouter();
+    const [canResend, setCanResend] = useState(false);
     useEffect(() => {
         const timeOtp = localStorage.getItem('timeOtp');
         if (timeOtp) {
@@ -86,13 +86,13 @@ const Verification = () => {
     const handleSubmit = useCallback(async () => {
         const formData = new FormData();
         formData.append('otp', otp);
-        const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
+        const res = await Post<Response>('zukses', `otp-verify-reset-passwrod/${user?.id}`, formData);
         console.log('res', res);
 
         if (res?.data?.status === 'success') {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
-            router.replace('/auth/change-password');
+            router.replace('/auth/change-password')
         }
     }, [otp, user, router]);
 
@@ -108,12 +108,12 @@ const Verification = () => {
     }, []);
 
     const handleBack = () => {
-        router.replace('/auth/login');
+        router.replace('/auth/reset');
         localStorage.removeItem('user')
-        localStorage.removeItem('token')
     }
+
     return (
-        <AuthLayout mode="verification">
+        <AuthLayout mode="verification-reset-password">
             <CardContainer>
                 <CardAuth style={{ top: '220px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
@@ -179,4 +179,4 @@ const styles = {
     },
 };
 
-export default Verification;
+export default VerificationResetPassword;

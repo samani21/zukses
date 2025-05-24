@@ -1,1 +1,1 @@
-export const Zukses = 'https://zukses.id//v1';
+export const Zukses = 'https://zukses.id/v1';
