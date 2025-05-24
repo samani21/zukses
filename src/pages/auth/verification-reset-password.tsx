@@ -16,7 +16,7 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 
-const Verification = () => {
+const VerificationResetPassword = () => {
     const [otp, setOtp] = useState('');
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
     const [counter, setCounter] = useState(0);
@@ -85,17 +85,10 @@ const Verification = () => {
         const fetchedUser = getUserInfo();
         const formData = new FormData();
         formData.append('otp', otp);
-        const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
+        const res = await Post<Response>('zukses', `otp-verify-reset-passwrod/${user?.id}`, formData);
         console.log('res', res);
 
         if (res?.data?.status === 'success') {
-            const data = {
-                name: fetchedUser?.name,
-                email: fetchedUser?.email,
-                role: fetchedUser?.role,
-                whatsapp: fetchedUser?.whatsapp,
-                is_active: 1
-            };
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             window.location.href = 'http://localhost:3000/auth/change-password';
         }
@@ -113,7 +106,7 @@ const Verification = () => {
     }, []);
 
     return (
-        <AuthLayout mode="verification">
+        <AuthLayout mode="verification-reset-password">
             <CardContainer>
                 <CardAuth style={{ top: '220px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
@@ -179,4 +172,4 @@ const styles = {
     },
 };
 
-export default Verification;
+export default VerificationResetPassword;

@@ -95,7 +95,7 @@ const Reset = () => {
                 is_active: 0
             }
             localStorage.setItem('user', JSON.stringify(data))
-            router.replace('/auth/verification');
+            router.replace('/auth/verification-reset-password');
         }
     };
     return (

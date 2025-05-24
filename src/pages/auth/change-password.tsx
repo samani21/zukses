@@ -19,10 +19,12 @@ import {
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { RegisterResponse } from 'services/api/types';
+
 const ChangePassword = () => {
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [password, setPassword] = useState('');
+    const [error, setError] = useState<string>('');
     const [validations, setValidations] = useState({
         hasLowercase: false,
         hasUppercase: false,
@@ -32,20 +34,17 @@ const ChangePassword = () => {
 
     const formatPhoneNumber = (raw: string): string => {
         const phone = raw.replace(/\D/g, '');
-
         const local = phone.startsWith('62') ? phone.slice(2) : phone;
-
         const masked = '**********';
         const suffix = local.slice(-2);
-
         return `${masked}${suffix}`;
     };
-
 
     useEffect(() => {
         const fetchedUser = getUserInfo();
         setUser(fetchedUser);
     }, []);
+
     useEffect(() => {
         const hasLowercase = /[a-z]/.test(password);
         const hasUppercase = /[A-Z]/.test(password);
@@ -62,10 +61,20 @@ const ChangePassword = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const { hasLowercase, hasUppercase, hasLength, hasValidChars } = validations;
+
+        if (!hasLowercase || !hasUppercase || !hasLength || !hasValidChars) {
+            setError('Semua kriteria password harus dipenuhi sebelum melanjutkan.');
+            return;
+        }
+
+        setError(''); // clear error
         const fetchedUser = getUserInfo();
         const formData = new FormData();
         formData.append('password', password);
         formData.append('email', fetchedUser?.email);
+
         const res = await Post<RegisterResponse>('zukses', 'auth/change-password', formData);
         if (res?.data?.status == 'success') {
             const data = {
@@ -73,13 +82,14 @@ const ChangePassword = () => {
                 email: fetchedUser?.name,
                 role: fetchedUser?.role,
                 whatsapp: fetchedUser?.whatsapp,
-            }
-            localStorage.setItem('user', JSON.stringify(data))
-            window.location.href = 'http://localhost:3000/'
+            };
+            localStorage.setItem('user', JSON.stringify(data));
+            window.location.href = 'http://localhost:3000/';
         } else {
-
+            setError('Terjadi kesalahan saat mengganti password.');
         }
-    }
+    };
+
     return (
         <AuthLayout mode="change-password">
             <CardContainer>
@@ -89,13 +99,9 @@ const ChangePassword = () => {
                         <TextHeaderCard>Atur Password Kamu</TextHeaderCard>
                     </HeadCard>
                     <ContentCard>
-                        <TextContent>
-                            Buat password baru untuk
-                        </TextContent>
+                        <TextContent>Buat password baru untuk</TextContent>
                         <WhatsAppContainer>
-                            <b>
-                                {user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}
-                            </b>
+                            <b>{user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}</b>
                         </WhatsAppContainer>
                         <form onSubmit={handleSubmit}>
                             <WrapperInput>
@@ -105,17 +111,24 @@ const ChangePassword = () => {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
-                                <IconPassword src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'} onClick={() => setShowPassword(!showPassword)} />
+                                <IconPassword
+                                    src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                />
                             </WrapperInput>
-                            <AlertChangePassword >
-                                <ListAlert>Min. satu karakter huruf kecil {validations.hasLowercase ? <IconInModal src='/icon/circle-tick.svg' width={20} /> : ''}</ListAlert>
-                                <ListAlert>Min. satu karakter huruf besar {validations.hasUppercase ? <IconInModal src='/icon/circle-tick.svg' width={20} /> : ''}</ListAlert>
-                                <ListAlert>8-16 karakter {validations.hasLength ? <IconInModal src='/icon/circle-tick.svg' width={20} /> : ''}</ListAlert>
-                                <ListAlert>Hanya huruf, angka, dan tanda baca umum yang dapat digunakan {validations.hasValidChars ? <IconInModal src='/icon/circle-tick.svg' width={20} /> : ''}</ListAlert>
+
+                            {error && (
+                                <div style={{ color: 'red', marginBottom: '10px' }}>{error}</div>
+                            )}
+
+                            <AlertChangePassword>
+                                <ListAlert>Min. satu karakter huruf kecil {validations.hasLowercase && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>Min. satu karakter huruf besar {validations.hasUppercase && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>8-16 karakter {validations.hasLength && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>Hanya huruf, angka, dan tanda baca umum yang dapat digunakan {validations.hasValidChars && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
                             </AlertChangePassword>
-                            <ButtonAuth type='submit'>
-                                BERIKUTNYA
-                            </ButtonAuth>
+
+                            <ButtonAuth type='submit'>BERIKUTNYA</ButtonAuth>
                         </form>
                     </ContentCard>
                 </CardAuth>
