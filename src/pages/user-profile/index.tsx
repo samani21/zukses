@@ -1,13 +1,6 @@
-import { useSearchParams } from 'next/navigation';
 import React from 'react'
 
-type Props = {}
-
-const UserProfile = (props: Props) => {
-    const searchParams = useSearchParams();
-    const email = searchParams.get('email');
-    const name = searchParams.get('name');
-    console.log(email, name)
+const UserProfile = () => {
     return (
         <div>UserProfile</div>
     )

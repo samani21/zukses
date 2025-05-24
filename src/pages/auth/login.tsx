@@ -38,9 +38,8 @@ const Login = () => {
     const [error, setError] = useState<string | null>(null)
     const router = useRouter();
 
-    // Format untuk kirim ke backend (tanpa simbol, mulai dari 62)
     const formatToIndoPhoneRaw = (input: string): string => {
-        let phone = input.trim().replace(/\D/g, ''); // hanya angka
+        const phone = input.trim().replace(/\D/g, ''); // hanya angka
         if (phone.startsWith('0')) {
             return '62' + phone.slice(1);
         } else if (phone.startsWith('62')) {

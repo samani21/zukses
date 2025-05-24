@@ -84,7 +84,6 @@ const Verification = () => {
     };
 
     const handleSubmit = useCallback(async () => {
-        const fetchedUser = getUserInfo();
         const formData = new FormData();
         formData.append('otp', otp);
         const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
@@ -95,7 +94,7 @@ const Verification = () => {
             localStorage.removeItem('timeOtp');
             router.replace('/auth/change-password');
         }
-    }, [otp, user]);
+    }, [otp, user, router]);
 
     useEffect(() => {
         if (otp.length === 6) {
