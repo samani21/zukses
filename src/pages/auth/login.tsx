@@ -114,6 +114,10 @@ const Login = () => {
         }
     };
 
+
+    const handleLoginGoogle = () => {
+        window.location.href = 'http://localhost:8000/v1/auth/google';
+    }
     return (
         <AuthLayout mode="login">
             <CardContainer>
@@ -176,7 +180,7 @@ const Login = () => {
                                 <IconSocial src='/icon/facebook.png' width={20} />
                                 Facebook
                             </Facebook>
-                            <Google>
+                            <Google onClick={handleLoginGoogle}>
                                 <IconSocial src='/icon/google.webp' width={30} />
                                 Google
                             </Google>

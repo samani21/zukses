@@ -92,6 +92,7 @@ const Verification = () => {
 
         if (res?.data?.status === 'success') {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
+            localStorage.removeItem('timeOtp');
             router.replace('/auth/change-password');
         }
     }, [otp, user]);

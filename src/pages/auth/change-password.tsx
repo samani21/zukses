@@ -20,6 +20,7 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { RegisterResponse } from 'services/api/types';
 import { useRouter } from 'next/router';
+import { useSearchParams } from 'next/navigation';
 
 const ChangePassword = () => {
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
@@ -34,6 +35,28 @@ const ChangePassword = () => {
         hasValidChars: false,
     });
 
+    const searchParams = useSearchParams();
+    useEffect(() => {
+        if (searchParams.get('token')) {
+            const email = searchParams.get('email');
+            const name = searchParams.get('name');
+            const whatsapp = searchParams.get('whatsapp');
+            const is_active = parseInt(searchParams.get('is_active') || '');
+            const role = searchParams.get('role');
+            const id = parseInt(searchParams.get('id') || '');
+            const data = {
+                name: name,
+                email: email,
+                role: role,
+                id: id,
+                whatsapp: `${whatsapp}`,
+                is_active: is_active
+            };
+            const token = searchParams.get('token');
+            localStorage.setItem('user', JSON.stringify(data));
+            localStorage.setItem('token', token ? token : '');
+        }
+    }, [searchParams]);
     const formatPhoneNumber = (raw: string): string => {
         const phone = raw.replace(/\D/g, '');
         const local = phone.startsWith('62') ? phone.slice(2) : phone;
@@ -84,6 +107,7 @@ const ChangePassword = () => {
                 email: fetchedUser?.name,
                 role: fetchedUser?.role,
                 whatsapp: fetchedUser?.whatsapp,
+                id: fetchedUser?.id
             };
             localStorage.setItem('user', JSON.stringify(data));
             router.replace('/auth')

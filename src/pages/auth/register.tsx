@@ -84,6 +84,11 @@ const Register = () => {
 
         }
     }
+
+
+    const handleLoginGoogle = () => {
+        window.location.href = 'http://localhost:8000/v1/auth/google';
+    }
     return (
         <AuthLayout mode="register">
             <CardContainer>
@@ -93,7 +98,7 @@ const Register = () => {
                     </HeadCard>
                     <ContentCard>
                         <AuthWith style={{ marginTop: '-20px' }}>
-                            <Google>
+                            <Google onClick={handleLoginGoogle}>
                                 <IconSocial src='/icon/google.webp' width={30} />
                                 Google
                             </Google>
