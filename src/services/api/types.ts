@@ -13,3 +13,8 @@ export interface RegisterResponse {
     token_type?: string;
     [key: string]: unknown;
 }
+
+export interface Response {
+    data: UserData;
+    [key: string]: unknown;
+}
