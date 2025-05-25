@@ -104,6 +104,27 @@ const Reset = () => {
             router.replace('/auth/verification-reset-password');
         }
     };
+    const handleResendOTPMail = async () => {
+        const formData = new FormData();
+        formData.append('email', user?.email ? user?.email : '');
+        formData.append('name', user?.name ? user?.name : '');
+        const res = await Post<Response>('zukses', `send-email/${user?.id}`, formData);
+        console.log('res', res);
+        if (res?.data?.status === 'success') {
+            const now = Math.floor(Date.now() / 1000);
+            localStorage.setItem('timeOtp', now.toString());
+            const data = {
+                name: user?.name,
+                email: user?.email,
+                role: user?.role,
+                id: user?.id,
+                whatsapp: `${user?.whatsapp}`,
+                is_active: 0
+            };
+            localStorage.setItem('user', JSON.stringify(data));
+            router.replace('/auth/verification-reset-password');
+        }
+    };
 
     return (
         <AuthLayout mode="reset">
@@ -125,19 +146,22 @@ const Reset = () => {
                             nextReset ? (
                                 <>
                                     {isEmailValid && (
-                                        <WrapperInput>
+                                        <WrapperInput onClick={handleResendOTPMail}>
                                             <OptionReset>
                                                 <IconInModal src='/icon/mail.svg' />
                                                 Email ({maskEmail(user?.email)})
                                             </OptionReset>
                                         </WrapperInput>
                                     )}
-                                    <WrapperInput onClick={handleResendOTPPhone}>
-                                        <OptionReset>
-                                            <IconInModal src='/icon/phone.svg' />
-                                            No.Handphone ({maskPhone(user?.whatsapp || '')})
-                                        </OptionReset>
-                                    </WrapperInput>
+                                    {
+                                        user?.whatsapp ?
+                                            <WrapperInput onClick={handleResendOTPPhone}>
+                                                <OptionReset>
+                                                    <IconInModal src='/icon/phone.svg' />
+                                                    No.Handphone ({maskPhone(user?.whatsapp || '')})
+                                                </OptionReset>
+                                            </WrapperInput> : ""
+                                    }
                                 </>
                             ) : (
                                 <form onSubmit={handleSubmit}>
