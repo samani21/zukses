@@ -16,12 +16,14 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 import { useRouter } from 'next/router';
+import Loading from 'components/Loading';
 
 const Verification = () => {
     const [otp, setOtp] = useState('');
     const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
     const [counter, setCounter] = useState(0);
-    const [canResend, setCanResend] = useState(false);
+    const [canResend, setCanResend] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
     useEffect(() => {
         const timeOtp = localStorage.getItem('timeOtp');
@@ -57,6 +59,7 @@ const Verification = () => {
 
     const handleResend = async () => {
         // Simulasi: Kirim OTP dan simpan waktu sekarang + 60 detik
+        setLoading(true);
         const formData = new FormData();
         formData.append('whatsapp', user?.whatsapp ? user?.whatsapp : '');
         const res = await Post<Response>('zukses', `otp/${user?.id}/request`, formData);
@@ -66,6 +69,7 @@ const Verification = () => {
             localStorage.setItem('timeOtp', now.toString());
             setCounter(60);
             setCanResend(false);
+            setLoading(false);
         }
     };
 
@@ -84,6 +88,7 @@ const Verification = () => {
     };
 
     const handleSubmit = useCallback(async () => {
+        setLoading(true)
         const formData = new FormData();
         formData.append('otp', otp);
         const res = await Post<Response>('zukses', `otp-verify/${user?.id}`, formData);
@@ -93,6 +98,7 @@ const Verification = () => {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
             router.replace('/auth/change-password');
+            setLoading(false);
         }
     }, [otp, user, router]);
 
@@ -160,6 +166,9 @@ const Verification = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
+            {
+                loading && <Loading />
+            }
         </AuthLayout>
     );
 };

@@ -20,12 +20,14 @@ import React, { useState } from 'react';
 import AuthLayout from '.';
 import ModalAgreement from './ModalAgreement';
 import Post from 'services/api/Post';
-import { RegisterResponse } from 'services/api/types';
+import { UserData } from 'services/api/types';
+import Loading from 'components/Loading';
 
 const Register = () => {
     const [phone, setPhone] = useState('');
     const [error, setError] = useState('');
     const [modalAgreement, setModalAgreement] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [whatsapp, setWhatsapp] = useState<string>('');
     const normalizePhone = (input: string) => {
         const digits = input.replace(/\D/g, '');
@@ -63,6 +65,7 @@ const Register = () => {
 
 
     const handleRegister = async () => {
+        setLoading(true)
         const formData = new FormData();
         formData.append('whatsapp', whatsapp);
         formData.append('password', "ZUKSES");
@@ -80,7 +83,9 @@ const Register = () => {
             // Simpan ke localStorage
             localStorage.setItem('timeOtp', twoMinutesLater.toString());
             window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/verification'
+            setLoading(false);
         } else {
+            setLoading(false);
 
         }
     }
@@ -145,8 +150,19 @@ const Register = () => {
             <ModalAgreementContainer open={modalAgreement} onClick={() => setModalAgreement(false)}>
                 <ModalAgreement setModalAgreement={setModalAgreement} handleRegister={handleRegister} />
             </ModalAgreementContainer>
+            {
+                loading && <Loading />
+            }
         </AuthLayout>
     );
 };
 
 export default Register;
+
+export interface RegisterResponse {
+    token: string;
+    data: UserData;
+    expires_in?: number;
+    token_type?: string;
+    [key: string]: unknown;
+}

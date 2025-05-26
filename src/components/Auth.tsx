@@ -180,6 +180,7 @@ export const WrapperInput = styled.div`
     align-items: center;
     padding: 10px;
     margin-top: 30px;
+    cursor: pointer;
 `
 
 export const InputAuth = styled.input`
@@ -383,6 +384,7 @@ export const TextContent = styled.div`
     color: rgba(0, 0, 0, .7);
     span{
         color: #4080ee;
+        cursor: pointer;
     }
 `;
 

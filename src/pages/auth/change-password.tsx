@@ -21,12 +21,15 @@ import Post from 'services/api/Post';
 import { RegisterResponse } from 'services/api/types';
 import { useRouter } from 'next/router';
 import { useSearchParams } from 'next/navigation';
+import Loading from 'components/Loading';
 
 const ChangePassword = () => {
-    const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
+    const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string } | null>(null);
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string>('');
+    const [type, setType] = useState<string>('');
     const router = useRouter()
     const [validations, setValidations] = useState({
         hasLowercase: false,
@@ -68,6 +71,8 @@ const ChangePassword = () => {
     useEffect(() => {
         const fetchedUser = getUserInfo();
         setUser(fetchedUser);
+        const type = localStorage.getItem('typeOtp');
+        setType(type ? type : '')
     }, []);
 
     useEffect(() => {
@@ -84,12 +89,23 @@ const ChangePassword = () => {
         });
     }, [password]);
 
+    const maskEmail = (email?: string | null): string => {
+        if (!email || !email.includes('@')) return '';
+        const [localPart, domain] = email.split('@');
+        if (localPart.length <= 2) {
+            return `${localPart[0] || ''}${'*'.repeat(localPart.length - 1)}@${domain}`;
+        }
+        const visible = localPart.slice(0, 2);
+        const masked = '*'.repeat(localPart.length - 2);
+        return `${visible}${masked}@${domain}`;
+    };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        setLoading(true)
         const { hasLowercase, hasUppercase, hasLength, hasValidChars } = validations;
 
         if (!hasLowercase || !hasUppercase || !hasLength || !hasValidChars) {
+            setLoading(false)
             setError('Semua kriteria password harus dipenuhi sebelum melanjutkan.');
             return;
         }
@@ -110,9 +126,13 @@ const ChangePassword = () => {
                 id: fetchedUser?.id
             };
             localStorage.setItem('user', JSON.stringify(data));
+            localStorage.removeItem('typeOtp')
+            localStorage.removeItem('timeOtp')
             router.replace('/auth')
+            setLoading(false)
         } else {
             setError('Terjadi kesalahan saat mengganti password.');
+            setLoading(false)
         }
     };
 
@@ -133,7 +153,11 @@ const ChangePassword = () => {
                     <ContentCard>
                         <TextContent>Buat password baru untuk</TextContent>
                         <WhatsAppContainer>
-                            <b>{user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}</b>
+                            {
+                                type === 'email' ?
+                                    <b>{user?.email ? maskEmail(user.email) : '...'}</b> :
+                                    <b>{user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}</b>
+                            }
                         </WhatsAppContainer>
                         <form onSubmit={handleSubmit}>
                             <WrapperInput>
@@ -165,6 +189,10 @@ const ChangePassword = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
+            {
+                loading &&
+                <Loading />
+            }
         </AuthLayout>
     );
 };

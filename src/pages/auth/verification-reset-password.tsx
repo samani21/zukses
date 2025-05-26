@@ -16,11 +16,14 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 import { useRouter } from 'next/router';
+import Loading from 'components/Loading';
 
 const VerificationResetPassword = () => {
     const [otp, setOtp] = useState('');
-    const [user, setUser] = useState<{ whatsapp?: string, id?: string } | null>(null);
+    const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string, name?: string, role?: string } | null>(null);
     const [counter, setCounter] = useState(0);
+    const [type, setType] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
     const [canResend, setCanResend] = useState(false);
     useEffect(() => {
@@ -55,18 +58,52 @@ const VerificationResetPassword = () => {
         return () => clearTimeout(timer);
     }, [counter, canResend]);
 
+    useEffect(() => {
+        const type = localStorage.getItem('typeOtp');
+        setType(type ? type : '')
+    }, []);
+
     const handleResend = async () => {
         // Simulasi: Kirim OTP dan simpan waktu sekarang + 60 detik
-        const formData = new FormData();
-        formData.append('whatsapp', user?.whatsapp ? user?.whatsapp : '');
-        const res = await Post<Response>('zukses', `otp/${user?.id}/request`, formData);
-        console.log('res', res)
-        if (res?.data?.status === 'success') {
-            const now = Math.floor(Date.now() / 1000);
-            localStorage.setItem('timeOtp', now.toString());
-            setCounter(60);
-            setCanResend(false);
+        if (type === 'email') {
+            setLoading(true)
+            const formData = new FormData();
+            formData.append('email', user?.email ? user?.email : '');
+            formData.append('name', user?.name ? user?.name : '');
+            const res = await Post<Response>('zukses', `send-email/${user?.id}`, formData);
+            console.log('res', res);
+            if (res?.data?.status === 'success') {
+                const now = Math.floor(Date.now() / 1000);
+                localStorage.setItem('timeOtp', now.toString());
+                setCounter(60);
+                setCanResend(false);
+                setLoading(false)
+            }
+        } else {
+            setLoading(true)
+            const formData = new FormData();
+            formData.append('whatsapp', user?.whatsapp ? user?.whatsapp : '');
+            const res = await Post<Response>('zukses', `otp/${user?.id}/request`, formData);
+            console.log('res', res)
+            if (res?.data?.status === 'success') {
+                const now = Math.floor(Date.now() / 1000);
+                localStorage.setItem('timeOtp', now.toString());
+                setCounter(60);
+                setCanResend(false);
+                setLoading(false)
+            }
         }
+    };
+
+    const maskEmail = (email?: string | null): string => {
+        if (!email || !email.includes('@')) return '';
+        const [localPart, domain] = email.split('@');
+        if (localPart.length <= 2) {
+            return `${localPart[0] || ''}${'*'.repeat(localPart.length - 1)}@${domain}`;
+        }
+        const visible = localPart.slice(0, 2);
+        const masked = '*'.repeat(localPart.length - 2);
+        return `${visible}${masked}@${domain}`;
     };
 
     const formatPhoneNumber = (raw: string): string => {
@@ -84,6 +121,7 @@ const VerificationResetPassword = () => {
     };
 
     const handleSubmit = useCallback(async () => {
+        setLoading(true)
         const formData = new FormData();
         formData.append('otp', otp);
         const res = await Post<Response>('zukses', `otp-verify-reset-passwrod/${user?.id}`, formData);
@@ -93,6 +131,7 @@ const VerificationResetPassword = () => {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
             router.replace('/auth/change-password')
+            setLoading(false)
         }
     }, [otp, user, router]);
 
@@ -125,10 +164,21 @@ const VerificationResetPassword = () => {
                             Kode OTP telah dikirim via WhatsApp ke
                         </TextContent>
                         <WhatsAppContainer>
-                            <IconInModal src="/icon/whatsapp.svg" />
-                            <b>
-                                {user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}
-                            </b>
+                            {
+                                type === 'email' ?
+                                    <>
+                                        <IconInModal src="/icon/mail.svg" />
+                                        <b>
+                                            {user?.email ? maskEmail(user.email) : '...'}
+                                        </b>
+                                    </> :
+                                    <>
+                                        <IconInModal src="/icon/whatsapp.svg" />
+                                        <b>
+                                            {user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}
+                                        </b>
+                                    </>
+                            }
                         </WhatsAppContainer>
                         <OtpInput
                             value={otp}
@@ -160,6 +210,9 @@ const VerificationResetPassword = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
+            {
+                loading && <Loading />
+            }
         </AuthLayout>
     );
 };

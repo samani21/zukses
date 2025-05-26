@@ -11,9 +11,9 @@ export interface RegisterResponse {
     data: UserData;
     expires_in?: number;
     token_type?: string;
-    is_active?: string;
     [key: string]: unknown;
 }
+
 export interface Response {
     data: UserData;
     [key: string]: unknown;
