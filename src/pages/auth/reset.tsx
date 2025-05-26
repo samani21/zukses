@@ -19,6 +19,7 @@ import { Response } from 'services/api/types';
 import Post from 'services/api/Post';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
+import Loading from 'components/Loading';
 
 const Reset = () => {
     const [email, setEmail] = useState('');
@@ -26,6 +27,7 @@ const Reset = () => {
     const [nextReset, setNextReset] = useState<boolean>(false);
     const [user, setUser] = useState<{ whatsapp?: string; id?: number; email?: string; name?: string; role?: string } | null>(null);
     const [isEmailValid, setIsEmailValid] = useState<boolean>(false);
+    const [loading, setloading] = useState<boolean>(false);
     const router = useRouter();
 
     const maskPhone = (phone?: string | number | null): string => {
@@ -58,6 +60,7 @@ const Reset = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setloading(true)
 
         // Normalisasi jika input berupa nomor telepon
         const isEmailInput = email.includes('@');
@@ -71,6 +74,7 @@ const Reset = () => {
                 const isValid = res?.data?.email?.includes('@gmail') || res?.data?.email?.includes('@mail');
                 setIsEmailValid(isValid);
                 setNextReset(true);
+                setloading(false)
             }
         } catch (err: unknown) {
             const error = err as AxiosError<{ message?: string }>;
@@ -78,17 +82,19 @@ const Reset = () => {
                 const errorMessage = error.response.data?.message || 'Data tidak valid';
                 console.log('error', errorMessage);
                 setError(errorMessage);
+                setloading(false)
             } else {
                 console.error('Unexpected error', error);
+                setloading(false)
             }
         }
     };
 
     const handleResendOTPPhone = async () => {
+        setloading(true)
         const formData = new FormData();
         formData.append('whatsapp', user?.whatsapp ? user?.whatsapp : '');
         const res = await Post<Response>('zukses', `otp/${user?.id}/request`, formData);
-        console.log('res', res);
         if (res?.data?.status === 'success') {
             const now = Math.floor(Date.now() / 1000);
             localStorage.setItem('timeOtp', now.toString());
@@ -101,10 +107,13 @@ const Reset = () => {
                 is_active: 0
             };
             localStorage.setItem('user', JSON.stringify(data));
+            localStorage.setItem('typeOtp', "phone");
             router.replace('/auth/verification-reset-password');
+            setloading(false)
         }
     };
     const handleResendOTPMail = async () => {
+        setloading(true)
         const formData = new FormData();
         formData.append('email', user?.email ? user?.email : '');
         formData.append('name', user?.name ? user?.name : '');
@@ -122,7 +131,9 @@ const Reset = () => {
                 is_active: 0
             };
             localStorage.setItem('user', JSON.stringify(data));
+            localStorage.setItem('typeOtp', "email");
             router.replace('/auth/verification-reset-password');
+            setloading(false)
         }
     };
 
@@ -187,6 +198,9 @@ const Reset = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
+            {
+                loading && <Loading />
+            }
         </AuthLayout>
     );
 };

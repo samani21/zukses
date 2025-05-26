@@ -30,13 +30,15 @@ import Post from 'services/api/Post'
 import { RegisterResponse } from 'services/api/types'
 import { useRouter } from 'next/router'
 import { AxiosError } from 'axios'
+import Loading from 'components/Loading'
 
 const Login = () => {
-    const [showPassword, setShowPassword] = useState(false)
+    const [showPassword, setShowPassword] = useState<boolean>(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState<string | null>(null)
     const router = useRouter();
+    const [loading, setLoading] = useState<boolean>(false)
 
     const formatToIndoPhoneRaw = (input: string): string => {
         const phone = input.trim().replace(/\D/g, ''); // hanya angka
@@ -88,6 +90,7 @@ const Login = () => {
         }
 
         try {
+            setLoading(true)
             const formData = new FormData();
             formData.append('email', rawToSend); // tetap kirim format 62xxxxxxxxxx
             formData.append('password', password);
@@ -99,6 +102,7 @@ const Login = () => {
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
                 localStorage.setItem('token', res?.data?.token || '');
                 window.location.href = 'http://localhost:3000/';
+                setLoading(false)
             }
         } catch (err: unknown) {
             const error = err as AxiosError<{ message?: string }>;
@@ -110,6 +114,7 @@ const Login = () => {
             } else {
                 console.error('Unexpected error', error);
             }
+            setLoading(false)
         }
     };
 
@@ -191,6 +196,9 @@ const Login = () => {
                     </ContentCard>
                 </CardAuth>
             </CardContainer>
+            {
+                loading && <Loading />
+            }
         </AuthLayout>
     )
 }
