@@ -34,8 +34,9 @@ export const HeaderLeft = styled.div`
 `;
 
 export const LogoHeader = styled.img`
-    width: 130px;
+    width: 150px;
     margin-top: -10px;
+
 `;
 
 export const TextLogin = styled.div`
@@ -69,7 +70,7 @@ export const ContentContainer = styled.div`
 `;
 
 export const Content = styled.div`
-    background-image: url('/image/backgroundAuth.png') ;
+    background-image: url('/image/background-auth.png') ;
     min-height: 600px;
     background-repeat: no-repeat;
     @media (max-width: 990px) {
@@ -256,6 +257,7 @@ export const Facebook = styled.div`
     justify-content: center;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
 `
 export const Google = styled.div`
     background-color: #fff;
@@ -272,6 +274,7 @@ export const Google = styled.div`
     justify-content: center;
     align-items: center;
     gap: 10px;
+    cursor: pointer;
 `
 
 export const IconSocial = styled.img`

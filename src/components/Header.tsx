@@ -33,7 +33,7 @@ export default function Header() {
         <div>
             <HeaderComponent>
                 <NavbarHeader>
-                    <Logo src='/logo/shopee-logo-white.png' />
+                    <Logo src='/logo/logo-white.png' />
                     <SearchComponent>
                         <Wrapper>
                             <InputSearch />
@@ -50,7 +50,7 @@ export default function Header() {
                             <p>Mesin Rumah Low Wat</p>
                         </ListHistorySearch>
                     </SearchComponent>
-                    <IconHeader src='/icon/bx--cart.svg' style={{ width: "40px" }} />
+                    <IconHeader src='/icon/bx--cart.svg' style={{ width: "40px", marginTop: "10px" }} />
                     {
                         login ? (
                             <Login onClick={handleLogin}>
