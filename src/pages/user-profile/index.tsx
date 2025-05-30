@@ -1,4 +1,4 @@
-import { ContentLeft, ContentRight, Header, HeaderUserProfilMobile, HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, LineUserProfil, MenuList, MenuUserProfil, ProfilDesktop, UpdateProfilContainer, UserProfileContainer, UserProfileContainerMobile } from 'components/UserProfile';
+import { ContentLeft, ContentRight, EditProfilContainer, Followers, Header, HeaderLeft, HeaderProfil, HeaderRight, HeaderUserProfilMobile, HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, LineUserProfil, MenuHeader, MenuList, MenuUserProfil, NameProfil, ProfilContainer, ProfilDesktop, StatusAccount, UpdateProfilContainer, UserProfileContainer, UserProfileContainerMobile } from 'components/UserProfile';
 import { useRouter } from 'next/router';
 import Home from 'pages'
 import React, { ReactNode, useEffect, useState } from 'react'
@@ -77,8 +77,39 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <UserProfileContainerMobile>
                 <HeaderUserProfilMobileComponent>
                     <HeaderUserProfilMobile>
-                        <div>ajsbjas</div>
-                        <div>ajsbjas</div>
+                        <MenuHeader>
+                            <HeaderLeft>
+                                <IconUserProfil src='/icon/market.svg' width={30} />
+                                <p>Toko Saya</p>
+                                <IconUserProfil src='/icon/arrow-right.svg' />
+                            </HeaderLeft>
+                            <HeaderRight>
+                                <IconUserProfil src='/icon/setting.svg' />
+                                <IconUserProfil src='/icon/bx--cart.svg' />
+                                <IconUserProfil src='/icon/chat.svg' />
+                            </HeaderRight>
+                        </MenuHeader>
+                        <HeaderProfil>
+                            <div>
+                                <IconUserProfil src='/icon/user.svg' style={{ width: "80px", borderRadius: "50%" }} />
+                                <EditProfilContainer>
+                                    <IconUserProfil src='/icon/pen.svg' />
+                                </EditProfilContainer>
+                            </div>
+                            <ProfilContainer>
+                                <NameProfil>
+                                    {user?.name}
+                                    <StatusAccount>
+                                        Classic
+                                        <IconUserProfil src='/icon/arrow-right-red.svg' />
+                                    </StatusAccount>
+                                </NameProfil>
+                                <Followers>
+                                    <p><span>43</span> Pengikut</p>
+                                    <p><span>42</span> Mengikuti</p>
+                                </Followers>
+                            </ProfilContainer>
+                        </HeaderProfil>
                     </HeaderUserProfilMobile>
                 </HeaderUserProfilMobileComponent>
             </UserProfileContainerMobile>
