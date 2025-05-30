@@ -6,7 +6,7 @@ interface HomeLayoutProps {
   children: ReactNode;
   mode?: 'user-profile';
 }
-const Home: React.FC<HomeLayoutProps> = ({ children }) => {
+const Home: React.FC<HomeLayoutProps> = ({ children, mode }) => {
   return (
     <>
       <HomeContainer>
@@ -14,7 +14,10 @@ const Home: React.FC<HomeLayoutProps> = ({ children }) => {
         {children}
       </HomeContainer>
       <HomeContainerMobile>
-        <Header />
+        {
+          mode === 'user-profile' ? '' :
+            <Header />
+        }
         {children}
         <NavbarBottom />
       </HomeContainerMobile>

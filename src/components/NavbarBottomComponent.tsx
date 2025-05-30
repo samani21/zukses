@@ -28,6 +28,7 @@ export const IconNavbar = styled.img`
 export const MenuWrapper = styled.div`
     color: #656565;
     align-content: center;
+    cursor: pointer;
     &.active{
         color: var(--primary-color);
     }
