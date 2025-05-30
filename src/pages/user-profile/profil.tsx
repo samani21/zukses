@@ -25,6 +25,8 @@ import {
     WrapperImageProfil
 } from 'components/Profile/ProfileComponent'
 import { getUserInfo } from 'services/api/redux/action/AuthAction'
+import { ModalContainer } from 'components/Profile/ModalContainer'
+import ModalProtect from './ModalProtect'
 
 const months: string[] = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -44,6 +46,8 @@ interface ErrorMap {
 
 export default function Profil() {
     const [user, setUser] = useState<User | null>(null)
+    const [openModal, setOpenModal] = useState<boolean>(false);
+    const [typeModal, setTypeModal] = useState<string>('');
     const [tanggal, setTanggal] = useState<string>('')
     const [bulan, setBulan] = useState<string>('')
     const [tahun, setTahun] = useState<string>('')
@@ -145,6 +149,10 @@ export default function Profil() {
         // }
     }
 
+    const handleChangeEmailOrWhatsapp = (type?: string) => {
+        setOpenModal(true)
+        setTypeModal(type || '')
+    }
     return (
         <UserProfile mode="profil">
             <ProfilComponent>
@@ -180,14 +188,14 @@ export default function Profil() {
                         <Wrapper>
                             <Label>Email</Label>
                             <InputWrapper style={{ border: 'none', paddingLeft: "0px" }}>
-                                <div>{maskEmail(user?.email) || '...'}<span>Ubah</span></div>
+                                <div>{maskEmail(user?.email) || '...'}<span onClick={() => handleChangeEmailOrWhatsapp('email')}>Ubah</span></div>
                             </InputWrapper>
                         </Wrapper>
 
                         <Wrapper>
                             <Label>Nomor Telepon</Label>
                             <InputWrapper style={{ border: 'none', paddingLeft: "0px" }}>
-                                <div>{maskPhone(user?.whatsapp) || '...'}<span>Ubah</span></div>
+                                <div>{maskPhone(user?.whatsapp) || '...'}<span onClick={() => handleChangeEmailOrWhatsapp('whatsapp')}>Ubah</span></div>
                             </InputWrapper>
                         </Wrapper>
 
@@ -300,6 +308,9 @@ export default function Profil() {
                     <ButtonSave type="submit">Simpan</ButtonSave>
                 </ButtonContainer>
             </form>
+            <ModalContainer open={openModal}>
+                <ModalProtect setOpenModal={setOpenModal} typeModal={typeModal} user={user} />
+            </ModalContainer>
         </UserProfile>
     )
 }
