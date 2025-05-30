@@ -41,14 +41,14 @@ export default function Header() {
                                 <IconHeader src='/icon/search.svg' style={{ width: "20px" }} />
                             </ButtonSearch>
                         </Wrapper>
-                        <ListHistorySearch>
+                        {/* <ListHistorySearch>
                             <p>Gps Mini</p>
                             <p>Engsel Meja Lipat Dinding</p>
                             <p>Kemeja Hitam Pria</p>
                             <p>Kacamata Ray Ban Original 100%</p>
                             <p>Bantal Latex Original</p>
                             <p>Mesin Rumah Low Wat</p>
-                        </ListHistorySearch>
+                        </ListHistorySearch> */}
                     </SearchComponent>
                     <IconHeader src='/icon/bx--cart.svg' style={{ width: "40px", marginTop: "10px" }} />
                     {

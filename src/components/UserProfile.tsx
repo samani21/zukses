@@ -29,9 +29,9 @@ export const ContentLeft = styled.div`
 export const ContentRight = styled.div`
     width: 100%;
     background: #fff;
-    border-radius: 10px;
     height: 80dvh;
     padding: 20px;
+    box-shadow: 0px 0px 3px 0px #0000004b;
 `;
 
 export const ProfilDesktop = styled.div`
@@ -54,6 +54,7 @@ export const UpdateProfilContainer = styled.div`
     justify-content: left;
     align-items: center;
     font-size: 12px;
+    font-weight: 600;
     gap: 5px;
     color: #989898;
     cursor: pointer;
