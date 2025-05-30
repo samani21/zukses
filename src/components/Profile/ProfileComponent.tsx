@@ -24,20 +24,45 @@ export const Wrapper = styled.div`
     justify-content: left;
     align-items: center;
     gap: 10px;
+    margin: 25px;
+    @media (max-width: 1000px) {
+        display: grid;
+        justify-content: normal;
+    }
 `;
 
-export const Label = styled.label`
+export const Label = styled.div`
     color: #666666;
     font-size: 16px;
     text-align: right;
+    width: 200px;
+     @media (max-width: 1000px) {
+       text-align: left;
+    }
+`;
+export const LabelRadio = styled.div`
+    color: #666666;
+    font-size: 16px;
+    text-align: left;
+    width: auto;
 `;
 
 export const FormProfil = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: start;
-    padding: 20px;
+    /* padding: 20px; */
+    padding-top: 10px;
+    @media (max-width: 1160px) {
+        display: grid;
+        justify-content: normal;
+    }
 `;
+
+export const FormLeft = styled.div`
+    flex: 2;
+    padding: 10px;
+`
 
 export const InputWrapper = styled.div`
     border: 1px solid #e5e5e5;
@@ -76,6 +101,12 @@ export const Tr = styled.tr`
 
 export const Td = styled.td`
     padding: 15px 20px;
+    span{
+        color: blue;
+        text-decoration: underline;
+        font-size: 14px;
+        cursor: pointer;
+    }
 `;
 
 export const WrapperImageProfil = styled.div`
@@ -85,6 +116,10 @@ export const WrapperImageProfil = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 30px;
+     @media (max-width: 1160px) {
+        border: none;
+    }
 `;
 
 export const ImageProfilContainer = styled.div`
@@ -123,10 +158,15 @@ export const Image = styled.img`
 `;
 
 export const ButtonContainer = styled.div`
-    padding:30px;
+    /* padding:30px; */
     width: 52%;
     display: flex;
     justify-content: center;
+    @media (max-width: 1160px) {
+       width: 100%;
+       justify-content: left;
+       padding-left: 30px;
+    }
 `;
 
 export const ButtonSave = styled.button`

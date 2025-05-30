@@ -9,6 +9,9 @@ export const UserProfileContainer = styled.div`
     @media (max-width: 650px) {
         display: none;
     }
+    @media (max-width: 850px) {
+       padding: 10px;
+    }
 `;
 export const UserProfileContainerMobile = styled.div`
     display: none;
@@ -29,7 +32,6 @@ export const ContentLeft = styled.div`
 export const ContentRight = styled.div`
     width: 100%;
     background: #fff;
-    height: 80dvh;
     padding: 20px;
     box-shadow: 0px 0px 3px 0px #0000004b;
 `;
@@ -70,3 +72,43 @@ export const LineUserProfil = styled.div`
 export const IconUserProfil = styled.img`
     
 `
+export const MenuUserProfil = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: sans-serif;
+  margin-top: 10px;
+  padding-left: 10px;
+`;
+
+export const Header = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 12px;
+`;
+
+export const MenuList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+    padding-left: 30px;
+  li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+
+    &.active {
+      color: #f44336; /* Warna merah untuk item aktif */
+      font-weight: bold;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`;
