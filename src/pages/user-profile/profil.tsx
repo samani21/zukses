@@ -35,7 +35,6 @@ export default function Profil() {
     const [tanggal, setTanggal] = useState('')
     const [bulan, setBulan] = useState('')
     const [tahun, setTahun] = useState('')
-    const [image, setImage] = useState<File | null>(null)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageError, setImageError] = useState<string>('')
 
@@ -60,19 +59,16 @@ export default function Profil() {
         // Validasi file
         if (!['image/jpeg', 'image/png'].includes(file.type)) {
             setImageError('Format gambar harus JPEG atau PNG.')
-            setImage(null)
             setImagePreview(null)
             return
         }
 
         if (file.size > 1024 * 1024) {
             setImageError('Ukuran gambar maksimal 1 MB.')
-            setImage(null)
             setImagePreview(null)
             return
         }
 
-        setImage(file)
         setImagePreview(URL.createObjectURL(file))
         setImageError('')
     }

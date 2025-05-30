@@ -1,4 +1,4 @@
-import { ContentLeft, ContentRight, Header, IconUserProfil, ImageProfil, LineUserProfil, MenuList, MenuUserProfil, ProfilDesktop, UpdateProfilContainer, UserProfileContainer, UserProfileContainerMobile } from 'components/UserProfile';
+import { ContentLeft, ContentRight, Header, HeaderUserProfilMobile, HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, LineUserProfil, MenuList, MenuUserProfil, ProfilDesktop, UpdateProfilContainer, UserProfileContainer, UserProfileContainerMobile } from 'components/UserProfile';
 import { useRouter } from 'next/router';
 import Home from 'pages'
 import React, { ReactNode, useEffect, useState } from 'react'
@@ -75,9 +75,12 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                 </UserProfileContainer>
             </Home>
             <UserProfileContainerMobile>
-                <p onClick={handleLogout}>
-                    Logout
-                </p>
+                <HeaderUserProfilMobileComponent>
+                    <HeaderUserProfilMobile>
+                        <div>ajsbjas</div>
+                        <div>ajsbjas</div>
+                    </HeaderUserProfilMobile>
+                </HeaderUserProfilMobileComponent>
             </UserProfileContainerMobile>
         </>
     )

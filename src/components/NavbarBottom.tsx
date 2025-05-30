@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { IconNavbar, IconNavbarContainer, MenuWrapper, NavbarBottomContainer } from './NavbarBottomComponent'
 import { useRouter } from 'next/router';
 
@@ -36,7 +36,6 @@ const listMenu = [
 ]
 
 const NavbarBottom = () => {
-    const [menuActive, setMenuActive] = useState<number>(0);
     const router = useRouter();
     console.log('pathname', router?.pathname)
     return (
@@ -44,7 +43,6 @@ const NavbarBottom = () => {
             {
                 listMenu?.map((lm, i) => (
                     <MenuWrapper key={i} onClick={() => {
-                        setMenuActive(i)
                         router.replace(lm?.url ? lm?.url : '')
                     }} className={router?.pathname === lm?.url ? 'active' : ""}>
                         <IconNavbarContainer>

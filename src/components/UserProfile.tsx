@@ -112,3 +112,18 @@ export const MenuList = styled.ul`
     }
   }
 `;
+
+
+export const HeaderUserProfilMobileComponent = styled.div`
+  background-image: url('/image/batik.png');
+  background-size: 100px;
+  height: 200px;
+`;
+
+export const HeaderUserProfilMobile = styled.div`
+  background: radial-gradient(circle,rgba(0, 0, 0, 0) 0%, rgba(0,0,0,0) 20%, #ca264c 80%);
+  height: 200px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+`

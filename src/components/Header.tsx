@@ -1,5 +1,5 @@
 // src/pages/index.tsx
-import { ButtonSearch, HeaderComponent, IconHeader, ImageUser, InputSearch, ListHistorySearch, Login, Logo, NavbarHeader, SearchComponent, Wrapper } from 'components/HeaderComponent';
+import { ButtonSearch, HeaderComponent, IconHeader, ImageUser, InputSearch, Login, Logo, NavbarHeader, SearchComponent, Wrapper } from 'components/HeaderComponent';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';

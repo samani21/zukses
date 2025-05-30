@@ -14,10 +14,12 @@ interface AuthLayoutProps {
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
     const router = useRouter();
     const [checkedAuth, setCheckedAuth] = useState(false);
+
     useEffect(() => {
         const user = localStorage.getItem('user');
         const token = localStorage.getItem('token');
         const fetchedUser = getUserInfo();
+
         if (user) {
             if (fetchedUser?.is_active == 1) {
                 router.replace('/auth/change-password');
@@ -43,11 +45,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
             } else {
                 router.replace('/auth/register');
             }
-
         }
 
-        setCheckedAuth(true); // Mark auth check as complete
-    }, [router.pathname]);
+        setCheckedAuth(true);
+    }, [router, mode]);
 
     // Prevent rendering until auth check is complete
     if (!checkedAuth) return null;
