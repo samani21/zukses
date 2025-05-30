@@ -28,10 +28,12 @@ export const Logo = styled.img`
 
 export const IconHeader = styled.img`
     width: 30px;
+    cursor: pointer;
 `;
 export const ImageUser = styled.img`
     border-radius: 30px;
     margin-top: 10px;
+    cursor: pointer;
     @media (max-width: 500px) {
         display: none;
     }

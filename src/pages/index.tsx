@@ -3,11 +3,14 @@ import Header from '../components/Header'
 import NavbarBottom from 'components/NavbarBottom'
 import { HomeContainer, HomeContainerMobile } from 'components/HomeContainer';
 import Head from 'next/head';
+
 interface HomeLayoutProps {
   children: ReactNode;
   mode?: 'user-profile';
+  navbarOn?: boolean; // tanda tanya karena sekarang opsional
 }
-const Home: React.FC<HomeLayoutProps> = ({ children, mode }) => {
+
+const Home: React.FC<HomeLayoutProps> = ({ children, mode, navbarOn = true }) => {
   return (
     <>
       <Head>
@@ -19,12 +22,9 @@ const Home: React.FC<HomeLayoutProps> = ({ children, mode }) => {
         {children}
       </HomeContainer>
       <HomeContainerMobile>
-        {
-          mode === 'user-profile' ? '' :
-            <Header />
-        }
+        {mode === 'user-profile' ? '' : <Header />}
         {children}
-        <NavbarBottom />
+        {navbarOn && <NavbarBottom />}
       </HomeContainerMobile>
     </>
   )

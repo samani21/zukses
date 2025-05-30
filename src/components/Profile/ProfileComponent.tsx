@@ -28,7 +28,12 @@ export const Wrapper = styled.div`
     @media (max-width: 1000px) {
         display: grid;
         justify-content: normal;
+        margin: 0px;
     }
+`;
+
+export const FormGroup = styled.div`
+    width: 100%;
 `;
 
 export const Label = styled.div`
@@ -48,27 +53,34 @@ export const LabelRadio = styled.div`
 `;
 
 export const FormProfil = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    /* padding: 20px; */
+    display: grid;
+    grid-template-columns: 3fr 1fr; /* form-left (3 bagian), image (1 bagian) */
+    grid-template-areas: "form-left image";
     padding-top: 10px;
+
     @media (max-width: 1160px) {
-        display: grid;
-        justify-content: normal;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "image"
+            "form-left";
     }
 `;
 
 export const FormLeft = styled.div`
-    flex: 2;
+    grid-area: form-left;
     padding: 10px;
-`
-
+`;
 export const InputWrapper = styled.div`
     border: 1px solid #e5e5e5;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding: 10px;
     width: 100%;
+    span{
+        color: blue;
+        text-decoration: underline;
+        font-size: 14px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
 `;
 
 export const Input = styled.input`
@@ -110,14 +122,15 @@ export const Td = styled.td`
 `;
 
 export const WrapperImageProfil = styled.div`
+    grid-area: image;
     border-left: 1px solid #e5e5e5;
     width: 100%;
-    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 30px;
-     @media (max-width: 1160px) {
+
+    @media (max-width: 1160px) {
         border: none;
     }
 `;
@@ -159,13 +172,13 @@ export const Image = styled.img`
 
 export const ButtonContainer = styled.div`
     /* padding:30px; */
-    width: 52%;
+    width: 100%;
     display: flex;
     justify-content: center;
     @media (max-width: 1160px) {
        width: 100%;
        justify-content: left;
-       padding-left: 30px;
+       padding-left: 10px;
     }
 `;
 
