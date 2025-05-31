@@ -2,15 +2,16 @@ import styled from "@emotion/styled";
 
 export const HeaderComponent = styled.div`
     background-image: url('/image/batik.png');
+    background-size: 150px;
     font-family: "Roboto", sans-serif;  
 `
 
 export const NavbarHeader = styled.nav`
-    background: radial-gradient(circle,rgba(0, 0, 0, 0) 0%, rgba(0,0,0,0) 20%, rgba(238, 77, 45, 1) 100%);
+    background: radial-gradient(circle,rgba(0, 0, 0, 0) 0%, rgba(0,0,0,0) 20%, #ca264c 100%);
     padding: 10px 50px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: start;
     gap: 30px;
     @media (max-width: 650px) {
        padding: 10px;
@@ -19,6 +20,7 @@ export const NavbarHeader = styled.nav`
 
 export const Logo = styled.img`
     width: 100px;
+    margin-top: 10px;
     @media (max-width: 650px) {
         display: none;
     }
@@ -26,9 +28,12 @@ export const Logo = styled.img`
 
 export const IconHeader = styled.img`
     width: 30px;
+    cursor: pointer;
 `;
 export const ImageUser = styled.img`
     border-radius: 30px;
+    margin-top: 10px;
+    cursor: pointer;
     @media (max-width: 500px) {
         display: none;
     }
@@ -45,7 +50,7 @@ export const Wrapper = styled.div`
     border-radius: 4px;
     border: 1px solid transparent;
     transition: border 0.2s ease;
-
+    margin-bottom: 10px;
     &:focus-within {
         border: 1px solid #171717;
     }
@@ -75,6 +80,7 @@ export const Login = styled.div`
     width: 70px;
     text-align: center;
     cursor: pointer;
+    margin-top: 20px;
     @media (max-width: 500px) {
         display: none;
     }

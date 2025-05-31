@@ -1,5 +1,5 @@
 // src/pages/index.tsx
-import { ButtonSearch, HeaderComponent, IconHeader, ImageUser, InputSearch, ListHistorySearch, Login, Logo, NavbarHeader, SearchComponent, Wrapper } from 'components/HeaderComponent';
+import { ButtonSearch, HeaderComponent, IconHeader, ImageUser, InputSearch, Login, Logo, NavbarHeader, SearchComponent, Wrapper } from 'components/HeaderComponent';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
@@ -33,7 +33,7 @@ export default function Header() {
         <div>
             <HeaderComponent>
                 <NavbarHeader>
-                    <Logo src='/logo/shopee-logo-white.png' />
+                    <Logo src='/logo/logo-white.png' />
                     <SearchComponent>
                         <Wrapper>
                             <InputSearch />
@@ -41,16 +41,16 @@ export default function Header() {
                                 <IconHeader src='/icon/search.svg' style={{ width: "20px" }} />
                             </ButtonSearch>
                         </Wrapper>
-                        <ListHistorySearch>
+                        {/* <ListHistorySearch>
                             <p>Gps Mini</p>
                             <p>Engsel Meja Lipat Dinding</p>
                             <p>Kemeja Hitam Pria</p>
                             <p>Kacamata Ray Ban Original 100%</p>
                             <p>Bantal Latex Original</p>
                             <p>Mesin Rumah Low Wat</p>
-                        </ListHistorySearch>
+                        </ListHistorySearch> */}
                     </SearchComponent>
-                    <IconHeader src='/icon/bx--cart.svg' style={{ width: "40px" }} />
+                    <IconHeader src='/icon/bx--cart.svg' style={{ width: "40px", marginTop: "10px" }} />
                     {
                         login ? (
                             <Login onClick={handleLogin}>

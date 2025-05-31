@@ -120,7 +120,7 @@ const Login = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = 'https://zukses.id/v1/auth/google';
+        window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/v1/auth/google';
     }
     return (
         <AuthLayout mode="login">
