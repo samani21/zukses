@@ -120,7 +120,7 @@ const Login = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = `https://zukses.id/v1/auth/google`;
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, '_blank')
     }
     return (
         <AuthLayout mode="login">
