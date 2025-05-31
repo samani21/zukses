@@ -104,7 +104,7 @@ const Register = () => {
                     <ContentCard>
                         <AuthWith style={{ marginTop: '-20px' }}>
                             <Google onClick={handleLoginGoogle}>
-                                <IconSocial src='/icon/google.webp' width={30} />
+                                <IconSocial src='/icon/google.svg' width={30} />
                                 Google
                             </Google>
                         </AuthWith>

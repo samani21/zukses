@@ -181,11 +181,11 @@ const Login = () => {
 
                         <AuthWith>
                             <Facebook>
-                                <IconSocial src='/icon/facebook.png' width={20} />
+                                <IconSocial src='/icon/facebook.svg' width={20} />
                                 Facebook
                             </Facebook>
                             <Google onClick={handleLoginGoogle}>
-                                <IconSocial src='/icon/google.webp' width={30} />
+                                <IconSocial src='/icon/google.svg' width={30} />
                                 Google
                             </Google>
                         </AuthWith>
