@@ -120,7 +120,7 @@ const Login = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/google`;
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
     }
     return (
         <AuthLayout mode="login">

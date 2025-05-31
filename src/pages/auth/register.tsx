@@ -94,7 +94,7 @@ const Register = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = 'https://zukses.id/v1/auth/google';
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
     }
     return (
         <AuthLayout mode="register">
