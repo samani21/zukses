@@ -29,6 +29,7 @@ export const MenuWrapper = styled.div`
     color: #656565;
     align-content: center;
     cursor: pointer;
+    font-size: 14px;
     &.active{
         color: var(--primary-color);
     }
