@@ -9,13 +9,17 @@ import {
     ResendVerification,
     Typograph
 } from 'components/Profile/ModalContainer';
+import Post from 'services/api/Post';
+import { Response } from 'services/api/types';
 
 type Props = {
     setOpenModal: (value: boolean) => void;
+    setVerifikasi: (value: boolean) => void;
     typeVerifikasi: string;
     user?: {
         whatsapp?: string;
         email?: string;
+        id?: number;
     } | null;
 };
 
@@ -39,10 +43,10 @@ const maskEmail = (email?: string | null): string => {
     return `${visible}${masked}@${domain}`;
 };
 
-const ModalResponse = ({ setOpenModal, typeVerifikasi, user }: Props) => {
+const ModalResponse = ({ setOpenModal, typeVerifikasi, user, setVerifikasi }: Props) => {
     const [countdown, setCountdown] = useState(60);
     const [isResendAvailable, setIsResendAvailable] = useState(false);
-
+    const [loading, setLoading] = useState<boolean>(false);
     useEffect(() => {
         if (countdown <= 0) {
             setIsResendAvailable(true);
@@ -62,6 +66,33 @@ const ModalResponse = ({ setOpenModal, typeVerifikasi, user }: Props) => {
         console.log(`Resending verification via ${typeVerifikasi}`);
         setCountdown(60);
         setIsResendAvailable(false);
+        if (typeVerifikasi === 'Email') {
+            handleResendOTPMail()
+        } else {
+            handleResendVerificationWhatsapp()
+        }
+    };
+
+    const handleResendOTPMail = async () => {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('type', typeVerifikasi.toLowerCase());
+        const res = await Post<Response>('zukses', `send-email-verification/${user?.id}`, formData);
+        console.log('res', res);
+        if (res?.data?.status === 'success') {
+            setLoading(false)
+        }
+    };
+    const handleResendVerificationWhatsapp = async () => {
+        // Simulasi: Kirim OTP dan simpan waktu sekarang + 60 detik
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('type', typeVerifikasi.toLowerCase());
+        const res = await Post<Response>('zukses', `otp/${user?.id}/request-verification`, formData);
+        console.log('res', res)
+        if (res?.data?.status === 'success') {
+            setLoading(false)
+        }
     };
 
     const maskedContact =
@@ -74,7 +105,10 @@ const ModalResponse = ({ setOpenModal, typeVerifikasi, user }: Props) => {
             <HeaderModal>
                 <IconAbsolute
                     src='/icon/arrow-left-red.svg'
-                    onClick={() => setOpenModal(false)}
+                    onClick={() => {
+                        setOpenModal(false)
+                        setVerifikasi(false)
+                    }}
                 />
                 <p>Respon melalui {typeVerifikasi === 'Whatsapp' ? 'handphone-mu' : 'email-mu'}</p>
             </HeaderModal>

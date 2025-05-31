@@ -7,6 +7,8 @@ import {
     ModalProtectContainer
 } from 'components/Profile/ModalContainer';
 import ModalResponse from './ModalResponse';
+import { Response } from 'services/api/types';
+import Post from 'services/api/Post';
 
 type Props = {
     setOpenModal: (value: boolean) => void;
@@ -14,12 +16,37 @@ type Props = {
     user?: {
         whatsapp?: string;
         email?: string;
+        id?: number;
     } | null;
 };
 
 function ModalProtect({ setOpenModal, typeModal, user }: Props) {
     const [verifikasi, setVerifikasi] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [typeVerifikasi, setTypeVerifikasi] = useState<string>('');
+    const handleResendOTPMail = async () => {
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('type', typeModal);
+        const res = await Post<Response>('zukses', `send-email-verification/${user?.id}`, formData);
+        console.log('res', res);
+        if (res?.data?.status === 'success') {
+            setLoading(false)
+        }
+    };
+
+    const handleResendVerificationWhatsapp = async () => {
+        // Simulasi: Kirim OTP dan simpan waktu sekarang + 60 detik
+        setLoading(true);
+        const formData = new FormData();
+        formData.append('type', typeModal);
+        const res = await Post<Response>('zukses', `otp/${user?.id}/request-verification`, formData);
+        console.log('res', res)
+        if (res?.data?.status === 'success') {
+            setLoading(false)
+        }
+    };
+
     const handleVerifikasi = () => {
         const email = user?.email;
         const whatsapp = user?.whatsapp; // pastikan `user` punya properti ini
@@ -28,15 +55,19 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
             if (email && email.includes('@gmail.com')) {
                 console.log('Email valid:', email);
                 setTypeVerifikasi('Email')
+                handleResendOTPMail()
             } else {
                 console.log('Konsulkan WhatsApp');
                 setTypeVerifikasi('Whatsapp')
+                handleResendVerificationWhatsapp()
             }
         } else if (typeModal === 'whatsapp') {
             if (whatsapp && /^[0-9]{10,15}$/.test(whatsapp)) {
                 setTypeVerifikasi('Whatsapp')
+                handleResendVerificationWhatsapp()
             } else {
                 setTypeVerifikasi('Email')
+                handleResendOTPMail()
             }
         }
         setVerifikasi(true)
@@ -44,7 +75,7 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
 
 
     return (
-        verifikasi ? <ModalResponse setOpenModal={setOpenModal} typeVerifikasi={typeVerifikasi} user={user} /> :
+        verifikasi ? <ModalResponse setOpenModal={setOpenModal} typeVerifikasi={typeVerifikasi} user={user} setVerifikasi={setVerifikasi} /> :
             <ModalProtectContainer>
                 <Content>
                     <IconModalContainer>
