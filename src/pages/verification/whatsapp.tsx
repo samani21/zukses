@@ -34,9 +34,9 @@ const normalizePhone = (input: string) => {
     return cleaned;
 };
 
-const whatsapp: React.FC = () => {
-    const [phoneInput, setPhoneInput] = useState('');
-    const [phoneError, setPhoneError] = useState<string | null>(null);
+const Whatsapp: React.FC = () => {
+    const [phoneInput, setPhoneInput] = useState<string>('');
+    const [phoneError, setPhoneError] = useState<string | null>('');
 
     const validatePhone = (phone: string): boolean => {
         const cleaned = normalizePhone(phone);
@@ -92,4 +92,4 @@ const whatsapp: React.FC = () => {
     );
 };
 
-export default whatsapp;
+export default Whatsapp;

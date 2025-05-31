@@ -10,9 +10,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { OtpInput } from 'reactjs-otp-input';
 
-type Props = {};
-
-const OtpPage = (props: Props) => {
+const OtpPage = () => {
     const [otp, setOtp] = useState('');
     const [counter, setCounter] = useState(60);
     const [resendAvailable, setResendAvailable] = useState(false);

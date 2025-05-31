@@ -9,6 +9,7 @@ import {
 import ModalResponse from './ModalResponse';
 import { Response } from 'services/api/types';
 import Post from 'services/api/Post';
+import Loading from 'components/Loading';
 
 type Props = {
     setOpenModal: (value: boolean) => void;
@@ -89,6 +90,9 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
                         <p>Verifikasi melalui link</p>
                     </ButtonVerifikasi>
                 </Content>
+                {
+                    loading && <Loading />
+                }
             </ModalProtectContainer>
     );
 }

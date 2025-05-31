@@ -31,21 +31,23 @@ const formatDate = (timestamp: number): string => {
 
 const Verification = () => {
     const router = useRouter()
-    const { email, whatsapp, ts } = router.query
+    const { email, whatsapp, ts, type } = router.query
 
     const [emailState, setEmailState] = useState('')
     const [waState, setWaState] = useState('')
+    const [typeState, setTypeState] = useState('')
     const [timestamp, setTimestamp] = useState<number | null>(null)
-
+    console.log(emailState, waState, typeState)
     useEffect(() => {
         if (typeof email === 'string') setEmailState(email)
+        if (typeof type === 'string') setTypeState(type)
         if (typeof whatsapp === 'string') setWaState(whatsapp)
         if (typeof ts === 'string') setTimestamp(Number(ts))
 
-        if (email || whatsapp || ts) {
+        if (email || whatsapp || ts || type) {
             router.replace('/verification', undefined, { shallow: true })
         }
-    }, [email, whatsapp, ts, router])
+    }, [email, whatsapp, ts, router, type])
 
     return (
         <VerificationContainer>
@@ -54,7 +56,7 @@ const Verification = () => {
                     <IconVerification src='/icon/information.svg' />
                 </IconVerificationContainer>
                 <Title>
-                    Seseorang mencoba mengubah email-mu.
+                    Seseorang mencoba mengubah {typeState}-mu.
                 </Title>
                 <table>
                     <tbody>

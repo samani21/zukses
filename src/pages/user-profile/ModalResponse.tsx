@@ -11,6 +11,7 @@ import {
 } from 'components/Profile/ModalContainer';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
+import Loading from 'components/Loading';
 
 type Props = {
     setOpenModal: (value: boolean) => void;
@@ -139,6 +140,9 @@ const ModalResponse = ({ setOpenModal, typeVerifikasi, user, setVerifikasi }: Pr
                     )}
                 </ResendVerification>
             </Content>
+            {
+                loading && <Loading />
+            }
         </ModalProtectContainer>
     );
 };
