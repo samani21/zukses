@@ -22,6 +22,7 @@ import ModalAgreement from './ModalAgreement';
 import Post from 'services/api/Post';
 import { UserData } from 'services/api/types';
 import Loading from 'components/Loading';
+import { useRouter } from 'next/router';
 
 const Register = () => {
     const [phone, setPhone] = useState('');
@@ -29,6 +30,7 @@ const Register = () => {
     const [modalAgreement, setModalAgreement] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [whatsapp, setWhatsapp] = useState<string>('');
+    const route = useRouter();
     const normalizePhone = (input: string) => {
         const digits = input.replace(/\D/g, '');
 
@@ -82,7 +84,7 @@ const Register = () => {
 
             // Simpan ke localStorage
             localStorage.setItem('timeOtp', twoMinutesLater.toString());
-            window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/verification'
+            route.replace('auth/verification')
             setLoading(false);
         } else {
             setLoading(false);
@@ -140,7 +142,7 @@ const Register = () => {
                         </form>
                         <TextFooter>
                             Punya akun?{' '}
-                            <span onClick={() => window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/login'}>
+                            <span onClick={() => route.replace('/auth/login')}>
                                 Log in
                             </span>
                         </TextFooter>

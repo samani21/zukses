@@ -101,7 +101,7 @@ const Login = () => {
             if (res?.data?.status === 'success') {
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
                 localStorage.setItem('token', res?.data?.token || '');
-                window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/';
+                router.replace('/')
                 setLoading(false)
             }
         } catch (err: unknown) {
@@ -120,7 +120,7 @@ const Login = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/v1/auth/google';
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/v1/auth/google`;
     }
     return (
         <AuthLayout mode="login">
@@ -191,7 +191,7 @@ const Login = () => {
                         </AuthWith>
 
                         <TextFooter>
-                            Baru di Shopee? <span onClick={() => window.location.href = 'https://zukses-git-main-samanis-projects.vercel.app/auth/register'}>Daftar</span>
+                            Baru di Zukses? <span onClick={() => window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/register`}>Daftar</span>
                         </TextFooter>
                     </ContentCard>
                 </CardAuth>
