@@ -94,7 +94,7 @@ const Register = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, '_blank')
     }
     return (
         <AuthLayout mode="register">
