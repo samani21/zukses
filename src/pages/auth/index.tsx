@@ -1,9 +1,17 @@
 import {
-    AuthContainer, Content, ContentContainer, HeaderContainer,
-    HeaderLeft, LogoHeader, NavAuth, TextHelper, TextLogin
+    AuthContainer,
+    Content,
+    ContentContainer,
+    HeaderContainer,
+    HeaderLeft,
+    LogoHeader,
+    NavAuth,
+    TextHelper,
+    TextLogin
 } from 'components/Auth';
-import { useRouter } from 'next/router';
+
 import React, { ReactNode, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
 interface AuthLayoutProps {
@@ -16,41 +24,53 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
     const [checkedAuth, setCheckedAuth] = useState(false);
 
     useEffect(() => {
-        const user = localStorage.getItem('user');
         const token = localStorage.getItem('token');
-        const fetchedUser = getUserInfo();
+        const userStr = localStorage.getItem('user');
+        const userInfo = getUserInfo();
 
-        if (user) {
-            if (fetchedUser?.is_active == 1) {
-                router.replace('/auth/change-password');
-            } else if (fetchedUser?.is_active === 0) {
-                if (mode === 'verification') {
-                    router.replace('/auth/verification');
+        const redirectTo = (path: string) => {
+            if (router.pathname !== path) {
+                router.replace(path);
+            }
+        };
+
+        const handleAuthRedirect = () => {
+            if (userStr) {
+                if (userInfo?.is_active === 1) {
+                    redirectTo('/auth/change-password');
+                } else if (userInfo?.is_active === 0) {
+                    if (mode === 'verification') {
+                        redirectTo('/auth/verification');
+                    } else {
+                        redirectTo('/auth/verification-reset-password');
+                    }
                 } else {
-                    router.replace('/auth/verification-reset-password');
+                    if (token) {
+                        redirectTo('/');
+                    } else {
+                        localStorage.removeItem('user');
+                        redirectTo('/auth/login');
+                    }
                 }
             } else {
-                if (token) {
-                    router.replace('/');
-                } else {
-                    router.replace('/auth/login');
-                    localStorage.removeItem('user');
+                switch (mode) {
+                    case 'login':
+                        redirectTo('/auth/login');
+                        break;
+                    case 'reset':
+                        redirectTo('/auth/reset');
+                        break;
+                    default:
+                        redirectTo('/auth/register');
+                        break;
                 }
             }
-        } else {
-            if (mode === 'login') {
-                router.replace('/auth/login');
-            } else if (mode === 'reset') {
-                router.replace('/auth/reset');
-            } else {
-                router.replace('/auth/register');
-            }
-        }
+        };
 
+        handleAuthRedirect();
         setCheckedAuth(true);
     }, [router, mode]);
 
-    // Prevent rendering until auth check is complete
     if (!checkedAuth) return null;
 
     return (
@@ -59,7 +79,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
                 <HeaderContainer>
                     <HeaderLeft>
                         <LogoHeader src='/logo/logo.png' />
-                        <TextLogin>{mode === 'register' ? "Daftar" : "Log in"}</TextLogin>
+                        <TextLogin>
+                            {mode === 'register' ? 'Daftar' : 'Log in'}
+                        </TextLogin>
                     </HeaderLeft>
                     <TextHelper>Butuh bantuan?</TextHelper>
                 </HeaderContainer>

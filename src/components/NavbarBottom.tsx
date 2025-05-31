@@ -37,7 +37,6 @@ const listMenu = [
 
 const NavbarBottom = () => {
     const router = useRouter();
-    console.log('pathname', router?.pathname)
     return (
         <NavbarBottomContainer>
             {

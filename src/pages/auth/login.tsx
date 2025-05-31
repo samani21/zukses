@@ -101,7 +101,7 @@ const Login = () => {
             if (res?.data?.status === 'success') {
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
                 localStorage.setItem('token', res?.data?.token || '');
-                window.location.href = 'http://localhost:3000/';
+                router.replace('/')
                 setLoading(false)
             }
         } catch (err: unknown) {
@@ -120,7 +120,7 @@ const Login = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = 'http://localhost:8000/v1/auth/google';
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, '_blank')
     }
     return (
         <AuthLayout mode="login">
@@ -181,17 +181,17 @@ const Login = () => {
 
                         <AuthWith>
                             <Facebook>
-                                <IconSocial src='/icon/facebook.png' width={20} />
+                                <IconSocial src='/icon/facebook.svg' width={20} />
                                 Facebook
                             </Facebook>
                             <Google onClick={handleLoginGoogle}>
-                                <IconSocial src='/icon/google.webp' width={30} />
+                                <IconSocial src='/icon/google.svg' width={30} />
                                 Google
                             </Google>
                         </AuthWith>
 
                         <TextFooter>
-                            Baru di Shopee? <span onClick={() => window.location.href = 'http://localhost:3000/auth/register'}>Daftar</span>
+                            Baru di Zukses? <span onClick={() => router.replace('/auth/register')}>Daftar</span>
                         </TextFooter>
                     </ContentCard>
                 </CardAuth>

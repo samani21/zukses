@@ -1,1 +1,1 @@
-export const Zukses = 'http://localhost:8000/v1';
+export const Zukses = `${process.env.NEXT_PUBLIC_API_URL}`;

@@ -22,6 +22,7 @@ import ModalAgreement from './ModalAgreement';
 import Post from 'services/api/Post';
 import { UserData } from 'services/api/types';
 import Loading from 'components/Loading';
+import { useRouter } from 'next/router';
 
 const Register = () => {
     const [phone, setPhone] = useState('');
@@ -29,6 +30,7 @@ const Register = () => {
     const [modalAgreement, setModalAgreement] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [whatsapp, setWhatsapp] = useState<string>('');
+    const route = useRouter();
     const normalizePhone = (input: string) => {
         const digits = input.replace(/\D/g, '');
 
@@ -82,7 +84,7 @@ const Register = () => {
 
             // Simpan ke localStorage
             localStorage.setItem('timeOtp', twoMinutesLater.toString());
-            window.location.href = 'http://localhost:3000/auth/verification'
+            route.replace('auth/verification')
             setLoading(false);
         } else {
             setLoading(false);
@@ -92,7 +94,7 @@ const Register = () => {
 
 
     const handleLoginGoogle = () => {
-        window.location.href = 'http://localhost:8000/v1/auth/google';
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, '_blank')
     }
     return (
         <AuthLayout mode="register">
@@ -104,7 +106,7 @@ const Register = () => {
                     <ContentCard>
                         <AuthWith style={{ marginTop: '-20px' }}>
                             <Google onClick={handleLoginGoogle}>
-                                <IconSocial src='/icon/google.webp' width={30} />
+                                <IconSocial src='/icon/google.svg' width={30} />
                                 Google
                             </Google>
                         </AuthWith>
@@ -140,7 +142,7 @@ const Register = () => {
                         </form>
                         <TextFooter>
                             Punya akun?{' '}
-                            <span onClick={() => window.location.href = 'http://localhost:3000/auth/login'}>
+                            <span onClick={() => route.replace('/auth/login')}>
                                 Log in
                             </span>
                         </TextFooter>
