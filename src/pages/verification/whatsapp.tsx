@@ -19,7 +19,8 @@ import { Response } from 'services/api/types';
 import { AxiosError } from 'axios';
 import OtpPage from './OtpPage';
 
-const formatDisplayPhone = (raw: string) => {
+// Utils
+const formatDisplayPhone = (raw: string): string => {
     const cleaned = raw.replace(/\D/g, '');
     if (cleaned.startsWith('0')) {
         const national = cleaned.slice(1);
@@ -31,99 +32,113 @@ const formatDisplayPhone = (raw: string) => {
     return raw;
 };
 
-const normalizePhone = (input: string) => {
+const normalizePhone = (input: string): string => {
     const cleaned = input.replace(/\D/g, '');
-    if (cleaned.startsWith('0')) {
-        return '62' + cleaned.slice(1);
-    }
-    return cleaned;
+    return cleaned.startsWith('0') ? '62' + cleaned.slice(1) : cleaned;
+};
+
+const validatePhone = (phone: string): boolean => {
+    const cleaned = normalizePhone(phone);
+    return /^62\d{9,13}$/.test(cleaned); // Valid Indonesian phone numbers
 };
 
 const Whatsapp: React.FC = () => {
     const [phoneInput, setPhoneInput] = useState<string>('');
-    const [phoneError, setPhoneError] = useState<string | null>('');
+    const [phoneError, setPhoneError] = useState<string | null>(null);
     const [userId, setUserId] = useState<string>('');
-    const [email, setsetEmail] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [openOTP, setOpenOTP] = useState<boolean>(false);
-    const normalized = normalizePhone(phoneInput);
-    const validatePhone = (phone: string): boolean => {
-        const cleaned = normalizePhone(phone);
-        return /^62\d{9,13}$/.test(cleaned); // e.g., 62812xxxxxxx
-    };
+
+    const normalizedPhone = normalizePhone(phoneInput);
 
     useEffect(() => {
-        const storedData = localStorage.getItem('dataUser')
+        const storedData = localStorage.getItem('dataUser');
         if (storedData) {
             try {
-                const parsedData = JSON.parse(storedData)
-                setUserId(parsedData?.id)
-                setsetEmail(parsedData?.email)
+                const parsedData = JSON.parse(storedData);
+                setUserId(parsedData?.id || '');
+                setEmail(parsedData?.email || '');
             } catch (error) {
-                console.error('Failed to parse dataUser from localStorage', error)
+                console.error('Failed to parse dataUser from localStorage', error);
             }
         }
-    }, [])
-    const handleNext = useCallback((e: React.FormEvent) => {
-        e.preventDefault();
-        setPhoneError(null);
+    }, []);
 
-        const normalized = normalizePhone(phoneInput);
+    const handleNext = useCallback(
+        (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            setPhoneError(null);
 
-        if (!validatePhone(phoneInput)) {
-            setPhoneError('Format nomor tidak valid');
-            return;
-        }
-        handleSendOTP(normalized)
-    }, [phoneInput]);
+            if (!validatePhone(phoneInput)) {
+                setPhoneError('Format nomor tidak valid');
+                return;
+            }
 
-    const handleSendOTP = async (normalized?: string) => {
-        setLoading(true)
+            handleSendOTP(normalizedPhone);
+        },
+        [phoneInput]
+    );
+
+    const handleSendOTP = async (phone: string = ''): Promise<void> => {
+        setLoading(true);
         try {
             const formData = new FormData();
-            formData.append('whatsapp', normalized ? normalized : '');
+            formData.append('whatsapp', phone);
+
             const res = await Post<Response>('zukses', `otp/${userId}/request-otp`, formData);
-            console.log('res', res);
+
             if (res?.data?.status === 'success') {
-                setOpenOTP(true)
-                setLoading(false)
+                setOpenOTP(true);
             }
         } catch (err: unknown) {
             const error = err as AxiosError<{ message?: string }>;
-            setPhoneError(error?.response?.data?.message || '');
-            setLoading(false)
+            setPhoneError(error.response?.data?.message || 'Gagal mengirim OTP');
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (openOTP) {
+        return (
+            <OtpPage
+                setOpenOTP={setOpenOTP}
+                handleResendOTPMail={() => handleSendOTP(normalizedPhone)}
+                email={email}
+                type="whatsapp"
+                userId={userId}
+                whatsapp={normalizedPhone}
+            />
+        );
+    }
+
     return (
-        openOTP ? <OtpPage setOpenOTP={setOpenOTP} handleResendOTPMail={handleSendOTP} email={email} type={"whatsapp"} userId={userId} whatsapp={normalized} /> :
-            <EmailContainer>
-                <ContentContainer>
-                    <Content>
-                        <Title>Ganti Nomor WhatsApp</Title>
-                        <form onSubmit={handleNext}>
-                            <FormContainer>
-                                <FormGroup>
-                                    <Label>Nomor WhatsApp</Label>
-                                    <WrapperInputContainer>
-                                        <WrapperInput error={!!phoneError}>
-                                            <Input
-                                                type="text"
-                                                value={formatDisplayPhone(phoneInput)}
-                                                onChange={(e) => setPhoneInput(e.target.value)}
-                                            />
-                                        </WrapperInput>
-                                        {phoneError && <Error>{phoneError}</Error>}
-                                        <ButtonNext type="submit">Selanjutnya</ButtonNext>
-                                    </WrapperInputContainer>
-                                </FormGroup>
-                            </FormContainer>
-                        </form>
-                    </Content>
-                </ContentContainer>
-                {
-                    loading && <Loading />
-                }
-            </EmailContainer>
+        <EmailContainer>
+            <ContentContainer>
+                <Content>
+                    <Title>Ganti Nomor WhatsApp</Title>
+                    <form onSubmit={handleNext}>
+                        <FormContainer>
+                            <FormGroup>
+                                <Label>Nomor WhatsApp</Label>
+                                <WrapperInputContainer>
+                                    <WrapperInput error={!!phoneError}>
+                                        <Input
+                                            type="text"
+                                            value={formatDisplayPhone(phoneInput)}
+                                            onChange={(e) => setPhoneInput(e.target.value)}
+                                        />
+                                    </WrapperInput>
+                                    {phoneError && <Error>{phoneError}</Error>}
+                                    <ButtonNext type="submit">Selanjutnya</ButtonNext>
+                                </WrapperInputContainer>
+                            </FormGroup>
+                        </FormContainer>
+                    </form>
+                </Content>
+            </ContentContainer>
+            {loading && <Loading />}
+        </EmailContainer>
     );
 };
 

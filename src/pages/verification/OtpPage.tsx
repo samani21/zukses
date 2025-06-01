@@ -23,22 +23,30 @@ type Props = {
     userId: string;
 };
 
-const OtpPage = ({ setOpenOTP, handleResendOTPMail, userId, email, type, whatsapp }: Props) => {
-    const [otp, setOtp] = useState('');
-    const [counter, setCounter] = useState(60);
-    const [resendAvailable, setResendAvailable] = useState(false);
+const OtpPage: React.FC<Props> = ({
+    setOpenOTP,
+    handleResendOTPMail,
+    userId,
+    email,
+    type,
+    whatsapp,
+}) => {
+    const [otp, setOtp] = useState<string>('');
+    const [counter, setCounter] = useState<number>(60);
+    const [resendAvailable, setResendAvailable] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
+
     const router = useRouter();
+
     useEffect(() => {
         if (counter > 0) {
-            const timer = setTimeout(() => setCounter(counter - 1), 1000);
+            const timer = setTimeout(() => setCounter((prev) => prev - 1), 1000);
             return () => clearTimeout(timer);
         } else {
             setResendAvailable(true);
         }
     }, [counter]);
 
-    // Auto submit OTP if length is 6
     useEffect(() => {
         if (otp.length === 6) {
             handleSubmit();
@@ -48,27 +56,37 @@ const OtpPage = ({ setOpenOTP, handleResendOTPMail, userId, email, type, whatsap
     const handleResend = () => {
         if (!resendAvailable) return;
 
-        console.log('OTP dikirim ulang');
-        handleResendOTPMail()
+        handleResendOTPMail();
         setCounter(60);
         setResendAvailable(false);
     };
 
     const handleSubmit = async () => {
-        setLoading(true)
-        const formData = new FormData();
-        formData.append('otp', otp);
-        formData.append('email', email);
-        formData.append('whatsapp', whatsapp);
-        formData.append('type', type);
-        const res = await Post<RegisterResponse>('zukses', `otp-verify/${userId}/verification`, formData);
-        console.log('res', res);
+        if (otp.length !== 6) return;
+        try {
+            setLoading(true);
 
-        if (res?.data?.status === 'success') {
-            localStorage.setItem('user', JSON.stringify(res?.data?.data));
-            localStorage.setItem('token', res?.data?.token || '');
-            localStorage.removeItem('dataUser');
-            router.replace('/user-profile/profil');
+            const formData = new FormData();
+            formData.append('otp', otp);
+            formData.append('email', email);
+            formData.append('whatsapp', whatsapp);
+            formData.append('type', type);
+
+            const res = await Post<RegisterResponse>(
+                'zukses',
+                `otp-verify/${userId}/verification`,
+                formData
+            );
+
+            if (res?.data?.status === 'success') {
+                localStorage.setItem('user', JSON.stringify(res.data.data));
+                localStorage.setItem('token', res.data.token || '');
+                localStorage.removeItem('dataUser');
+                router.replace('/user-profile/profil');
+            }
+        } catch (err) {
+            console.error('OTP verification failed:', err);
+        } finally {
             setLoading(false);
         }
     };
@@ -80,7 +98,10 @@ const OtpPage = ({ setOpenOTP, handleResendOTPMail, userId, email, type, whatsap
             <ContentContainer>
                 <Content>
                     <HeaderContainer>
-                        <IconBack src='/icon/arrow-left-red.svg' onClick={() => setOpenOTP(false)} />
+                        <IconBack
+                            src="/icon/arrow-left-red.svg"
+                            onClick={() => setOpenOTP(false)}
+                        />
                         <Title>Masukkan Kode OTP</Title>
                     </HeaderContainer>
 
@@ -102,7 +123,11 @@ const OtpPage = ({ setOpenOTP, handleResendOTPMail, userId, email, type, whatsap
                             Tidak menerima kode?{' '}
                             <span
                                 onClick={handleResend}
-                                style={{ color: '#e74c3c', cursor: 'pointer', fontWeight: 'bold' }}
+                                style={{
+                                    color: '#e74c3c',
+                                    cursor: 'pointer',
+                                    fontWeight: 'bold',
+                                }}
                             >
                                 Kirim ulang
                             </span>
@@ -125,9 +150,8 @@ const OtpPage = ({ setOpenOTP, handleResendOTPMail, userId, email, type, whatsap
                     </ButtonNext>
                 </Content>
             </ContentContainer>
-            {
-                loading && <Loading />
-            }
+
+            {loading && <Loading />}
         </OtpContainer>
     );
 };
