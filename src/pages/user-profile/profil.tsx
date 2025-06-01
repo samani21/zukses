@@ -27,6 +27,10 @@ import {
 import { getUserInfo } from 'services/api/redux/action/AuthAction'
 import { ModalContainer } from 'components/Profile/ModalContainer'
 import ModalProtect from './ModalProtect'
+import Snackbar from 'components/Snackbar'
+import Post from 'services/api/Post'
+import { Response } from 'services/api/types'
+import { AxiosError } from 'axios'
 
 const months: string[] = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -38,6 +42,7 @@ interface User {
     email?: string
     whatsapp?: string
     id?: number
+    username?: string
 }
 
 interface ErrorMap {
@@ -54,7 +59,11 @@ export default function Profil() {
     const [imagePreview, setImagePreview] = useState<string | null>(null)
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [imageError, setImageError] = useState<string>('')
-
+    const [snackbar, setSnackbar] = useState<{
+        message: string;
+        type?: 'success' | 'error' | 'info';
+        isOpen: boolean;
+    }>({ message: '', type: 'info', isOpen: false });
     const [name, setName] = useState<string>('')
     const [storeName, setStoreName] = useState<string>('')
     const [gender, setGender] = useState<string>('')
@@ -126,28 +135,27 @@ export default function Profil() {
         setErrors(newErrors)
         console.log(name, storeName, gender, `${tanggal}-${bulan}-${tahun}`, imageFile)
 
-        // if (Object.keys(newErrors).length === 0 && imageFile) {
-        //     const formData = new FormData()
-        //     formData.append('name', name)
-        //     formData.append('storeName', storeName)
-        //     formData.append('gender', gender)
-        //     formData.append('birthdate', `${tanggal}-${bulan}-${tahun}`)
-        //     formData.append('image', imageFile)
+        if (Object.keys(newErrors).length === 0 && imageFile) {
+            try {
+                const formData = new FormData();
+                formData.append('name', name)
+                formData.append('name_store', storeName)
+                formData.append('gender', gender)
+                formData.append('date_birth', `${tahun}-${bulan}-${tanggal}`)
+                formData.append('image', imageFile)
 
-        //     try {
-        //         const response = await fetch('/api/update-profile', {
-        //             method: 'POST',
-        //             body: formData
-        //         })
+                const res = await Post<Response>('zukses', `user-profile/${user?.id}/create`, formData);
 
-        //         if (!response.ok) throw new Error('Gagal menyimpan profil.')
-        //         const data = await response.json()
-        //         console.log('✅ Profil berhasil disimpan:', data)
-        //     } catch (error) {
-        //         console.error('❌ Error saat menyimpan profil:', error)
-        //     }
-        // }
+                if (res?.data?.status === 'success') {
+                    setSnackbar({ message: 'Data berhasil dikirim!', type: 'success', isOpen: true });
+                }
+            } catch (err: unknown) {
+                const error = err as AxiosError<{ message?: string }>;
+                setSnackbar({ message: `${error.response?.data?.message || "Terjadi Kesalahan"}`, type: 'error', isOpen: true });
+            }
+        }
     }
+
 
     const handleChangeEmailOrWhatsapp = (type?: string) => {
         setOpenModal(true)
@@ -168,7 +176,7 @@ export default function Profil() {
                         <Wrapper>
                             <Label>Username</Label>
                             <InputWrapper style={{ border: 'none', paddingLeft: "0px" }}>
-                                <div>{user?.name || '...'}</div>
+                                <div>{user?.username || '...'}</div>
                             </InputWrapper>
                         </Wrapper>
 
@@ -311,6 +319,14 @@ export default function Profil() {
             <ModalContainer open={openModal}>
                 <ModalProtect setOpenModal={setOpenModal} typeModal={typeModal} user={user} />
             </ModalContainer>
+            {snackbar.isOpen && (
+                <Snackbar
+                    message={snackbar.message}
+                    type={snackbar.type}
+                    isOpen={snackbar.isOpen}
+                    onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                />
+            )}
         </UserProfile>
     )
 }

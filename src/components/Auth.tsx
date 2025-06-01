@@ -181,7 +181,6 @@ export const WrapperInput = styled.div`
     align-items: center;
     padding: 10px;
     margin-top: 30px;
-    cursor: pointer;
 `
 
 export const InputAuth = styled.input`

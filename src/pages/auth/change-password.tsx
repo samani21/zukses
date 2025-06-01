@@ -43,12 +43,14 @@ const ChangePassword = () => {
         if (searchParams.get('token')) {
             const email = searchParams.get('email');
             const name = searchParams.get('name');
+            const username = searchParams.get('username');
             const whatsapp = searchParams.get('whatsapp');
             const is_active = parseInt(searchParams.get('is_active') || '');
             const role = searchParams.get('role');
             const id = parseInt(searchParams.get('id') || '');
             const data = {
                 name: name,
+                username: username,
                 email: email,
                 role: role,
                 id: id,
@@ -120,6 +122,7 @@ const ChangePassword = () => {
         if (res?.data?.status == 'success') {
             const data = {
                 name: fetchedUser?.name,
+                username: fetchedUser?.username,
                 email: fetchedUser?.name,
                 role: fetchedUser?.role,
                 whatsapp: fetchedUser?.whatsapp,
@@ -156,7 +159,7 @@ const ChangePassword = () => {
                             {
                                 type === 'email' ?
                                     <b>{user?.email ? maskEmail(user.email) : '...'}</b> :
-                                    <b>{user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}</b>
+                                    <b>{user?.whatsapp ? formatPhoneNumber(user.whatsapp) : user?.email ? maskEmail(user.email) : '...'}</b>
                             }
                         </WhatsAppContainer>
                         <form onSubmit={handleSubmit}>
