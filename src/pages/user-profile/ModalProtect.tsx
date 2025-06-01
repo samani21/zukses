@@ -33,6 +33,7 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
         console.log('res', res);
         if (res?.data?.status === 'success') {
             setLoading(false)
+            setVerifikasi(true)
         }
     };
 
@@ -45,6 +46,7 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
         console.log('res', res)
         if (res?.data?.status === 'success') {
             setLoading(false)
+            setVerifikasi(true)
         }
     };
 
@@ -71,7 +73,6 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
                 handleResendOTPMail()
             }
         }
-        setVerifikasi(true)
     };
 
 
