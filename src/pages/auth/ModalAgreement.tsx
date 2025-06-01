@@ -19,12 +19,12 @@ const ModalAgreement = ({ setModalAgreement, handleRegister }: Props) => {
   return (
     <ModalContainer>
       <TitleModal>
-        Simak Ketentuan Akun Shopee
+        Simak Ketentuan Akun Zukses
       </TitleModal>
       <ContentModal>
-        Dengan mendaftar & menggunakan Shopee, saya mengakui telah membaca dan menyetujui{' '}
-        <span>Syarat, Ketentuan dan Kebijakan dari Shopee</span> &{' '}
-        <span>Kebijakan Privasi</span> Shopee.
+        Dengan mendaftar & menggunakan Zukses, saya mengakui telah membaca dan menyetujui{' '}
+        <span>Syarat, Ketentuan dan Kebijakan dari Zukses</span> &{' '}
+        <span>Kebijakan Privasi</span> Zukses.
       </ContentModal>
       <ButtonModalContainer>
         <ButtonCancel onClick={() => setModalAgreement(false)}>

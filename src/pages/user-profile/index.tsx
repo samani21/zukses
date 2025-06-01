@@ -1,7 +1,8 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Home from 'pages';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
+
 import {
     ContentLeft, ContentRight, EditProfilContainer, Followers, Header,
     HeaderLeft, HeaderProfil, HeaderRight, HeaderUserProfilMobile,
@@ -21,14 +22,16 @@ interface UserProfileLayoutProps {
 }
 
 const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
-    const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string, role?: string, name?: string } | null>(null);
+    const [user, setUser] = useState<{ name?: string } | null>(null);
     const [openModalSetting, setOpenModalSetting] = useState(false);
     const [navbarOff, setNavbarOff] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (!token) localStorage.removeItem('user');
+        if (!token) {
+            localStorage.removeItem('user');
+        }
         setUser(getUserInfo());
     }, []);
 
@@ -36,19 +39,16 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
         if (mode) setNavbarOff(true);
     }, [mode]);
 
-    const handleLogout = () => {
+    const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.replace('/auth/login');
-    };
+    }, [router]);
 
-    const handleBack = () => {
+    const handleBack = useCallback(() => {
         setOpenModalSetting(false);
         setNavbarOff(false);
-    };
-    const handleMenu = () => {
-        setNavbarOff(false);
-    };
+    }, []);
 
     const renderDesktopSidebar = () => (
         <>
@@ -63,30 +63,26 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                 </div>
             </ProfilDesktop>
             <LineUserProfil />
-            {user && (
-                <>
-                    <MenuUserProfil>
-                        <Header>
-                            <IconUserProfil src="/icon/fa--user-o.svg" />
-                            <span>Akun Saya</span>
-                        </Header>
-                        <MenuList>
-                            <li className="active">Profil</li>
-                            <li>Bank & Kartu</li>
-                            <li>Alamat</li>
-                            <li>Ubah Password</li>
-                            <li>Pengaturan Notifikasi</li>
-                            <li>Pengaturan Privasi</li>
-                        </MenuList>
-                    </MenuUserProfil>
-                    <MenuUserProfil onClick={handleLogout}>
-                        <Header>
-                            <IconUserProfil src="/icon/logout.svg" />
-                            <span>Logout</span>
-                        </Header>
-                    </MenuUserProfil>
-                </>
-            )}
+            <MenuUserProfil>
+                <Header>
+                    <IconUserProfil src="/icon/fa--user-o.svg" />
+                    <span>Akun Saya</span>
+                </Header>
+                <MenuList>
+                    <li className="active">Profil</li>
+                    <li>Bank & Kartu</li>
+                    <li>Alamat</li>
+                    <li>Ubah Password</li>
+                    <li>Pengaturan Notifikasi</li>
+                    <li>Pengaturan Privasi</li>
+                </MenuList>
+            </MenuUserProfil>
+            <MenuUserProfil onClick={handleLogout}>
+                <Header>
+                    <IconUserProfil src="/icon/logout.svg" />
+                    <span>Logout</span>
+                </Header>
+            </MenuUserProfil>
         </>
     );
 
@@ -143,7 +139,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                 <Title>Akun Saya</Title>
                 <MenuSetting onClick={() => {
                     router.replace('/user-profile/profil');
-                    handleMenu();
+                    setNavbarOff(false);
                 }}>
                     Keamanan & Akun
                     <IconUserProfil src='/icon/arrow-right.svg' />
@@ -169,7 +165,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
 
     return (
         <>
-            <Home mode='user-profile' navbarOn={!navbarOff}>
+            <Home mode="user-profile" navbarOn={!navbarOff}>
                 <UserProfileContainer>
                     <ContentLeft>{renderDesktopSidebar()}</ContentLeft>
                     {mode && <ContentRight>{children}</ContentRight>}

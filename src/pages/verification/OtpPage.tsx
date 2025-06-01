@@ -1,3 +1,4 @@
+import Loading from 'components/Loading';
 import {
     ButtonNext,
     Content,
@@ -7,17 +8,27 @@ import {
     OtpContainer,
     Title
 } from 'components/Verfication/Otp';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { OtpInput } from 'reactjs-otp-input';
+import Post from 'services/api/Post';
+import { RegisterResponse } from 'services/api/types';
 
-type Props = {};
+type Props = {
+    setOpenOTP: (value: boolean) => void;
+    handleResendOTPMail: () => Promise<void>;
+    email: string;
+    whatsapp: string;
+    type: string;
+    userId: string;
+};
 
-const OtpPage = (props: Props) => {
+const OtpPage = ({ setOpenOTP, handleResendOTPMail, userId, email, type, whatsapp }: Props) => {
     const [otp, setOtp] = useState('');
     const [counter, setCounter] = useState(60);
     const [resendAvailable, setResendAvailable] = useState(false);
-
-    // Countdown timer for resend
+    const [loading, setLoading] = useState<boolean>(false);
+    const router = useRouter();
     useEffect(() => {
         if (counter > 0) {
             const timer = setTimeout(() => setCounter(counter - 1), 1000);
@@ -38,13 +49,28 @@ const OtpPage = (props: Props) => {
         if (!resendAvailable) return;
 
         console.log('OTP dikirim ulang');
+        handleResendOTPMail()
         setCounter(60);
         setResendAvailable(false);
     };
 
-    const handleSubmit = () => {
-        console.log('OTP dikirim:', otp);
-        // Tambahkan validasi atau pengiriman OTP ke server di sini
+    const handleSubmit = async () => {
+        setLoading(true)
+        const formData = new FormData();
+        formData.append('otp', otp);
+        formData.append('email', email);
+        formData.append('whatsapp', whatsapp);
+        formData.append('type', type);
+        const res = await Post<RegisterResponse>('zukses', `otp-verify/${userId}/verification`, formData);
+        console.log('res', res);
+
+        if (res?.data?.status === 'success') {
+            localStorage.setItem('user', JSON.stringify(res?.data?.data));
+            localStorage.setItem('token', res?.data?.token || '');
+            localStorage.removeItem('dataUser');
+            router.replace('/user-profile/profil');
+            setLoading(false);
+        }
     };
 
     const isOtpComplete = otp.length === 6;
@@ -54,12 +80,12 @@ const OtpPage = (props: Props) => {
             <ContentContainer>
                 <Content>
                     <HeaderContainer>
-                        <IconBack src='/icon/arrow-left-red.svg' />
+                        <IconBack src='/icon/arrow-left-red.svg' onClick={() => setOpenOTP(false)} />
                         <Title>Masukkan Kode OTP</Title>
                     </HeaderContainer>
 
                     <p>Kode OTP telah dikirim via e-mail ke</p>
-                    <b>Eksloba21@gmail.com</b>
+                    <b>{type === 'email' ? email : whatsapp}</b>
 
                     <OtpInput
                         value={otp}
@@ -99,6 +125,9 @@ const OtpPage = (props: Props) => {
                     </ButtonNext>
                 </Content>
             </ContentContainer>
+            {
+                loading && <Loading />
+            }
         </OtpContainer>
     );
 };
