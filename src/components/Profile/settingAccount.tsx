@@ -17,7 +17,6 @@ export const HeaderSetting = styled.div`
 `;
 
 export const Content = styled.div`
-    height: 94dvh;
     overflow: auto;
     background: #e5e5e5;
 `;

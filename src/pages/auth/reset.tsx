@@ -25,7 +25,7 @@ const Reset = () => {
     const [email, setEmail] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [nextReset, setNextReset] = useState<boolean>(false);
-    const [user, setUser] = useState<{ whatsapp?: string; id?: number; email?: string; name?: string; role?: string } | null>(null);
+    const [user, setUser] = useState<{ whatsapp?: string; id?: number; email?: string; name?: string; role?: string, username?: string } | null>(null);
     const [isEmailValid, setIsEmailValid] = useState<boolean>(false);
     const [loading, setloading] = useState<boolean>(false);
     const router = useRouter();
@@ -100,6 +100,7 @@ const Reset = () => {
             localStorage.setItem('timeOtp', now.toString());
             const data = {
                 name: user?.name,
+                username: user?.username,
                 email: user?.email,
                 role: user?.role,
                 id: user?.id,
@@ -125,6 +126,7 @@ const Reset = () => {
             const data = {
                 name: user?.name,
                 email: user?.email,
+                username: user?.username,
                 role: user?.role,
                 id: user?.id,
                 whatsapp: `${user?.whatsapp}`,

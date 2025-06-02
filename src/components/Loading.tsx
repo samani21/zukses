@@ -12,12 +12,15 @@ const LoadingContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 `;
 
 const ImageLoading = styled.img`
-      width: 150px;
+    width: 150px;
 `;
+
 const Loading = () => {
+
     return (
         <LoadingContainer>
             <ImageLoading src='/loading/fade-stagger-squares.svg' />
@@ -25,4 +28,4 @@ const Loading = () => {
     )
 }
 
-export default Loading
+export default Loading;

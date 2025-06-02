@@ -168,6 +168,7 @@ export const ImageContainer = styled.div`
 export const Image = styled.img`
     border-radius: 50%;
     width: 150px;
+    height: 150px;
 `;
 
 export const ButtonContainer = styled.div`

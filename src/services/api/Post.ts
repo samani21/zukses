@@ -14,9 +14,10 @@ const Post = <T = unknown>(
     token?: string
 ): Promise<AxiosResponse<T>> => {
     const baseUrl = urlMap[url];
-    const config = token
+    const bearer = token || localStorage.getItem('token');
+    const config = token || localStorage.getItem('token')
         ? {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${bearer}` }
         }
         : {};
 

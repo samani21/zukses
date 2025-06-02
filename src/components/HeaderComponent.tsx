@@ -33,6 +33,7 @@ export const IconHeader = styled.img`
 export const ImageUser = styled.img`
     border-radius: 30px;
     margin-top: 10px;
+    height: 40px;
     cursor: pointer;
     @media (max-width: 500px) {
         display: none;
