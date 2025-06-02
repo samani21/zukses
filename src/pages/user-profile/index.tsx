@@ -6,7 +6,7 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import {
     ContentLeft, ContentRight, EditProfilContainer, Followers, Header,
     HeaderLeft, HeaderProfil, HeaderRight, HeaderUserProfilMobile,
-    HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, LineUserProfil,
+    HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, ImageProfile, LineUserProfil,
     MenuHeader, MenuList, MenuUserProfil, NameProfil, ProfilContainer,
     ProfilDesktop, StatusAccount, UpdateProfilContainer, UserProfileContainer,
     UserProfileContainerMobile
@@ -21,23 +21,69 @@ interface UserProfileLayoutProps {
     mode?: 'profil';
 }
 
+// Simple responsive check for server-side + client
+const useIsDesktop = () => {
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const checkScreen = () => setIsDesktop(window.innerWidth >= 1024);
+        checkScreen();
+        window.addEventListener('resize', checkScreen);
+        return () => window.removeEventListener('resize', checkScreen);
+    }, []);
+
+    return isDesktop;
+};
+
+const menus = [
+    {
+        parent: 'Akun Saya',
+        icon: '/icon/fa--user-o.svg',
+        url: '/user-profile/profil',
+        child: [
+            { name: 'Profil', url: '/user-profile/profil' },
+            { name: 'Bank & Kartu' },
+            { name: 'Alamat' },
+            { name: 'Ubah Password' },
+            { name: 'Pengaturan Privasi' },
+        ]
+    },
+    {
+        parent: 'Pesanan Saya',
+        icon: '/icon/clipboard.svg',
+    },
+    {
+        parent: 'Notifikasi Saya',
+        icon: '/icon/notifcation-menu.svg',
+    },
+];
+
 const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
-    const [user, setUser] = useState<{ name?: string } | null>(null);
+    const [user, setUser] = useState<{ name?: string, image?: string } | null>(null);
     const [openModalSetting, setOpenModalSetting] = useState(false);
     const [navbarOff, setNavbarOff] = useState(false);
     const router = useRouter();
+    const isDesktop = useIsDesktop();
 
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
             localStorage.removeItem('user');
+            router.replace('/auth/login');
+        } else {
+            setUser(getUserInfo());
         }
-        setUser(getUserInfo());
     }, []);
 
     useEffect(() => {
         if (mode) setNavbarOff(true);
     }, [mode]);
+
+    useEffect(() => {
+        if (isDesktop && router.pathname === '/user-profile') {
+            router.replace('/user-profile/profil');
+        }
+    }, [isDesktop, router.pathname]);
 
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
@@ -53,7 +99,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const renderDesktopSidebar = () => (
         <>
             <ProfilDesktop>
-                <ImageProfil src='/icon/user.svg' />
+                <ImageProfil src={user?.image || '/icon/user.svg'} />
                 <div>
                     <b>{user?.name || 'Nama User'}</b>
                     <UpdateProfilContainer>
@@ -64,22 +110,27 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             </ProfilDesktop>
             <LineUserProfil />
             <MenuUserProfil>
-                <Header>
-                    <IconUserProfil src="/icon/fa--user-o.svg" />
-                    <span>Akun Saya</span>
-                </Header>
-                <MenuList>
-                    <li className="active">Profil</li>
-                    <li>Bank & Kartu</li>
-                    <li>Alamat</li>
-                    <li>Ubah Password</li>
-                    <li>Pengaturan Notifikasi</li>
-                    <li>Pengaturan Privasi</li>
-                </MenuList>
-            </MenuUserProfil>
-            <MenuUserProfil onClick={handleLogout}>
-                <Header>
-                    <IconUserProfil src="/icon/logout.svg" />
+                {menus.map((m, i) => (
+                    <div key={i}>
+                        <Header>
+                            <IconUserProfil src={m.icon} />
+                            <span>{m.parent}</span>
+                        </Header>
+                        <MenuList>
+                            {m.child?.map((ch, index) => (
+                                <li
+                                    key={index}
+                                    className={router.pathname === ch?.url ? 'active' : ''}
+                                    onClick={() => ch?.url && router.replace(ch.url)}
+                                >
+                                    {ch?.name}
+                                </li>
+                            ))}
+                        </MenuList>
+                    </div>
+                ))}
+                <Header onClick={handleLogout} style={{ marginLeft: "5px" }}>
+                    <IconUserProfil src="/icon/logout.svg" width={20} />
                     <span>Logout</span>
                 </Header>
             </MenuUserProfil>
@@ -96,17 +147,23 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                         <IconUserProfil src='/icon/arrow-right.svg' />
                     </HeaderLeft>
                     <HeaderRight>
-                        <IconUserProfil src='/icon/setting.svg' onClick={() => {
-                            setOpenModalSetting(true);
-                            setNavbarOff(true);
-                        }} />
+                        <IconUserProfil
+                            src='/icon/setting.svg'
+                            onClick={() => {
+                                setOpenModalSetting(true);
+                                setNavbarOff(true);
+                            }}
+                        />
                         <IconUserProfil src='/icon/bx--cart.svg' />
                         <IconUserProfil src='/icon/chat.svg' />
                     </HeaderRight>
                 </MenuHeader>
                 <HeaderProfil>
                     <div>
-                        <IconUserProfil src='/icon/user.svg' style={{ width: 80, borderRadius: '50%' }} />
+                        <ImageProfile
+                            src={user?.image || '/icon/user.svg'}
+                            style={{ width: 80, borderRadius: '50%' }}
+                        />
                         <EditProfilContainer>
                             <IconUserProfil src='/icon/pen.svg' />
                         </EditProfilContainer>

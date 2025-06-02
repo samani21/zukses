@@ -45,6 +45,7 @@ const ChangePassword = () => {
             const name = searchParams.get('name');
             const username = searchParams.get('username');
             const whatsapp = searchParams.get('whatsapp');
+            const image = searchParams.get('image');
             const is_active = parseInt(searchParams.get('is_active') || '');
             const role = searchParams.get('role');
             const id = parseInt(searchParams.get('id') || '');
@@ -55,7 +56,8 @@ const ChangePassword = () => {
                 role: role,
                 id: id,
                 whatsapp: `${whatsapp}`,
-                is_active: is_active
+                is_active: is_active,
+                image: image
             };
             const token = searchParams.get('token');
             localStorage.setItem('user', JSON.stringify(data));

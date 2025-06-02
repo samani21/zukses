@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
 export default function Header() {
-    const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string, role?: string, name?: string } | null>(null);
+    const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string, role?: string, name?: string, image?: string } | null>(null);
     const [login, setLogin] = useState<boolean>(false);
+    console.log('user', user)
     const router = useRouter();
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -56,7 +57,7 @@ export default function Header() {
                             <Login onClick={handleLogin}>
                                 Log In
                             </Login>
-                        ) : <ImageUser src='/icon/user.svg' style={{ width: "40px" }} onClick={() => router.replace('/user-profile/profil')} />
+                        ) : <ImageUser src={user?.image ? user?.image : '/icon/user.svg'} style={{ width: "40px" }} onClick={() => router.replace('/user-profile/profil')} />
                     }
                 </NavbarHeader>
             </HeaderComponent>

@@ -22,6 +22,8 @@ export const UserProfileContainerMobile = styled.div`
 
 export const ImageProfil = styled.img`
     width: 50px;
+    height: 50px;
+    border-radius: 50px;
 `;
 
 export const ContentLeft = styled.div`
@@ -33,9 +35,18 @@ export const ContentRight = styled.div`
     width: 100%;
     background: #fff;
     padding: 20px;
+    height: 800px;
     box-shadow: 0px 0px 3px 0px #0000004b;
+    overflow: auto;
+    &::-webkit-scrollbar{
+      display: none;
+    }
     @media (max-width: 1160px) {
       padding: 10px;
+    }
+    @media (max-width: 650px) {
+       overflow: hidden;
+       height: auto;
     }
 `;
 
@@ -75,6 +86,13 @@ export const LineUserProfil = styled.div`
 export const IconUserProfil = styled.img`
     cursor: pointer;
 `
+export const ImageProfile = styled.img`
+  cursor: pointer;
+  height: 80px;
+  width: 80px;
+
+`
+
 export const MenuUserProfil = styled.div`
   display: flex;
   flex-direction: column;
@@ -91,6 +109,7 @@ export const Header = styled.div`
   font-weight: bold;
   font-size: 14px;
   color: #333;
+  cursor: pointer;
   margin-bottom: 12px;
 `;
 
