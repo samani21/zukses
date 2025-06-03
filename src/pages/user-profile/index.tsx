@@ -18,7 +18,7 @@ import {
 
 interface UserProfileLayoutProps {
     children: ReactNode;
-    mode?: 'profil';
+    mode?: 'profil' | 'address';
 }
 
 // Simple responsive check for server-side + client
@@ -43,7 +43,10 @@ const menus = [
         child: [
             { name: 'Profil', url: '/user-profile/profil' },
             { name: 'Bank & Kartu' },
-            { name: 'Alamat' },
+            {
+                name: 'Alamat',
+                url: '/user-profile/address'
+            },
             { name: 'Ubah Password' },
             { name: 'Pengaturan Privasi' },
         ]
