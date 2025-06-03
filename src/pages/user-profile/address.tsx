@@ -1,12 +1,141 @@
 // pages/address.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UserProfile from '.';
-import { Action, AddAddressMobile, Address, AddressComponent, AddressContent, AddressTop, ButtonAddAddress, ContentAddress, HeaderAddress, IconAddAddress, InfoUser, ListAddressContainer, SetAddress, StatusAddress, Title, TypographAddress } from 'components/Profile/AddressComponent';
+import {
+    Action, AddAddressMobile, Address, AddressComponent, AddressContent,
+    AddressTop, ButtonAddAddress, ContentAddress, HeaderAddress,
+    IconAddAddress, InfoUser, ListAddressContainer, SetAddress,
+    StatusAddress, Title, TypographAddress
+} from 'components/Profile/AddressComponent';
 import { ModalContainer } from 'components/Profile/ModalContainer';
 import ModalAddAddress from './Components/ModalAddAddress';
+import Post from 'services/api/Post';
+import { Response } from 'services/api/types';
+import Snackbar from 'components/Snackbar';
+import Loading from 'components/Loading';
+import { AxiosError } from 'axios';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import Get from 'services/api/Get';
+
+interface User {
+    name?: string;
+    email?: string;
+    whatsapp?: string;
+    id?: number;
+    username?: string;
+    image?: string;
+    role?: string;
+}
+
+type AddressData = {
+    name: string;
+    phone: string;
+    isPrivate: boolean;
+    fullAddress: string;
+    fullAddressStreet: string;
+    lat: number;
+    long: number;
+    prov: number;
+    city: number;
+    district: number;
+    postCode: number;
+    tag: 'Rumah' | 'Kantor';
+};
+
+type GetAddressData = {
+    name_receiver?: string;
+    number_receiver?: string;
+    provinces?: string;
+    cities?: string;
+    subdistricts?: string;
+    postal_codes?: string;
+    full_address?: string;
+    label?: string;
+    id?: number;
+    lat?: number;
+    long?: number;
+    is_primary?: number;
+    province_id?: number;
+    citie_id?: number;
+    subdistrict_id?: number;
+    postal_code_id?: number;
+};
 
 function AddressPage() {
-    const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false)
+    const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [addresses, setAddresses] = useState<GetAddressData[]>([]);
+    const [dataAddress, setDataAddress] = useState<GetAddressData | null>(null);
+    const [snackbar, setSnackbar] = useState<{
+        message: string;
+        type?: 'success' | 'error' | 'info';
+        isOpen: boolean;
+    }>({ message: '', type: 'info', isOpen: false });
+
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const currentUser = getUserInfo();
+        if (currentUser) {
+            setUser(currentUser);
+            getUserAddress(currentUser.id);
+        }
+    }, []);
+
+    const getUserAddress = async (userId?: number) => {
+        if (!userId) return;
+        setLoading(true);
+        const res = await Get<Response>('zukses', `user-address/${userId}`);
+        setLoading(false);
+
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res.data as GetAddressData[];
+            setAddresses(data);
+        } else {
+            console.warn('User address tidak ditemukan atau bukan array:');
+        }
+    };
+
+    const handleAdd = async (data: AddressData, id?: number): Promise<void> => {
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            formData.append('name_receiver', data.name);
+            formData.append('number_receiver', data.phone);
+            formData.append('province_id', String(data.prov || 0));
+            formData.append('citie_id', String(data.city || 0));
+            formData.append('subdistrict_id', String(data.district || 0));
+            formData.append('postal_code_id', String(data.postCode || 0));
+            formData.append('full_address', data.fullAddressStreet);
+            formData.append('label', data.tag);
+            formData.append('lat', String(data.lat || 0));
+            formData.append('long', String(data.long || 0));
+            formData.append('is_primary', String(data.isPrivate ? 1 : 0));
+
+            if (id) {
+                const res = await Post<Response>('zukses', `user-address/${id}/edit`, formData);
+                setLoading(false);
+
+                if (res?.data?.status === 'success') {
+                    getUserAddress(user?.id); // refresh address list
+                    setOpenModalAddAdress(false)
+                }
+            } else {
+                const res = await Post<Response>('zukses', `user-address/create/${user?.id}`, formData);
+                setLoading(false);
+
+                if (res?.data?.status === 'success') {
+                    getUserAddress(user?.id); // refresh address list
+                    setOpenModalAddAdress(false)
+                }
+            }
+        } catch (err) {
+            setLoading(false);
+            const error = err as AxiosError<{ message?: string }>;
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
+        }
+    };
+
     return (
         <UserProfile mode="address">
             <AddressComponent>
@@ -19,108 +148,41 @@ function AddressPage() {
                 <ContentAddress>
                     <p className='mobile'>Alamat</p>
                     <ListAddressContainer>
-                        <Address>
-                            <AddressTop>
-                                <InfoUser>
-                                    <b>Samani</b>
-                                    <p>(+62) 812 5413 0919</p>
-                                </InfoUser>
-                                <Action>
-                                    <p>Ubah</p>
-                                </Action>
-                            </AddressTop>
-                            <AddressContent>
-                                <TypographAddress>
-                                    <p>Jalan Gerilya Peradapan No. 41, RT.39/RW.2, Kelurahan Kelayan Timur, Banjarmasin Selatan</p>
-                                    <p>BANJARMASIN SELATAN, KOTA BANJARMASIN, KALIMANTAN SELATAN, ID, 70247</p>
-                                </TypographAddress>
-                                <SetAddress>
-                                    Atur Sebagai Utama
-                                </SetAddress>
-                            </AddressContent>
-                            <StatusAddress>
-                                <span className='primary'>
-                                    Utama
-                                </span>
-                            </StatusAddress>
-                        </Address>
-                        <Address>
-                            <AddressTop>
-                                <InfoUser>
-                                    <b>Samani</b>
-                                    <p>(+62) 812 5413 0919</p>
-                                </InfoUser>
-                                <Action>
-                                    <p>Ubah</p>
-                                    <p>Hapus</p>
-                                </Action>
-                            </AddressTop>
-                            <AddressContent>
-                                <TypographAddress>
-                                    <p>Jalan.gerilya peradapan RT39 RW02</p>
-                                    <p>BANJARMASIN SELATAN, KOTA BANJARMASIN, KALIMANTAN SELATAN, ID, 70247</p>
-                                </TypographAddress>
-                                <SetAddress>
-                                    Atur Sebagai Utama
-                                </SetAddress>
-                            </AddressContent>
-                            <StatusAddress>
-                                <span>
-                                    Alamat Toko
-                                </span>
-                                <span>
-                                    Alamat Pengembalian
-                                </span>
-                            </StatusAddress>
-                        </Address>
-                        <Address>
-                            <AddressTop>
-                                <InfoUser>
-                                    <b>Samani</b>
-                                    <p>(+62) 812 5413 0919</p>
-                                </InfoUser>
-                                <Action>
-                                    <p>Ubah</p>
-                                    <p>Hapus</p>
-                                </Action>
-                            </AddressTop>
-                            <AddressContent>
-                                <TypographAddress>
-                                    <p>Jalan.gerilya peradapan RT39 RW02</p>
-                                    <p>BANJARMASIN SELATAN, KOTA BANJARMASIN, KALIMANTAN SELATAN, ID, 70247</p>
-                                </TypographAddress>
-                                <SetAddress>
-                                    Atur Sebagai Utama
-                                </SetAddress>
-                            </AddressContent>
-                            <StatusAddress>
+                        {addresses.map((adrs, i) => (
+                            <Address key={i}>
+                                <AddressTop>
+                                    <InfoUser>
+                                        <b>{adrs?.name_receiver}</b>
+                                        <p>{adrs?.number_receiver}</p>
+                                    </InfoUser>
+                                    <Action>
+                                        <p onClick={() => {
+                                            setDataAddress(adrs)
+                                            setOpenModalAddAdress(true)
+                                        }}>Ubah</p>
+                                        {adrs?.is_primary === 0 && (
+                                            <p>Hapus</p>
+                                        )}
+                                    </Action>
+                                </AddressTop>
+                                <AddressContent>
+                                    <TypographAddress>
+                                        <p>{adrs?.full_address}</p>
+                                        <p>{`${adrs?.cities}, ${adrs?.provinces}, ${adrs?.postal_codes}`}</p>
+                                    </TypographAddress>
+                                    <SetAddress>
+                                        Atur Sebagai Utama
+                                    </SetAddress>
+                                </AddressContent>
 
-                            </StatusAddress>
-                        </Address>
-                        <Address>
-                            <AddressTop>
-                                <InfoUser>
-                                    <b>Samani</b>
-                                    <p>(+62) 812 5413 0919</p>
-                                </InfoUser>
-                                <Action>
-                                    <p>Ubah</p>
-                                    <p>Hapus</p>
-                                </Action>
-                            </AddressTop>
-                            <AddressContent>
-                                <TypographAddress>
-                                    <p>Jalan.gerilya peradapan RT39 RW02</p>
-                                    <p>BANJARMASIN SELATAN, KOTA BANJARMASIN, KALIMANTAN SELATAN, ID, 70247</p>
-                                </TypographAddress>
-                                <SetAddress>
-                                    Atur Sebagai Utama
-                                </SetAddress>
-                            </AddressContent>
-                            <StatusAddress>
-
-                            </StatusAddress>
-                        </Address>
+                                <StatusAddress>
+                                    {adrs?.is_primary === 1 && (
+                                        <span className='primary'>Utama</span>
+                                    )}
+                                    <span className=''>{adrs?.label}</span>
+                                </StatusAddress>
+                            </Address>
+                        ))}
                     </ListAddressContainer>
                     <AddAddressMobile>
                         <IconAddAddress src='/icon/add-red.svg' />
@@ -129,8 +191,19 @@ function AddressPage() {
                 </ContentAddress>
             </AddressComponent>
             <ModalContainer open={openModalAddAddress}>
-                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} />
+                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} />
             </ModalContainer>
+
+            {snackbar.isOpen && (
+                <Snackbar
+                    message={snackbar.message}
+                    type={snackbar.type}
+                    isOpen={snackbar.isOpen}
+                    onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                />
+            )}
+
+            {loading && <Loading />}
         </UserProfile>
     );
 }

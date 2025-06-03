@@ -82,6 +82,9 @@ export const Action = styled.div`
     gap: 20px;
     font-size: 16px;
     color: #05a7ff;
+    p{
+        cursor: pointer;
+    }
     @media (max-width: 650px) {
      display: none;
     }

@@ -11,6 +11,7 @@ type Props = {
     setFullAddressStreet: (value: string) => void;
     setLat: (value: number) => void;
     setLong: (value: number) => void;
+    dataFullAddressStreet?: string;
 };
 
 type PlaceResult = {
@@ -24,10 +25,16 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
     setFullAddressStreet,
     setLat,
     setLong,
+    dataFullAddressStreet = "",
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [result, setResult] = useState<PlaceResult | null>(null);
-    const [manualInput, setManualInput] = useState("");
+    const [manualInput, setManualInput] = useState(dataFullAddressStreet);
+
+    // Sync initial value to input
+    useEffect(() => {
+        setManualInput(dataFullAddressStreet);
+    }, [dataFullAddressStreet]);
 
     const handleBlur = () => {
         if (!result && manualInput.trim() !== "") {
@@ -57,7 +64,6 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
                 inputRef.current,
                 {
                     types: ["geocode", "establishment"],
-                    // componentRestrictions: { country: "id" },
                 }
             );
 
@@ -76,7 +82,7 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
                 const lng = place.geometry.location.lng();
 
                 setResult({ name, address, lat, lng });
-
+                setManualInput(address);
                 setFullAddressStreet(address);
                 setLat(lat);
                 setLong(lng);
@@ -108,6 +114,7 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
                     border: "1px solid #d1d1d1",
                     borderRadius: 3,
                 }}
+                value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
                 onBlur={handleBlur}
             />

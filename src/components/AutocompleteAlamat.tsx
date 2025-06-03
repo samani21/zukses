@@ -42,7 +42,7 @@ type Props = {
     setCity: (value: number) => void;
     setDistrict: (value: number) => void;
     setPostCode: (value: number) => void;
-
+    dataFullAddress?: string
 };
 
 // === Type Guard ===
@@ -54,7 +54,7 @@ function isAutocompleteOption(option: Option): option is AutocompleteOption {
     );
 }
 
-const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, setPostCode
+const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, setPostCode, dataFullAddress
 }: Props) => {
     const [inputValue, setInputValue] = useState('');
     const [debouncedInputValue, setDebouncedInputValue] = useState('');
@@ -148,11 +148,18 @@ const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, se
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+    useEffect(() => {
+        if (dataFullAddress) {
+            setInputValue(dataFullAddress)
+        } else {
+            setInputValue('')
+        }
+    }, [dataFullAddress]);
 
     const handleSelect = (step: number, code: string, label: string, option?: Option) => {
         if (option && isAutocompleteOption(option)) {
             const { province_id, city_id, district_id, postcode_id } = option.compilationID;
-            const full = getFullLabel(label, 'BAKONGAN', 'KAB. ACEH SELATAN', 'ACEH'); // Simulasi label
+            const full = getFullLabel(label); // Simulasi label
 
             setSelectedProvince({ id: province_id, name: label });
             setSelectedCity({ id: city_id, name: label });
