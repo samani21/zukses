@@ -1,8 +1,6 @@
 // pages/address.tsx
 import React from 'react';
 import UserProfile from '.';
-import AutocompleteAlamat from '../../components/AutocompleteAlamat';
-import AutocompleteStreetAddress from 'components/AutocompleteStreetAddress';
 import { Action, AddAddressMobile, Address, AddressComponent, AddressContent, AddressTop, ButtonAddAddress, ContentAddress, HeaderAddress, IconAddAddress, InfoUser, ListAddressContainer, SetAddress, StatusAddress, Title, TypographAddress } from 'components/Profile/AddressComponent';
 
 function AddressPage() {
@@ -21,7 +19,7 @@ function AddressPage() {
                         <Address>
                             <AddressTop>
                                 <InfoUser>
-                                    <b>Sam'ani</b>
+                                    <b>Samani</b>
                                     <p>(+62) 812 5413 0919</p>
                                 </InfoUser>
                                 <Action>
@@ -46,7 +44,7 @@ function AddressPage() {
                         <Address>
                             <AddressTop>
                                 <InfoUser>
-                                    <b>Sam'ani</b>
+                                    <b>Samani</b>
                                     <p>(+62) 812 5413 0919</p>
                                 </InfoUser>
                                 <Action>
@@ -75,7 +73,7 @@ function AddressPage() {
                         <Address>
                             <AddressTop>
                                 <InfoUser>
-                                    <b>Sam'ani</b>
+                                    <b>Samani</b>
                                     <p>(+62) 812 5413 0919</p>
                                 </InfoUser>
                                 <Action>
@@ -99,7 +97,7 @@ function AddressPage() {
                         <Address>
                             <AddressTop>
                                 <InfoUser>
-                                    <b>Sam'ani</b>
+                                    <b>Samani</b>
                                     <p>(+62) 812 5413 0919</p>
                                 </InfoUser>
                                 <Action>
