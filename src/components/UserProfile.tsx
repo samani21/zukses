@@ -35,7 +35,7 @@ export const ContentRight = styled.div`
     width: 100%;
     background: #fff;
     padding: 20px;
-    height: 800px;
+    height: 85dvh;
     box-shadow: 0px 0px 3px 0px #0000004b;
     overflow: auto;
     &::-webkit-scrollbar{
@@ -47,6 +47,7 @@ export const ContentRight = styled.div`
     @media (max-width: 650px) {
        overflow: hidden;
        height: auto;
+       box-shadow: none;
     }
 `;
 

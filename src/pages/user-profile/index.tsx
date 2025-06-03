@@ -13,12 +13,13 @@ import {
 } from 'components/UserProfile';
 
 import {
-    Content, HeaderSetting, MenuSetting, SettingAccountContainer, Title
+    Content, HeaderSetting, MenuSetting, SettingAccountContainer, Title,
+    TItleMobile
 } from 'components/Profile/settingAccount';
 
 interface UserProfileLayoutProps {
     children: ReactNode;
-    mode?: 'profil';
+    mode?: 'profil' | 'address';
 }
 
 // Simple responsive check for server-side + client
@@ -43,7 +44,10 @@ const menus = [
         child: [
             { name: 'Profil', url: '/user-profile/profil' },
             { name: 'Bank & Kartu' },
-            { name: 'Alamat' },
+            {
+                name: 'Alamat',
+                url: '/user-profile/address'
+            },
             { name: 'Ubah Password' },
             { name: 'Pengaturan Privasi' },
         ]
@@ -201,6 +205,13 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     Keamanan & Akun
                     <IconUserProfil src='/icon/arrow-right.svg' />
                 </MenuSetting>
+                <MenuSetting onClick={() => {
+                    router.replace('/user-profile/address');
+                    setNavbarOff(false);
+                }}>
+                    Alamat Saya
+                    <IconUserProfil src='/icon/arrow-right.svg' />
+                </MenuSetting>
                 <MenuSetting onClick={handleLogout}>
                     Logout
                 </MenuSetting>
@@ -212,9 +223,18 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
         <SettingAccountContainer>
             <HeaderSetting>
                 <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.replace('/user-profile')} />
-                Pengaturan Akun
+                {
+                    !mode ? "Pengaturan Akun" : mode
+                        .split(" ")
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(" ")
+                }
             </HeaderSetting>
             <Content>
+                {mode === 'address' ?
+                    <TItleMobile>
+                        Alamat
+                    </TItleMobile> : ''}
                 <ContentRight>{children}</ContentRight>
             </Content>
         </SettingAccountContainer>
