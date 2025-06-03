@@ -36,4 +36,10 @@ export const MenuSetting = styled.div`
     color: #171717;
     padding: 10px;
     margin-bottom: 10px;
+`;
+
+export const TItleMobile = styled.div`
+    width: 100%;
+    padding: 10px;
+    color: #666666;
 `

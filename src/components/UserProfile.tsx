@@ -47,6 +47,7 @@ export const ContentRight = styled.div`
     @media (max-width: 650px) {
        overflow: hidden;
        height: auto;
+       box-shadow: none;
     }
 `;
 
