@@ -1,15 +1,18 @@
 // pages/address.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import UserProfile from '.';
 import { Action, AddAddressMobile, Address, AddressComponent, AddressContent, AddressTop, ButtonAddAddress, ContentAddress, HeaderAddress, IconAddAddress, InfoUser, ListAddressContainer, SetAddress, StatusAddress, Title, TypographAddress } from 'components/Profile/AddressComponent';
+import { ModalContainer } from 'components/Profile/ModalContainer';
+import ModalAddAddress from './Components/ModalAddAddress';
 
 function AddressPage() {
+    const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false)
     return (
         <UserProfile mode="address">
             <AddressComponent>
                 <HeaderAddress>
                     <Title>Alamat Saya</Title>
-                    <ButtonAddAddress>
+                    <ButtonAddAddress onClick={() => setOpenModalAddAdress(true)}>
                         + Tambah Alamat Baru
                     </ButtonAddAddress>
                 </HeaderAddress>
@@ -125,6 +128,9 @@ function AddressPage() {
                     </AddAddressMobile>
                 </ContentAddress>
             </AddressComponent>
+            <ModalContainer open={openModalAddAddress}>
+                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} />
+            </ModalContainer>
         </UserProfile>
     );
 }

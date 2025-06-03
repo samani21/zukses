@@ -1,105 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, List, ListItemButton, Typography, CircularProgress, Box } from '@mui/material';
-import axios from 'axios';
+/// <reference types="@types/googlemaps" />
+import React, { useEffect, useRef, useState } from "react";
 
-type Address = {
-    nama: string;
-    alamat: string;
-    lokasi: { lat: number; lng: number };
+declare global {
+    interface Window {
+        google?: typeof google;
+    }
+}
+
+type Props = {
+    setFullAddressStreet: (value: string) => void;
+    setLat: (value: number) => void;
+    setLong: (value: number) => void;
 };
 
-const AutocompleteStreetAddress = () => {
-    const [inputValue, setInputValue] = useState('');
-    const [debouncedValue, setDebouncedValue] = useState('');
-    const [options, setOptions] = useState<Address[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [focused, setFocused] = useState(false);
+type PlaceResult = {
+    name: string;
+    address: string;
+    lat: number;
+    lng: number;
+};
+
+const GoogleMapsAutocomplete: React.FC<Props> = ({
+    setFullAddressStreet,
+    setLat,
+    setLong,
+}) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [result, setResult] = useState<PlaceResult | null>(null);
+    const [manualInput, setManualInput] = useState("");
+
+    const handleBlur = () => {
+        if (!result && manualInput.trim() !== "") {
+            setFullAddressStreet(manualInput.trim());
+        }
+    };
 
     useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedValue(inputValue);
-        }, 500);
-        return () => clearTimeout(handler);
-    }, [inputValue]);
-
-    useEffect(() => {
-        const fetchAddresses = async () => {
-            if (!debouncedValue) {
-                setOptions([]);
-                return;
+        const loadScript = (src: string, onLoad: () => void) => {
+            const existingScript = document.querySelector(`script[src="${src}"]`);
+            if (!existingScript) {
+                const script = document.createElement("script");
+                script.src = src;
+                script.async = true;
+                script.defer = true;
+                script.onload = onLoad;
+                document.head.appendChild(script);
+            } else {
+                onLoad();
             }
-            setLoading(true);
-            try {
-                const res = await axios.get(`/api/address-search?q=${debouncedValue}`);
-                setOptions(res.data ?? []);
-            } catch (err) {
-                console.error('Search failed:', err);
-                setOptions([]);
-            }
-            setLoading(false);
         };
 
-        fetchAddresses();
-    }, [debouncedValue]);
+        const initAutocomplete = () => {
+            if (!inputRef.current || !window.google) return;
 
-    const highlightMatch = (text: string, keyword: string) => {
-        const index = text.toLowerCase().indexOf(keyword.toLowerCase());
-        if (index === -1) return text;
-        return (
-            <>
-                {text.substring(0, index)}
-                <strong>{text.substring(index, index + keyword.length)}</strong>
-                {text.substring(index + keyword.length)}
-            </>
-        );
-    };
+            const autocomplete = new window.google.maps.places.Autocomplete(
+                inputRef.current,
+                {
+                    types: ["geocode", "establishment"],
+                    // componentRestrictions: { country: "id" },
+                }
+            );
 
-    const handleSelect = (option: Address) => {
-        const fullText = `${option.nama}, ${option.alamat}, Lat: ${option.lokasi.lat}, Lng: ${option.lokasi.lng}`;
-        setInputValue(fullText);
-        setFocused(false);
-    };
+            autocomplete.addListener("place_changed", () => {
+                const place = autocomplete.getPlace();
+
+                if (!place.geometry) {
+                    setResult(null);
+                    setFullAddressStreet("");
+                    return;
+                }
+
+                const name = place.name || "";
+                const address = place.formatted_address || "";
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+
+                setResult({ name, address, lat, lng });
+
+                setFullAddressStreet(address);
+                setLat(lat);
+                setLong(lng);
+            });
+        };
+
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        if (!window.google) {
+            loadScript(
+                `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`,
+                initAutocomplete
+            );
+        } else {
+            initAutocomplete();
+        }
+    }, [setFullAddressStreet, setLat, setLong]);
 
     return (
-        <Box sx={{ position: 'relative' }}>
-            <TextField
-                fullWidth
-                placeholder="Nama Jalan, Gedung, No. Rumah"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setTimeout(() => setFocused(false), 200)}
+        <div>
+            <input
+                ref={inputRef}
+                type="text"
+                placeholder="Jalan, Kecamatan, Gedung, Tempat, dll"
+                style={{
+                    width: "100%",
+                    height: 40,
+                    fontSize: 16,
+                    padding: "5px 10px",
+                    border: "1px solid #d1d1d1",
+                    borderRadius: 3,
+                }}
+                onChange={(e) => setManualInput(e.target.value)}
+                onBlur={handleBlur}
             />
-
-            {loading && (
-                <CircularProgress size={20} sx={{ position: 'absolute', top: 16, right: 16 }} />
-            )}
-
-            {focused && options.length > 0 && (
-                <List sx={{ border: '1px solid #ccc', maxHeight: 250, overflowY: 'auto', mt: 1 }}>
-                    {options.map((option, index) => (
-                        <ListItemButton
-                            key={index}
-                            onMouseDown={() => handleSelect(option)}
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'flex-start',
-                                '&:hover': { backgroundColor: '#f5f5f5' },
-                            }}
-                        >
-                            <Typography variant="body2" color="text.primary">
-                                {highlightMatch(option.nama, inputValue)}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {highlightMatch(option.alamat, inputValue)}
-                            </Typography>
-                        </ListItemButton>
-                    ))}
-                </List>
-            )}
-        </Box>
+        </div>
     );
 };
 
-export default AutocompleteStreetAddress;
+export default GoogleMapsAutocomplete;

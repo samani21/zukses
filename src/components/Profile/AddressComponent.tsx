@@ -146,3 +146,188 @@ export const AddAddressMobile = styled.div`
 
 export const IconAddAddress = styled.img`
 `
+
+export const ModalAdd = styled.div`
+    background: #fff;
+    height: 500px;
+    padding: 15px;
+    width: 50%;
+    @media (max-width: 1000px) {
+        width: 75%;
+    }
+`
+
+export const HeaderModal = styled.div`
+    font-size: 20px;
+`;
+
+export const ContentInput = styled.div`
+    height: 450px;
+    overflow: auto;
+    &::-webkit-scrollbar{
+        display: none;
+    }
+`;
+
+
+export const LabelContainer = styled.div`
+    color: #666666;
+    margin-top: 10px;
+`;
+
+export const WrapperLabel = styled.div`
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 10px;
+`;
+
+export const OptionLabel = styled.div`
+    border: 1px solid #e5e5e5;
+    color: #171717;
+    padding: 5px;
+`;
+
+export const InputFlex = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+`
+
+export const WrapperInput = styled.div`
+    width: 100%;
+    margin-bottom: 20px;
+`;
+
+export const LocationContainer = styled.div`
+    background-image: url('/image/lokasi.png');
+    background-size: 200px;
+    height: 120px;
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+export const AddLocation = styled.div`
+    background: #fff;
+    color: #ccc;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 0, .09);
+    border-radius: 2px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .03);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    padding: 8px 12px;
+    cursor: not-allowed;
+`;
+
+export const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+`;
+
+export const ButtonHold = styled.div`
+    align-items: center;
+    background: none;
+    border: 0;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    justify-content: center;
+    min-width: 140px;
+    outline: none;
+    padding: 10px;
+    color: #555;
+    &:hover{
+        background: #e5e5e5;
+    }
+`;
+
+export const ButtonOk = styled.button`
+    align-items: center;
+    background: none;
+    border: 0;
+    color: #fff;
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    font-size: 14px;
+    justify-content: center;
+    min-width: 140px;
+    outline: none;
+    padding: 10px;
+    background: var(--primary-color);
+`;
+
+export const MapsContainer = styled.div`
+  position: relative;
+  width: 100%;
+  height: 200px;
+
+  &:hover .show-maps-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+`;
+
+export const ButtonMapsContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+`;
+
+export const ButtonShowMaps = styled.button`
+  background-color: var(--primary-color);
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+
+  &.show-maps-btn {
+    /* ditandai agar bisa dikontrol lewat hover container */
+  }
+`;
+
+export const ModalMapsContainer = styled.div`
+    background: #fff;
+    height: 550px;
+    width: 80%;
+    @media (max-width: 1000px) {
+        width: 80%;
+    }
+`;
+
+export const HeaderMaps = styled.div`
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+`;
+
+export const InfoMap = styled.div`
+   .title{
+        color: #333;
+        font-size: 20px;
+        line-height: 15px;
+   }
+
+   .subtitle{
+        font-size: .875rem;
+        color: rgba(0, 0, 0, .54);
+   }
+`
