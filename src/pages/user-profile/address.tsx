@@ -16,6 +16,8 @@ import Loading from 'components/Loading';
 import { AxiosError } from 'axios';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Get from 'services/api/Get';
+import ModalDelete from './Components/ModalDelete';
+import Delete from 'services/api/Delete';
 
 interface User {
     name?: string;
@@ -63,6 +65,7 @@ type GetAddressData = {
 
 function AddressPage() {
     const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
+    const [openDelete, setOpenDelete] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [addresses, setAddresses] = useState<GetAddressData[]>([]);
     const [dataAddress, setDataAddress] = useState<GetAddressData | null>(null);
@@ -135,6 +138,39 @@ function AddressPage() {
             setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
         }
     };
+    const handlePrimary = async (id?: number): Promise<void> => {
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            const res = await Post<Response>('zukses', `user-address/${id}/edit-status`, formData);
+            setLoading(false);
+
+            if (res?.data?.status === 'success') {
+                getUserAddress(user?.id); // refresh address list
+                setOpenModalAddAdress(false)
+            }
+        } catch (err) {
+            setLoading(false);
+            const error = err as AxiosError<{ message?: string }>;
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
+        }
+    };
+    const handleDelete = async (id?: number): Promise<void> => {
+        try {
+            setLoading(true);
+            const res = await Delete<Response>('zukses', `user-address/${id}/delete`);
+            setLoading(false);
+
+            if (res?.data?.status === 'success') {
+                getUserAddress(user?.id); // refresh address list
+                setOpenDelete(0)
+            }
+        } catch (err) {
+            setLoading(false);
+            const error = err as AxiosError<{ message?: string }>;
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
+        }
+    };
 
     return (
         <UserProfile mode="address">
@@ -161,7 +197,7 @@ function AddressPage() {
                                             setOpenModalAddAdress(true)
                                         }}>Ubah</p>
                                         {adrs?.is_primary === 0 && (
-                                            <p>Hapus</p>
+                                            <p onClick={() => setOpenDelete(adrs?.id || 0)}>Hapus</p>
                                         )}
                                     </Action>
                                 </AddressTop>
@@ -170,9 +206,12 @@ function AddressPage() {
                                         <p>{adrs?.full_address}</p>
                                         <p>{`${adrs?.cities}, ${adrs?.provinces}, ${adrs?.postal_codes}`}</p>
                                     </TypographAddress>
-                                    <SetAddress>
+                                    {adrs?.is_primary === 0 ? <SetAddress onClick={() => handlePrimary(adrs?.id)}>
                                         Atur Sebagai Utama
-                                    </SetAddress>
+                                    </SetAddress> :
+                                        <SetAddress style={{ color: "#666666" }}>
+                                            Atur Sebagai Utama
+                                        </SetAddress>}
                                 </AddressContent>
 
                                 <StatusAddress>
@@ -191,7 +230,10 @@ function AddressPage() {
                 </ContentAddress>
             </AddressComponent>
             <ModalContainer open={openModalAddAddress}>
-                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} />
+                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} />
+            </ModalContainer>
+            <ModalContainer open={openDelete > 0 ? true : false}>
+                <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
             </ModalContainer>
 
             {snackbar.isOpen && (

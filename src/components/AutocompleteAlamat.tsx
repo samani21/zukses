@@ -43,6 +43,7 @@ type Props = {
     setDistrict: (value: number) => void;
     setPostCode: (value: number) => void;
     dataFullAddress?: string
+    openModalAddAddress?: boolean
 };
 
 // === Type Guard ===
@@ -54,7 +55,7 @@ function isAutocompleteOption(option: Option): option is AutocompleteOption {
     );
 }
 
-const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, setPostCode, dataFullAddress
+const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, setPostCode, dataFullAddress, openModalAddAddress
 }: Props) => {
     const [inputValue, setInputValue] = useState('');
     const [debouncedInputValue, setDebouncedInputValue] = useState('');
@@ -134,6 +135,12 @@ const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, se
     useEffect(() => {
         fetchOptions();
     }, [isFocused, isTyping, tab, selectedProvince, selectedCity, selectedDistrict, debouncedInputValue]);
+
+    useEffect(() => {
+        if (!openModalAddAddress) {
+            setInputValue('')
+        }
+    }, [openModalAddAddress]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

@@ -58,11 +58,12 @@ type Props = {
     setOpenModalAddAdress: (value: boolean) => void;
     handleAdd: (data: AddressData, id?: number) => Promise<void>;
     editData?: GetAddressData | null; // <-- Tambahkan ini
+    openModalAddAddress?: boolean
 };
 
 
 
-const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData }: Props) => {
+const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress }: Props) => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
@@ -113,6 +114,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData }: Props) 
             setPostCode(editData.postal_code_id || 0);
             setDataFullAddress(`${editData?.postal_codes}, ${editData?.subdistricts},${editData?.cities}, ${editData?.provinces}`);
             setDataFullAddressStreet(`${editData?.full_address}`);
+            setFullAddressStreet(`${editData?.full_address}`);
             setLat(editData.lat || 0)
             setLong(editData.long || 0)
             setTag(editData.label === 'Rumah' ? "Rumah" : "Kantor")
@@ -164,6 +166,8 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData }: Props) 
         if (isEdit) {
             handleAdd(data, editData?.id);
         } else {
+            setDataFullAddress('')
+            setDataFullAddressStreet('')
             handleAdd(data);
         }
         resetForm();
@@ -219,6 +223,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData }: Props) 
                             setCity={setCity}
                             setDistrict={setDistrict}
                             setPostCode={setPostCode}
+                            openModalAddAddress={openModalAddAddress}
                             dataFullAddress={dataFullAddress}
                         />
                         {errors.address && (
@@ -230,6 +235,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData }: Props) 
                     <WrapperInput>
                         <AutocompleteStreetAddress
                             setFullAddressStreet={setFullAddressStreet}
+                            openModalAddAddress={openModalAddAddress}
                             setLat={setLat}
                             setLong={setLong}
                             dataFullAddressStreet={dataFullAddressStreet}

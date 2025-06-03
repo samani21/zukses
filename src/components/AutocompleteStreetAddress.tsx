@@ -12,6 +12,7 @@ type Props = {
     setLat: (value: number) => void;
     setLong: (value: number) => void;
     dataFullAddressStreet?: string;
+    openModalAddAddress?: boolean;
 };
 
 type PlaceResult = {
@@ -26,6 +27,7 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
     setLat,
     setLong,
     dataFullAddressStreet = "",
+    openModalAddAddress
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
     const [result, setResult] = useState<PlaceResult | null>(null);
@@ -35,6 +37,11 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
     useEffect(() => {
         setManualInput(dataFullAddressStreet);
     }, [dataFullAddressStreet]);
+    useEffect(() => {
+        if (!openModalAddAddress) {
+            setManualInput('');
+        }
+    }, [openModalAddAddress]);
 
     const handleBlur = () => {
         if (!result && manualInput.trim() !== "") {
