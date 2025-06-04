@@ -3,6 +3,10 @@ import styled from "@emotion/styled";
 export const SettingAccountContainer = styled.div`
     background: #e5e5e5;
     font-family: "Roboto", sans-serif;    
+    @media (max-width: 650px) {
+        height: 99dvh;
+        overflow: auto;
+    }
 `;
 
 export const HeaderSetting = styled.div`
@@ -17,7 +21,6 @@ export const HeaderSetting = styled.div`
 `;
 
 export const Content = styled.div`
-    height: 94dvh;
     overflow: auto;
     background: #e5e5e5;
 `;
@@ -37,4 +40,10 @@ export const MenuSetting = styled.div`
     color: #171717;
     padding: 10px;
     margin-bottom: 10px;
+`;
+
+export const TItleMobile = styled.div`
+    width: 100%;
+    padding: 10px;
+    color: #666666;
 `

@@ -12,17 +12,31 @@ const LoadingContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
+`;
+const LoadingContent = styled.div`
+   width: 200px;
+   height: 130px;
+   background: #fff;
+   border-radius: 10px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
 `;
 
 const ImageLoading = styled.img`
-      width: 150px;
+    width: 150px;
 `;
+
 const Loading = () => {
+
     return (
         <LoadingContainer>
-            <ImageLoading src='/loading/fade-stagger-squares.svg' />
+            <LoadingContent>
+                <ImageLoading src='/loading/loading.svg' />
+            </LoadingContent>
         </LoadingContainer>
     )
 }
 
-export default Loading
+export default Loading;

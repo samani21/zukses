@@ -84,7 +84,7 @@ const Register = () => {
 
             // Simpan ke localStorage
             localStorage.setItem('timeOtp', twoMinutesLater.toString());
-            route.replace('auth/verification')
+            route.replace('/auth/verification')
             setLoading(false);
         } else {
             setLoading(false);

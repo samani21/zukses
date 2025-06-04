@@ -7,10 +7,9 @@ const urlMap: Record<URLType, string> = {
     zukses: Zukses
 };
 
-const Post = <T = unknown>(
+const Delete = <T = unknown>(
     url: URLType,
     path: string,
-    data: unknown,
     token?: string
 ): Promise<AxiosResponse<T>> => {
     const baseUrl = urlMap[url];
@@ -23,7 +22,7 @@ const Post = <T = unknown>(
 
     return new Promise((resolve, reject) => {
         axios
-            .post(`${baseUrl}/${path}`, data, config)
+            .delete(`${baseUrl}/${path}`, config)
             .then((result: AxiosResponse<T>) => {
                 resolve(result);
             })
@@ -36,4 +35,4 @@ const Post = <T = unknown>(
     });
 };
 
-export default Post;
+export default Delete;

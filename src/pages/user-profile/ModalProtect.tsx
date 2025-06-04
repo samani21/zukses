@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
     ButtonVerifikasi,
     Content,
+    HeaderProtect,
     IconModal,
     IconModalContainer,
     ModalProtectContainer
@@ -80,6 +81,9 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
         verifikasi ? <ModalResponse setOpenModal={setOpenModal} typeVerifikasi={typeVerifikasi} user={user} setVerifikasi={setVerifikasi} /> :
             <ModalProtectContainer>
                 <Content>
+                    <HeaderProtect>
+                        <IconModal src='/icon/arrow-left-red.svg' style={{ cursor: "pointer" }} onClick={() => setOpenModal(false)} />
+                    </HeaderProtect>
                     <IconModalContainer>
                         <IconModal src="/icon/protect-red.svg" width={100} alt="Proteksi" />
                     </IconModalContainer>

@@ -1,9 +1,9 @@
 export const getUserInfo = () => {
     try {
         const jsonValue = localStorage.getItem("user");
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
+        return jsonValue ? JSON.parse(jsonValue) : null;
     } catch (e) {
-        console.error(e);
-        return false;
+        console.error("Error parsing user:", e);
+        return null; // gunakan null, bukan false
     }
 };
