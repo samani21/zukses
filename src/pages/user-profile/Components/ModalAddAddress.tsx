@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Checkbox, FormControlLabel } from '@mui/material';
+import { TextField, Checkbox, Switch } from '@mui/material';
 import {
-    AddLocation,
-    ButtonContainer,
-    ButtonHold,
-    ButtonOk,
-    ContentInput,
-    HeaderModal,
-    InputFlex,
-    LabelContainer,
-    LocationContainer,
-    ModalAdd,
-    OptionLabel,
-    WrapperInput,
-    WrapperLabel
+    AddLocation, ButtonContainer, ButtonHold, ButtonOk,
+    ContentInput, HeaderModal, HeaderModalMobile, IconAddAddress, InputFlex, LabelContainer,
+    LocationContainer, ModalAdd, OptionLabel,
+    SwitchContainer,
+    WrapperInput, WrapperLabel
 } from 'components/Profile/AddressComponent';
 import AutocompleteAddress from 'components/AutocompleteAlamat';
 import AutocompleteStreetAddress from 'components/AutocompleteStreetAddress';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
 import ModalMaps from './ModalMaps';
+
 type AddressData = {
     name: string;
     phone: string;
     isPrivate: boolean;
+    isStore: boolean;
     fullAddress: string;
     fullAddressStreet: string;
     lat: number;
@@ -33,7 +27,6 @@ type AddressData = {
     postCode: number;
     tag: 'Rumah' | 'Kantor';
 };
-
 
 type GetAddressData = {
     name_receiver?: string;
@@ -48,6 +41,7 @@ type GetAddressData = {
     lat?: number;
     long?: number;
     is_primary?: number;
+    is_store?: number;
     province_id?: number;
     citie_id?: number;
     subdistrict_id?: number;
@@ -57,251 +51,303 @@ type GetAddressData = {
 type Props = {
     setOpenModalAddAdress: (value: boolean) => void;
     handleAdd: (data: AddressData, id?: number) => Promise<void>;
-    editData?: GetAddressData | null; // <-- Tambahkan ini
-    openModalAddAddress?: boolean
+    editData?: GetAddressData | null;
+    openModalAddAddress?: boolean;
 };
 
 
+type FormData = {
+    name: string;
+    phone: string;
+    isPrivate: boolean;
+    isStore: boolean;
+    fullAddress: string;
+    fullAddressStreet: string;
+    lat: number;
+    long: number;
+    prov: number;
+    city: number;
+    district: number;
+    postCode: number;
+    tag: '' | 'Rumah' | 'Kantor';
+};
 
 const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress }: Props) => {
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [isPrivate, setIsPrivate] = useState(false);
-    const [fullAddress, setFullAddress] = useState<string>('');
-    const [fullAddressStreet, setFullAddressStreet] = useState<string>('');
-    const [isEdit, setIsEdit] = useState<boolean>(false);
-    const [lat, setLat] = useState<number>(0);
-    const [long, setLong] = useState<number>(0);
-    const [prov, setProv] = useState<number>(0);
-    const [city, setCity] = useState<number>(0);
-    const [district, setDistrict] = useState<number>(0);
-    const [postCode, setPostCode] = useState<number>(0);
-    const [openMpas, setOpenMaps] = useState<boolean>(false);
-    const [dataFullAddress, setDataFullAddress] = useState<string>('');
-    const [dataFullAddressStreet, setDataFullAddressStreet] = useState<string>('');
-    const [tag, setTag] = useState<'Rumah' | 'Kantor' | ''>('');
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        phone: '',
+        isPrivate: false,
+        isStore: false,
+        fullAddress: '',
+        fullAddressStreet: '',
+        lat: 0,
+        long: 0,
+        prov: 0,
+        city: 0,
+        district: 0,
+        postCode: 0,
+        tag: ''
+    });
+    const [openMaps, setOpenMaps] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [isEdit, setIsEdit] = useState(false);
+
     const resetForm = () => {
-        setName('');
-        setPhone('');
-        setIsPrivate(false);
-        setFullAddress('');
-        setFullAddressStreet('');
-        setLat(0);
-        setLong(0);
-        setProv(0);
-        setCity(0);
-        setDistrict(0);
-        setPostCode(0);
-        setDataFullAddress('');
-        setDataFullAddressStreet('');
-        setTag('');
+        setFormData({
+            name: '',
+            phone: '',
+            isPrivate: false,
+            isStore: false,
+            fullAddress: '',
+            fullAddressStreet: '',
+            lat: 0,
+            long: 0,
+            prov: 0,
+            city: 0,
+            district: 0,
+            postCode: 0,
+            tag: ''
+        });
         setErrors({});
         setIsEdit(false);
     };
 
+    const populateForm = (data: GetAddressData) => {
+        setFormData({
+            name: data.name_receiver || '',
+            phone: data.number_receiver || '',
+            isPrivate: data.is_primary === 1,
+            isStore: data.is_store === 1,
+            fullAddress: `${data?.postal_codes}, ${data?.subdistricts}, ${data?.cities}, ${data?.provinces}` || '',
+            fullAddressStreet: data.full_address || '',
+            lat: data.lat || 0,
+            long: data.long || 0,
+            prov: data.province_id || 0,
+            city: data.citie_id || 0,
+            district: data.subdistrict_id || 0,
+            postCode: data.postal_code_id || 0,
+            tag: data.label === 'Rumah' ? 'Rumah' : 'Kantor'
+        });
+        setIsEdit(true);
+    };
+
     useEffect(() => {
-        if (!editData) {
-            resetForm();
-        }
         if (editData) {
-            setIsEdit(true);
-            setName(editData.name_receiver || '');
-            setPhone(editData.number_receiver || '');
-            setProv(editData.province_id || 0);
-            setCity(editData.citie_id || 0);
-            setDistrict(editData.subdistrict_id || 0);
-            setPostCode(editData.postal_code_id || 0);
-            setDataFullAddress(`${editData?.postal_codes}, ${editData?.subdistricts},${editData?.cities}, ${editData?.provinces}`);
-            setDataFullAddressStreet(`${editData?.full_address}`);
-            setFullAddressStreet(`${editData?.full_address}`);
-            setLat(editData.lat || 0)
-            setLong(editData.long || 0)
-            setTag(editData.label === 'Rumah' ? "Rumah" : "Kantor")
-            setIsPrivate(editData.is_primary ? true : false)
-            // dan field lainnya...
+            populateForm(editData);
+        } else {
+            resetForm();
         }
     }, [editData]);
 
+    const handleChange = <K extends keyof FormData>(key: K, value: FormData[K]) => {
+        setFormData((prev) => ({ ...prev, [key]: value }));
+    };
 
-    const handleSubmit = () => {
-        const newErrors: { [key: string]: string } = {};
-
-        if (!name.trim()) {
-            newErrors.name = 'Nama Lengkap tidak boleh kosong';
-        }
-        if (!phone.trim()) {
-            newErrors.phone = 'Nomor Telepon tidak boleh kosong';
-        }
-        if (!prov || !city || !district || !postCode) {
+    const validateForm = () => {
+        const newErrors: typeof errors = {};
+        if (!formData.name.trim()) newErrors.name = 'Nama Lengkap tidak boleh kosong';
+        if (!formData.phone.trim()) newErrors.phone = 'Nomor Telepon tidak boleh kosong';
+        if (!formData.prov || !formData.city || !formData.district || !formData.postCode) {
             newErrors.address = 'Alamat (Provinsi, Kota, Kecamatan, Kode Pos) harus lengkap';
         }
-        if (!fullAddressStreet.trim()) {
-            newErrors.fullAddressStreet = 'Alamat Jalan tidak boleh kosong';
-        }
-        if (!tag) {
-            newErrors.tag = 'Pilih label alamat (Rumah atau Kantor)';
-        }
+        if (!formData.fullAddressStreet.trim()) newErrors.fullAddressStreet = 'Alamat Jalan tidak boleh kosong';
+        if (!formData.tag) newErrors.tag = 'Pilih label alamat (Rumah atau Kantor)';
         setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
-        if (Object.keys(newErrors).length > 0) {
-            // Ada error, jangan submit
-            return;
-        }
+    const handleSubmit = () => {
+        if (!validateForm()) return;
 
-        const data = {
-            name,
-            phone,
-            isPrivate,
-            fullAddress,
-            fullAddressStreet,
-            lat,
-            long,
-            prov,
-            city,
-            district,
-            postCode,
-            tag: tag as 'Rumah' | 'Kantor',
+        const payload: AddressData = {
+            ...formData,
+            tag: formData.tag as 'Rumah' | 'Kantor',
         };
+
         if (isEdit) {
-            handleAdd(data, editData?.id);
+            handleAdd(payload, editData?.id);
         } else {
-            setDataFullAddress('')
-            setDataFullAddressStreet('')
-            handleAdd(data);
+            handleAdd(payload);
         }
         resetForm();
     };
 
     const handleClose = () => {
         setOpenModalAddAdress(false);
-        resetForm(); // Tambahkan ini
+        resetForm();
     };
 
-    return (
-        openMpas ? (
+    if (openMaps) {
+        return (
             <ModalMaps
-                fullAddressStreet={fullAddressStreet}
-                lat={lat}
-                long={long}
-                setLat={setLat}
-                setLong={setLong}
+                fullAddressStreet={formData.fullAddressStreet}
+                lat={formData.lat}
+                long={formData.long}
+                setLat={(val) => handleChange('lat', val)}
+                setLong={(val) => handleChange('long', val)}
                 setOpenMaps={setOpenMaps}
             />
-        ) : (
-            <ModalAdd>
-                <HeaderModal>{isEdit ? 'Edit Alamat' : 'Alamat Baru'}</HeaderModal>
-                <ContentInput>
-                    <InputFlex>
-                        <WrapperInput>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                label="Nama Lengkap"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                error={!!errors.name}
-                                helperText={errors.name}
-                            />
-                        </WrapperInput>
-                        <WrapperInput>
-                            <TextField
-                                fullWidth
-                                variant="outlined"
-                                label="Nomor Telepon"
-                                value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                error={!!errors.phone}
-                                helperText={errors.phone}
-                            />
-                        </WrapperInput>
-                    </InputFlex>
+        );
+    }
+
+    return (
+        <ModalAdd>
+            <HeaderModal>{isEdit ? 'Edit Alamat' : 'Alamat Baru'}</HeaderModal>
+            <HeaderModalMobile>
+                <IconAddAddress src='/icon/arrow-left-red.svg' onClick={() => setOpenModalAddAdress(false)} />
+                {isEdit ? 'Edit Alamat' : 'Alamat Baru'}
+            </HeaderModalMobile>
+            <ContentInput>
+                <InputFlex>
                     <WrapperInput>
-                        <AutocompleteAddress
-                            setFullAddress={setFullAddress}
-                            setProv={setProv}
-                            setCity={setCity}
-                            setDistrict={setDistrict}
-                            setPostCode={setPostCode}
-                            openModalAddAddress={openModalAddAddress}
-                            dataFullAddress={dataFullAddress}
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Nama Lengkap"
+                            value={formData.name}
+                            onChange={(e) => handleChange('name', e.target.value)}
+                            error={!!errors.name}
+                            helperText={errors.name}
                         />
-                        {errors.address && (
-                            <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>
-                                {errors.address}
-                            </div>
-                        )}
                     </WrapperInput>
                     <WrapperInput>
-                        <AutocompleteStreetAddress
-                            setFullAddressStreet={setFullAddressStreet}
-                            openModalAddAddress={openModalAddAddress}
-                            setLat={setLat}
-                            setLong={setLong}
-                            dataFullAddressStreet={dataFullAddressStreet}
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Nomor Telepon"
+                            value={formData.phone}
+                            onChange={(e) => handleChange('phone', e.target.value)}
+                            error={!!errors.phone}
+                            helperText={errors.phone}
                         />
-                        {errors.fullAddressStreet && (
-                            <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>
-                                {errors.fullAddressStreet}
-                            </div>
-                        )}
                     </WrapperInput>
-                    {lat && long ? (
-                        <MapWithDraggableSvgPinDisable
-                            lat={lat}
-                            lng={long}
-                            setOpenMaps={setOpenMaps}
-                        />
-                    ) : (
-                        <LocationContainer>
-                            <AddLocation>+ Tambah Location</AddLocation>
-                        </LocationContainer>
-                    )}
-                    <LabelContainer>
-                        Tandai Sebagai
-                        <WrapperLabel>
-                            <OptionLabel
-                                style={{ cursor: 'pointer', fontWeight: tag === 'Rumah' ? 'bold' : 'normal' }}
-                                onClick={() => setTag('Rumah')}
-                            >
-                                Rumah
-                            </OptionLabel>
-                            <OptionLabel
-                                style={{ cursor: 'pointer', fontWeight: tag === 'Kantor' ? 'bold' : 'normal' }}
-                                onClick={() => setTag('Kantor')}
-                            >
-                                Kantor
-                            </OptionLabel>
-                            {errors.tag && (
-                                <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>
-                                    {errors.tag}
-                                </div>
-                            )}
-                        </WrapperLabel>
-                    </LabelContainer>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={isPrivate}
-                                onChange={(e) => setIsPrivate(e.target.checked)}
-                                sx={{
-                                    color: 'var(--primary-color)',
-                                    '&.Mui-checked': {
-                                        color: 'var(--primary-color)',
-                                    },
-                                }}
-                            />
-                        }
-                        label="Atur sebagai Alamat Pribadi"
-                        sx={{ color: '#777', mt: 2 }}
+                </InputFlex>
+
+                <WrapperInput>
+                    <AutocompleteAddress
+                        setFullAddress={(val) => handleChange('fullAddress', val)}
+                        setProv={(val) => handleChange('prov', val)}
+                        setCity={(val) => handleChange('city', val)}
+                        setDistrict={(val) => handleChange('district', val)}
+                        setPostCode={(val) => handleChange('postCode', val)}
+                        openModalAddAddress={openModalAddAddress}
+                        dataFullAddress={formData.fullAddress}
                     />
-                    <ButtonContainer>
-                        <ButtonHold onClick={handleClose}>Nanti Saja</ButtonHold>
-                        <ButtonOk onClick={handleSubmit}>Ok</ButtonOk>
-                    </ButtonContainer>
-                </ContentInput>
-            </ModalAdd>
-        )
+                    {errors.address && (
+                        <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
+                    )}
+                </WrapperInput>
+
+                <WrapperInput>
+                    <AutocompleteStreetAddress
+                        setFullAddressStreet={(val) => handleChange('fullAddressStreet', val)}
+                        openModalAddAddress={openModalAddAddress}
+                        setLat={(val) => handleChange('lat', val)}
+                        setLong={(val) => handleChange('long', val)}
+                        dataFullAddressStreet={formData.fullAddressStreet}
+                    />
+                    {errors.fullAddressStreet && (
+                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
+                    )}
+                </WrapperInput>
+
+                {formData.lat && formData.long ? (
+                    <MapWithDraggableSvgPinDisable
+                        lat={formData.lat}
+                        lng={formData.long}
+                        setOpenMaps={setOpenMaps}
+                    />
+                ) : (
+                    <LocationContainer>
+                        <AddLocation>+ Tambah Location</AddLocation>
+                    </LocationContainer>
+                )}
+
+                <LabelContainer>
+                    Tandai Sebagai
+                    <WrapperLabel>
+                        {(['Rumah', 'Kantor'] as const).map((label) => (
+
+                            <OptionLabel
+                                key={label}
+                                className={formData.tag === label ? 'active' : ''}
+                                onClick={() => handleChange('tag', label)}
+                            >
+                                <div className='ceklist'>✓</div>
+                                <p>{label}</p>
+                            </OptionLabel>
+                        ))}
+                        {errors.tag && (
+                            <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.tag}</div>
+                        )}
+                    </WrapperLabel>
+                </LabelContainer>
+                <LabelContainer>
+                    Atur sebagai Alamat Utama
+                    <SwitchContainer>
+                        <Checkbox
+                            checked={formData.isPrivate}
+                            onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                            sx={{
+                                color: 'var(--primary-color)',
+                                '&.Mui-checked': {
+                                    color: 'var(--primary-color)',
+                                },
+                            }}
+                        />
+                    </SwitchContainer>
+                    <SwitchContainer className='mobile'>
+                        <Switch
+                            checked={formData.isPrivate}
+                            onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                            sx={{
+                                '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: 'var(--primary-color)',
+                                    '& + .MuiSwitch-track': {
+                                        backgroundColor: 'var(--primary-color)',
+                                    },
+                                },
+                            }}
+                        />
+                    </SwitchContainer>
+                </LabelContainer>
+                <LabelContainer>
+                    Atur sebagai Alamat Toto
+                    <SwitchContainer>
+                        <Checkbox
+                            checked={formData.isStore}
+                            onChange={(e) => handleChange('isStore', e.target.checked)}
+                            sx={{
+                                color: 'var(--primary-color)',
+                                '&.Mui-checked': {
+                                    color: 'var(--primary-color)',
+                                },
+                            }}
+                        />
+                    </SwitchContainer>
+                    <SwitchContainer className='mobile'>
+                        <Switch
+                            checked={formData.isStore}
+                            onChange={(e) => handleChange('isStore', e.target.checked)}
+                            sx={{
+                                '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: 'var(--primary-color)',
+                                    '& + .MuiSwitch-track': {
+                                        backgroundColor: 'var(--primary-color)',
+                                    },
+                                },
+                            }}
+                        />
+                    </SwitchContainer>
+                </LabelContainer>
+
+
+                <ButtonContainer>
+                    <ButtonHold onClick={handleClose}>Nanti Saja</ButtonHold>
+                    <ButtonOk onClick={handleSubmit}>Ok</ButtonOk>
+                </ButtonContainer>
+            </ContentInput>
+        </ModalAdd>
     );
 };
 

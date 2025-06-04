@@ -153,7 +153,7 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
                 )}
             </GoogleMap>
 
-            <ButtonContainer style={{ padding: "20px" }}>
+            <ButtonContainer style={{ padding: "20px", marginTop: "0px" }}>
                 <ButtonHold onClick={() => setOpenMaps(false)}>
                     Nanti Saja
                 </ButtonHold>

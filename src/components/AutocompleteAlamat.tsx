@@ -178,6 +178,7 @@ const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, se
             setInputValue(full);
             setFullAddress(full);
             setIsTyping(false);
+            setIsFocused(false);
             return;
         }
 
@@ -205,6 +206,7 @@ const AutocompleteAddress = ({ setFullAddress, setProv, setCity, setDistrict, se
             const full = getFullLabel(label, selectedDistrict?.name, selectedCity?.name, selectedProvince?.name);
             setInputValue(full);
             setFullAddress(full);
+            setIsFocused(false);
         }
         setIsTyping(false);
     };

@@ -3,6 +3,10 @@ import styled from "@emotion/styled";
 export const SettingAccountContainer = styled.div`
     background: #e5e5e5;
     font-family: "Roboto", sans-serif;    
+    @media (max-width: 650px) {
+        height: 99dvh;
+        overflow: auto;
+    }
 `;
 
 export const HeaderSetting = styled.div`

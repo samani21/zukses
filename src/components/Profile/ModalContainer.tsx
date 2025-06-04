@@ -16,6 +16,12 @@ export const ModalContainer = styled.div<ModalContainerProps>`
     align-items: center;
 `;
 
+export const HeaderProtect = styled.div`
+    display: flex;
+    justify-content: left;
+    align-items: center;
+`
+
 export const ModalProtectContainer = styled.div`
     background: #fff;
     border-radius: 4px;
