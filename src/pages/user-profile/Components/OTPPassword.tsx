@@ -116,7 +116,6 @@ const OTPPassword = ({ setOpen, password }: Props) => {
                         Kode OTP telah dikirim via WhatsApp ke
                     </TextContent>
                     <WhatsAppContainer>
-                        <IconInModal src="/icon/whatsapp.svg" />
                         {
                             user?.whatsapp ?
                                 <span>+62xxxxxxx</span> :
