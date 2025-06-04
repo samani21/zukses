@@ -26,7 +26,7 @@ import {
 } from 'components/Profile/ProfileComponent'
 import { getUserInfo } from 'services/api/redux/action/AuthAction'
 import { ModalContainer } from 'components/Profile/ModalContainer'
-import ModalProtect from './ModalProtect'
+import ModalProtect from './Components/ModalProtect'
 import Snackbar from 'components/Snackbar'
 import Post from 'services/api/Post'
 import { Response } from 'services/api/types'

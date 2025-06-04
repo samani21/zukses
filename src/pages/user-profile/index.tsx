@@ -19,7 +19,7 @@ import {
 
 interface UserProfileLayoutProps {
     children: ReactNode;
-    mode?: 'profil' | 'address';
+    mode?: 'profil' | 'address' | 'reset-password';
 }
 
 // Simple responsive check for server-side + client
@@ -48,7 +48,7 @@ const menus = [
                 name: 'Alamat',
                 url: '/user-profile/address'
             },
-            { name: 'Ubah Password' },
+            { name: 'Ubah Password', url: '/user-profile/reset-password' },
             { name: 'Pengaturan Privasi' },
         ]
     },
