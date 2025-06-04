@@ -4,7 +4,7 @@ import UserProfile from '.';
 import {
     Action, AddAddressMobile, Address, AddressComponent, AddressContent,
     AddressTop, ButtonAddAddress, ContentAddress, HeaderAddress,
-    IconAddAddress, InfoUser, ListAddressContainer, SetAddress,
+    IconAddAddress, InfoUser, ListAddressContainer, ListAddressContainerMobile, ModalAddAdressDescktop, ModalAddAdressMobile, SetAddress,
     StatusAddress, Title, TypographAddress
 } from 'components/Profile/AddressComponent';
 import { ModalContainer } from 'components/Profile/ModalContainer';
@@ -33,6 +33,7 @@ type AddressData = {
     name: string;
     phone: string;
     isPrivate: boolean;
+    isStore: boolean;
     fullAddress: string;
     fullAddressStreet: string;
     lat: number;
@@ -57,6 +58,7 @@ type GetAddressData = {
     lat?: number;
     long?: number;
     is_primary?: number;
+    is_store?: number;
     province_id?: number;
     citie_id?: number;
     subdistrict_id?: number;
@@ -114,6 +116,7 @@ function AddressPage() {
             formData.append('lat', String(data.lat || 0));
             formData.append('long', String(data.long || 0));
             formData.append('is_primary', String(data.isPrivate ? 1 : 0));
+            formData.append('is_store', String(data.isStore ? 1 : 0));
 
             if (id) {
                 const res = await Post<Response>('zukses', `user-address/${id}/edit`, formData);
@@ -218,20 +221,59 @@ function AddressPage() {
                                     {adrs?.is_primary === 1 && (
                                         <span className='primary'>Utama</span>
                                     )}
+                                    {adrs?.is_store === 1 && (
+                                        <span className=''>Alamat Toko</span>
+                                    )}
                                     <span className=''>{adrs?.label}</span>
                                 </StatusAddress>
                             </Address>
                         ))}
                     </ListAddressContainer>
-                    <AddAddressMobile>
+                    <ListAddressContainerMobile>
+                        {addresses.map((adrs, i) => (
+                            <Address key={i} onClick={() => {
+                                setDataAddress(adrs)
+                                setOpenModalAddAdress(true)
+                            }}>
+                                <AddressTop>
+                                    <InfoUser>
+                                        <b>{adrs?.name_receiver}</b>
+                                        <p>{adrs?.number_receiver}</p>
+                                    </InfoUser>
+                                </AddressTop>
+                                <AddressContent>
+                                    <TypographAddress>
+                                        <p>{adrs?.full_address}</p>
+                                        <p>{`${adrs?.cities}, ${adrs?.provinces}, ${adrs?.postal_codes}`}</p>
+                                    </TypographAddress>
+                                </AddressContent>
+
+                                <StatusAddress>
+                                    {adrs?.is_primary === 1 && (
+                                        <span className='primary'>Utama</span>
+                                    )}
+                                    {adrs?.is_store === 1 && (
+                                        <span className=''>Alamat Toko</span>
+                                    )}
+                                    <span className=''>{adrs?.label}</span>
+                                </StatusAddress>
+                            </Address>
+                        ))}
+                    </ListAddressContainerMobile>
+                    <AddAddressMobile onClick={() => setOpenModalAddAdress(true)}>
                         <IconAddAddress src='/icon/add-red.svg' />
                         Tambah Alamat Baru
                     </AddAddressMobile>
                 </ContentAddress>
             </AddressComponent>
-            <ModalContainer open={openModalAddAddress}>
-                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} />
-            </ModalContainer>
+            <ModalAddAdressDescktop>
+                <ModalContainer open={openModalAddAddress}>
+                    <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} />
+                </ModalContainer>
+            </ModalAddAdressDescktop>
+            <ModalAddAdressMobile open={openModalAddAddress}>
+                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} />
+            </ModalAddAdressMobile>
             <ModalContainer open={openDelete > 0 ? true : false}>
                 <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
             </ModalContainer>

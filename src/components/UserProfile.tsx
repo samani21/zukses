@@ -45,7 +45,6 @@ export const ContentRight = styled.div`
       padding: 10px;
     }
     @media (max-width: 650px) {
-       overflow: hidden;
        height: auto;
        box-shadow: none;
     }

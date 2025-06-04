@@ -43,6 +43,16 @@ export const ContentAddress = styled.div`
 
 export const ListAddressContainer = styled.div`
     padding-top: 20px;
+    @media (max-width: 650px) {
+        display: none;
+    }
+`;
+export const ListAddressContainerMobile = styled.div`
+        display: none;
+     @media (max-width: 650px) {
+         padding-top: 20px;
+         display: inline;
+    }
 `;
 
 export const Address = styled.div`
@@ -158,10 +168,31 @@ export const ModalAdd = styled.div`
     @media (max-width: 1000px) {
         width: 75%;
     }
+    @media (max-width: 650px) {
+        width: 100%;
+        height: 100%;
+        background: #e5e5e5;
+        padding: 0px;
+    }
 `
 
 export const HeaderModal = styled.div`
     font-size: 20px;
+    @media (max-width: 650px) {
+       display:  none;
+    }
+`;
+export const HeaderModalMobile = styled.div`
+    font-size: 20px;
+    display:  none;
+     @media (max-width: 650px) {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        gap: 30px;
+        background: #fff;
+        padding: 15px;
+    }
 `;
 
 export const ContentInput = styled.div`
@@ -170,13 +201,42 @@ export const ContentInput = styled.div`
     &::-webkit-scrollbar{
         display: none;
     }
+    @media (max-width: 650px) {
+        height: 91dvh;
+        padding: 15px;
+        background: #fff;
+        border-radius: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
 `;
 
 
 export const LabelContainer = styled.div`
     color: #666666;
     margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    @media (max-width: 650px) {
+        color: #171717;
+        font-size: 14px;
+    }
 `;
+
+export const SwitchContainer = styled.div`
+    &.mobile{
+        display: none;
+    }
+    @media (max-width: 650px) {
+        display: none;
+        &.mobile{
+        display: inline;
+    }
+    }
+`
 
 export const WrapperLabel = styled.div`
     display: flex;
@@ -188,7 +248,49 @@ export const WrapperLabel = styled.div`
 export const OptionLabel = styled.div`
     border: 1px solid #e5e5e5;
     color: #171717;
-    padding: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    .ceklist{
+        display: none;
+    }
+    &.active{
+        border: 1px solid var(--primary-color);
+        border-radius: 4px;
+        padding: 0px;
+        .ceklist{
+            position: relative;
+            background: var(--primary-color);
+            color: white;
+            font-size: 12px;
+            width: 24px;
+            height: 24px;
+            margin-top: -10px;
+            display: flex;
+            justify-content: left;
+            align-items: start;
+            border-top-left-radius: 0px;
+            clip-path: polygon(0 0,100% 0,0 100%);
+            padding-left: 2px;
+        }
+        p{
+            position: relative;
+            padding: 5px 10px;
+            font-weight: bold;
+        }
+        @media (min-width: 650px) {
+            .ceklist{
+                display: none;
+            }
+        }
+        @media (max-width: 650px) {
+            p{
+            margin-left: -20px;
+                }
+        }
+    }
 `;
 
 export const InputFlex = styled.div`
@@ -197,6 +299,10 @@ export const InputFlex = styled.div`
     align-items: center;
     gap: 10px;
     margin-top: 10px;
+    @media (max-width: 650px) {
+        display: grid;
+        justify-content: normal;
+    }
 `
 
 export const WrapperInput = styled.div`
@@ -235,6 +341,18 @@ export const ButtonContainer = styled.div`
     align-items: center;
     gap: 10px;
     margin-bottom: 30px;
+    margin-top: 40px;
+`;
+export const Mobile = styled.div`
+    display: none;
+    @media (max-width: 650px) {
+        display: inline;
+    }
+`;
+export const Desktop = styled.div`
+    @media (max-width: 650px) {
+        display: none;
+    }
 `;
 
 export const ButtonHold = styled.div`
@@ -312,6 +430,10 @@ export const ModalMapsContainer = styled.div`
     @media (max-width: 1000px) {
         width: 80%;
     }
+    @media (max-width: 650px) {
+        width: 100%;
+        height: 100dvh;
+    }
 `;
 
 export const HeaderMaps = styled.div`
@@ -333,4 +455,27 @@ export const InfoMap = styled.div`
         font-size: .875rem;
         color: rgba(0, 0, 0, .54);
    }
+`;
+
+export const ModalAddAdressDescktop = styled.div`
+    @media (max-width: 650px) {
+        display: none;
+    }
+`;
+
+interface ModalAddMobileProps {
+    open: boolean;
+}
+export const ModalAddAdressMobile = styled.div<ModalAddMobileProps>`
+    display: none;
+    @media (max-width: 650px) {
+      display: ${(props) => props?.open ? "inline" : "none"};
+      position: absolute;
+      top: 0;
+      z-index: 3;
+      width: 100%;
+      background: red;
+      left: 0;
+      height: 100dvh;
+    }
 `
