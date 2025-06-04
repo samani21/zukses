@@ -58,6 +58,7 @@ type GetAddressData = {
     lat?: number;
     long?: number;
     is_primary?: number;
+    is_store?: number;
     province_id?: number;
     citie_id?: number;
     subdistrict_id?: number;
@@ -220,6 +221,9 @@ function AddressPage() {
                                     {adrs?.is_primary === 1 && (
                                         <span className='primary'>Utama</span>
                                     )}
+                                    {adrs?.is_store === 1 && (
+                                        <span className=''>Alamat Toko</span>
+                                    )}
                                     <span className=''>{adrs?.label}</span>
                                 </StatusAddress>
                             </Address>
@@ -247,6 +251,9 @@ function AddressPage() {
                                 <StatusAddress>
                                     {adrs?.is_primary === 1 && (
                                         <span className='primary'>Utama</span>
+                                    )}
+                                    {adrs?.is_store === 1 && (
+                                        <span className=''>Alamat Toko</span>
                                     )}
                                     <span className=''>{adrs?.label}</span>
                                 </StatusAddress>

@@ -283,7 +283,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                     </WrapperLabel>
                 </LabelContainer>
                 <LabelContainer>
-                    Atur sebagai Alamat Utama
+                    Atur Sebagai Alamat Utama
                     <SwitchContainer>
                         <Checkbox
                             checked={formData.isPrivate}
@@ -312,7 +312,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                     </SwitchContainer>
                 </LabelContainer>
                 <LabelContainer>
-                    Atur sebagai Alamat Toto
+                    Atur Sebagai Alamat Toko
                     <SwitchContainer>
                         <Checkbox
                             checked={formData.isStore}
