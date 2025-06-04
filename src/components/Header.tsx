@@ -26,7 +26,7 @@ export default function Header() {
     }, [user]);
 
     const handleLogin = () => {
-        router.replace('/auth/login')
+        router.push('/auth/login')
     }
 
 
@@ -57,7 +57,7 @@ export default function Header() {
                             <Login onClick={handleLogin}>
                                 Log In
                             </Login>
-                        ) : <ImageUser src={user?.image ? user?.image : '/icon/user.svg'} style={{ width: "40px" }} onClick={() => router.replace('/user-profile/profil')} />
+                        ) : <ImageUser src={user?.image ? user?.image : '/icon/user.svg'} style={{ width: "40px" }} onClick={() => router.push('/user-profile/profil')} />
                     }
                 </NavbarHeader>
             </HeaderComponent>

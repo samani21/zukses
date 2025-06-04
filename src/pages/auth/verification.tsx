@@ -97,7 +97,7 @@ const Verification = () => {
         if (res?.data?.status === 'success') {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
-            router.replace('/auth/change-password');
+            router.push('/auth/change-password');
             setLoading(false);
         }
     }, [otp, user, router]);
@@ -114,7 +114,7 @@ const Verification = () => {
     }, []);
 
     const handleBack = () => {
-        router.replace('/auth/login');
+        router.push('/auth/login');
         localStorage.removeItem('user')
         localStorage.removeItem('token')
     }

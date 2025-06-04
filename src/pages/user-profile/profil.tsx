@@ -33,6 +33,7 @@ import { Response } from 'services/api/types'
 import { AxiosError } from 'axios'
 import Get from 'services/api/Get'
 import Loading from 'components/Loading'
+import CropModal from './Components/CropModal'
 
 const months = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -80,6 +81,8 @@ export default function Profil() {
     const [loading, setLoading] = useState(false)
     const [openModal, setOpenModal] = useState(false)
     const [typeModal, setTypeModal] = useState('')
+    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null)
+    const [showCropModal, setShowCropModal] = useState(false)
     const [snackbar, setSnackbar] = useState<{
         message: string;
         type?: 'success' | 'error' | 'info';
@@ -140,22 +143,22 @@ export default function Profil() {
 
         if (!['image/jpeg', 'image/png'].includes(file.type)) {
             setImageError('Format gambar harus JPEG atau PNG.')
-            setImagePreview(null)
-            setImageFile(null)
             return
         }
 
         if (file.size > 1024 * 1024) {
             setImageError('Ukuran gambar maksimal 1 MB.')
-            setImagePreview(null)
-            setImageFile(null)
             return
         }
 
-        setImageFile(file)
-        setImagePreview(URL.createObjectURL(file))
-        setImageError('')
+        const reader = new FileReader()
+        reader.onload = () => {
+            setCropImageSrc(reader.result as string)
+            setShowCropModal(true)
+        }
+        reader.readAsDataURL(file)
     }
+
 
     const handleInputChange = (field: string, value: string) => {
         setForm(prev => ({ ...prev, [field]: value }))
@@ -210,6 +213,13 @@ export default function Profil() {
         setTypeModal(type || '')
         setOpenModal(true)
     }
+
+    const handleCropComplete = (croppedBlob: Blob, previewUrl: string) => {
+        const croppedFile = new File([croppedBlob], 'cropped.jpg', { type: 'image/jpeg' })
+        setImageFile(croppedFile)
+        setImagePreview(previewUrl)
+    }
+
 
     return (
         <UserProfile mode="profil">
@@ -346,6 +356,15 @@ export default function Profil() {
                     onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
                 />
             )}
+
+            {showCropModal && cropImageSrc && (
+                <CropModal
+                    imageSrc={cropImageSrc}
+                    onClose={() => setShowCropModal(false)}
+                    onCropComplete={handleCropComplete}
+                />
+            )}
+
 
             {loading && <Loading />}
         </UserProfile>

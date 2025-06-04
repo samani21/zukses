@@ -130,7 +130,7 @@ const VerificationResetPassword = () => {
         if (res?.data?.status === 'success') {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
-            router.replace('/auth/change-password')
+            router.push('/auth/change-password')
             setLoading(false)
         }
     }, [otp, user, router]);
@@ -147,7 +147,7 @@ const VerificationResetPassword = () => {
     }, []);
 
     const handleBack = () => {
-        router.replace('/auth/reset');
+        router.push('/auth/reset');
         localStorage.removeItem('user')
     }
 

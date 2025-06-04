@@ -73,7 +73,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
         const token = localStorage.getItem('token');
         if (!token) {
             localStorage.removeItem('user');
-            router.replace('/auth/login');
+            router.push('/auth/login');
         } else {
             setUser(getUserInfo());
         }
@@ -85,14 +85,14 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
 
     useEffect(() => {
         if (isDesktop && router.pathname === '/user-profile') {
-            router.replace('/user-profile/profil');
+            router.push('/user-profile/profil');
         }
     }, [isDesktop, router.pathname]);
 
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        router.replace('/auth/login');
+        router.push('/auth/login');
     }, [router]);
 
     const handleBack = useCallback(() => {
@@ -125,7 +125,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                                 <li
                                     key={index}
                                     className={router.pathname === ch?.url ? 'active' : ''}
-                                    onClick={() => ch?.url && router.replace(ch.url)}
+                                    onClick={() => ch?.url && router.push(ch.url)}
                                 >
                                     {ch?.name}
                                 </li>
@@ -199,14 +199,14 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <Content>
                 <Title>Akun Saya</Title>
                 <MenuSetting onClick={() => {
-                    router.replace('/user-profile/profil');
+                    router.push('/user-profile/profil');
                     setNavbarOff(false);
                 }}>
                     Keamanan & Akun
                     <IconUserProfil src='/icon/arrow-right.svg' />
                 </MenuSetting>
                 <MenuSetting onClick={() => {
-                    router.replace('/user-profile/address');
+                    router.push('/user-profile/address');
                     setNavbarOff(false);
                 }}>
                     Alamat Saya
@@ -222,7 +222,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const renderMobileSettingContent = () => (
         <SettingAccountContainer>
             <HeaderSetting>
-                <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.replace('/user-profile')} />
+                <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
                 {
                     !mode ? "Pengaturan Akun" : mode
                         .split(" ")
