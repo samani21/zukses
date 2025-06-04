@@ -350,10 +350,14 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                 </Desktop>
                 <Mobile>
                     <ButtonContainer style={{ justifyContent: "space-between" }}>
-                        <ButtonHold onClick={() => {
-                            setOpenDelete(editData?.id ?? 0)
-                            setOpenModalAddAdress(false)
-                        }} style={{ border: "1px solid var(--primary-color)", width: "100%", color: "black" }}>Hapus</ButtonHold>
+                        {
+                            editData?.is_primary === 1 ?
+                                <ButtonHold style={{ border: "1px solid var(--primary-color)", width: "100%", color: "#666666" }}>Hapus</ButtonHold> :
+                                <ButtonHold onClick={() => {
+                                    setOpenDelete(editData?.id ?? 0)
+                                    setOpenModalAddAdress(false)
+                                }} style={{ border: "1px solid var(--primary-color)", width: "100%", color: "black" }}>Hapus</ButtonHold>
+                        }
                         <ButtonOk onClick={handleSubmit} style={{ width: "100%" }}>Ok</ButtonOk>
                     </ButtonContainer>
                 </Mobile>
