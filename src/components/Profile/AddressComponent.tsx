@@ -222,6 +222,7 @@ export const LabelContainer = styled.div`
     align-items: center;
     @media (max-width: 650px) {
         color: #171717;
+        font-size: 14px;
     }
 `;
 
@@ -249,6 +250,9 @@ export const OptionLabel = styled.div`
     color: #171717;
     padding: 5px 10px;
     cursor: pointer;
+    display: flex;
+    justify-content: left;
+    align-items: center;
     .ceklist{
         display: none;
     }
@@ -257,12 +261,13 @@ export const OptionLabel = styled.div`
         border-radius: 4px;
         padding: 0px;
         .ceklist{
-            position: absolute;
+            position: relative;
             background: var(--primary-color);
             color: white;
             font-size: 12px;
             width: 24px;
             height: 24px;
+            margin-top: -10px;
             display: flex;
             justify-content: left;
             align-items: start;
@@ -271,6 +276,8 @@ export const OptionLabel = styled.div`
             padding-left: 2px;
         }
         p{
+            position: relative;
+            margin-left: -20px;
             padding: 5px 10px;
             font-weight: bold;
         }
