@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { TextField, Checkbox, Switch } from '@mui/material';
 import {
     AddLocation, ButtonContainer, ButtonHold, ButtonOk,
-    ContentInput, HeaderModal, HeaderModalMobile, IconAddAddress, InputFlex, LabelContainer,
-    LocationContainer, ModalAdd, OptionLabel,
+    ContentInput, Desktop, HeaderModal, HeaderModalMobile, IconAddAddress, InputFlex, LabelContainer,
+    LocationContainer, Mobile, ModalAdd, OptionLabel,
     SwitchContainer,
     WrapperInput, WrapperLabel
 } from 'components/Profile/AddressComponent';
@@ -50,6 +50,7 @@ type GetAddressData = {
 
 type Props = {
     setOpenModalAddAdress: (value: boolean) => void;
+    setOpenDelete: (value: number) => void;
     handleAdd: (data: AddressData, id?: number) => Promise<void>;
     editData?: GetAddressData | null;
     openModalAddAddress?: boolean;
@@ -72,7 +73,7 @@ type FormData = {
     tag: '' | 'Rumah' | 'Kantor';
 };
 
-const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress }: Props) => {
+const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress, setOpenDelete }: Props) => {
     const [formData, setFormData] = useState<FormData>({
         name: '',
         phone: '',
@@ -341,11 +342,21 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                     </SwitchContainer>
                 </LabelContainer>
 
-
-                <ButtonContainer>
-                    <ButtonHold onClick={handleClose}>Nanti Saja</ButtonHold>
-                    <ButtonOk onClick={handleSubmit}>Ok</ButtonOk>
-                </ButtonContainer>
+                <Desktop>
+                    <ButtonContainer>
+                        <ButtonHold onClick={handleClose}>Nanti Saja</ButtonHold>
+                        <ButtonOk onClick={handleSubmit}>Ok</ButtonOk>
+                    </ButtonContainer>
+                </Desktop>
+                <Mobile>
+                    <ButtonContainer style={{ justifyContent: "space-between" }}>
+                        <ButtonHold onClick={() => {
+                            setOpenDelete(editData?.id ?? 0)
+                            setOpenModalAddAdress(false)
+                        }} style={{ border: "1px solid var(--primary-color)", width: "100%", color: "black" }}>Hapus</ButtonHold>
+                        <ButtonOk onClick={handleSubmit} style={{ width: "100%" }}>Ok</ButtonOk>
+                    </ButtonContainer>
+                </Mobile>
             </ContentInput>
         </ModalAdd>
     );

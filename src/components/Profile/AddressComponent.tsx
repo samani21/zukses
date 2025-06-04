@@ -277,14 +277,18 @@ export const OptionLabel = styled.div`
         }
         p{
             position: relative;
-            margin-left: -20px;
             padding: 5px 10px;
             font-weight: bold;
         }
         @media (min-width: 650px) {
             .ceklist{
-        display: none;
-    }
+                display: none;
+            }
+        }
+        @media (max-width: 650px) {
+            p{
+            margin-left: -20px;
+                }
         }
     }
 `;
@@ -338,6 +342,17 @@ export const ButtonContainer = styled.div`
     gap: 10px;
     margin-bottom: 30px;
     margin-top: 40px;
+`;
+export const Mobile = styled.div`
+    display: none;
+    @media (max-width: 650px) {
+        display: inline;
+    }
+`;
+export const Desktop = styled.div`
+    @media (max-width: 650px) {
+        display: none;
+    }
 `;
 
 export const ButtonHold = styled.div`

@@ -268,11 +268,11 @@ function AddressPage() {
             </AddressComponent>
             <ModalAddAdressDescktop>
                 <ModalContainer open={openModalAddAddress}>
-                    <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} />
+                    <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} />
                 </ModalContainer>
             </ModalAddAdressDescktop>
             <ModalAddAdressMobile open={openModalAddAddress}>
-                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} />
+                <ModalAddAddress setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} />
             </ModalAddAdressMobile>
             <ModalContainer open={openDelete > 0 ? true : false}>
                 <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
