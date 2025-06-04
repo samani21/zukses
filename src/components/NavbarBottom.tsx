@@ -42,7 +42,7 @@ const NavbarBottom = () => {
             {
                 listMenu?.map((lm, i) => (
                     <MenuWrapper key={i} onClick={() => {
-                        router.replace(lm?.url ? lm?.url : '')
+                        router.push(lm?.url ? lm?.url : '')
                     }} className={router?.pathname === lm?.url ? 'active' : ""}>
                         <IconNavbarContainer>
                             <IconNavbar src={router?.pathname === lm?.url ? lm?.icon_active : lm?.icon} />

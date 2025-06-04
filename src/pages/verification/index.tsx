@@ -71,13 +71,13 @@ const Verification: React.FC = () => {
 
         if (email || whatsapp || ts || type) {
             getUser(email as string, type as string, whatsapp as string);
-            router.replace('/verification', undefined, { shallow: true });
+            router.push('/verification', undefined, { shallow: true });
         }
     }, [email, whatsapp, ts, type, router]);
 
     const handleApprove = () => {
         const path = typeState === 'whatsapp' ? '/verification/whatsapp' : '/verification/email';
-        router.replace(path);
+        router.push(path);
     };
 
     const renderTableData = () => (

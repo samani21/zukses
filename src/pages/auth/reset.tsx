@@ -109,7 +109,7 @@ const Reset = () => {
             };
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.setItem('typeOtp', "phone");
-            router.replace('/auth/verification-reset-password');
+            router.push('/auth/verification-reset-password');
             setloading(false)
         }
     };
@@ -134,7 +134,7 @@ const Reset = () => {
             };
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.setItem('typeOtp', "email");
-            router.replace('/auth/verification-reset-password');
+            router.push('/auth/verification-reset-password');
             setloading(false)
         }
     };
@@ -147,7 +147,7 @@ const Reset = () => {
                         {
                             nextReset ?
                                 <IconInModal src="/icon/arrow-left-line.svg" onClick={() => setNextReset(false)} /> :
-                                <IconInModal src="/icon/arrow-left-line.svg" onClick={() => router.replace('/auth/login')} />
+                                <IconInModal src="/icon/arrow-left-line.svg" onClick={() => router.push('/auth/login')} />
                         }
                         <TextHeaderCard>Reset Password</TextHeaderCard>
                     </HeadCard>

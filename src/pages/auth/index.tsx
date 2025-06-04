@@ -30,7 +30,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
 
         const redirectTo = (path: string) => {
             if (router.pathname !== path) {
-                router.replace(path);
+                router.push(path);
             }
         };
 
