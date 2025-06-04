@@ -1,7 +1,6 @@
 import {
     ButtonAuth,
     ContentCard,
-    IconInModal,
     TextContent,
     WhatsAppContainer,
 } from 'components/Auth';
