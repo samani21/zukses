@@ -5,23 +5,43 @@ import {
     TextContent,
     WhatsAppContainer,
 } from 'components/Auth';
+import Loading from 'components/Loading';
 import {
     ChangePasswordContent,
     CheckPasswordContainer,
 } from 'components/Profile/ResetPassword';
 import React, { useEffect, useState, useCallback } from 'react';
 import { OtpInput } from 'reactjs-otp-input';
+import Post from 'services/api/Post';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import { RegisterResponse, Response } from 'services/api/types';
 
 type Props = {
     setOpen: (value: string) => void;
+    password?: string
 };
+interface User {
+    name?: string
+    email?: string
+    whatsapp?: string
+    id?: number
+    username?: string
+    image?: string
+    role?: string
+}
 
-const OTPPassword = ({ setOpen }: Props) => {
+const OTPPassword = ({ setOpen, password }: Props) => {
     const [otp, setOtp] = useState('');
     const [canResend, setCanResend] = useState(false);
     const [counter, setCounter] = useState(60);
     const [loading, setLoading] = useState(false);
-
+    const [user, setUser] = useState<User | null>(null)
+    useEffect(() => {
+        const currentUser = getUserInfo()
+        if (currentUser) {
+            setUser(currentUser)
+        }
+    }, [])
     // Simulasi penghitungan mundur
     useEffect(() => {
         let timer: NodeJS.Timeout;
@@ -42,19 +62,38 @@ const OTPPassword = ({ setOpen }: Props) => {
         setCounter(60);
         setCanResend(false);
         setLoading(false);
+        requestOTP()
     };
 
     const handleSubmit = useCallback(async () => {
-        setLoading(true);
-        // Simulasi verifikasi OTP
-        console.log('Verifikasi OTP:', otp);
-        setTimeout(() => {
-            console.log('OTP benar, lanjut ke halaman berikutnya');
-            setLoading(false);
+        setLoading(true)
+        const formData = new FormData();
+        formData.append('otp', otp);
+        formData.append('password', password ?? '');
+        const res = await Post<Response>('zukses', `otp/${user?.id}/verify-change-password`, formData);
+        if (res?.data?.status === 'success') {
             setOpen('change-password'); // Simulasi navigasi
-        }, 1000);
+            setLoading(false);
+        }
     }, [otp, setOpen]);
 
+    const requestOTP = async () => {
+        try {
+            setLoading(true)
+            const email = user?.email ?? '';
+            const formData = new FormData();
+            formData.append('email', email.includes('@') ? email : '');
+            formData.append('whatsapp', String(user?.whatsapp || 0));
+            formData.append('name', String(user?.name || 0));
+
+            const res = await Post<RegisterResponse>('zukses', `otp/${user?.id}/request-change-password`, formData);
+            if (res?.data?.status === 'success') {
+                setLoading(false)
+            }
+        } catch {
+            setLoading(false)
+        }
+    }
     useEffect(() => {
         if (otp.length === 6) {
             handleSubmit();
@@ -78,7 +117,11 @@ const OTPPassword = ({ setOpen }: Props) => {
                     </TextContent>
                     <WhatsAppContainer>
                         <IconInModal src="/icon/whatsapp.svg" />
-                        <span>+62xxxxxxx</span>
+                        {
+                            user?.whatsapp ?
+                                <span>+62xxxxxxx</span> :
+                                <span>******** @gmail.com</span>
+                        }
                     </WhatsAppContainer>
 
                     <OtpInput
@@ -114,6 +157,9 @@ const OTPPassword = ({ setOpen }: Props) => {
                     </ButtonAuth>
                 </ContentCard>
             </ChangePasswordContent>
+            {
+                loading && <Loading />
+            }
         </CheckPasswordContainer>
     );
 };

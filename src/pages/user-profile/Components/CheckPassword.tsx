@@ -10,8 +10,20 @@ import {
     CheckPasswordContainer,
     CheckPasswordContent
 } from 'components/Profile/ResetPassword'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import Post from 'services/api/Post';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import { RegisterResponse } from 'services/api/types';
 
+interface User {
+    name?: string
+    email?: string
+    whatsapp?: string
+    id?: number
+    username?: string
+    image?: string
+    role?: string
+}
 
 type Props = {
     setOpen: (value: string) => void;
@@ -21,16 +33,27 @@ const CheckPassword = ({ setOpen }: Props) => {
     const [showPassword, setShowPassword] = useState(false)
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
-
-    const handleSubmit = (e: React.FormEvent) => {
+    const [user, setUser] = useState<User | null>(null)
+    useEffect(() => {
+        const currentUser = getUserInfo()
+        if (currentUser) {
+            setUser(currentUser)
+        }
+    }, [])
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        try {
+            const formData = new FormData();
+            formData.append('email', user?.email ?? ''); // tetap kirim format 62xxxxxxxxxx
+            formData.append('password', password);
 
-        // Simulasi password benar (misal: 'admin123')
-        if (password === 'admin123') {
-            setError('')
-            // Lanjut ke proses berikutnya (misal: navigate ke halaman reset password)
-            setOpen('Change Password')
-        } else {
+            const res = await Post<RegisterResponse>('zukses', 'auth/check-password', formData);
+            if (res?.data?.status === 'success') {
+                setError('')
+                // Lanjut ke proses berikutnya (misal: navigate ke halaman reset password)
+                setOpen('Change Password')
+            }
+        } catch {
             setError('Password salah, silakan coba lagi.')
         }
     }

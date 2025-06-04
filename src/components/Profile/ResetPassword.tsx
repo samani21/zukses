@@ -6,7 +6,7 @@ export const ResetPasswordContainer = styled.div`
 
 export const HeaderResetPassword = styled.div`
     width: 100%;
-    font-size: 1.25rem;
+    font-size: 1.20rem;
     p{
         color: #222;
         text-align: center;
@@ -43,7 +43,7 @@ export const VerifyContainer = styled.div`
         margin-top: 20px;
     }
     @media (max-width: 650px) {
-        height: 88dvh;
+        height: 90dvh;
     }
 `;
 export const CheckPasswordContainer = styled.div`

@@ -212,6 +212,13 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     Alamat Saya
                     <IconUserProfil src='/icon/arrow-right.svg' />
                 </MenuSetting>
+                <MenuSetting onClick={() => {
+                    router.push('/user-profile/reset-password');
+                    setNavbarOff(false);
+                }}>
+                    Reset Password
+                    <IconUserProfil src='/icon/arrow-right.svg' />
+                </MenuSetting>
                 <MenuSetting onClick={handleLogout}>
                     Logout
                 </MenuSetting>
@@ -220,16 +227,18 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     );
 
     const renderMobileSettingContent = () => (
-        <SettingAccountContainer>
-            <HeaderSetting>
-                <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
-                {
-                    !mode ? "Pengaturan Akun" : mode
-                        .split(" ")
-                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                        .join(" ")
-                }
-            </HeaderSetting>
+        <SettingAccountContainer style={{ background: mode === 'reset-password' ? "#fff" : "#e5e5e5" }}>
+            {
+                mode != "reset-password" && <HeaderSetting>
+                    <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
+                    {
+                        !mode ? "Pengaturan Akun" : mode
+                            .split(" ")
+                            .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                            .join(" ")
+                    }
+                </HeaderSetting>
+            }
             <Content>
                 {mode === 'address' ?
                     <TItleMobile>
