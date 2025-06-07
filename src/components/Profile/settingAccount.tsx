@@ -5,7 +5,10 @@ export const SettingAccountContainer = styled.div`
     font-family: "Roboto", sans-serif;    
     @media (max-width: 650px) {
         height: 99dvh;
-        overflow: auto;
+        /* overflow: auto; */
+        &::-webkit-scrollbar{
+            display: none;
+        }
     }
 `;
 
@@ -18,6 +21,28 @@ export const HeaderSetting = styled.div`
   background: white;
   font-size: 18px;
   color: black;
+`;
+export const HeaderSettingOrders = styled.div`
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: white;
+  font-size: 18px;
+  color: black;
+    .left{
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        gap: 10px;
+    }
+    .right{
+        gap: 10px;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+  }
 `;
 
 export const Content = styled.div`

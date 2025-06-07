@@ -29,7 +29,7 @@ const listMenu = [
     },
     {
         title: "Saya",
-        icon: "/icon/profil.svg",
+        icon: "/icon/user-profile.svg",
         icon_active: "/icon/profil-active.svg",
         url: '/user-profile'
     }
@@ -47,7 +47,7 @@ const NavbarBottom = () => {
                         <IconNavbarContainer>
                             <IconNavbar src={router?.pathname === lm?.url ? lm?.icon_active : lm?.icon} />
                         </IconNavbarContainer>
-                        {lm?.title}
+                        <p>{lm?.title}</p>
                     </MenuWrapper>
                 ))
             }

@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import UserProfile from '.'
-import { ActionButtonContainer, ActionOrder, ButtonAction, ButtonChat, ButtonColor, ButtonViewShop, ContentItemOrder, ContentLeft, HeaderItemOrder, HeaderLeft, IconOrders, ImageItem, InfoItem, InformationOrder, InputSearch, ItemOrder, ListItemOrder, Menu, MenusContainer, Price, PriceAmount, SatusMarket, SearchContainer, StatusOrders, Variant } from 'components/Profile/Orders'
+import { ActionButtonContainer, ActionMobileContainer, ActionOrder, AmountMobile, ButtonAction, ButtonChat, ButtonColor, ButtonOutline, ButtonOutlineGray, ButtonViewShop, CardItemOrder, ContentItemOrder, ContentLeft, HeaderItemOrder, HeaderLeft, IconOrders, ImageItem, InfoItem, InformationOrder, InputSearch, ItemOrder, ListItemOrder, Menu, MenusContainer, Price, PriceAmount, PriceMobile, SatusMarket, SearchContainer, StatusOrders, Variant, VariaQty } from 'components/Profile/Orders'
+import { useSearchParams } from 'next/navigation'
 
 const menus = [
     'Semua',
@@ -58,13 +59,22 @@ const MyOrders = () => {
             minimumFractionDigits: 0,
         }).format(value);
     };
-
+    const param = useSearchParams();
+    useEffect(() => {
+        if (param?.get('menu') === "Dikemas") {
+            setMenuActive("Sedang Dikemas")
+        } else if (param?.get('menu') === "Beri Penilaian") {
+            setMenuActive("Selesai")
+        } else {
+            setMenuActive(param?.get('menu') || '')
+        }
+    }, [param])
     return (
         <UserProfile mode="my-orders">
             <MenusContainer>
                 {
                     menus?.map((mn, i) => (
-                        <Menu key={i} className={menuActive === mn ? 'active' : ''} onClick={() => setMenuActive(mn)}>{mn}</Menu>
+                        <Menu key={i} className={menuActive === mn ? 'active' : ''} onClick={() => setMenuActive(mn)}><p>{mn}</p></Menu>
                     ))
                 }
             </MenusContainer>
@@ -76,8 +86,8 @@ const MyOrders = () => {
             <ListItemOrder>
                 {
                     itemOrder?.map((io, index) => (
-                        <>
-                            <ItemOrder key={index}>
+                        <CardItemOrder key={index}>
+                            <ItemOrder>
                                 <HeaderItemOrder>
                                     <HeaderLeft>
                                         {
@@ -108,10 +118,20 @@ const MyOrders = () => {
                                         <ImageItem src={io?.image} />
                                         <InfoItem>
                                             <span>{io?.name_item}</span>
-                                            <Variant>
-                                                Variasi: {io?.variant}
-                                            </Variant>
-                                            x{io?.qty}
+                                            <VariaQty>
+                                                <Variant>
+                                                    Variasi: {io?.variant}
+                                                </Variant>
+                                                x{io?.qty}
+                                            </VariaQty>
+                                            <PriceMobile>
+                                                <div className='price-old'>
+                                                    {formatRupiah(io?.price_old)}
+                                                </div>
+                                                <div className='price-new'>
+                                                    {formatRupiah(io?.price_new)}
+                                                </div>
+                                            </PriceMobile>
                                         </InfoItem>
                                     </ContentLeft>
                                     <Price>
@@ -123,6 +143,18 @@ const MyOrders = () => {
                                         </div>
                                     </Price>
                                 </ContentItemOrder>
+                                <AmountMobile>
+                                    <p>Total {io?.qty} produk: </p>
+                                    <span>{formatRupiah(io?.qty * io?.price_new)}</span>
+                                </AmountMobile>
+                                <ActionMobileContainer>
+                                    <ButtonOutlineGray>
+                                        Lihat Penilaian
+                                    </ButtonOutlineGray>
+                                    <ButtonOutline>
+                                        Beli Lagi
+                                    </ButtonOutline>
+                                </ActionMobileContainer>
                             </ItemOrder>
                             <PriceAmount>
                                 Total Pesanan: <span> {formatRupiah(io?.amount_price)}</span>
@@ -130,7 +162,6 @@ const MyOrders = () => {
                             <ActionOrder>
                                 <InformationOrder>
                                     Dibatalkan secara otomatis oleh sistem Zukses
-                                    <IconOrders src='/icon/information.svg' width={20} />
                                 </InformationOrder>
                                 <ActionButtonContainer>
                                     <ButtonColor>
@@ -144,7 +175,7 @@ const MyOrders = () => {
                                     </ButtonAction>
                                 </ActionButtonContainer>
                             </ActionOrder>
-                        </>
+                        </CardItemOrder>
                     ))
                 }
             </ListItemOrder>

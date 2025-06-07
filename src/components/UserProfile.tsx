@@ -50,14 +50,34 @@ export const ContentRight = styled.div`
     }
 `;
 export const ContentRightNoCard = styled.div`
-    width: 100%;
-    @media (max-width: 1160px) {
-      padding: 10px;
-    }
-    @media (max-width: 650px) {
-       height: auto;
-       box-shadow: none;
-    }
+  width: 100%;
+  overflow-x: auto;
+
+  /* Scrollbar custom */
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  @media (max-width: 1160px) {
+    padding: 10px;
+  }
+
+  @media (max-width: 650px) {
+    height: auto;
+    box-shadow: none;
+    padding: 0px;
+    background: #f6f6f6;
+
+  }
 `;
 
 export const ProfilDesktop = styled.div`
@@ -238,3 +258,48 @@ export const Followers = styled.div`
   color: #fff;
   gap: 10px;
 `;
+
+export const MyOrders = styled.div`
+  background: #fff;
+  padding: 10px;
+`;
+
+export const HeaderMyorders = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  p{
+    color: #000;
+    font-size: 14px;
+  }
+`;
+
+export const HistoryOrders = styled.div`
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+`;
+
+export const ListMenuOrder = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+export const Menu = styled.div`
+  width: 100%;
+  p{
+    font-size: 14px;
+    text-align: center;
+  }
+`;
+
+export const IconUserProfileContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 5px;
+`
