@@ -4,7 +4,7 @@ import Home from 'pages';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
 import {
-    ContentLeft, ContentRight, EditProfilContainer, Followers, Header,
+    ContentLeft, ContentRight, ContentRightNoCard, EditProfilContainer, Followers, Header,
     HeaderLeft, HeaderProfil, HeaderRight, HeaderUserProfilMobile,
     HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, ImageProfile, LineUserProfil,
     MenuHeader, MenuList, MenuUserProfil, NameProfil, ProfilContainer,
@@ -19,7 +19,7 @@ import {
 
 interface UserProfileLayoutProps {
     children: ReactNode;
-    mode?: 'profil' | 'address' | 'reset-password';
+    mode?: 'profil' | 'address' | 'reset-password' | 'my-orders';
 }
 
 // Simple responsive check for server-side + client
@@ -55,6 +55,7 @@ const menus = [
     {
         parent: 'Pesanan Saya',
         icon: '/icon/clipboard.svg',
+        url: '/user-profile/my-orders'
     },
     {
         parent: 'Notifikasi Saya',
@@ -115,7 +116,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <LineUserProfil />
             <MenuUserProfil>
                 {menus.map((m, i) => (
-                    <div key={i}>
+                    <div key={i} onClick={() => m?.url && router.push(m.url)}>
                         <Header>
                             <IconUserProfil src={m.icon} />
                             <span>{m.parent}</span>
@@ -254,7 +255,9 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <Home mode="user-profile" navbarOn={!navbarOff}>
                 <UserProfileContainer>
                     <ContentLeft>{renderDesktopSidebar()}</ContentLeft>
-                    {mode && <ContentRight>{children}</ContentRight>}
+                    {mode && mode === 'my-orders' ? <ContentRightNoCard>
+                        {children}
+                    </ContentRightNoCard> : <ContentRight>{children}</ContentRight>}
                 </UserProfileContainer>
             </Home>
 

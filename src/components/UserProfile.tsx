@@ -49,6 +49,16 @@ export const ContentRight = styled.div`
        box-shadow: none;
     }
 `;
+export const ContentRightNoCard = styled.div`
+    width: 100%;
+    @media (max-width: 1160px) {
+      padding: 10px;
+    }
+    @media (max-width: 650px) {
+       height: auto;
+       box-shadow: none;
+    }
+`;
 
 export const ProfilDesktop = styled.div`
     display: flex;
