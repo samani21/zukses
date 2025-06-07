@@ -4,22 +4,26 @@ import Home from 'pages';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
 import {
-    ContentLeft, ContentRight, EditProfilContainer, Followers, Header,
-    HeaderLeft, HeaderProfil, HeaderRight, HeaderUserProfilMobile,
+    HistoryOrders,
+    ContentLeft, ContentRight, ContentRightNoCard, EditProfilContainer, Followers, Header,
+    HeaderLeft, HeaderMyorders, HeaderProfil, HeaderRight, HeaderUserProfilMobile,
     HeaderUserProfilMobileComponent, IconUserProfil, ImageProfil, ImageProfile, LineUserProfil,
-    MenuHeader, MenuList, MenuUserProfil, NameProfil, ProfilContainer,
+    MenuHeader, MenuList, MenuUserProfil, MyOrders, NameProfil, ProfilContainer,
     ProfilDesktop, StatusAccount, UpdateProfilContainer, UserProfileContainer,
-    UserProfileContainerMobile
+    UserProfileContainerMobile,
+    ListMenuOrder,
+    Menu,
+    IconUserProfileContainer
 } from 'components/UserProfile';
 
 import {
-    Content, HeaderSetting, MenuSetting, SettingAccountContainer, Title,
+    Content, HeaderSetting, HeaderSettingOrders, MenuSetting, SettingAccountContainer, Title,
     TItleMobile
 } from 'components/Profile/settingAccount';
 
 interface UserProfileLayoutProps {
     children: ReactNode;
-    mode?: 'profil' | 'address' | 'reset-password';
+    mode?: 'profil' | 'address' | 'reset-password' | 'my-orders';
 }
 
 // Simple responsive check for server-side + client
@@ -55,12 +59,32 @@ const menus = [
     {
         parent: 'Pesanan Saya',
         icon: '/icon/clipboard.svg',
+        url: '/user-profile/my-orders'
     },
     {
         parent: 'Notifikasi Saya',
         icon: '/icon/notifcation-menu.svg',
     },
 ];
+
+const menuOrders = [
+    {
+        name: 'Belum Bayar',
+        icon: '/icon/pay.svg'
+    },
+    {
+        name: 'Dikemas',
+        icon: '/icon/box.svg'
+    },
+    {
+        name: 'Dikirim',
+        icon: '/icon/truck.svg'
+    },
+    {
+        name: 'Beri Penilaian',
+        icon: '/icon/star.svg'
+    },
+]
 
 const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const [user, setUser] = useState<{ name?: string, image?: string } | null>(null);
@@ -115,7 +139,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <LineUserProfil />
             <MenuUserProfil>
                 {menus.map((m, i) => (
-                    <div key={i}>
+                    <div key={i} onClick={() => m?.url && router.push(m.url)}>
                         <Header>
                             <IconUserProfil src={m.icon} />
                             <span>{m.parent}</span>
@@ -187,6 +211,27 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     </ProfilContainer>
                 </HeaderProfil>
             </HeaderUserProfilMobile>
+            <MyOrders>
+                <HeaderMyorders>
+                    <p>Pesanan Saya</p>
+                    <HistoryOrders>
+                        Lihat Riwayat Pesanan
+                        <IconUserProfil src='/icon/arrow-right.svg' width={20} />
+                    </HistoryOrders>
+                </HeaderMyorders>
+                <ListMenuOrder>
+                    {
+                        menuOrders?.map((mo, index) => (
+                            <Menu key={index}>
+                                <IconUserProfileContainer onClick={() => router.push(`/user-profile/my-orders?menu=${mo?.name}`)}>
+                                    <IconUserProfil src={mo?.icon} width={25} />
+                                </IconUserProfileContainer>
+                                <p>{mo?.name}</p>
+                            </Menu>
+                        ))
+                    }
+                </ListMenuOrder>
+            </MyOrders>
         </HeaderUserProfilMobileComponent>
     );
 
@@ -229,7 +274,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const renderMobileSettingContent = () => (
         <SettingAccountContainer style={{ background: mode === 'reset-password' ? "#fff" : "#e5e5e5" }}>
             {
-                mode != "reset-password" && <HeaderSetting>
+                mode != "reset-password" && mode != "my-orders" && <HeaderSetting>
                     <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
                     {
                         !mode ? "Pengaturan Akun" : mode
@@ -239,12 +284,27 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     }
                 </HeaderSetting>
             }
+            {
+                mode === "my-orders" &&
+                <HeaderSettingOrders>
+                    <div className='left'>
+                        <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
+                        Pesanan Saya
+                    </div>
+                    <div className='right'>
+                        <IconUserProfil src='/icon/search-red.svg' />
+                        <IconUserProfil src='/icon/buble-chat.svg' />
+                    </div>
+                </HeaderSettingOrders>
+            }
             <Content>
                 {mode === 'address' ?
                     <TItleMobile>
                         Alamat
                     </TItleMobile> : ''}
-                <ContentRight>{children}</ContentRight>
+                {mode && mode === 'my-orders' ? <ContentRightNoCard>
+                    {children}
+                </ContentRightNoCard> : <ContentRight>{children}</ContentRight>}
             </Content>
         </SettingAccountContainer>
     );
@@ -254,7 +314,9 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <Home mode="user-profile" navbarOn={!navbarOff}>
                 <UserProfileContainer>
                     <ContentLeft>{renderDesktopSidebar()}</ContentLeft>
-                    {mode && <ContentRight>{children}</ContentRight>}
+                    {mode && mode === 'my-orders' ? <ContentRightNoCard>
+                        {children}
+                    </ContentRightNoCard> : <ContentRight>{children}</ContentRight>}
                 </UserProfileContainer>
             </Home>
 
