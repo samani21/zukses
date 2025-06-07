@@ -133,7 +133,7 @@ const ChangePassword = () => {
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.removeItem('typeOtp')
             localStorage.removeItem('timeOtp')
-            router.replace('/auth')
+            router.push('/auth')
             setLoading(false)
         } else {
             setError('Terjadi kesalahan saat mengganti password.');
@@ -142,7 +142,7 @@ const ChangePassword = () => {
     };
 
     const handleBack = () => {
-        router.replace('/auth/register');
+        router.push('/auth/register');
         localStorage.removeItem('token')
         localStorage.removeItem('user')
     }

@@ -101,7 +101,7 @@ const Login = () => {
             if (res?.data?.status === 'success') {
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
                 localStorage.setItem('token', res?.data?.token || '');
-                router.replace('/')
+                router.push('/')
                 setLoading(false)
             }
         } catch (err: unknown) {
@@ -168,7 +168,7 @@ const Login = () => {
                         </form>
 
                         <ForgetPassword>
-                            <p onClick={() => router.replace('/auth/reset')} style={{ cursor: "pointer" }}>
+                            <p onClick={() => router.push('/auth/reset')} style={{ cursor: "pointer" }}>
                                 Lupa Password
                             </p>
                         </ForgetPassword>
@@ -191,7 +191,7 @@ const Login = () => {
                         </AuthWith>
 
                         <TextFooter>
-                            Baru di Zukses? <span onClick={() => router.replace('/auth/register')}>Daftar</span>
+                            Baru di Zukses? <span onClick={() => router.push('/auth/register')}>Daftar</span>
                         </TextFooter>
                     </ContentCard>
                 </CardAuth>

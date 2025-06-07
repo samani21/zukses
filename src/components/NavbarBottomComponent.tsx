@@ -22,7 +22,7 @@ export const IconNavbarContainer = styled.div`
 `;
 
 export const IconNavbar = styled.img`
-    width: 30px;
+    width: 25px;
 `
 
 export const MenuWrapper = styled.div`
@@ -30,7 +30,22 @@ export const MenuWrapper = styled.div`
     align-content: center;
     cursor: pointer;
     font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    p{
+        display: none;
+    }
     &.active{
         color: var(--primary-color);
+        p{
+            display: inline;
+            
+        }
+        background: #ca264c27;
+        border-radius: 10px;
+        padding: 10px;
+        width: 50%;
     }
 `

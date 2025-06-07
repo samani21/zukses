@@ -82,7 +82,7 @@ const OtpPage: React.FC<Props> = ({
                 localStorage.setItem('user', JSON.stringify(res.data.data));
                 localStorage.setItem('token', res.data.token || '');
                 localStorage.removeItem('dataUser');
-                router.replace('/user-profile/profil');
+                router.push('/user-profile/profil');
             }
         } catch (err) {
             console.error('OTP verification failed:', err);
