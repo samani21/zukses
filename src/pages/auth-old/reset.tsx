@@ -109,7 +109,7 @@ const Reset = () => {
             };
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.setItem('typeOtp', "phone");
-            router.push('/auth/verification-reset-password');
+            router.push('/auth-old/verification-reset-password');
             setloading(false)
         }
     };
@@ -134,7 +134,7 @@ const Reset = () => {
             };
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.setItem('typeOtp', "email");
-            router.push('/auth/verification-reset-password');
+            router.push('/auth-old/verification-reset-password');
             setloading(false)
         }
     };
@@ -146,8 +146,8 @@ const Reset = () => {
                     <HeadCard style={{ justifyContent: 'left' }}>
                         {
                             nextReset ?
-                                <IconInModal src="/icon/arrow-left-line.svg" onClick={() => setNextReset(false)} /> :
-                                <IconInModal src="/icon/arrow-left-line.svg" onClick={() => router.push('/auth/login')} />
+                                <IconInModal src="/icon-old/arrow-left-line.svg" onClick={() => setNextReset(false)} /> :
+                                <IconInModal src="/icon-old/arrow-left-line.svg" onClick={() => router.push('/auth-old/login')} />
                         }
                         <TextHeaderCard>Reset Password</TextHeaderCard>
                     </HeadCard>
@@ -161,7 +161,7 @@ const Reset = () => {
                                     {isEmailValid && (
                                         <WrapperInput onClick={handleResendOTPMail}>
                                             <OptionReset>
-                                                <IconInModal src='/icon/mail.svg' />
+                                                <IconInModal src='/icon-old/mail.svg' />
                                                 Email ({maskEmail(user?.email)})
                                             </OptionReset>
                                         </WrapperInput>
@@ -170,7 +170,7 @@ const Reset = () => {
                                         user?.whatsapp ?
                                             <WrapperInput onClick={handleResendOTPPhone}>
                                                 <OptionReset>
-                                                    <IconInModal src='/icon/phone.svg' />
+                                                    <IconInModal src='/icon-old/phone.svg' />
                                                     No.Handphone ({maskPhone(user?.whatsapp || '')})
                                                 </OptionReset>
                                             </WrapperInput> : ""
@@ -181,7 +181,7 @@ const Reset = () => {
 
                                     {error &&
                                         <AlertLogin>
-                                            <IconInModal src='/icon/alert-error.svg' width={15} />
+                                            <IconInModal src='/icon-old/alert-error.svg' width={15} />
                                             {error}
                                         </AlertLogin>}
                                     <WrapperInput style={{ marginTop: '10px' }}>

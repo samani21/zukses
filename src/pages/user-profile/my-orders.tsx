@@ -79,8 +79,8 @@ const MyOrders = () => {
                 }
             </MenusContainer>
             <SearchContainer>
-                <IconOrders src='/icon/search-gray.svg' className='image-gray' />
-                <IconOrders src='/icon/search-black.svg' className='image-black' />
+                <IconOrders src='/icon-old/search-gray.svg' className='image-gray' />
+                <IconOrders src='/icon-old/search-black.svg' className='image-black' />
                 <InputSearch placeholder='Kamu bisa cari berdasarkan Nama Penjual, No. Pesanan atau Nama Produk' />
             </SearchContainer>
             <ListItemOrder>
@@ -93,19 +93,19 @@ const MyOrders = () => {
                                         {
                                             io?.status_market ?
                                                 io?.status_market == 'Mall' ?
-                                                    <IconOrders src='/icon/mall.svg' /> :
+                                                    <IconOrders src='/icon-old/mall.svg' /> :
                                                     <SatusMarket>
                                                         {io?.status_market}
                                                     </SatusMarket> :
-                                                <IconOrders src='/icon/market.svg' />
+                                                <IconOrders src='/icon-old/market.svg' />
                                         }
                                         <b>{io?.name_shop}</b>
                                         <ButtonChat>
-                                            <IconOrders src='/icon/entypo--chat.svg' width={20} />
+                                            <IconOrders src='/icon-old/entypo--chat.svg' width={20} />
                                             <span>Chat</span>
                                         </ButtonChat>
                                         <ButtonViewShop>
-                                            <IconOrders src='/icon/market.svg' width={20} />
+                                            <IconOrders src='/icon-old/market.svg' width={20} />
                                             <span>Kunjungi Toko</span>
                                         </ButtonViewShop>
                                     </HeaderLeft>

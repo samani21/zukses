@@ -15,7 +15,7 @@ const ModalMaps = ({ fullAddressStreet, lat, long, setLat, setLong, setOpenMaps 
     return (
         <ModalMapsContainer>
             <HeaderMaps>
-                <IconAddAddress src='/icon/arrow-left-gray.svg' onClick={() => setOpenMaps(false)} />
+                <IconAddAddress src='/icon-old/arrow-left-gray.svg' onClick={() => setOpenMaps(false)} />
                 <InfoMap>
                     <div className='title'>Ubah Lokasi</div>
                     <div className='subtitle'>{fullAddressStreet}</div>

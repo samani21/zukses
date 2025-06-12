@@ -97,7 +97,7 @@ const Verification = () => {
         if (res?.data?.status === 'success') {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
-            router.push('/auth/change-password');
+            router.push('/auth-old/change-password');
             setLoading(false);
         }
     }, [otp, user, router]);
@@ -114,7 +114,7 @@ const Verification = () => {
     }, []);
 
     const handleBack = () => {
-        router.push('/auth/login');
+        router.push('/auth-old/login');
         localStorage.removeItem('user')
         localStorage.removeItem('token')
     }
@@ -123,7 +123,7 @@ const Verification = () => {
             <CardContainer>
                 <CardAuth style={{ top: '220px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
-                        <IconInModal src="/icon/arrow-left-line.svg" onClick={handleBack} />
+                        <IconInModal src="/icon-old/arrow-left-line.svg" onClick={handleBack} />
                         <TextHeaderCard>Masukkan Kode OTP</TextHeaderCard>
                     </HeadCard>
                     <ContentCard>
@@ -131,7 +131,7 @@ const Verification = () => {
                             Kode OTP telah dikirim via WhatsApp ke
                         </TextContent>
                         <WhatsAppContainer>
-                            <IconInModal src="/icon/whatsapp.svg" />
+                            <IconInModal src="/icon-old/whatsapp.svg" />
                             <b>
                                 {user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}
                             </b>

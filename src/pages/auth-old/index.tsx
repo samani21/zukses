@@ -37,31 +37,31 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, mode }) => {
         const handleAuthRedirect = () => {
             if (userStr) {
                 if (userInfo?.is_active === 1) {
-                    redirectTo('/auth/change-password');
+                    redirectTo('/auth-old/change-password');
                 } else if (userInfo?.is_active === 0) {
                     if (mode === 'verification') {
-                        redirectTo('/auth/verification');
+                        redirectTo('/auth-old/verification');
                     } else {
-                        redirectTo('/auth/verification-reset-password');
+                        redirectTo('/auth-old/verification-reset-password');
                     }
                 } else {
                     if (token) {
                         redirectTo('/');
                     } else {
                         localStorage.removeItem('user');
-                        redirectTo('/auth/login');
+                        redirectTo('/auth-old/login');
                     }
                 }
             } else {
                 switch (mode) {
                     case 'login':
-                        redirectTo('/auth/login');
+                        redirectTo('/auth-old/login');
                         break;
                     case 'reset':
-                        redirectTo('/auth/reset');
+                        redirectTo('/auth-old/reset');
                         break;
                     default:
-                        redirectTo('/auth/register');
+                        redirectTo('/auth-old/register');
                         break;
                 }
             }

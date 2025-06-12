@@ -10,12 +10,12 @@ const Verify = ({ setOpen }: Props) => {
         <VerifyContainer>
             <div>
                 <IconResetPasswordContainer>
-                    <IconResetPasswrd src="/icon/protect-red.svg" width={150} />
+                    <IconResetPasswrd src="/icon-old/protect-red.svg" width={150} />
                 </IconResetPasswordContainer>
                 <p>Untuk keamanan akun, mohon verifikasi identitas kamu dengan salah satu cara di bawah ini.</p>
                 <IconResetPasswordContainer>
                     <ButtonVerify onClick={() => setOpen('Check Password')}>
-                        <IconResetPasswrd src="/icon/ep--lock.svg" /><span>Verifikasi dengan password</span>
+                        <IconResetPasswrd src="/icon-old/ep--lock.svg" /><span>Verifikasi dengan password</span>
                     </ButtonVerify>
                 </IconResetPasswordContainer>
             </div>

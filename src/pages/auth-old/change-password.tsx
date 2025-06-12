@@ -133,7 +133,7 @@ const ChangePassword = () => {
             localStorage.setItem('user', JSON.stringify(data));
             localStorage.removeItem('typeOtp')
             localStorage.removeItem('timeOtp')
-            router.push('/auth')
+            router.push('/auth-old')
             setLoading(false)
         } else {
             setError('Terjadi kesalahan saat mengganti password.');
@@ -142,7 +142,7 @@ const ChangePassword = () => {
     };
 
     const handleBack = () => {
-        router.push('/auth/register');
+        router.push('/auth-old/register');
         localStorage.removeItem('token')
         localStorage.removeItem('user')
     }
@@ -152,7 +152,7 @@ const ChangePassword = () => {
             <CardContainer>
                 <CardAuth style={{ top: '160px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
-                        <IconInModal src="/icon/arrow-left-line.svg" onClick={handleBack} />
+                        <IconInModal src="/icon-old/arrow-left-line.svg" onClick={handleBack} />
                         <TextHeaderCard>Atur Password Kamu</TextHeaderCard>
                     </HeadCard>
                     <ContentCard>
@@ -173,7 +173,7 @@ const ChangePassword = () => {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <IconPassword
-                                    src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'}
+                                    src={showPassword ? '/icon-old/eye.svg' : '/icon-old/eye-close.svg'}
                                     onClick={() => setShowPassword(!showPassword)}
                                 />
                             </WrapperInput>
@@ -183,10 +183,10 @@ const ChangePassword = () => {
                             )}
 
                             <AlertChangePassword>
-                                <ListAlert>Min. satu karakter huruf kecil {validations.hasLowercase && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
-                                <ListAlert>Min. satu karakter huruf besar {validations.hasUppercase && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
-                                <ListAlert>8-16 karakter {validations.hasLength && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
-                                <ListAlert>Hanya huruf, angka, dan tanda baca umum yang dapat digunakan {validations.hasValidChars && <IconInModal src='/icon/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>Min. satu karakter huruf kecil {validations.hasLowercase && <IconInModal src='/icon-old/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>Min. satu karakter huruf besar {validations.hasUppercase && <IconInModal src='/icon-old/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>8-16 karakter {validations.hasLength && <IconInModal src='/icon-old/circle-tick.svg' width={20} />}</ListAlert>
+                                <ListAlert>Hanya huruf, angka, dan tanda baca umum yang dapat digunakan {validations.hasValidChars && <IconInModal src='/icon-old/circle-tick.svg' width={20} />}</ListAlert>
                             </AlertChangePassword>
 
                             <ButtonAuth type='submit'>BERIKUTNYA</ButtonAuth>

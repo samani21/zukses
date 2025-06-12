@@ -261,7 +261,7 @@ function AddressPage() {
                         ))}
                     </ListAddressContainerMobile>
                     <AddAddressMobile onClick={() => setOpenModalAddAdress(true)}>
-                        <IconAddAddress src='/icon/add-red.svg' />
+                        <IconAddAddress src='/icon-old/add-red.svg' />
                         Tambah Alamat Baru
                     </AddAddressMobile>
                 </ContentAddress>

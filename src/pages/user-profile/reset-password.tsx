@@ -33,7 +33,7 @@ const ResetPassword = () => {
                         {open === 'Check Password' ? (
                             <HeaderResetPassword>
                                 <IconResetPasswrd
-                                    src='/icon/arrow-left-red.svg'
+                                    src='/icon-old/arrow-left-red.svg'
                                     style={{ position: "absolute", cursor: 'pointer' }}
                                     onClick={() => setOpen('')}
                                 />
@@ -42,7 +42,7 @@ const ResetPassword = () => {
                         ) : open === 'Change Password' ? (
                             <HeaderResetPassword style={{ paddingBottom: "20px", borderBottom: "1px solid #e5e5e5" }}>
                                 <IconResetPasswrd
-                                    src='/icon/arrow-left-red.svg'
+                                    src='/icon-old/arrow-left-red.svg'
                                     style={{ position: "absolute", cursor: 'pointer' }}
                                     onClick={() => setOpen('Check Password')}
                                 />
@@ -54,7 +54,7 @@ const ResetPassword = () => {
                         ) : open === 'OTP Password' ? (
                             <HeaderResetPassword>
                                 <IconResetPasswrd
-                                    src='/icon/arrow-left-red.svg'
+                                    src='/icon-old/arrow-left-red.svg'
                                     style={{ position: "absolute", cursor: 'pointer' }}
                                     onClick={() => setOpen('Change Password')}
                                 />
@@ -62,7 +62,7 @@ const ResetPassword = () => {
                             </HeaderResetPassword>
                         ) : <HeaderResetPassword>
                             <IconResetPasswrd
-                                src='/icon/arrow-left-red.svg'
+                                src='/icon-old/arrow-left-red.svg'
                                 style={{ position: "absolute", cursor: 'pointer' }}
                                 onClick={() => router.push('/user-profile')}
                             />

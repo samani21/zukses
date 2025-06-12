@@ -5,32 +5,32 @@ import { useRouter } from 'next/router';
 const listMenu = [
     {
         title: "Beranda",
-        icon: "/icon/home.svg",
-        icon_active: "/icon/home-active.svg",
+        icon: "/icon-old/home.svg",
+        icon_active: "/icon-old/home-active.svg",
         url: '/'
     },
     {
         title: "Trending",
-        icon: "/icon/trending.svg",
-        icon_active: "/icon/trending-active.svg",
+        icon: "/icon-old/trending.svg",
+        icon_active: "/icon-old/trending-active.svg",
         // url: '/trending'
     },
     {
         title: "Live & Video",
-        icon: "/icon/live.svg",
-        icon_active: "/icon/live-active.svg",
+        icon: "/icon-old/live.svg",
+        icon_active: "/icon-old/live-active.svg",
         // url: '/live'
     },
     {
         title: "Notifikasi",
-        icon: "/icon/notification.svg",
-        icon_active: "/icon/notification-active.svg",
+        icon: "/icon-old/notification.svg",
+        icon_active: "/icon-old/notification-active.svg",
         // url: '/notification'
     },
     {
         title: "Saya",
-        icon: "/icon/user-profile.svg",
-        icon_active: "/icon/profil-active.svg",
+        icon: "/icon-old/user-profile.svg",
+        icon_active: "/icon-old/profil-active.svg",
         url: '/user-profile'
     }
 ]

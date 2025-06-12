@@ -82,16 +82,16 @@ function ModalProtect({ setOpenModal, typeModal, user }: Props) {
             <ModalProtectContainer>
                 <Content>
                     <HeaderProtect>
-                        <IconModal src='/icon/arrow-left-red.svg' style={{ cursor: "pointer" }} onClick={() => setOpenModal(false)} />
+                        <IconModal src='/icon-old/arrow-left-red.svg' style={{ cursor: "pointer" }} onClick={() => setOpenModal(false)} />
                     </HeaderProtect>
                     <IconModalContainer>
-                        <IconModal src="/icon/protect-red.svg" width={100} alt="Proteksi" />
+                        <IconModal src="/icon-old/protect-red.svg" width={100} alt="Proteksi" />
                     </IconModalContainer>
                     <p>
                         Untuk keamanan akun, mohon verifikasi identitas kamu dengan salah satu cara di bawah ini.
                     </p>
                     <ButtonVerifikasi onClick={handleVerifikasi}>
-                        <IconModal src="/icon/link.svg" alt="Link Icon" />
+                        <IconModal src="/icon-old/link.svg" alt="Link Icon" />
                         <p>Verifikasi melalui link</p>
                     </ButtonVerifikasi>
                 </Content>

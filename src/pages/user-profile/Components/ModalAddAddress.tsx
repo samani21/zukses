@@ -195,7 +195,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         <ModalAdd>
             <HeaderModal>{isEdit ? 'Edit Alamat' : 'Alamat Baru'}</HeaderModal>
             <HeaderModalMobile>
-                <IconAddAddress src='/icon/arrow-left-red.svg' onClick={() => setOpenModalAddAdress(false)} />
+                <IconAddAddress src='/icon-old/arrow-left-red.svg' onClick={() => setOpenModalAddAdress(false)} />
                 {isEdit ? 'Edit Alamat' : 'Alamat Baru'}
             </HeaderModalMobile>
             <ContentInput>

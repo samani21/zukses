@@ -43,7 +43,7 @@ const useIsDesktop = () => {
 const menus = [
     {
         parent: 'Akun Saya',
-        icon: '/icon/fa--user-o.svg',
+        icon: '/icon-old/fa--user-o.svg',
         url: '/user-profile/profil',
         child: [
             { name: 'Profil', url: '/user-profile/profil' },
@@ -58,31 +58,31 @@ const menus = [
     },
     {
         parent: 'Pesanan Saya',
-        icon: '/icon/clipboard.svg',
+        icon: '/icon-old/clipboard.svg',
         url: '/user-profile/my-orders'
     },
     {
         parent: 'Notifikasi Saya',
-        icon: '/icon/notifcation-menu.svg',
+        icon: '/icon-old/notifcation-menu.svg',
     },
 ];
 
 const menuOrders = [
     {
         name: 'Belum Bayar',
-        icon: '/icon/pay.svg'
+        icon: '/icon-old/pay.svg'
     },
     {
         name: 'Dikemas',
-        icon: '/icon/box.svg'
+        icon: '/icon-old/box.svg'
     },
     {
         name: 'Dikirim',
-        icon: '/icon/truck.svg'
+        icon: '/icon-old/truck.svg'
     },
     {
         name: 'Beri Penilaian',
-        icon: '/icon/star.svg'
+        icon: '/icon-old/star.svg'
     },
 ]
 
@@ -97,7 +97,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
         const token = localStorage.getItem('token');
         if (!token) {
             localStorage.removeItem('user');
-            router.push('/auth/login');
+            router.push('/auth-old/login');
         } else {
             setUser(getUserInfo());
         }
@@ -116,7 +116,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        router.push('/auth/login');
+        router.push('/auth-old/login');
     }, [router]);
 
     const handleBack = useCallback(() => {
@@ -127,11 +127,11 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const renderDesktopSidebar = () => (
         <>
             <ProfilDesktop>
-                <ImageProfil src={user?.image || '/icon/user.svg'} />
+                <ImageProfil src={user?.image || '/icon-old/user.svg'} />
                 <div>
                     <b>{user?.name || 'Nama User'}</b>
                     <UpdateProfilContainer>
-                        <IconUserProfil src='/icon/bxs--pencil.svg' style={{ width: 15 }} />
+                        <IconUserProfil src='/icon-old/bxs--pencil.svg' style={{ width: 15 }} />
                         Ubah Profil
                     </UpdateProfilContainer>
                 </div>
@@ -158,7 +158,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     </div>
                 ))}
                 <Header onClick={handleLogout} style={{ marginLeft: "5px" }}>
-                    <IconUserProfil src="/icon/logout.svg" width={20} />
+                    <IconUserProfil src="/icon-old/logout.svg" width={20} />
                     <span>Logout</span>
                 </Header>
             </MenuUserProfil>
@@ -170,30 +170,30 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
             <HeaderUserProfilMobile>
                 <MenuHeader>
                     <HeaderLeft>
-                        <IconUserProfil src='/icon/market.svg' width={30} />
+                        <IconUserProfil src='/icon-old/market.svg' width={30} />
                         <p>Toko Saya</p>
-                        <IconUserProfil src='/icon/arrow-right.svg' />
+                        <IconUserProfil src='/icon-old/arrow-right.svg' />
                     </HeaderLeft>
                     <HeaderRight>
                         <IconUserProfil
-                            src='/icon/setting.svg'
+                            src='/icon-old/setting.svg'
                             onClick={() => {
                                 setOpenModalSetting(true);
                                 setNavbarOff(true);
                             }}
                         />
-                        <IconUserProfil src='/icon/bx--cart.svg' />
-                        <IconUserProfil src='/icon/chat.svg' />
+                        <IconUserProfil src='/icon-old/bx--cart.svg' />
+                        <IconUserProfil src='/icon-old/chat.svg' />
                     </HeaderRight>
                 </MenuHeader>
                 <HeaderProfil>
                     <div>
                         <ImageProfile
-                            src={user?.image || '/icon/user.svg'}
+                            src={user?.image || '/icon-old/user.svg'}
                             style={{ width: 80, borderRadius: '50%' }}
                         />
                         <EditProfilContainer>
-                            <IconUserProfil src='/icon/pen.svg' />
+                            <IconUserProfil src='/icon-old/pen.svg' />
                         </EditProfilContainer>
                     </div>
                     <ProfilContainer>
@@ -201,7 +201,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                             {user?.name}
                             <StatusAccount>
                                 Classic
-                                <IconUserProfil src='/icon/arrow-right-red.svg' />
+                                <IconUserProfil src='/icon-old/arrow-right-red.svg' />
                             </StatusAccount>
                         </NameProfil>
                         <Followers>
@@ -216,7 +216,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     <p>Pesanan Saya</p>
                     <HistoryOrders>
                         Lihat Riwayat Pesanan
-                        <IconUserProfil src='/icon/arrow-right.svg' width={20} />
+                        <IconUserProfil src='/icon-old/arrow-right.svg' width={20} />
                     </HistoryOrders>
                 </HeaderMyorders>
                 <ListMenuOrder>
@@ -238,7 +238,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const renderMobileSettingModal = () => (
         <SettingAccountContainer>
             <HeaderSetting>
-                <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={handleBack} />
+                <IconUserProfil src='/icon-old/arrow-left-red.svg' width={30} onClick={handleBack} />
                 Pengaturan Akun
             </HeaderSetting>
             <Content>
@@ -248,21 +248,21 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                     setNavbarOff(false);
                 }}>
                     Keamanan & Akun
-                    <IconUserProfil src='/icon/arrow-right.svg' />
+                    <IconUserProfil src='/icon-old/arrow-right.svg' />
                 </MenuSetting>
                 <MenuSetting onClick={() => {
                     router.push('/user-profile/address');
                     setNavbarOff(false);
                 }}>
                     Alamat Saya
-                    <IconUserProfil src='/icon/arrow-right.svg' />
+                    <IconUserProfil src='/icon-old/arrow-right.svg' />
                 </MenuSetting>
                 <MenuSetting onClick={() => {
                     router.push('/user-profile/reset-password');
                     setNavbarOff(false);
                 }}>
                     Reset Password
-                    <IconUserProfil src='/icon/arrow-right.svg' />
+                    <IconUserProfil src='/icon-old/arrow-right.svg' />
                 </MenuSetting>
                 <MenuSetting onClick={handleLogout}>
                     Logout
@@ -275,7 +275,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
         <SettingAccountContainer style={{ background: mode === 'reset-password' ? "#fff" : "#e5e5e5" }}>
             {
                 mode != "reset-password" && mode != "my-orders" && <HeaderSetting>
-                    <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
+                    <IconUserProfil src='/icon-old/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
                     {
                         !mode ? "Pengaturan Akun" : mode
                             .split(" ")
@@ -288,12 +288,12 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
                 mode === "my-orders" &&
                 <HeaderSettingOrders>
                     <div className='left'>
-                        <IconUserProfil src='/icon/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
+                        <IconUserProfil src='/icon-old/arrow-left-red.svg' width={30} onClick={() => router.push('/user-profile')} />
                         Pesanan Saya
                     </div>
                     <div className='right'>
-                        <IconUserProfil src='/icon/search-red.svg' />
-                        <IconUserProfil src='/icon/buble-chat.svg' />
+                        <IconUserProfil src='/icon-old/search-red.svg' />
+                        <IconUserProfil src='/icon-old/buble-chat.svg' />
                     </div>
                 </HeaderSettingOrders>
             }

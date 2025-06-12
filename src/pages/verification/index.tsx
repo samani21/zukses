@@ -107,7 +107,7 @@ const Verification: React.FC = () => {
         <VerificationContainer>
             <ContentVerification>
                 <IconVerificationContainer>
-                    <IconVerification src="/icon/information.svg" style={{ cursor: 'pointer' }} />
+                    <IconVerification src="/icon-old/information.svg" style={{ cursor: 'pointer' }} />
                 </IconVerificationContainer>
 
                 <Title>Seseorang mencoba mengubah {typeState}-mu.</Title>
@@ -123,11 +123,11 @@ const Verification: React.FC = () => {
                 {dataUser && (
                     <ButtonContainer>
                         <ButtonApprove onClick={handleApprove}>
-                            <IconButton src="/icon/check.svg" />
+                            <IconButton src="/icon-old/check.svg" />
                             Izinkan Perubahan
                         </ButtonApprove>
                         <ButtonReject>
-                            <IconButton src="/icon/reject.svg" />
+                            <IconButton src="/icon-old/reject.svg" />
                             Tolak Perubahan
                         </ButtonReject>
                     </ButtonContainer>

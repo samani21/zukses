@@ -320,7 +320,7 @@ export default function Profil() {
                     <WrapperImageProfil>
                         <ImageProfilContainer>
                             <ImageContainer>
-                                <Image src={imagePreview || '/icon/user-red.svg'} alt="Preview" />
+                                <Image src={imagePreview || '/icon-old/user-red.svg'} alt="Preview" />
                             </ImageContainer>
                             <LabelImageContainer>
                                 <LabelImage htmlFor="image-upload">Pilih Gambar</LabelImage>

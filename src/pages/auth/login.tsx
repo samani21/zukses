@@ -1,206 +1,106 @@
+'use client'
+import { ErrorMessage, Footer, IconAuth, IconHeader, Input, Terms, Wrapper } from 'components/layouts/auth'
 import {
-    AlertLogin,
-    AuthWith,
-    ButtonAuth,
-    CardAuth,
-    CardContainer,
-    ContentCard,
-    Facebook,
-    ForgetPassword,
-    Google,
-    HeadCard,
-    IconInModal,
-    IconPassword,
-    IconSocial,
-    InputAuth,
-    Line,
-    OrContainer,
-    Rectangle,
-    RightHeaderCard,
-    SwitchLogo,
-    TextFooter,
-    TextSwtichAuth,
-    TitleAuth,
-    WrapperInput,
-} from 'components/Auth'
+    Card,
+    TitleContainer,
+    Logo,
+    RootLogin,
+    DaftarLink,
+    InputHint,
+    HelpText,
+    ButtonNext,
+    Divider,
+    LoginOption,
+    InputGroup,
+    Header,
+} from 'components/layouts/Login'
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react'
+const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-import React, { useState } from 'react'
-import AuthLayout from '.'
-import Post from 'services/api/Post'
-import { RegisterResponse } from 'services/api/types'
-import { useRouter } from 'next/router'
-import { AxiosError } from 'axios'
-import Loading from 'components/Loading'
+const isValidPhone = (value: string) =>
+    /^(\+62|62|0)8[1-9][0-9]{6,9}$/.test(value);
 
 const Login = () => {
-    const [showPassword, setShowPassword] = useState<boolean>(false)
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [error, setError] = useState<string | null>(null)
+    const [input, setInput] = useState<string>("");
+    const [isValid, setIsValid] = useState<boolean>(false);
+    const [showError, setShowError] = useState<boolean>(false);
     const router = useRouter();
-    const [loading, setLoading] = useState<boolean>(false)
 
-    const formatToIndoPhoneRaw = (input: string): string => {
-        const phone = input.trim().replace(/\D/g, ''); // hanya angka
-        if (phone.startsWith('0')) {
-            return '62' + phone.slice(1);
-        } else if (phone.startsWith('62')) {
-            return phone;
-        } else if (phone.startsWith('+62')) {
-            return phone.slice(1); // hilangkan +
+    useEffect(() => {
+        const trimmed = input.trim();
+        if (trimmed === "") {
+            setIsValid(false);
+            setShowError(false);
+        } else if (isValidEmail(trimmed) || isValidPhone(trimmed)) {
+            setIsValid(true);
+            setShowError(false);
+        } else {
+            setIsValid(false);
+            setShowError(true);
         }
-        return '62' + phone;
-    };
+    }, [input]);
 
-    // Format tampilan input menjadi: (+62) 812 7887 9032
-    const formatPhoneForDisplay = (raw: string): string => {
-        let digits = raw.replace(/\D/g, '');
-
-        if (digits.startsWith('0')) {
-            digits = digits.slice(1);
-        } else if (digits.startsWith('62')) {
-            digits = digits.slice(2);
-        } else if (digits.startsWith('+62')) {
-            digits = digits.slice(3);
-        }
-
-        // Pisah: (812) 7887 9032
-        const part1 = digits.slice(0, 3);      // 812
-        const part2 = digits.slice(3, 7);      // 7887
-        const part3 = digits.slice(7, 11);     // 9032
-
-        let result = `(+62)`;
-        if (part1) result += ` ${part1}`;
-        if (part2) result += ` ${part2}`;
-        if (part3) result += ` ${part3}`;
-        return result;
-    };
-
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setError(null)
-
-        const isEmail = email.includes('@');
-        let rawToSend = email;
-
-        if (!isEmail) {
-            rawToSend = formatToIndoPhoneRaw(email);
-            const displayFormat = formatPhoneForDisplay(email);
-            setEmail(displayFormat); // Update tampilan input
-        }
-
-        try {
-            setLoading(true)
-            const formData = new FormData();
-            formData.append('email', rawToSend); // tetap kirim format 62xxxxxxxxxx
-            formData.append('password', password);
-
-            const res = await Post<RegisterResponse>('zukses', 'auth/login', formData);
-            console.log('res', res)
-
-            if (res?.data?.status === 'success') {
-                localStorage.setItem('user', JSON.stringify(res?.data?.data));
-                localStorage.setItem('token', res?.data?.token || '');
-                router.push('/')
-                setLoading(false)
-            }
-        } catch (err: unknown) {
-            const error = err as AxiosError<{ message?: string }>;
-
-            if (error.response?.status === 422) {
-                const errorMessage = error.response.data?.message || 'Data tidak valid';
-                console.log('error', errorMessage);
-                setError(errorMessage);
-            } else {
-                console.error('Unexpected error', error);
-            }
-            setLoading(false)
-        }
-    };
-
-
-    const handleLoginGoogle = () => {
-        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, '_blank')
-    }
     return (
-        <AuthLayout mode="login">
-            <CardContainer>
-                <CardAuth>
-                    <HeadCard>
-                        <TitleAuth>Log in</TitleAuth>
-                        <RightHeaderCard>
-                            <TextSwtichAuth>Log in dengan QR</TextSwtichAuth>
-                            <Rectangle />
-                            <SwitchLogo src='/icon/qr-code.svg' />
-                        </RightHeaderCard>
-                    </HeadCard>
-                    <ContentCard>
-                        <form onSubmit={handleLogin}>
-                            {error && (
-                                <AlertLogin>
-                                    <IconInModal src='/icon/alert-error.svg' width={15} />
-                                    {error}
-                                </AlertLogin>
-                            )}
+        <RootLogin>
+            <Logo
+                src="/logo/logo_header.png"
+                alt="Zukses Logo"
+            />
+            <Header>
+                <IconHeader src='/icon/arrow-left.svg' width={30} />
+                <IconHeader src='/icon/quest.svg' width={30} />
+            </Header>
+            <Card>
+                <TitleContainer>
+                    <div>Masuk ke Zukses</div>
+                    <DaftarLink onClick={() => router.push('/auth/register')}>Daftar</DaftarLink>
+                </TitleContainer>
 
-                            <WrapperInput style={{ marginTop: "0px" }}>
-                                <InputAuth
-                                    placeholder='No. Handphone/Username/Email'
-                                    value={email}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                                />
-                            </WrapperInput>
-                            <WrapperInput>
-                                <InputAuth
-                                    placeholder='Password'
-                                    type={showPassword ? 'text' : 'password'}
-                                    value={password}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                                />
-                                <IconPassword
-                                    src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'}
-                                    onClick={() => setShowPassword(!showPassword)}
-                                />
-                            </WrapperInput>
-                            <ButtonAuth type='submit'>
-                                LOG IN
-                            </ButtonAuth>
-                        </form>
+                <form>
+                    <InputGroup>
+                        <Wrapper className={showError ? 'error' : ''}>
+                            <Input
+                                type="text"
+                                placeholder="Nomor HP atau Email"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                            />
+                        </Wrapper>
+                        <InputHint>Contoh: 08123456789</InputHint>
+                    </InputGroup>
+                    {showError && (
+                        <ErrorMessage>
+                            Masukkan nomor HP atau email yang valid
+                        </ErrorMessage>
+                    )}
+                    <HelpText>Butuh bantuan?</HelpText>
 
-                        <ForgetPassword>
-                            <p onClick={() => router.push('/auth/reset')} style={{ cursor: "pointer" }}>
-                                Lupa Password
-                            </p>
-                        </ForgetPassword>
+                    <ButtonNext disabled={!isValid}>Selanjutnya</ButtonNext>
+                </form>
 
-                        <OrContainer>
-                            <Line />
-                            Atau
-                            <Line />
-                        </OrContainer>
+                <Divider>
+                    <span>atau masuk dengan</span>
+                </Divider>
+                <LoginOption>
+                    <IconAuth
+                        src="https://img.icons8.com/color/48/000000/google-logo.png"
+                        alt="Google"
+                    />
+                    <span>Google</span>
+                </LoginOption>
+                <Terms>
+                    Dengan masuk di sini, kamu menyetujui{" "}
+                    <a href="#">Syarat & Ketentuan</a> serta{" "}
+                    <a href="#">Kebijakan Privasi</a> Zukses.
+                </Terms>
+            </Card>
+            <Footer>
+                Sudah punya akun? <span onClick={() => router.push('/auth/register')}>Daftar Sekarang</span>
+            </Footer>
+        </RootLogin>
+    );
+};
 
-                        <AuthWith>
-                            <Facebook>
-                                <IconSocial src='/icon/facebook.svg' width={20} />
-                                Facebook
-                            </Facebook>
-                            <Google onClick={handleLoginGoogle}>
-                                <IconSocial src='/icon/google.svg' width={30} />
-                                Google
-                            </Google>
-                        </AuthWith>
-
-                        <TextFooter>
-                            Baru di Zukses? <span onClick={() => router.push('/auth/register')}>Daftar</span>
-                        </TextFooter>
-                    </ContentCard>
-                </CardAuth>
-            </CardContainer>
-            {
-                loading && <Loading />
-            }
-        </AuthLayout>
-    )
-}
-
-export default Login
+export default Login;

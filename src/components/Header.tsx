@@ -26,7 +26,7 @@ export default function Header() {
     }, [user]);
 
     const handleLogin = () => {
-        router.push('/auth/login')
+        router.push('/auth-old/login')
     }
 
 
@@ -39,7 +39,7 @@ export default function Header() {
                         <Wrapper>
                             <InputSearch />
                             <ButtonSearch>
-                                <IconHeader src='/icon/search.svg' style={{ width: "20px" }} />
+                                <IconHeader src='/icon-old/search.svg' style={{ width: "20px" }} />
                             </ButtonSearch>
                         </Wrapper>
                         {/* <ListHistorySearch>
@@ -51,13 +51,13 @@ export default function Header() {
                             <p>Mesin Rumah Low Wat</p>
                         </ListHistorySearch> */}
                     </SearchComponent>
-                    <IconHeader src='/icon/bx--cart.svg' style={{ width: "40px", marginTop: "10px" }} />
+                    <IconHeader src='/icon-old/bx--cart.svg' style={{ width: "40px", marginTop: "10px" }} />
                     {
                         login ? (
                             <Login onClick={handleLogin}>
                                 Log In
                             </Login>
-                        ) : <ImageUser src={user?.image ? user?.image : '/icon/user.svg'} style={{ width: "40px" }} onClick={() => router.push('/user-profile/profil')} />
+                        ) : <ImageUser src={user?.image ? user?.image : '/icon-old/user.svg'} style={{ width: "40px" }} onClick={() => router.push('/user-profile/profil')} />
                     }
                 </NavbarHeader>
             </HeaderComponent>

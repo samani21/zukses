@@ -34,7 +34,7 @@ const LoadingProtect = () => {
     return (
         <LoadingContainer>
             <ImageLoading src='/loading/tube-spinner.svg' />
-            <ImageLoadingProtect src='/icon/protect-red.svg' />
+            <ImageLoadingProtect src='/icon-old/protect-red.svg' />
             <Typograph>
                 Memverfikasi Akunmu...
             </Typograph>

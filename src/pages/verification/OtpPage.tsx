@@ -99,7 +99,7 @@ const OtpPage: React.FC<Props> = ({
                 <Content>
                     <HeaderContainer>
                         <IconBack
-                            src="/icon/arrow-left-red.svg"
+                            src="/icon-old/arrow-left-red.svg"
                             onClick={() => setOpenOTP(false)}
                         />
                         <Title>Masukkan Kode OTP</Title>

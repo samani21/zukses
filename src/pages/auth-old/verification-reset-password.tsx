@@ -130,7 +130,7 @@ const VerificationResetPassword = () => {
         if (res?.data?.status === 'success') {
             localStorage.setItem('user', JSON.stringify(res?.data?.data));
             localStorage.removeItem('timeOtp');
-            router.push('/auth/change-password')
+            router.push('/auth-old/change-password')
             setLoading(false)
         }
     }, [otp, user, router]);
@@ -147,7 +147,7 @@ const VerificationResetPassword = () => {
     }, []);
 
     const handleBack = () => {
-        router.push('/auth/reset');
+        router.push('/auth-old/reset');
         localStorage.removeItem('user')
     }
 
@@ -156,7 +156,7 @@ const VerificationResetPassword = () => {
             <CardContainer>
                 <CardAuth style={{ top: '220px' }}>
                     <HeadCard style={{ justifyContent: 'left' }}>
-                        <IconInModal src="/icon/arrow-left-line.svg" onClick={handleBack} />
+                        <IconInModal src="/icon-old/arrow-left-line.svg" onClick={handleBack} />
                         <TextHeaderCard>Masukkan Kode OTP</TextHeaderCard>
                     </HeadCard>
                     <ContentCard>
@@ -167,13 +167,13 @@ const VerificationResetPassword = () => {
                             {
                                 type === 'email' ?
                                     <>
-                                        <IconInModal src="/icon/mail.svg" />
+                                        <IconInModal src="/icon-old/mail.svg" />
                                         <b>
                                             {user?.email ? maskEmail(user.email) : '...'}
                                         </b>
                                     </> :
                                     <>
-                                        <IconInModal src="/icon/whatsapp.svg" />
+                                        <IconInModal src="/icon-old/whatsapp.svg" />
                                         <b>
                                             {user?.whatsapp ? formatPhoneNumber(user.whatsapp) : '...'}
                                         </b>

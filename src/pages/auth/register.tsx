@@ -1,170 +1,88 @@
+import { useState, useEffect } from "react";
 import {
-    AuthWith,
-    ButtonAuth,
-    CardAuth,
-    CardContainer,
-    ContentCard,
-    Google,
-    HeadCard,
-    IconPassword,
-    IconSocial,
-    InputAuth,
-    Line,
-    OrContainer,
-    WrapperInput,
-    TextFooter,
-    TitleAuth,
-    ModalAgreementContainer,
-} from 'components/Auth';
-import React, { useState } from 'react';
-import AuthLayout from '.';
-import ModalAgreement from './ModalAgreement';
-import Post from 'services/api/Post';
-import { UserData } from 'services/api/types';
-import Loading from 'components/Loading';
-import { useRouter } from 'next/router';
+    Title,
+    CenteredText,
+    StyledLink,
+    GoogleButton,
+    Divider,
+    Input,
+    ErrorMessage,
+    SubmitButton,
+    Terms,
+    Wrapper,
+    IconAuth,
+} from "components/layouts/auth";
+import AuthLayout from "pages/layouts/AuthLayout";
+import { useRouter } from "next/router";
 
-const Register = () => {
-    const [phone, setPhone] = useState('');
-    const [error, setError] = useState('');
-    const [modalAgreement, setModalAgreement] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [whatsapp, setWhatsapp] = useState<string>('');
-    const route = useRouter();
-    const normalizePhone = (input: string) => {
-        const digits = input.replace(/\D/g, '');
+// Helper functions for basic validation
+const isValidEmail = (value: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-        if (digits.startsWith('0')) return '62' + digits.slice(1);
-        if (digits.startsWith('8')) return '62' + digits;
-        if (digits.startsWith('62')) return digits;
-        return digits;
-    };
+const isValidPhone = (value: string) =>
+    /^(\+62|62|0)8[1-9][0-9]{6,9}$/.test(value); // basic Indonesian number check
 
-    const formatPhone = (digits: string) => {
-        const national = digits.startsWith('62') ? digits.slice(2) : digits;
-        return `(+62) ${national.slice(0, 3)} ${national.slice(3, 7)} ${national.slice(7, 11)}`;
-    };
-
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPhone(e.target.value);
-        if (error) setError('');
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const normalized = normalizePhone(phone);
-
-        if (normalized.length < 10 || normalized.length > 15) {
-            setError('Nomor telepon tidak valid. Harus antara 10–15 digit.');
-            return;
-        }
-
-        const formatted = formatPhone(normalized);
-        setWhatsapp(normalized);
-        setPhone(formatted);
-        setModalAgreement(true)
-    };
-
-
-    const handleRegister = async () => {
-        setLoading(true)
-        const formData = new FormData();
-        formData.append('whatsapp', whatsapp);
-        formData.append('password', "ZUKSES");
-        formData.append('email', whatsapp);
-        const res = await Post<RegisterResponse>('zukses', 'auth/register-with-whatsapp', formData);
-        if (res?.data?.status == 'success') {
-            localStorage.setItem('user', JSON.stringify(res?.data?.data)); // ubah objek jadi string
-            localStorage.setItem('token', res?.data?.token || ''); // pastikan string (fallback kalau undefined)
-            // Waktu sekarang dalam detik
-            const nowInSeconds = Math.floor(Date.now() / 1000);
-
-            // Tambah 2 menit (120 detik)
-            const twoMinutesLater = nowInSeconds + 60;
-
-            // Simpan ke localStorage
-            localStorage.setItem('timeOtp', twoMinutesLater.toString());
-            route.replace('/auth/verification')
-            setLoading(false);
+export default function Register() {
+    const [input, setInput] = useState("");
+    const [isValid, setIsValid] = useState(false);
+    const [showError, setShowError] = useState(false);
+    const router = useRouter();
+    useEffect(() => {
+        const trimmed = input.trim();
+        if (trimmed === "") {
+            setIsValid(false);
+            setShowError(false);
+        } else if (isValidEmail(trimmed) || isValidPhone(trimmed)) {
+            setIsValid(true);
+            setShowError(false);
         } else {
-            setLoading(false);
-
+            setIsValid(false);
+            setShowError(true);
         }
-    }
-
-
+    }, [input]);
     const handleLoginGoogle = () => {
-        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, '_blank')
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`, '_blank')
     }
     return (
-        <AuthLayout mode="register">
-            <CardContainer>
-                <CardAuth style={{ top: '220px' }}>
-                    <HeadCard>
-                        <TitleAuth>Daftar</TitleAuth>
-                    </HeadCard>
-                    <ContentCard>
-                        <AuthWith style={{ marginTop: '-20px' }}>
-                            <Google onClick={handleLoginGoogle}>
-                                <IconSocial src='/icon/google.svg' width={30} />
-                                Google
-                            </Google>
-                        </AuthWith>
-                        <OrContainer>
-                            <Line />
-                            Atau
-                            <Line />
-                        </OrContainer>
-                        <form onSubmit={handleSubmit}>
-                            <WrapperInput style={{ marginTop: '10px' }}>
-                                <InputAuth
-                                    placeholder='No. Telepon'
-                                    value={phone}
-                                    onChange={handlePhoneChange}
-                                    maxLength={25}
-                                    required
-                                />
-                                {phone.replace(/\D/g, '').length >= 10 && (
-                                    <IconPassword
-                                        src='/icon/circle-tick.svg'
-                                        style={{ cursor: 'not-allowed' }}
-                                    />
-                                )}
-                            </WrapperInput>
-                            {error && (
-                                <p style={{ color: 'red', fontSize: '0.9em', marginTop: '4px' }}>
-                                    {error}
-                                </p>
-                            )}
-                            <ButtonAuth type="submit">
-                                Daftar
-                            </ButtonAuth>
-                        </form>
-                        <TextFooter>
-                            Punya akun?{' '}
-                            <span onClick={() => route.replace('/auth/login')}>
-                                Log in
-                            </span>
-                        </TextFooter>
-                    </ContentCard>
-                </CardAuth>
-            </CardContainer>
-            <ModalAgreementContainer open={modalAgreement} onClick={() => setModalAgreement(false)}>
-                <ModalAgreement setModalAgreement={setModalAgreement} handleRegister={handleRegister} />
-            </ModalAgreementContainer>
-            {
-                loading && <Loading />
-            }
+        <AuthLayout>
+            <Title className="mobile">Daftar dan nikmatin <span>diskon s.d. Rp.30.000</span> di belanja pertamamu</Title>
+            <Title className="desktop">Daftar Sekarang</Title>
+
+            <CenteredText>
+                Sudah punya akun Zukses?{" "}
+                <StyledLink onClick={() => router.push('/auth/login')}>Masuk</StyledLink>
+            </CenteredText>
+
+            <form style={{ marginTop: "30px" }}>
+                <Wrapper className={showError ? 'error' : ''}>
+                    <IconAuth src='/icon/phone.svg' style={{ marginRight: "5px" }} />
+                    <Input
+                        type="text"
+                        placeholder="Contoh: 08123456789"
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                    />
+                </Wrapper>
+                {showError && (
+                    <ErrorMessage>
+                        Masukkan nomor HP atau email yang valid
+                    </ErrorMessage>
+                )}
+
+                <SubmitButton disabled={!isValid}>Daftar</SubmitButton>
+
+            </form>
+            <Divider><span>atau daftar dengan</span></Divider>
+            <GoogleButton onClick={handleLoginGoogle}>
+                <IconAuth src="/icon/google.svg" alt="Google" width="30" />
+                <p>Google</p>
+            </GoogleButton>
+
+            <Terms>
+                Dengan mendaftar, saya menyetujui{" "}
+                <a href="#">Syarat & Ketentuan</a> serta{" "}
+                <a href="#">Kebijakan Privasi Zukses</a>.
+            </Terms>
         </AuthLayout>
     );
-};
-
-export default Register;
-
-export interface RegisterResponse {
-    token: string;
-    data: UserData;
-    expires_in?: number;
-    token_type?: string;
-    [key: string]: unknown;
 }

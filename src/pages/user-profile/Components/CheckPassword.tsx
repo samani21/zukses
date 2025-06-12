@@ -64,7 +64,7 @@ const CheckPassword = ({ setOpen }: Props) => {
                 <form onSubmit={handleSubmit}>
                     {error && (
                         <AlertLogin>
-                            <IconInModal src='/icon/alert-error.svg' width={15} />
+                            <IconInModal src='/icon-old/alert-error.svg' width={15} />
                             {error}
                         </AlertLogin>
                     )}
@@ -77,7 +77,7 @@ const CheckPassword = ({ setOpen }: Props) => {
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                         />
                         <IconPassword
-                            src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'}
+                            src={showPassword ? '/icon-old/eye.svg' : '/icon-old/eye-close.svg'}
                             onClick={() => setShowPassword(!showPassword)}
                         />
                     </WrapperInput>

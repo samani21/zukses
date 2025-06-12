@@ -96,7 +96,7 @@ const ChangePassword = ({ setOpen, setInputPassword }: Props) => {
                 <ChangePasswordContent>
                     {error && (
                         <AlertLogin>
-                            <IconInModal src='/icon/alert-error.svg' width={15} />
+                            <IconInModal src='/icon-old/alert-error.svg' width={15} />
                             {error}
                         </AlertLogin>
                     )}
@@ -112,7 +112,7 @@ const ChangePassword = ({ setOpen, setInputPassword }: Props) => {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <IconPassword
-                                    src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'}
+                                    src={showPassword ? '/icon-old/eye.svg' : '/icon-old/eye-close.svg'}
                                     onClick={() => setShowPassword(!showPassword)}
                                 />
                             </WrapperInput>
@@ -130,7 +130,7 @@ const ChangePassword = ({ setOpen, setInputPassword }: Props) => {
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                 />
                                 <IconPassword
-                                    src={showPassword ? '/icon/eye.svg' : '/icon/eye-close.svg'}
+                                    src={showPassword ? '/icon-old/eye.svg' : '/icon-old/eye-close.svg'}
                                     onClick={() => setShowPassword(!showPassword)}
                                 />
                             </WrapperInput>

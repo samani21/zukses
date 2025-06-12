@@ -105,7 +105,7 @@ const ModalResponse = ({ setOpenModal, typeVerifikasi, user, setVerifikasi }: Pr
         <ModalProtectContainer>
             <HeaderModal>
                 <IconAbsolute
-                    src='/icon/arrow-left-red.svg'
+                    src='/icon-old/arrow-left-red.svg'
                     onClick={() => {
                         setOpenModal(false)
                         setVerifikasi(false)
@@ -120,9 +120,9 @@ const ModalResponse = ({ setOpenModal, typeVerifikasi, user, setVerifikasi }: Pr
                 <div>{maskedContact}</div>
                 <ImageModalContainer>
                     {typeVerifikasi === 'Email' ? (
-                        <IconModal src='/icon/send-mail.svg' width={100} />
+                        <IconModal src='/icon-old/send-mail.svg' width={100} />
                     ) : (
-                        <IconModal src='/icon/phone-chat.svg' width={100} />
+                        <IconModal src='/icon-old/phone-chat.svg' width={100} />
                     )}
                 </ImageModalContainer>
                 <ResendVerification>

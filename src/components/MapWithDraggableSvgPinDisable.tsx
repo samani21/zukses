@@ -47,7 +47,7 @@ const MapWithStaticPinAndDisable = ({ lat, lng, setOpenMaps }: MapWithStaticPinP
                 <Marker
                     position={position}
                     icon={{
-                        url: "/icon/pin-shadow.svg",
+                        url: "/icon-old/pin-shadow.svg",
                         scaledSize: new window.google.maps.Size(50, 20),
                         anchor: new window.google.maps.Point(25, 10),
                     }}
@@ -61,7 +61,7 @@ const MapWithStaticPinAndDisable = ({ lat, lng, setOpenMaps }: MapWithStaticPinP
                     position={position}
                     draggable={false}
                     icon={{
-                        url: "/icon/pin-maps.svg",
+                        url: "/icon-old/pin-maps.svg",
                         scaledSize: new window.google.maps.Size(40, 40),
                         anchor: new window.google.maps.Point(20, 40),
                     }}
