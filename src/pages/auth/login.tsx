@@ -1,5 +1,5 @@
 'use client'
-import { ErrorMessage, Footer, IconHeader, Input, Terms, Wrapper } from 'components/layouts/auth'
+import { ErrorMessage, Footer, IconAuth, IconHeader, Input, Terms, Wrapper } from 'components/layouts/auth'
 import {
     Card,
     TitleContainer,
@@ -16,11 +16,36 @@ import {
 } from 'components/layouts/Login'
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
+import Post from 'services/api/Post';
+import { Response } from 'services/api/types';
 const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const isValidPhone = (value: string) =>
     /^(\+62|62|0)8[1-9][0-9]{6,9}$/.test(value);
+// Convert local phone numbers to 628 format
+const formatPhoneNumberTo62 = (phone: string) => {
+    const trimmed = phone.trim();
+    if (trimmed.startsWith("+62")) return trimmed.replace("+", "");
+    if (trimmed.startsWith("62")) return trimmed;
+    if (trimmed.startsWith("0")) return "62" + trimmed.slice(1);
+    return trimmed;
+};
+
+type PayloadType = 'email' | 'whatsapp' | 'unknown';
+
+
+function getPayloadType(input: string): PayloadType {
+    const trimmedInput = input.trim();
+
+    if (trimmedInput.includes('@') && /\S+@\S+\.\S+/.test(trimmedInput)) {
+        return 'email';
+    } else if (/^\d+$/.test(trimmedInput)) {
+        return 'whatsapp';
+    }
+
+    return 'unknown';
+}
 
 const Login = () => {
     const [input, setInput] = useState<string>("");
@@ -41,6 +66,36 @@ const Login = () => {
             setShowError(true);
         }
     }, [input]);
+    const handleLoginGoogle = () => {
+        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`, '_blank')
+    }
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!isValid) return;
+
+        try {
+            const trimmed = input.trim();
+            const isPhone = isValidPhone(trimmed);
+            const payload = isPhone ? formatPhoneNumberTo62(trimmed) : trimmed;
+
+            const type = getPayloadType(payload);
+            const formData = new FormData();
+            formData.append('email_whatsapp', payload);
+            formData.append('type', type);
+
+            const res = await Post<Response>('zukses', 'auth/login-otp', formData);
+
+            if (res?.data?.status === 'success') {
+                router.push(`/auth/verification-account?${type}=${payload}&type=${type}&user_id=${res?.data?.data}`);
+            } else {
+                setShowError(true);
+            }
+        } catch (err) {
+            console.error("Error submitting:", err);
+            setShowError(true);
+        }
+    };
 
     return (
         <RootLogin>
@@ -49,7 +104,7 @@ const Login = () => {
                 alt="Zukses Logo"
             />
             <Header>
-                <IconHeader src='/icon/arrow-left.svg' width={30} />
+                <IconHeader src='/icon/arrow-left.svg' width={30} onClick={() => router.push('/')} />
                 <IconHeader src='/icon/quest.svg' width={30} />
             </Header>
             <Card>
@@ -58,7 +113,7 @@ const Login = () => {
                     <DaftarLink onClick={() => router.push('/auth/register')}>Daftar</DaftarLink>
                 </TitleContainer>
 
-                <form>
+                <form onSubmit={handleSubmit}>
                     <InputGroup>
                         <Wrapper className={showError ? 'error' : ''}>
                             <Input
@@ -83,8 +138,8 @@ const Login = () => {
                 <Divider>
                     <span>atau masuk dengan</span>
                 </Divider>
-                <LoginOption>
-                    <img
+                <LoginOption onClick={handleLoginGoogle}>
+                    <IconAuth
                         src="https://img.icons8.com/color/48/000000/google-logo.png"
                         alt="Google"
                     />

@@ -234,6 +234,16 @@ export const Terms = styled.p`
       color: ${theme?.colors?.primaryDark};
     }
   }
+  span {
+    color: ${theme?.colors?.primary};
+    text-decoration: none;
+    font-weight: bold;
+    transition: ${theme?.transition};
+
+    &:hover {
+      color: ${theme?.colors?.primaryDark};
+    }
+  }
 `;
 
 
@@ -253,8 +263,9 @@ export const RootMobile = styled.div`
 export const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  padding-left: 10px;
-  padding-top: 10px;
+  padding-left: 20px;
+  padding-top: 20px;
+  
 `
 
 export const IconHeader = styled.img`
@@ -289,5 +300,18 @@ export const Footer = styled.div`
 
 export const ContentMobile = styled.div`
   padding: 20px;
-`
+`;
 
+export const VerificationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;
+
+export const IconAuthContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+`

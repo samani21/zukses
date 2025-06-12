@@ -80,7 +80,7 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
                     <Marker
                         position={tempMarkerPos}
                         icon={{
-                            url: "/icon/pin-shadow.svg",
+                            url: "/icon-old/pin-shadow.svg",
                             scaledSize: new window.google.maps.Size(50, 20),
                             anchor: new window.google.maps.Point(25, 10),
                         }}
@@ -96,7 +96,7 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
                     onDragStart={onDragStart}
                     onDragEnd={onDragEnd}
                     icon={{
-                        url: "/icon/pin-maps.svg",
+                        url: "/icon-old/pin-maps.svg",
                         scaledSize: new window.google.maps.Size(40, 40),
                         anchor: new window.google.maps.Point(20, 40),
                     }}

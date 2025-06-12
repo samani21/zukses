@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 interface HomeLayoutProps {
   children: ReactNode;
@@ -8,6 +9,7 @@ interface HomeLayoutProps {
 }
 
 const Home: React.FC<HomeLayoutProps> = () => {
+  const router = useRouter();
   return (
     <>
       <Head>
@@ -15,7 +17,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
         <meta name="description" content="Deskripsi singkat situs kamu" />
       </Head>
 
-      Home
+      <p style={{ cursor: "pointer" }} onClick={() => router.push('/auth/login')}>Login</p>
     </>
   );
 };
