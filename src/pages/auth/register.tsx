@@ -17,6 +17,7 @@ import Post from "services/api/Post";
 import { AxiosError } from "axios";
 import { Modal } from "components/Modal";
 import Loading from "components/Loading";
+import { LoginOption } from "components/layouts/Login";
 
 // Validation helpers
 const isValidEmail = (value: string) =>
@@ -213,10 +214,13 @@ export default function Register() {
             </form>
 
             <Divider><span>atau daftar dengan</span></Divider>
-            <GoogleButton onClick={handleLoginGoogle}>
-                <IconAuth src="/icon/google.svg" alt="Google" width="30" />
-                <p>Google</p>
-            </GoogleButton>
+            <LoginOption onClick={handleLoginGoogle}>
+                <IconAuth
+                    src="https://img.icons8.com/color/48/000000/google-logo.png"
+                    alt="Google"
+                />
+                <span>Google</span>
+            </LoginOption>
 
             <Terms>
                 Dengan mendaftar, saya menyetujui{" "}
