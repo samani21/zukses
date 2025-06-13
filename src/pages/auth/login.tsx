@@ -15,6 +15,7 @@ import {
     InputGroup,
     Header,
 } from 'components/layouts/Login'
+import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
@@ -54,10 +55,13 @@ const Login = () => {
     const [typeLogin, setTypeLogin] = useState<string>("");
     const [isValid, setIsValid] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalType, setModalType] = useState<'exists' | 'not-found' | null>(null);
-
+    const { register } = router.query as {
+        register?: string;
+    };
     useEffect(() => {
         const trimmed = input.trim();
         if (trimmed === "") {
@@ -71,8 +75,11 @@ const Login = () => {
             setShowError(true);
         }
     }, [input]);
+    useEffect(() => {
+        setInput(register ?? '')
+    }, [register]);
     const handleLoginGoogle = () => {
-        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`, '_blank')
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -80,6 +87,7 @@ const Login = () => {
         if (!isValid) return;
 
         try {
+            setLoading(true)
             const trimmed = input.trim();
             const isPhone = isValidPhone(trimmed);
             const payload = isPhone ? formatPhoneNumberTo62(trimmed) : trimmed;
@@ -93,8 +101,10 @@ const Login = () => {
             const res = await Post<Response>('zukses', 'auth/login-otp', formData);
             console.log('res', res)
             if (res?.data?.status === 'success') {
+                setLoading(false)
                 router.push(`/auth/verification-account?${type}=${payload}&type=${type}&user_id=${res?.data?.data}`);
             } else {
+                setLoading(false)
                 setShowError(true);
             }
         } catch (error) {
@@ -106,20 +116,15 @@ const Login = () => {
                 console.warn("Validasi gagal:", msg);
                 setModalType('not-found');
                 setIsModalOpen(true);
+                setLoading(false)
                 // Bisa simpan pesan error ke state jika perlu
                 // setErrorMessage(msg);
             } else {
                 console.error("Terjadi kesalahan lain:", err);
                 setShowError(true);
+                setLoading(false)
             }
         }
-        // // Simulasi pengecekan ke backend
-        // if (input.toLowerCase() === FAKE_REGISTERED_EMAIL) {
-        //     setModalType('exists'); // Atur tipe modal jika akun ditemukan
-        // } else {
-        //     setModalType('not-found'); // Atur tipe modal jika akun tidak ditemukan
-        // }
-        // setIsModalOpen(true); // Buka modal
     };
 
     const closeModal = () => {
@@ -137,7 +142,7 @@ const Login = () => {
                 Akun belum terdaftar. Apakah Anda ingin membuat akun baru dengan {typeLogin === 'email' ? 'email' : 'whatsapp'} ini?
             </p>
             <div className="space-y-3">
-                <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors" onClick={() => router.push(`/auth/register?input=${input}`)}>
+                <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer" onClick={() => router.push(`/auth/register?login=${input}`)}>
                     Ya, Daftar Sekarang
                 </button>
                 <button
@@ -217,6 +222,9 @@ const Login = () => {
                 {/* Render konten modal berdasarkan state `modalType` */}
                 {modalType === 'not-found' && <AccountNotFoundModalContent />}
             </Modal>
+            {
+                loading && <Loading />
+            }
         </RootLogin>
     );
 };

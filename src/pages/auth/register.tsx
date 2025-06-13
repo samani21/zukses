@@ -16,6 +16,9 @@ import AuthLayout from "pages/layouts/AuthLayout";
 import { useRouter } from "next/router";
 import { Response } from "services/api/types";
 import Post from "services/api/Post";
+import { AxiosError } from "axios";
+import { Modal } from "components/Modal";
+import Loading from "components/Loading";
 
 // Validation helpers
 const isValidEmail = (value: string) =>
@@ -50,26 +53,39 @@ function getPayloadType(input: string): PayloadType {
 
 export default function Register() {
     const [input, setInput] = useState("");
-    const [isValid, setIsValid] = useState(false);
-    const [showError, setShowError] = useState(false);
+    const [name, setName] = useState("");
+    const [isValid, setIsValid] = useState<boolean>(false);
+    const [showError, setShowError] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [typeLogin, setTypeLogin] = useState<string>("");
     const router = useRouter();
-
+    const { login } = router.query as {
+        login?: string;
+    };
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<'exists' | 'not-found' | null>(null);
     useEffect(() => {
         const trimmed = input.trim();
-        if (!trimmed) {
+        if (!trimmed || !name.trim()) {
             setIsValid(false);
             setShowError(false);
-        } else if (isValidEmail(trimmed) || isValidPhone(trimmed)) {
+        } else if ((isValidEmail(trimmed) || isValidPhone(trimmed)) && name.trim().length > 1) {
             setIsValid(true);
             setShowError(false);
         } else {
             setIsValid(false);
             setShowError(true);
         }
-    }, [input]);
+    }, [input, name]);
+
+    useEffect(() => {
+        if (login) {
+            setInput(login);
+        }
+    }, [login]);
 
     const handleLoginGoogle = () => {
-        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`, '_blank');
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -77,27 +93,67 @@ export default function Register() {
         if (!isValid) return;
 
         try {
+            setLoading(true)
             const trimmed = input.trim();
             const isPhone = isValidPhone(trimmed);
             const payload = isPhone ? formatPhoneNumberTo62(trimmed) : trimmed;
 
             const type = getPayloadType(payload);
+            setTypeLogin(type);
             const formData = new FormData();
             formData.append('email_whatsapp', payload);
+            formData.append('name', name);
             formData.append('type', type);
 
-            const res = await Post<Response>('zukses', 'auth/login-otp', formData);
+            const res = await Post<Response>('zukses', 'auth/register', formData);
 
             if (res?.data?.status === 'success') {
                 router.push(`/auth/verification-account?${type}=${payload}&type=${type}&user_id=${res?.data?.data}`);
             } else {
                 setShowError(true);
+                setLoading(false)
             }
-        } catch (err) {
-            console.error("Error submitting:", err);
-            setShowError(true);
+        } catch (error) {
+            // Tangani error 422 secara spesifik
+            const err = error as AxiosError<Response>;
+            console.log('res', err)
+            if (err?.response?.status === 422) {
+                const msg = err.response?.data?.message || 'Data tidak valid.';
+                console.warn("Validasi gagal:", msg);
+                setModalType('exists');
+                setIsModalOpen(true);
+                // Bisa simpan pesan error ke state jika perlu
+                // setErrorMessage(msg);
+                setLoading(false)
+            } else {
+                console.error("Terjadi kesalahan lain:", err);
+                setShowError(true);
+                setLoading(false)
+            }
         }
     };
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setTimeout(() => setModalType(null), 300);
+    }
+    const AccountExistsModalContent = () => (
+        <div>
+            <p className="mb-6">
+                Akun sudah terdaftar. Apakah Anda ingin login akun dengan {typeLogin === 'email' ? 'email' : 'whatsapp'} ini?
+            </p>
+            <div className="space-y-3">
+                <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer" onClick={() => router.push(`/auth/login?register=${input}`)}>
+                    Ya, Login Sekarang
+                </button>
+                <button
+                    onClick={closeModal}
+                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                    Batal
+                </button>
+            </div>
+        </div>
+    );
+
 
     return (
         <AuthLayout>
@@ -113,6 +169,16 @@ export default function Register() {
 
             <form style={{ marginTop: "30px" }} onSubmit={handleSubmit}>
                 <Wrapper className={showError ? 'error' : ''}>
+                    <IconAuth src='/icon/user.svg' style={{ marginRight: "5px" }} />
+                    <Input
+                        type="text"
+                        placeholder="Nama User"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </Wrapper>
+
+                <Wrapper className={showError ? 'error' : ''}>
                     <IconAuth src='/icon/phone.svg' style={{ marginRight: "5px" }} />
                     <Input
                         type="text"
@@ -123,10 +189,9 @@ export default function Register() {
                 </Wrapper>
                 {showError && (
                     <ErrorMessage>
-                        Masukkan nomor HP atau email yang valid
+                        Masukkan nama dan nomor HP atau email yang valid
                     </ErrorMessage>
                 )}
-
                 <SubmitButton disabled={!isValid}>Daftar</SubmitButton>
             </form>
 
@@ -141,6 +206,16 @@ export default function Register() {
                 <a href="#">Syarat & Ketentuan</a> serta{" "}
                 <a href="#">Kebijakan Privasi Zukses</a>.
             </Terms>
+            <Modal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                title={'Akun Ditemukan'}
+            >
+                {modalType === 'exists' && <AccountExistsModalContent />}
+            </Modal>
+            {
+                loading && <Loading />
+            }
         </AuthLayout>
     );
 }
