@@ -153,7 +153,7 @@ const Login = () => {
             </CenteredText>
 
             <form onSubmit={handleSubmit}>
-                <div className="relative mt-8">
+                <div className="relative mt-4">
                     <input
                         id="phoneOrEmail" // Tambahkan ID ini agar label bisa mengaktifkan input saat diklik
                         type="text"

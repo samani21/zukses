@@ -166,7 +166,7 @@ export default function Register() {
             </CenteredText>
 
             <form style={{ marginTop: "30px" }} onSubmit={handleSubmit}>
-                <div className="relative mt-8">
+                <div className="relative mt-4">
                     <input
                         id="name" // Tambahkan ID ini agar label bisa mengaktifkan input saat diklik
                         type="text"
@@ -182,7 +182,7 @@ export default function Register() {
                         Nama User
                     </label>
                 </div>
-                <div className="relative mt-8 mb-8">
+                <div className="relative mt-4 ">
                     <input
                         id="phoneOrEmail"
                         type="text"
@@ -192,17 +192,18 @@ export default function Register() {
                         className={`block w-full px-3 py-3 text-gray-900 bg-transparent border rounded-lg appearance-none focus:outline-none focus:ring-2 peer ${showError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
                             }`}
                     />
-
                     <label
                         htmlFor="phoneOrEmail"
                         className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2
                         ${showError ? 'text-red-500' : 'text-gray-500 peer-focus:text-blue-600'}
                         peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1`}
                     >
-                        Contoh: 08123456789
+                        Nomor HP atau E-mail
                     </label>
-
                 </div>
+                <p className="text-xs text-gray-500 mt-2 ml-1 mb-2">
+                    Contoh: 08123456789
+                </p>
                 {showError && (
                     <ErrorMessage>
                         Masukkan nama dan nomor HP atau email yang valid
