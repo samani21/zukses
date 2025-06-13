@@ -1,23 +1,11 @@
 'use client'
 import { AxiosError } from 'axios';
-import { ErrorMessage, Footer, IconAuth, IconHeader, Input, Terms, Wrapper } from 'components/layouts/auth'
-import {
-    Card,
-    TitleContainer,
-    Logo,
-    RootLogin,
-    DaftarLink,
-    InputHint,
-    HelpText,
-    ButtonNext,
-    Divider,
-    LoginOption,
-    InputGroup,
-    Header,
-} from 'components/layouts/Login'
+import { CenteredText, Divider, ErrorMessage, IconAuth, StyledLink, Terms, Title } from 'components/layouts/auth'
+import { ButtonNext, HelpText, LoginOption } from 'components/layouts/Login';
 import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
 import { useRouter } from 'next/router';
+import AuthLayout from 'pages/layouts/AuthLayout';
 import React, { useEffect, useState } from 'react'
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
@@ -147,7 +135,7 @@ const Login = () => {
                 </button>
                 <button
                     onClick={closeModal}
-                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
                     Batal
                 </button>
             </div>
@@ -156,63 +144,63 @@ const Login = () => {
 
 
     return (
-        <RootLogin>
-            <Logo
-                src="/logo/Logo_Header.png"
-                alt="Zukses Logo"
-            />
-            <Header>
-                <IconHeader src='/icon/arrow-left.svg' width={30} onClick={() => router.push('/')} />
-                <IconHeader src='/icon/quest.svg' width={30} />
-            </Header>
-            <Card>
-                <TitleContainer>
-                    <div>Masuk ke Zukses</div>
-                    <DaftarLink onClick={() => router.push('/auth/register')}>Daftar</DaftarLink>
-                </TitleContainer>
+        <AuthLayout>
+            <Title>Login</Title>
 
-                <form onSubmit={handleSubmit}>
-                    <InputGroup>
-                        <Wrapper className={showError ? 'error' : ''}>
-                            <Input
-                                type="text"
-                                placeholder="Nomor HP atau Email"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                            />
-                        </Wrapper>
-                        <InputHint>Contoh: 08123456789</InputHint>
-                    </InputGroup>
-                    {showError && (
-                        <ErrorMessage>
-                            Masukkan nomor HP atau email yang valid
-                        </ErrorMessage>
-                    )}
-                    <HelpText>Butuh bantuan?</HelpText>
+            <CenteredText>
+                Belum punya akun Zukses?{" "}
+                <StyledLink onClick={() => router.push('/auth/register')}>Daftar</StyledLink>
+            </CenteredText>
 
-                    <ButtonNext disabled={!isValid}>Selanjutnya</ButtonNext>
-                </form>
-
-                <Divider>
-                    <span>atau masuk dengan</span>
-                </Divider>
-                <LoginOption onClick={handleLoginGoogle}>
-                    <IconAuth
-                        src="https://img.icons8.com/color/48/000000/google-logo.png"
-                        alt="Google"
+            <form onSubmit={handleSubmit}>
+                <div className="relative mt-8">
+                    <input
+                        id="phoneOrEmail" // Tambahkan ID ini agar label bisa mengaktifkan input saat diklik
+                        type="text"
+                        placeholder=""
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        className={`block w-full px-3 py-3 text-gray-900 bg-transparent border rounded-lg appearance-none focus:outline-none focus:ring-2 peer ${showError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                            }`}
                     />
-                    <span>Google</span>
-                </LoginOption>
-                <Terms>
-                    Dengan masuk di sini, kamu menyetujui{" "}
-                    <a href="#">Syarat & Ketentuan</a> serta{" "}
-                    <a href="#">Kebijakan Privasi</a> Zukses.
-                </Terms>
-            </Card>
-            <Footer>
-                Sudah punya akun? <span onClick={() => router.push('/auth/register')}>Daftar Sekarang</span>
-            </Footer>
+                    <label
+                        htmlFor="phoneOrEmail"
+                        className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2
+                        ${showError ? 'text-red-500' : 'text-gray-500 peer-focus:text-blue-600'}
+                        peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1`}
+                    >
+                        Nomor HP atau E-mail
+                    </label>
+                </div>
 
+                <p className="text-xs text-gray-500 mt-2 ml-1">
+                    Contoh: 08123456789
+                </p>
+
+                {showError && (
+                    <ErrorMessage>
+                        Masukkan nomor HP atau email yang valid
+                    </ErrorMessage>
+                )}
+                <HelpText>Butuh bantuan?</HelpText>
+
+                <ButtonNext disabled={!isValid}>Selanjutnya</ButtonNext>
+            </form>
+            <Divider>
+                <span>atau masuk dengan</span>
+            </Divider>
+            <LoginOption onClick={handleLoginGoogle}>
+                <IconAuth
+                    src="https://img.icons8.com/color/48/000000/google-logo.png"
+                    alt="Google"
+                />
+                <span>Google</span>
+            </LoginOption>
+            <Terms>
+                Dengan masuk di sini, kamu menyetujui{" "}
+                <a href="#">Syarat & Ketentuan</a> serta{" "}
+                <a href="#">Kebijakan Privasi</a> Zukses.
+            </Terms>
             {/* Implementasi Komponen Modal dengan Konten Dinamis */}
             <Modal
                 isOpen={isModalOpen}
@@ -225,7 +213,7 @@ const Login = () => {
             {
                 loading && <Loading />
             }
-        </RootLogin>
+        </AuthLayout>
     );
 };
 

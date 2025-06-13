@@ -13,8 +13,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     const mode = path.includes('verification-account')
         ? 'verification-account'
         : path.includes('register')
-            ? 'register'
-            : 'unknown';
+            ? 'register' : path.includes('login')
+                ? 'login'
+                : 'unknown';
 
     return (
         <>
@@ -35,7 +36,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </Root>
             <RootMobile style={{ backgroundImage: mode === 'verification-account' ? 'none' : '' }}>
                 {
-                    mode === 'register' && <Header>
+                    mode != 'verification-account' && <Header>
                         <IconHeader src='/icon/arrow-left.svg' width={30} onClick={() => router.push('/')} />
                     </Header>
                 }
@@ -43,9 +44,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                     {children}
                 </ContentMobile>
                 {
-                    mode === 'register' && <Footer>
+                    mode === 'register' ? <Footer>
                         Sudah punya akun? <span onClick={() => router.push('/auth/login')}>Masuk</span>
-                    </Footer>
+                    </Footer> :
+                        mode === 'login' ? <Footer>
+                            Sudah punya akun? <span onClick={() => router.push('/auth/register')}>Daftar Sekarang</span>
+                        </Footer> : ''
                 }
 
             </RootMobile>

@@ -5,11 +5,9 @@ import {
     StyledLink,
     GoogleButton,
     Divider,
-    Input,
     ErrorMessage,
     SubmitButton,
     Terms,
-    Wrapper,
     IconAuth,
 } from "components/layouts/auth";
 import AuthLayout from "pages/layouts/AuthLayout";
@@ -147,7 +145,7 @@ export default function Register() {
                 </button>
                 <button
                     onClick={closeModal}
-                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
                     Batal
                 </button>
             </div>
@@ -168,25 +166,43 @@ export default function Register() {
             </CenteredText>
 
             <form style={{ marginTop: "30px" }} onSubmit={handleSubmit}>
-                <Wrapper className={showError ? 'error' : ''}>
-                    <IconAuth src='/icon/user.svg' style={{ marginRight: "5px" }} />
-                    <Input
+                <div className="relative mt-8">
+                    <input
+                        id="name" // Tambahkan ID ini agar label bisa mengaktifkan input saat diklik
                         type="text"
-                        placeholder="Nama User"
+                        placeholder=""
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        className="block w-full px-3 py-3 text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 peer"
                     />
-                </Wrapper>
-
-                <Wrapper className={showError ? 'error' : ''}>
-                    <IconAuth src='/icon/phone.svg' style={{ marginRight: "5px" }} />
-                    <Input
+                    <label
+                        htmlFor="name"
+                        className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+                    >
+                        Nama User
+                    </label>
+                </div>
+                <div className="relative mt-8 mb-8">
+                    <input
+                        id="phoneOrEmail"
                         type="text"
-                        placeholder="Contoh: 08123456789"
+                        placeholder=""
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
+                        className={`block w-full px-3 py-3 text-gray-900 bg-transparent border rounded-lg appearance-none focus:outline-none focus:ring-2 peer ${showError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                            }`}
                     />
-                </Wrapper>
+
+                    <label
+                        htmlFor="phoneOrEmail"
+                        className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2
+                        ${showError ? 'text-red-500' : 'text-gray-500 peer-focus:text-blue-600'}
+                        peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1`}
+                    >
+                        Contoh: 08123456789
+                    </label>
+
+                </div>
                 {showError && (
                     <ErrorMessage>
                         Masukkan nama dan nomor HP atau email yang valid
