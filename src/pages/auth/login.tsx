@@ -1,4 +1,5 @@
 'use client'
+import { AxiosError } from 'axios';
 import { ErrorMessage, Footer, IconAuth, IconHeader, Input, Terms, Wrapper } from 'components/layouts/auth'
 import {
     Card,
@@ -14,6 +15,7 @@ import {
     InputGroup,
     Header,
 } from 'components/layouts/Login'
+import { Modal } from 'components/Modal';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react'
 import Post from 'services/api/Post';
@@ -49,9 +51,12 @@ function getPayloadType(input: string): PayloadType {
 
 const Login = () => {
     const [input, setInput] = useState<string>("");
+    const [typeLogin, setTypeLogin] = useState<string>("");
     const [isValid, setIsValid] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
     const router = useRouter();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<'exists' | 'not-found' | null>(null);
 
     useEffect(() => {
         const trimmed = input.trim();
@@ -70,8 +75,8 @@ const Login = () => {
         window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`, '_blank')
     }
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault(); // Mencegah form dari me-refresh halaman
         if (!isValid) return;
 
         try {
@@ -80,22 +85,70 @@ const Login = () => {
             const payload = isPhone ? formatPhoneNumberTo62(trimmed) : trimmed;
 
             const type = getPayloadType(payload);
+            setTypeLogin(type)
             const formData = new FormData();
             formData.append('email_whatsapp', payload);
             formData.append('type', type);
 
             const res = await Post<Response>('zukses', 'auth/login-otp', formData);
-
+            console.log('res', res)
             if (res?.data?.status === 'success') {
                 router.push(`/auth/verification-account?${type}=${payload}&type=${type}&user_id=${res?.data?.data}`);
             } else {
                 setShowError(true);
             }
-        } catch (err) {
-            console.error("Error submitting:", err);
-            setShowError(true);
+        } catch (error) {
+            // Tangani error 422 secara spesifik
+            const err = error as AxiosError<Response>;
+            console.log('res', err)
+            if (err?.response?.status === 422) {
+                const msg = err.response?.data?.message || 'Data tidak valid.';
+                console.warn("Validasi gagal:", msg);
+                setModalType('not-found');
+                setIsModalOpen(true);
+                // Bisa simpan pesan error ke state jika perlu
+                // setErrorMessage(msg);
+            } else {
+                console.error("Terjadi kesalahan lain:", err);
+                setShowError(true);
+            }
         }
+        // // Simulasi pengecekan ke backend
+        // if (input.toLowerCase() === FAKE_REGISTERED_EMAIL) {
+        //     setModalType('exists'); // Atur tipe modal jika akun ditemukan
+        // } else {
+        //     setModalType('not-found'); // Atur tipe modal jika akun tidak ditemukan
+        // }
+        // setIsModalOpen(true); // Buka modal
     };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        // Reset tipe modal setelah ditutup agar tidak muncul lagi saat dibuka
+        setTimeout(() => setModalType(null), 300);
+    }
+
+
+    // Komponen kecil untuk konten modal "Akun Tidak Ditemukan"
+    const AccountNotFoundModalContent = () => (
+
+        <div>
+            <p className="mb-6">
+                Akun belum terdaftar. Apakah Anda ingin membuat akun baru dengan {typeLogin === 'email' ? 'email' : 'whatsapp'} ini?
+            </p>
+            <div className="space-y-3">
+                <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors" onClick={() => router.push(`/auth/register?input=${input}`)}>
+                    Ya, Daftar Sekarang
+                </button>
+                <button
+                    onClick={closeModal}
+                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors">
+                    Batal
+                </button>
+            </div>
+        </div>
+    );
+
 
     return (
         <RootLogin>
@@ -154,6 +207,16 @@ const Login = () => {
             <Footer>
                 Sudah punya akun? <span onClick={() => router.push('/auth/register')}>Daftar Sekarang</span>
             </Footer>
+
+            {/* Implementasi Komponen Modal dengan Konten Dinamis */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                title={modalType === 'exists' ? 'Akun Ditemukan' : 'Akun Belum Terdaftar'}
+            >
+                {/* Render konten modal berdasarkan state `modalType` */}
+                {modalType === 'not-found' && <AccountNotFoundModalContent />}
+            </Modal>
         </RootLogin>
     );
 };
