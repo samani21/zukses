@@ -19,7 +19,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     return (
         <>
             <Root>
-                <Logo src="/logo/logo_header.png" alt="Zukses Logo" />
+                <Logo src="/logo/Logo_Header.png" alt="Zukses Logo" />
                 <Container>
                     <Left>
                         <LeftImageContainer>

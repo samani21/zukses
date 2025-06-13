@@ -158,7 +158,7 @@ const Login = () => {
     return (
         <RootLogin>
             <Logo
-                src="/logo/logo_header.png"
+                src="/logo/Logo_Header.png"
                 alt="Zukses Logo"
             />
             <Header>
