@@ -1,9 +1,10 @@
 "use client"; // Diperlukan karena menggunakan hook useState
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ProvinceModal from './ProvinceModal';
+import MobileSearch from './MobileSearch';
+import SearchSuggestions from './SearchSuggestions';
 
-// --- Komponen Ikon (SVG Inline) ---
 const PhoneIcon = () => (
     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -30,13 +31,19 @@ const ChevronRightIcon = () => (
     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
 );
 
-
+interface Suggestion {
+    type: 'suggestion' | 'store' | 'protection';
+    text: string;
+    location?: string;
+    icon?: string;
+}
 
 const Header = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isProvinceModalOpen, setProvinceModalOpen] = useState(false);
-    // State sekarang menjadi array untuk multi-seleksi
     const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
     const topLinks = ["Tentang Tokopedia", "Mulai Berjualan", "Promo", "Tokopedia Care"];
     const provinces = [
@@ -49,10 +56,35 @@ const Header = () => {
         "Sumatera Barat", "Sumatera Selatan", "Sumatera Utara"
     ];
 
+    const searchSuggestions: Suggestion[] = [
+        { type: 'protection', text: 'Proteksi Gadget' },
+        { type: 'suggestion', text: 'laptop second' },
+        { type: 'store', text: 'Laptop Murah ID', location: 'Jakarta', icon: 'https://placehold.co/24x24/7C3AED/FFFFFF?text=L' },
+        { type: 'suggestion', text: 'laptop rtx' },
+        { type: 'store', text: 'LAPTOP GADGET ID', location: 'Jakarta', icon: 'https://placehold.co/24x24/F59E0B/FFFFFF?text=G' },
+        { type: 'suggestion', text: 'laptop gaming' },
+        { type: 'suggestion', text: 'laptop rtx 3050' },
+    ];
+
+    const headerRef = useRef<HTMLDivElement>(null);
+
+    // Klik di luar untuk menutup dropdown
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
+                setIsSearchFocused(false);
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [headerRef]);
+
+
     return (
         <>
-            <header className="bg-white shadow-sm sticky top-0 z-40">
-                {/* Banner Promo Atas */}
+            <header ref={headerRef} className="bg-white shadow-sm sticky top-0 z-40">
                 <div className="bg-gray-100 text-xs text-gray-600 py-1 hidden md:block">
                     <div className="container mx-auto px-4 flex justify-between items-center">
                         <a href="#" className="flex items-center hover:text-blue-600">
@@ -67,10 +99,7 @@ const Header = () => {
                         </nav>
                     </div>
                 </div>
-
-                {/* Main Header */}
                 <div className="container mx-auto px-4 py-3">
-                    {/* --- Tampilan Desktop --- */}
                     <div className="hidden md:block">
                         <div className="flex flex-row items-center gap-4">
                             <a href="#" className="text-4xl font-bold text-blue-600 shrink-0">
@@ -91,9 +120,11 @@ const Header = () => {
                                     type="text"
                                     placeholder="Cari di zukses"
                                     value={searchTerm}
+                                    onFocus={() => setIsSearchFocused(true)}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 />
+                                {isSearchFocused && <SearchSuggestions suggestions={searchSuggestions} searchTerm={searchTerm} />}
                             </div>
                             <div className="flex items-center gap-4 shrink-0">
                                 <button className="p-2 hover:bg-gray-100 rounded-full">
@@ -108,7 +139,6 @@ const Header = () => {
                                 </button>
                             </div>
                         </div>
-                        {/* --- REVISI: List Provinsi di bawah pencarian --- */}
                         <div className="mt-2 flex items-center gap-x-4 gap-y-1 flex-wrap">
                             <span className="text-sm text-gray-500">Pencarian di:</span>
                             {selectedProvinces.length > 0 ? (
@@ -122,19 +152,20 @@ const Header = () => {
                             )}
                         </div>
                     </div>
-                    {/* PERBAIKAN: Tata letak baru untuk mobile */}
+                    {/* PERBAIKAN: Input di mobile sekarang membuka overlay pencarian */}
                     <div className="md:hidden flex items-center gap-2">
                         <div className="relative flex-grow">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <SearchIcon />
+                            <div className="relative flex-grow" onClick={() => setIsMobileSearchOpen(true)}>
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <SearchIcon />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Cari di Tokopedia"
+                                    readOnly
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                                />
                             </div>
-                            <input
-                                type="text"
-                                placeholder="Cari di Tokopedia"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-20 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            />
                             <button
                                 className="absolute inset-y-0 right-0 px-4 text-black font-semibold rounded-r-lg text-sm"
                                 onClick={() => console.log('Cari:', searchTerm)}
@@ -153,10 +184,8 @@ const Header = () => {
                             <CartIcon />
                         </button>
                     </div>
-
                 </div>
             </header>
-
             <ProvinceModal
                 isOpen={isProvinceModalOpen}
                 onClose={() => setProvinceModalOpen(false)}
@@ -164,6 +193,7 @@ const Header = () => {
                 selectedProvinces={selectedProvinces}
                 onApply={setSelectedProvinces}
             />
+            {isMobileSearchOpen && <MobileSearch onClose={() => setIsMobileSearchOpen(false)} suggestions={searchSuggestions} />}
         </>
     );
 }

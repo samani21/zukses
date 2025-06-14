@@ -5,6 +5,7 @@ import CategoryGrid from 'components/CategoryGrid';
 import UserGreeting from 'components/UserGreeting';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import ProductList from 'components/ProductList';
+import SiteFooter from 'components/SiteFooter';
 
 interface HomeLayoutProps {
   children?: ReactNode;
@@ -68,11 +69,14 @@ const Home: React.FC<HomeLayoutProps> = () => {
   return (
     <MainLayout>
       <SlidingBanner banners={bannerImages} />
-      <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
+      <div className='md:hidden'>
+        <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
+      </div>
       <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
       <main className="container mx-auto pb-24">
         <ProductList products={allProducts} selectedCategory={selectedCategory} />
       </main>
+        <SiteFooter />
     </MainLayout>
   );
 };
