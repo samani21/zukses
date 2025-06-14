@@ -45,7 +45,7 @@ const Header = () => {
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
-    const topLinks = ["Tentang Tokopedia", "Mulai Berjualan", "Promo", "Tokopedia Care"];
+    const topLinks = ["Tentang Zukses", "Mulai Berjualan", "Promo", "Zukses Care"];
     const provinces = [
         "Aceh", "Bali", "Banten", "Bengkulu", "DI Yogyakarta", "DKI Jakarta",
         "Gorontalo", "Jambi", "Jawa Barat", "Jawa Tengah", "Jawa Timur",
@@ -161,7 +161,7 @@ const Header = () => {
                                 </div>
                                 <input
                                     type="text"
-                                    placeholder="Cari di Tokopedia"
+                                    placeholder="Cari di Zukses"
                                     readOnly
                                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
                                 />

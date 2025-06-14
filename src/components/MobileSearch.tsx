@@ -38,7 +38,7 @@ function MobileSearch({ onClose, suggestions }: MobileSearchProps) {
                         </div>
                         <input
                             type="text"
-                            placeholder="Cari di Tokopedia"
+                            placeholder="Cari di Zukses"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             autoFocus

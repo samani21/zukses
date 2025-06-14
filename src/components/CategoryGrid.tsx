@@ -18,7 +18,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto md:p-4">
             <div className="bg-white rounded-lg shadow p-4 relative">
                 <h2 className="text-base font-bold text-gray-700 mb-4">KATEGORI</h2>
                 <div
