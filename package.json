@@ -21,7 +21,8 @@
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.4.2",
     "reactjs-otp-input": "^2.0.10",
-    "styled-components": "^6.1.18"
+    "styled-components": "^6.1.18",
+    "tailwind-scrollbar-hide": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
