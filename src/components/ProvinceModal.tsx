@@ -41,7 +41,7 @@ function ProvinceModal({ isOpen, onClose, provinces, selectedProvinces, onApply 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" onClick={onClose} style={{ background: "#00000022" }}>
             <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl m-4" onClick={(e) => e.stopPropagation()}>
-                <div className="p-4 border-b">
+                <div className="p-4 ">
                     <h2 id="modal-title" className="text-xl font-bold text-center text-gray-800">Pilih Provinsi Lokasi Pencarian</h2>
                 </div>
                 <div className="p-6 max-h-80 overflow-y-auto">
@@ -60,7 +60,7 @@ function ProvinceModal({ isOpen, onClose, provinces, selectedProvinces, onApply 
                         ))}
                     </div>
                 </div>
-                <div className="flex justify-end p-4 border-t gap-4">
+                <div className="flex justify-end p-4  gap-4">
                     <button onClick={onClose} className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition-colors">
                         Keluar
                     </button>
