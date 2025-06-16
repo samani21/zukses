@@ -67,7 +67,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
   ];
   return (
     <MainLayout>
-      <main className="md:px-15 mx-auto">
+      <main className="hidden md:block md:px-15 mx-auto">
         <SlidingBanner banners={bannerImages} />
       </main>
       <div className='md:hidden'>
