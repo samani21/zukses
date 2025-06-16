@@ -184,6 +184,18 @@ const Header = () => {
                             <CartIcon />
                         </button>
                     </div>
+                    <div className="mt-2 flex items-center gap-x-4 gap-y-1 flex-wrap md:hidden">
+                        <span className="text-sm text-gray-500">Pencarian di:</span>
+                        {selectedProvinces.length > 0 ? (
+                            selectedProvinces.map(province => (
+                                <a key={province} href="#" className="text-sm font-bold text-gray-800 hover:text-blue-600">
+                                    {province}
+                                </a>
+                            ))
+                        ) : (
+                            <span className="text-sm font-bold text-gray-800">Semua Provinsi</span>
+                        )}
+                    </div>
                 </div>
             </header>
             <ProvinceModal
