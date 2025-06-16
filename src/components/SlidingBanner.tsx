@@ -115,7 +115,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
                 <div
                     ref={scrollRef}
                     onScroll={handleScroll}
-                    className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar h-40"
+                    className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar md:h-45"
                 >
                     {extendedBanners.map((banner, index) => (
                         <div
