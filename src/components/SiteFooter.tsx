@@ -60,24 +60,24 @@ function SiteFooter() {
                 <div className="border-t border-gray-200 mt-8 pt-6">
                     <h3 className="font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
                     <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        <img src="/icon/alfamart-2.webp" alt="Alfamart" className="h-6" />
-                        <img src="/icon/bni.webp" alt="BNI" className="h-6" />
-                        <img src="/icon/bri.webp" alt="BRI" className="h-6" />
-                        <img src="/icon/dana.webp" alt="DANA" className="h-6" />
-                        <img src="/icon/gopay.webp" alt="GOPAY" className="h-6" />
-                        <img src="/icon/home-credit.webp" alt="HOMECREDIt" className="h-6" />
+                        <img src="/icon/alfamart-2.webp" alt="Alfamart" />
+                        <img src="/icon/bni.webp" alt="BNI" />
+                        <img src="/icon/bri.webp" alt="BRI" />
+                        <img src="/icon/dana.webp" alt="DANA" />
+                        <img src="/icon/gopay.webp" alt="GOPAY" />
+                        <img src="/icon/home-credit.webp" alt="HOMECREDIt" />
                     </div>
                 </div>
                 <div className="border-t border-gray-200 mt-8 pt-6">
                     <h3 className="font-bold text-gray-800 mb-4">Jasa Pengiriman</h3>
                     <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        <img src="/icon/JNE.webp" alt="JNE" className="h-6" />
-                        <img src="/icon/ID_express.webp" alt="IDEXPRESS" className="h-6" />
-                        <img src="/icon/ID_express.webp" alt="JNT" className="h-6" />
-                        <img src="/icon/JNT.webp" alt="JNT" className="h-6" />
-                        <img src="/icon/Ninjavan.webp" alt="NINJA" className="h-6" />
-                        <img src="/icon/Gosend.webp" alt="GoSend" className="h-6" />
-                        <img src="/icon/Grab_Exp.webp" alt="GrabEXP" className="h-6" />
+                        <img src="/icon/JNE.webp" alt="JNE" />
+                        <img src="/icon/ID_express.webp" alt="IDEXPRESS" />
+                        <img src="/icon/ID_express.webp" alt="JNT" />
+                        <img src="/icon/JNT.webp" alt="JNT" />
+                        <img src="/icon/Ninjavan.webp" alt="NINJA" />
+                        <img src="/icon/Gosend.webp" alt="GoSend" />
+                        <img src="/icon/Grab_Exp.webp" alt="GrabEXP" />
                     </div>
                 </div>
             </div>
