@@ -115,7 +115,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
                 <div
                     ref={scrollRef}
                     onScroll={handleScroll}
-                    className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar md:h-45"
+                    className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar h-25 md:h-45"
                 >
                     {extendedBanners.map((banner, index) => (
                         <div
@@ -147,7 +147,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
                 </button>
 
                 {/* Dots */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 z-10">
+                <div className="hidden sm:flex absolute bottom-4 left-1/2 -translate-x-1/2 items-center space-x-2 z-10">
                     {banners.map((_, index) => (
                         <button
                             key={index}
