@@ -85,7 +85,7 @@ const Header = () => {
     return (
         <>
             <header ref={headerRef} className="bg-white shadow-sm sticky top-0 z-40">
-                <div className="bg-gray-100 text-xs text-gray-600 py-1 hidden md:block">
+                <div className="bg-gray-100 text-xs text-gray-600 py-1 hidden md:block md:px-25">
                     <div className="container mx-auto px-4 flex justify-between items-center">
                         <a href="#" className="flex items-center hover:text-blue-600">
                             <PhoneIcon />
@@ -99,7 +99,7 @@ const Header = () => {
                         </nav>
                     </div>
                 </div>
-                <div className="container mx-auto px-4 py-3">
+                <div className="container mx-auto px-4 py-3 md:px-25">
                     <div className="hidden md:block">
                         <div className="flex flex-row items-center gap-4">
                             <a href="#" className="text-4xl font-bold text-blue-600 shrink-0">

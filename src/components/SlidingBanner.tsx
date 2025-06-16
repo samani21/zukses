@@ -111,7 +111,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
 
     return (
         <div className="w-full py-4">
-            <div className="relative group">
+            <div className="relative group md:px-10">
                 <div
                     ref={scrollRef}
                     onScroll={handleScroll}
@@ -135,7 +135,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
                 {/* Arrows */}
                 <button
                     onClick={() => goToIndex(activeIndex - 1)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/0 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                     <ChevronLeftIcon />
                 </button>
