@@ -45,39 +45,39 @@ function SiteFooter() {
                     <div>
                         <h3 className="font-bold text-gray-800 mb-4">Download Aplikasi</h3>
                         <div className="space-y-3">
-                            <a href="#"><img src="https://placehold.co/150x50/000000/FFFFFF?text=Google+Play" alt="Google Play" className="h-10 mb-4" /></a>
-                            <a href="#"><img src="https://placehold.co/150x50/000000/FFFFFF?text=App+Store" alt="App Store" className="h-10" /></a>
+                            <a href="#"><img src="/icon/Google_Play_Store_badge_EN.svg.webp" alt="Google Play" className="h-10 mb-4" width={120} /></a>
+                            <a href="#"><img src="/icon/apple_apps_store.png" alt="App Store" className="h-10" width={120} /></a>
                         </div>
                         <h3 className="font-bold text-gray-800 mt-6 mb-4">Ikuti Kami</h3>
                         <div className="flex space-x-4">
-                            <a href="#" className="text-gray-500 hover:text-blue-600">FB</a>
-                            <a href="#" className="text-gray-500 hover:text-pink-500">IG</a>
-                            <a href="#" className="text-gray-500 hover:text-blue-400">TW</a>
-                            <a href="#" className="text-gray-500 hover:text-red-600">YT</a>
+                            <img src="/icon/fb.svg" alt="FB" className="h-6" />
+                            <img src="/icon/ig.svg" alt="IG" className="h-6" />
+                            <img src="/icon/twitter.svg" alt="X" className="h-6" />
+                            <img src="/icon/yt.svg" alt="YT" className="h-6" />
                         </div>
                     </div>
                 </div>
                 <div className="border-t border-gray-200 mt-8 pt-6">
                     <h3 className="font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
                     <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=VISA" alt="Visa" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=MasterCard" alt="MasterCard" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=BCA" alt="BCA" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=Mandiri" alt="Mandiri" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=BNI" alt="BNI" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=BRI" alt="BRI" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=GoPay" alt="GoPay" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=OVO" alt="OVO" className="h-6" />
+                        <img src="/icon/alfamart-2.webp" alt="Alfamart" className="h-6" />
+                        <img src="/icon/bni.webp" alt="BNI" className="h-6" />
+                        <img src="/icon/bri.webp" alt="BRI" className="h-6" />
+                        <img src="/icon/dana.webp" alt="DANA" className="h-6" />
+                        <img src="/icon/gopay.webp" alt="GOPAY" className="h-6" />
+                        <img src="/icon/home-credit.webp" alt="HOMECREDIt" className="h-6" />
                     </div>
                 </div>
                 <div className="border-t border-gray-200 mt-8 pt-6">
                     <h3 className="font-bold text-gray-800 mb-4">Jasa Pengiriman</h3>
                     <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=JNE" alt="JNE" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=TIKI" alt="TIKI" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=SiCepat" alt="SiCepat" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=GoSend" alt="GoSend" className="h-6" />
-                        <img src="https://placehold.co/80x30/cccccc/000000?text=GrabExpress" alt="GrabExpress" className="h-6" />
+                        <img src="/icon/JNE.webp" alt="JNE" className="h-6" />
+                        <img src="/icon/ID_express.webp" alt="IDEXPRESS" className="h-6" />
+                        <img src="/icon/ID_express.webp" alt="JNT" className="h-6" />
+                        <img src="/icon/JNT.webp" alt="JNT" className="h-6" />
+                        <img src="/icon/Ninjavan.webp" alt="NINJA" className="h-6" />
+                        <img src="/icon/Gosend.webp" alt="GoSend" className="h-6" />
+                        <img src="/icon/Grab_Exp.webp" alt="GrabEXP" className="h-6" />
                     </div>
                 </div>
             </div>

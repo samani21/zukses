@@ -25,7 +25,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto scroll-smooth scrollbar-hide"
                 >
-                    <div className="flex flex-row md:grid md:grid-rows-2 md:grid-flow-col md:gap-4">
+                    <div className="flex flex-row md:grid md:grid-rows-1 md:grid-flow-col md:gap-4">
                         {categories.map((category) => (
                             <button onClick={() => onCategorySelect(category.name)} key={category.name} className="flex flex-col items-center justify-start w-24 text-center group">
                                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 group-hover:bg-gray-200 transition-colors">

@@ -11,6 +11,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <Head>
                 <title>Zukses Plaza</title>
                 <meta name="description" content="Deskripsi singkat situs kamu" />
+                <link rel="icon" href="/logo/favicon.ico" type="image/x-icon"></link>
             </Head>
             <Header />
             <main className="container mx-auto">

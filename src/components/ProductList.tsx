@@ -26,12 +26,12 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
         : products.filter(p => p.category === selectedCategory);
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 md:px-10">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Produk untuk Anda</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {filteredProducts.map(product => (
                     <a href="#" key={product.id} className="bg-white rounded-lg overflow-hidden group">
-                        <img src={product.imageUrl} alt={product.name} className="w-full h-40 object-cover group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
+                        <img src={product.imageUrl} alt={product.name} className="w-full h-50 group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-4">
                             <h3 className="text-sm text-gray-700 truncate">{product.name}</h3>
                             <p className="text-base font-bold mt-1">Rp{product.price}</p>
