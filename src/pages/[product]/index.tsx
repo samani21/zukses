@@ -1,5 +1,3 @@
-import { useRouter } from 'next/router';
-import MainLayout from 'pages/layouts/MainLayout';
 import React from 'react'
 import ProductDetail from './Components/ProductDetail';
 import Header from 'components/Header';
@@ -18,10 +16,6 @@ interface Variant {
     imageUrl: string;
 }
 
-interface ProductDetailProps {
-    product: Product;
-}
-
 
 interface Product {
     id: string;
@@ -38,8 +32,6 @@ interface Product {
 
 
 const ProductPage = () => {
-    const router = useRouter();
-    const { product } = router.query;
     const sampleProduct: Product = {
         id: 'LP-TPX-270',
         name: 'LAPTOP LENOVO THINKPAD X240 X250 X260 X270 X280 CORE i3 / i5 / i7 ORIGINAL MURAH BERGARANSI',

@@ -74,16 +74,5 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, initialIndex = 0,
     );
 };
 
-// --- Komponen Galeri Produk ---
-interface ProductGalleryProps {
-    images: Thumbnail[];
-    activeImage: string;
-    onImageSelect: (url: string) => void;
-    onImageClick: () => void;
-    onNextImage: () => void;
-    onPrevImage: () => void;
-}
-
-
 
 export default ImageLightbox
