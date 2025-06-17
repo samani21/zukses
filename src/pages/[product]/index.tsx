@@ -2,6 +2,8 @@ import React from 'react'
 import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
 import SellerInfo from 'components/product/SellerInfo';
+import ProductSpecification from 'components/product/ProductSpecification';
+import ProductDescription from 'components/product/ProductDescription';
 
 
 
@@ -34,6 +36,18 @@ interface Seller {
     };
 }
 
+
+interface Specification {
+    [key: string]: string | string[];
+}
+
+interface Description {
+    intro: string;
+    condition: string[];
+    completeness: string[];
+    notes: string[];
+}
+
 interface Product {
     id: string;
     name: string;
@@ -46,6 +60,8 @@ interface Product {
     variants: Variant[];
     thumbnails: Thumbnail[];
     seller: Seller;
+    specifications: Specification;
+    description: Description;
 }
 
 
@@ -86,6 +102,50 @@ const ProductPage = () => {
                 joined: '8 tahun lalu',
                 followers: '5,4RB'
             }
+        },
+        specifications: {
+            'Kategori': ['Shopee', 'Komputer & Aksesoris', 'Laptop', '2-in-1'],
+            'Kondisi': 'Bekas',
+            'Merek': 'Lenovo',
+            'Ukuran Layar Laptop': '< 13 inci',
+            'Tipe Laptop': '2-in-1, Gaming, Lainnya, Ultrabook',
+            'Masa Garansi': '1 Bulan',
+            'Jenis Garansi': 'Garansi Supplier',
+            'No. Sertifikat (POSTEL)': '-',
+            'Dikirim Dari': 'KOTA TANGERANG',
+        },
+        description: {
+            intro: 'Mohon dibaca keterangan di bawah sebelum order, untuk lebih detail bisa cek gambar:',
+            condition: [
+                'Laptop yang dijual 100% original (bukan servisan, bukan refurbish)',
+                'Mesin 100% Normal',
+                'Fisik/Body ±90% (Ada baret bekas pemakaian wajar, harap dipahami ini laptop second, jangan ekspektasi seperti baru)',
+                'Processor: GOOD',
+                'Ram: GOOD',
+                'Hardisk / SSD: GOOD',
+                'Layar: GOOD',
+                'Baterai: GOOD',
+                'Fan / Kipas: GOOD',
+                'Webcam: GOOD',
+                'Wifi: GOOD',
+                'Keyboard: GOOD',
+                'Touchpad: GOOD',
+                'USB Port dan Port-Port yang lain: GOOD',
+            ],
+            completeness: [
+                'Unit laptop',
+                'Charger',
+                'Free Tas',
+                'Terinstall OS Windows 10 Pro 64 Bit',
+                'Terinstall aplikasi untuk penggunaan kantor/sekolah/ pribadi (Office, Pdf, Chrome, Mozilla, dll)',
+                'Paket dipacking dengan kardus tebal dan bubble tebal dijamin aman (Free packing)',
+            ],
+            notes: [
+                'Harap ditanyakan dulu tipe spesifikasi Laptop yang ingin diorder, kesalahan pembeli dalam memilih tipe bukan tanggung jawab kami',
+                'Bagi yang sudah tahu dengan tipe Laptop yang mau diorder, silakan langsung diorder karena stok ready selagi iklan masih tayang',
+                'Silakan pilih Varian Tipe, Ram, Ssd yang mau diorder',
+                'Belilah barang sesuai kebutuhan',
+            ]
         }
     };
     return (
@@ -114,6 +174,9 @@ const ProductPage = () => {
 
                     <ProductDetail product={sampleProduct} />
                     <SellerInfo seller={sampleProduct.seller} />
+                    <ProductSpecification specifications={sampleProduct.specifications} />
+
+                    <ProductDescription description={sampleProduct.description} />
                 </div>
             </main>
         </div>

@@ -40,7 +40,7 @@ interface SellerInfoProps {
 
 const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
     return (
-        <div className="bg-white rounded-lg shadow-md mt-4 mb-24">
+        <div className="bg-white rounded-lg shadow-md mt-4">
             {/* Mobile View */}
             <div className="p-4 sm:hidden">
                 <div className="flex justify-between items-start gap-4">
