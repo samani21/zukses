@@ -83,11 +83,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     };
 
     const handleImageClick = () => {
-        if (window.innerWidth < 1024) return;
+        if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
         const currentIndex = allImages.findIndex(img => img.url === activeImage);
         setLightboxInitialIndex(currentIndex);
         setIsLightboxOpen(true);
     };
+
 
     const handleNextImage = () => {
         const currentIndex = allImages.findIndex(img => img.url === activeImage);

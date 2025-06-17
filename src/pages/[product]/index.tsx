@@ -1,5 +1,5 @@
 import React from 'react'
-import ProductDetail from './Components/ProductDetail';
+import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
 
 
