@@ -51,21 +51,19 @@ interface ProductDetailProps {
     product: Product;
 }
 
-const MobileActionFooter: React.FC = () => {
-    return (
-        <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white shadow p-2 flex items-center space-x-2 z-20 text-sm">
-            <button className="p-1 border border-gray-300 rounded-md">
-                <ChatBubbleIcon />
-            </button>
-            <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
-            <button className="flex-1 py-2 px-3 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-medium">+ Keranjang</button>
-        </div>
-    );
-};
+const MobileActionFooter: React.FC = () => (
+    <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white shadow p-2 flex items-center space-x-2 z-20 text-sm">
+        <button className="p-1 border border-gray-300 rounded-md">
+            <ChatBubbleIcon />
+        </button>
+        <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
+        <button className="flex-1 py-2 px-3 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-medium">+ Keranjang</button>
+    </div>
+);
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [activeVariant, setActiveVariant] = useState<Variant>(product.variants[0]);
-    const [activeImage, setActiveImage] = useState<string>(product.variants[0].imageUrl);
+    const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState<number>(1);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
@@ -79,28 +77,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     const handleVariantSelect = (variant: Variant) => {
         setActiveVariant(variant);
-        setActiveImage(variant.imageUrl);
     };
 
-    const handleImageClick = () => {
-        if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
-        const currentIndex = allImages.findIndex(img => img.url === activeImage);
-        setLightboxInitialIndex(currentIndex);
+    const handleImageClick = (index: number) => {
+        if (window.innerWidth < 1024) return;
+        setLightboxInitialIndex(index); // Gunakan index
         setIsLightboxOpen(true);
     };
 
-
-    const handleNextImage = () => {
-        const currentIndex = allImages.findIndex(img => img.url === activeImage);
-        const nextIndex = (currentIndex + 1) % allImages.length;
-        setActiveImage(allImages[nextIndex].url);
-    };
-
-    const handlePrevImage = () => {
-        const currentIndex = allImages.findIndex(img => img.url === activeImage);
-        const prevIndex = (currentIndex - 1 + allImages.length) % allImages.length;
-        setActiveImage(allImages[prevIndex].url);
-    };
     const formatRupiah = (amount: number) =>
         new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -114,11 +98,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <ProductGallery
                         images={allImages}
-                        activeImage={activeImage}
-                        onImageSelect={setActiveImage}
+                        activeIndex={activeImageIndex}
+                        setActiveIndex={setActiveImageIndex}
                         onImageClick={handleImageClick}
-                        onNextImage={handleNextImage}
-                        onPrevImage={handlePrevImage}
                     />
                     <div className="lg:col-span-3">
                         <h1 className="text-base sm:text-lg font-semibold text-gray-800">{product.name}</h1>
@@ -176,7 +158,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                         +
                                     </button>
                                 </div>
-
                             </div>
                         </div>
                         <div className="mt-6 hidden sm:grid grid-cols-2 gap-3">
