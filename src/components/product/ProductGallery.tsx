@@ -70,6 +70,12 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
         <div className="lg:col-span-2">
             <div className="mb-4 relative group overflow-hidden rounded-lg">
                 <div
+                    onClick={() => window.location.href = '/'}
+                    className="flex items-center justify-center w-10 h-10 absolute top-2 left-2 z-20 bg-white/80 hover:bg-white text-gray-800 rounded-full shadow md:hidden"
+                >
+                    <ChevronLeftIcon className="w-6 h-6" />
+                </div>
+                <div
                     className="flex transition-transform duration-300 ease-in-out"
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
                     onMouseDown={handleDragStart}
