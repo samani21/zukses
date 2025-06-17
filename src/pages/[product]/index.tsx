@@ -1,6 +1,7 @@
 import React from 'react'
 import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
+import SellerInfo from 'components/product/SellerInfo';
 
 
 
@@ -16,6 +17,22 @@ interface Variant {
     imageUrl: string;
 }
 
+interface Seller {
+    name: string;
+    avatarUrl: string;
+    lastActive: string;
+    location: string;
+    stats: {
+        rating: number;
+        reviewsCount: number;
+        reviews: string;
+        products: number;
+        chatResponseRate: string;
+        chatResponseTime: string;
+        joined: string;
+        followers: string;
+    };
+}
 
 interface Product {
     id: string;
@@ -28,6 +45,7 @@ interface Product {
     vouchers: string[];
     variants: Variant[];
     thumbnails: Thumbnail[];
+    seller: Seller;
 }
 
 
@@ -53,6 +71,22 @@ const ProductPage = () => {
         thumbnails: [
 
         ],
+        seller: {
+            name: 'ajkomputer',
+            avatarUrl: 'https://placehold.co/80x80/e0e0e0/333333?text=AJK',
+            lastActive: '28 Menit Lalu',
+            location: 'Banjarmasin',
+            stats: {
+                reviews: '1,1RB',
+                rating: 5,
+                reviewsCount: 300,
+                products: 93,
+                chatResponseRate: '98%',
+                chatResponseTime: 'hitungan jam',
+                joined: '8 tahun lalu',
+                followers: '5,4RB'
+            }
+        }
     };
     return (
         <div>
@@ -79,6 +113,7 @@ const ProductPage = () => {
                     </nav>
 
                     <ProductDetail product={sampleProduct} />
+                    <SellerInfo seller={sampleProduct.seller} />
                 </div>
             </main>
         </div>
