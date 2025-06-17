@@ -30,7 +30,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
             <h2 className="text-xl font-bold text-gray-800 mb-4">Produk untuk Anda</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {filteredProducts.map(product => (
-                    <a href="#" key={product.id} className="bg-white rounded-lg overflow-hidden group">
+                    <a key={product.id} className="bg-white rounded-lg overflow-hidden group" onClick={() => window.location.href = `/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
                         <img src={product.imageUrl} alt={product.name} className="w-full group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-4">
                             <h3 className="text-sm text-gray-700 truncate">{product.name}</h3>
