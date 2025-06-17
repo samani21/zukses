@@ -84,7 +84,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({
                         <button
                             key={thumb.id}
                             onClick={() => onImageSelect(thumb.url)}
-                            className={`flex-shrink-0 w-16 h-16 rounded-md border-2 p-1 transition-colors ${activeImage === thumb.url ? 'border-orange-500' : 'border-transparent'}`}
+                            className={`flex-shrink-0 w-16 h-16 rounded-md border-2 p-1 transition-colors ${activeImage === thumb.url ? 'border-blue-500' : 'border-transparent'}`}
                         >
                             <img
                                 src={thumb.url.replace('600x400', '100x100')}
