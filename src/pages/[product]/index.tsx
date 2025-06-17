@@ -4,6 +4,7 @@ import Header from 'components/Header';
 import SellerInfo from 'components/product/SellerInfo';
 import ProductSpecification from 'components/product/ProductSpecification';
 import ProductDescription from 'components/product/ProductDescription';
+import ProductReviews from 'components/product/ProductReviews';
 
 
 
@@ -48,6 +49,23 @@ interface Description {
     notes: string[];
 }
 
+interface Review {
+    id: number;
+    author: string;
+    avatarUrl: string;
+    rating: number;
+    date: string;
+    variant: string;
+    comment: string;
+    images: { id: number; url: string }[];
+    videos: { id: number; thumbnailUrl: string }[];
+    likes: number;
+    sellerResponse?: {
+        comment: string;
+    };
+}
+
+
 interface Product {
     id: string;
     name: string;
@@ -62,6 +80,7 @@ interface Product {
     seller: Seller;
     specifications: Specification;
     description: Description;
+    reviews: Review[];
 }
 
 
@@ -146,7 +165,36 @@ const ProductPage = () => {
                 'Silakan pilih Varian Tipe, Ram, Ssd yang mau diorder',
                 'Belilah barang sesuai kebutuhan',
             ]
-        }
+        },
+        reviews: [
+            {
+                id: 1,
+                author: 'jejequinns',
+                avatarUrl: 'https://placehold.co/40x40/2d3748/ffffff?text=J',
+                rating: 5,
+                date: '2020-04-14 09:13',
+                variant: '',
+                comment: 'Sangat puas belanja di toko ini. Worth it banget. Penjual sangat ramah dan responsive. Kualitas barang sangat wow. Seperti baru. Terima kasih ya.',
+                images: [],
+                videos: [],
+                likes: 6,
+                sellerResponse: {
+                    comment: 'Terima kasih telah berbelanja di AJKomputer. Semoga barangnya awet dan bermanfaat gan. Silakan share toko kami ke teman2 agan dan follow toko kami untuk terus update mengenai stok dan produk terbaru.'
+                }
+            },
+            {
+                id: 2,
+                author: 'lenamedi',
+                avatarUrl: 'https://placehold.co/40x40/e0e0e0/333333?text=L',
+                rating: 5,
+                date: '2025-06-06 23:58',
+                variant: 'X250 I3 GEN 5,4GB - HDD 500GB',
+                comment: 'Keaslian: asli\nKualitas: baik\nKondisi Barang: baik tpi Btre ny cepat habis',
+                images: [],
+                videos: [{ id: 1, thumbnailUrl: 'https://placehold.co/200x200/000000/ffffff?text=Video' }],
+                likes: 0
+            }
+        ]
     };
     return (
         <div>
@@ -175,8 +223,8 @@ const ProductPage = () => {
                     <ProductDetail product={sampleProduct} />
                     <SellerInfo seller={sampleProduct.seller} />
                     <ProductSpecification specifications={sampleProduct.specifications} />
-
                     <ProductDescription description={sampleProduct.description} />
+                    <ProductReviews reviews={sampleProduct.reviews} productRating={sampleProduct.rating} />
                 </div>
             </main>
         </div>
