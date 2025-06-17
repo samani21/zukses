@@ -1,13 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+
+// --- Helper Components & Interfaces ---
 
 const ChevronRightIcon = () => (
-    <svg className="w-5 h-5 text-gray-400 hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
     </svg>
 );
 
 const ChevronLeftIcon = () => (
-    <svg className="w-5 h-5 text-gray-400 hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
     </svg>
 );
@@ -23,138 +25,193 @@ interface SlidingBannerProps {
     autoPlayInterval?: number;
 }
 
-function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps) {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const isTransitioning = useRef(false);
 
-    const extendedBanners = useMemo(() => {
+// --- Main SlidingBanner Component ---
+
+function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps) {
+    // We start at index 1 because index 0 is the clone of the last slide.
+    const [currentIndex, setCurrentIndex] = useState(1);
+    const [isTransitioning, setIsTransitioning] = useState(true); // Start with transition enabled for initial load
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // --- State and Ref for Width Calculation ---
+    // This makes the component responsive by calculating slide width dynamically
+    const [itemWidth, setItemWidth] = useState(0);
+
+    // Callback ref to measure a single banner item's width.
+    // This observer updates the width whenever the window is resized.
+    const itemRef = useCallback((node: HTMLDivElement | null) => {
+        if (node) {
+            const resizeObserver = new ResizeObserver(() => {
+                setItemWidth(node.offsetWidth);
+            });
+            resizeObserver.observe(node);
+            // Cleanup observer when component unmounts
+            return () => resizeObserver.disconnect();
+        }
+    }, []);
+
+
+    // Memoize the extended banners array to prevent re-calculations on every render.
+    // Clone first and last items for the seamless loop effect.
+    // [last, 1, 2, 3, ..., first]
+    const extendedBanners = React.useMemo(() => {
         if (banners.length === 0) return [];
         return [banners[banners.length - 1], ...banners, banners[0]];
     }, [banners]);
 
+    // Function to reset the autoplay timer
     const resetTimeout = useCallback(() => {
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
     }, []);
 
-    const goToIndex = useCallback((index: number, behavior: 'smooth' | 'auto' = 'smooth') => {
-        if (!scrollRef.current || banners.length === 0) return;
-        resetTimeout();
+    // --- Navigation Handlers ---
 
-        const container = scrollRef.current;
-        const targetBannerIndex = index % banners.length;
-        const targetElement = container.children[targetBannerIndex + 1] as HTMLElement;
+    const handleNext = useCallback(() => {
+        // Prevent navigation while a transition is in progress
+        if (isTransitioning) return;
+        setIsTransitioning(true);
+        setCurrentIndex(prevIndex => prevIndex + 1);
+    }, [isTransitioning]);
 
-        if (targetElement) {
-            if (behavior === 'auto') {
-                container.classList.remove('scroll-smooth');
-            } else {
-                container.classList.add('scroll-smooth');
-            }
-            container.scrollTo({ left: targetElement.offsetLeft, behavior });
-        }
+    const handlePrevious = useCallback(() => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
+        setCurrentIndex(prevIndex => prevIndex - 1);
+    }, [isTransitioning]);
 
-        setActiveIndex(targetBannerIndex);
-    }, [banners.length, resetTimeout]);
+    const handleDotClick = (index: number) => {
+        if (isTransitioning) return;
+        setIsTransitioning(true);
+        // Add 1 to match the extendedBanners index
+        setCurrentIndex(index + 1);
+    };
 
-    // Auto-play
-    useEffect(() => {
-        if (autoPlayInterval === 0) return;
 
+    // --- Effects ---
+
+    // Encapsulate the autoplay logic to start it.
+    const startAutoPlay = useCallback(() => {
+        if (autoPlayInterval <= 0 || banners.length === 0) return;
         resetTimeout();
         timeoutRef.current = setTimeout(() => {
-            goToIndex(activeIndex + 1);
+            handleNext();
         }, autoPlayInterval);
+    }, [autoPlayInterval, banners.length, handleNext, resetTimeout]);
 
-        return () => resetTimeout();
-    }, [activeIndex, autoPlayInterval, goToIndex, resetTimeout]);
+    // Autoplay effect
+    useEffect(() => {
+        // Start the timer when the slide changes or when autoplay is re-enabled.
+        if (!isTransitioning) {
+            startAutoPlay();
+        }
+        // Cleanup the timer when the component unmounts or dependencies change.
+        return resetTimeout;
+    }, [currentIndex, isTransitioning, startAutoPlay, resetTimeout]);
 
-    // Handle scroll looping
-    const handleScroll = () => {
-        if (!scrollRef.current || isTransitioning.current) return;
-
-        const container = scrollRef.current;
-        const children = container.children;
-        const itemWidth = (children[1] as HTMLElement).offsetWidth;
-        const scrollLeft = container.scrollLeft;
-        const currentVisibleIndex = Math.round(scrollLeft / itemWidth);
-
-        if (currentVisibleIndex === extendedBanners.length - 1) {
-            isTransitioning.current = true;
-            setTimeout(() => {
-                requestAnimationFrame(() => {
-                    goToIndex(0, 'auto');
-                    isTransitioning.current = false;
-                });
-            }, 10);
-        } else if (currentVisibleIndex === 0) {
-            isTransitioning.current = true;
-            setTimeout(() => {
-                requestAnimationFrame(() => {
-                    goToIndex(banners.length - 1, 'auto');
-                    isTransitioning.current = false;
-                });
-            }, 10);
-        } else {
-            setActiveIndex(currentVisibleIndex - 1);
+    // This effect handles the "magic" of the seamless loop.
+    // It runs after the transition to a cloned slide has finished.
+    const handleTransitionEnd = () => {
+        setIsTransitioning(false);
+        // If we have transitioned to the cloned last slide (at the beginning of the array)
+        if (currentIndex === 0) {
+            setCurrentIndex(banners.length);
+        }
+        // If we have transitioned to the cloned first slide (at the end of the array)
+        else if (currentIndex === extendedBanners.length - 1) {
+            setCurrentIndex(1);
         }
     };
 
-    // Set initial scroll position
-    useEffect(() => {
-        if (scrollRef.current && extendedBanners.length > 1) {
-            const firstRealItem = scrollRef.current.children[1] as HTMLElement;
-            scrollRef.current.scrollLeft = firstRealItem.offsetLeft;
+    // --- Interaction Handlers ---
+
+    // Handlers to pause autoplay on hover
+    const handleMouseEnter = () => {
+        if (autoPlayInterval > 0) {
+            resetTimeout();
         }
-    }, [extendedBanners.length]);
+    };
+
+    const handleMouseLeave = () => {
+        if (autoPlayInterval > 0) {
+            startAutoPlay();
+        }
+    };
+
+    // Calculate the active index for the dots (0-based for the original banners array)
+    const activeDotIndex = (currentIndex - 1 + banners.length) % banners.length;
+
+
+    if (banners.length === 0) {
+        return null; // Don't render anything if there are no banners
+    }
 
     return (
-        <div className="w-full py-4">
-            <div className="relative group md:px-10">
+        <div className="w-full mx-auto py-4">
+            <div
+                className="relative group overflow-hidden rounded-xl"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+            >
+                {/* This is the sliding container */}
                 <div
-                    ref={scrollRef}
-                    onScroll={handleScroll}
-                    className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar h-25 md:h-45"
+                    className="flex ml-[-20]"
+                    style={{
+                        // Move the container horizontally based on the current index and measured item width
+                        transform: `translateX(-${currentIndex * itemWidth}px)`,
+                        // Apply transition only when we are not on a cloned slide
+                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
+                    }}
+                    onTransitionEnd={handleTransitionEnd}
                 >
                     {extendedBanners.map((banner, index) => (
                         <div
+                            // Attach the ref to the first *real* banner to measure its width
+                            ref={index === 1 ? itemRef : null}
                             key={index}
-                            className={`flex-shrink-0 w-[90%] md:w-1/2 px-2 snap-center md:snap-start transition-transform duration-500 ${index === activeIndex + 1 ? 'md:scale-105' : 'md:scale-90'
-                                }`}
+                            // Each item now takes up half the container width
+                            className="flex-shrink-0  mr-3"
                         >
                             <img
                                 src={banner.src}
                                 alt={banner.alt}
-                                className="w-full h-full  rounded-xl"
+                                // Reduced height and removed aspect-video for a shorter banner
+                                className=" h-40 rounded-xl"
                             />
                         </div>
                     ))}
                 </div>
 
-                {/* Arrows */}
+                {/* Left Arrow */}
                 <button
-                    onClick={() => goToIndex(activeIndex - 1)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/0 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    onClick={handlePrevious}
+                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:outline-none z-10"
+                    aria-label="Previous slide"
                 >
                     <ChevronLeftIcon />
                 </button>
+
+                {/* Right Arrow */}
                 <button
-                    onClick={() => goToIndex(activeIndex + 1)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    onClick={handleNext}
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:outline-none z-10"
+                    aria-label="Next slide"
                 >
                     <ChevronRightIcon />
                 </button>
 
-                {/* Dots */}
-                <div className="hidden sm:flex absolute bottom-4 left-1/2 -translate-x-1/2 items-center space-x-2 z-10">
+                {/* Navigation Dots */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 z-10">
                     {banners.map((_, index) => (
                         <button
                             key={index}
-                            onClick={() => goToIndex(index)}
-                            className={`h-2 rounded-full transition-all duration-300 ${activeIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/50'
+                            onClick={() => handleDotClick(index)}
+                            className={`h-2 rounded-full transition-all duration-300 ${activeDotIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'
                                 }`}
-                        ></button>
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
                     ))}
                 </div>
             </div>

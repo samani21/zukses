@@ -6,7 +6,11 @@ import UserGreeting from 'components/UserGreeting';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import ProductList from 'components/ProductList';
 import SiteFooter from 'components/SiteFooter';
-
+interface Banner {
+  id: number;
+  src: string;
+  alt: string;
+}
 interface HomeLayoutProps {
   children?: ReactNode;
   mode?: 'user-profile';
@@ -27,7 +31,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
     setUser(fetchedUser);
   }, []);
 
-  const bannerImages = [
+  const sampleBanners: Banner[] = [
     { id: 1, src: '/image/banner1.webp', alt: 'Banner 1' },
     { id: 2, src: '/image/banner2.jpg', alt: 'Banner 2' },
     { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
@@ -67,8 +71,8 @@ const Home: React.FC<HomeLayoutProps> = () => {
   ];
   return (
     <MainLayout>
-      <main className="hidden md:block md:px-15 mx-auto">
-        <SlidingBanner banners={bannerImages} />
+      <main className="hidden md:block md:px-20 mx-auto">
+        <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
       </main>
       <div className='md:hidden'>
         <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
