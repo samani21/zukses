@@ -79,19 +79,19 @@ const ProfileForm = () => {
                         <div>
                             <h3 className="text-lg font-medium text-gray-800 mb-3">Ubah Kontak</h3>
                             <div className="space-y-4">
-                                <div className="flex items-center">
+                                <div className="md:flex items-center">
                                     <span className="w-full sm:w-1/4 text-sm text-gray-500">Email</span>
                                     <div className="flex-grow text-sm">
                                         aisyah.......@gmail.com
-                                        <span className="text-green-600 bg-green-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span>
+                                        <span className="text-blue-600 bg-blue-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span>
                                         <button className="text-blue-600 ml-4 text-sm hover:underline">Ubah</button>
                                     </div>
                                 </div>
-                                <div className="flex items-center">
+                                <div className="md:flex items-center">
                                     <span className="w-full sm:w-1/4 text-sm text-gray-500">Nomor HP</span>
                                     <div className="flex-grow text-sm">
                                         62853*****3301
-                                        <span className="text-green-600 bg-green-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span>
+                                        <span className="text-blue-600 bg-blue-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span>
                                         <button className="text-blue-600 ml-4 text-sm hover:underline">Ubah</button>
                                     </div>
                                 </div>

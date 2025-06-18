@@ -30,7 +30,7 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
             <div className="p-4 bg-white">
                 <div className="flex items-center gap-4 mb-4">
                     <img src="https://placehold.co/60x60/e2e8f0/333?text=IT" alt="Foto Profil" className="w-16 h-16 rounded-full border-2 border-white" />
-                    <div>
+                    <div className="flex-grow">
                         <h2 className="font-bold text-lg">Irvan Mamala</h2>
                         <button className="w-full bg-blue-600 text-white rounded-lg py-2 px-6 mt-1 font-semibold">Toko Saya</button>
                     </div>
@@ -75,8 +75,12 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
                     ))}
                 </div>
             </div>
+            <div className="p-4 mt-2">
+                <button className="w-full bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition">
+                    Logout
+                </button>
+            </div>
         </div>
     );
 };
-
 export default MobileSettings

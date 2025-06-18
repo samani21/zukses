@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+// --- ImageCropperModal.tsx ---
 interface ImageCropperModalProps {
     imageSrc: string;
     onCropComplete: (croppedImage: string) => void;
@@ -6,65 +7,54 @@ interface ImageCropperModalProps {
 }
 
 const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropComplete, onClose }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const imageRef = useRef<HTMLImageElement>(new Image());
-    const [zoom, setZoom] = useState(1);
-    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const containerRef = useRef<HTMLDivElement>(null);
+    const imageRef = useRef<HTMLImageElement>(null);
+    const cropBoxRef = useRef<HTMLDivElement>(null);
+
     const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-
-    const drawImage = useCallback(() => {
-        const canvas = canvasRef.current;
-        const image = imageRef.current;
-        if (!canvas || !image.complete) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        ctx.fillStyle = '#2d3748'; // bg-gray-800
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const canvasAspect = canvas.width / canvas.height;
-        const imageAspect = image.width / image.height;
-
-        let drawWidth, drawHeight;
-
-        if (imageAspect > canvasAspect) {
-            drawWidth = canvas.width;
-            drawHeight = canvas.width / imageAspect;
-        } else {
-            drawHeight = canvas.height;
-            drawWidth = canvas.height * imageAspect;
-        }
-
-        const finalDrawWidth = drawWidth * zoom;
-        const finalDrawHeight = drawHeight * zoom;
-
-        const finalOffsetX = offset.x + (canvas.width - finalDrawWidth) / 2;
-        const finalOffsetY = offset.y + (canvas.height - finalDrawHeight) / 2;
-
-        ctx.drawImage(image, finalOffsetX, finalOffsetY, finalDrawWidth, finalDrawHeight);
-
-    }, [zoom, offset]);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0, boxX: 0, boxY: 0 });
 
     useEffect(() => {
-        const image = imageRef.current;
-        image.src = imageSrc;
-        image.onload = drawImage;
-    }, [imageSrc, drawImage]);
+        // Mencegah scroll pada body saat modal aktif
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
 
-    useEffect(() => {
-        drawImage();
-    }, [zoom, offset, drawImage]);
-
-    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!cropBoxRef.current) return;
         setIsDragging(true);
-        setDragStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
+        // Menggunakan posisi cropbox saat ini untuk perhitungan
+        setDragStart({
+            x: e.clientX,
+            y: e.clientY,
+            boxX: cropBoxRef.current.offsetLeft,
+            boxY: cropBoxRef.current.offsetTop,
+        });
     };
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-        if (!isDragging) return;
-        setOffset({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isDragging || !cropBoxRef.current || !containerRef.current) return;
+
+        let newX = dragStart.boxX + (e.clientX - dragStart.x);
+        let newY = dragStart.boxY + (e.clientY - dragStart.y);
+
+        // Batasi pergerakan cropbox di dalam container gambar
+        const imageRect = imageRef.current!.getBoundingClientRect();
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const boxRect = cropBoxRef.current.getBoundingClientRect();
+
+        const minX = (containerRect.width - imageRect.width) / 2;
+        const maxX = minX + imageRect.width - boxRect.width;
+        const minY = (containerRect.height - imageRect.height) / 2;
+        const maxY = minY + imageRect.height - boxRect.height;
+
+        newX = Math.max(minX, Math.min(newX, maxX));
+        newY = Math.max(minY, Math.min(newY, maxY));
+
+        cropBoxRef.current.style.left = `${newX}px`;
+        cropBoxRef.current.style.top = `${newY}px`;
     };
 
     const handleMouseUp = () => {
@@ -72,41 +62,58 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
     };
 
     const handleSave = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
+        const image = imageRef.current;
+        const cropBox = cropBoxRef.current;
+        const container = containerRef.current;
+        if (!image || !cropBox || !container) return;
+
+        const canvas = document.createElement('canvas');
+        const finalSize = 150;
+        canvas.width = finalSize;
+        canvas.height = finalSize;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const scaleX = image.naturalWidth / image.clientWidth;
+        const scaleY = image.naturalHeight / image.clientHeight;
+
+        const sourceX = (cropBox.offsetLeft - (container.clientWidth - image.clientWidth) / 2) * scaleX;
+        const sourceY = (cropBox.offsetTop - (container.clientHeight - image.clientHeight) / 2) * scaleY;
+        const sourceWidth = cropBox.clientWidth * scaleX;
+        const sourceHeight = cropBox.clientHeight * scaleY;
+
+        ctx.drawImage(
+            image,
+            sourceX,
+            sourceY,
+            sourceWidth,
+            sourceHeight,
+            0,
+            0,
+            finalSize,
+            finalSize
+        );
         onCropComplete(canvas.toDataURL('image/jpeg'));
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4">
-            <div className="relative w-full max-w-md h-96">
-                <canvas
-                    ref={canvasRef}
-                    width={384}
-                    height={384}
-                    className="w-full h-full rounded-lg cursor-grab"
+        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+            <div
+                ref={containerRef}
+                className="relative w-full max-w-md h-96 bg-gray-900 rounded-lg overflow-hidden select-none flex items-center justify-center"
+            >
+                <img ref={imageRef} src={imageSrc} alt="Pilih area potong" className="max-w-full max-h-full pointer-events-none" />
+                <div
+                    ref={cropBoxRef}
+                    className="absolute border-2 border-dashed border-white cursor-move"
+                    style={{ width: '200px', height: '200px', top: '25%', left: '25%', transform: 'translate(0%, 0%)', boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.6)' }}
                     onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
-                />
-            </div>
-            <div className="p-4 bg-gray-900/50 backdrop-blur-sm rounded-b-lg w-full max-w-md flex flex-col items-center">
-                <label htmlFor="zoom" className="text-white text-sm mb-2">Zoom</label>
-                <input
-                    id="zoom"
-                    type="range"
-                    value={zoom}
-                    min={0.5}
-                    max={3}
-                    step={0.05}
-                    onChange={(e) => setZoom(parseFloat(e.target.value))}
-                    className="w-1/2"
-                />
-                <div className="flex gap-4 mt-4">
-                    <button onClick={onClose} className="px-4 py-2 rounded-lg border border-gray-400 text-white hover:bg-gray-700">Batal</button>
-                    <button onClick={handleSave} className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Simpan</button>
+                >
                 </div>
+            </div>
+            <div className="p-4 bg-gray-800/50 backdrop-blur-sm rounded-b-lg w-full max-w-md flex justify-center gap-4 mt-2">
+                <button onClick={onClose} className="px-6 py-2 rounded-lg border border-gray-400 text-white hover:bg-gray-700">Batal</button>
+                <button onClick={handleSave} className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Simpan</button>
             </div>
         </div>
     );

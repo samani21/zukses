@@ -67,7 +67,7 @@ const Header = () => {
     ];
 
     const headerRef = useRef<HTMLDivElement>(null);
-
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     // Klik di luar untuk menutup dropdown
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -80,6 +80,11 @@ const Header = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [headerRef]);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
+        setIsLoggedIn(!!token && !!user);
+    }, []);
 
 
     return (
@@ -131,12 +136,21 @@ const Header = () => {
                                     <CartIcon />
                                 </button>
                                 <div className="h-6 w-px bg-gray-200"></div>
-                                <button className="px-6 py-2 border border-gray-300 rounded-lg font-bold text-blue-600 hover:bg-gray-50 text-sm">
-                                    Masuk
-                                </button>
-                                <button className="px-6 py-2 bg-blue-600 border border-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 text-sm">
-                                    Daftar
-                                </button>
+                                {
+                                    isLoggedIn ?
+                                        <>
+                                            <div style={{ background: "#666666", borderRadius: "50%", padding: "5px", cursor: "pointer" }} onClick={() => window.location.href = '/user-profile'}>
+                                                <img src='/icon/user.svg' />
+                                            </div>
+                                        </> :
+                                        <>
+                                            <button className="px-6 py-2 border border-gray-300 rounded-lg font-bold text-blue-600 hover:bg-gray-50 text-sm" onClick={() => window.location.href = '/auth/login'}>
+                                                Masuk
+                                            </button>
+                                            <button className="px-6 py-2 bg-blue-600 border border-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 text-sm" onClick={() => window.location.href = '/auth/register'}>
+                                                Daftar
+                                            </button></>
+                                }
                             </div>
                         </div>
                         <div className="mt-2 flex items-center gap-x-4 gap-y-1 flex-wrap">

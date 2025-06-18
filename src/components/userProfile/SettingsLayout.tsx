@@ -3,12 +3,15 @@ import { ArrowLeftIcon } from './Icon';
 import MobileSettings from './MobileSettings';
 import DesktopSidebar from './DesktopSidebar';
 import ProfileForm from './ProfileForm';
-
-const SettingsLayout = () => {
+import AddressPage from './AddressPage';
+import BankAccountPage from './BankAccountPage';
+type Props = {
+    setHideNavbar: (value: boolean) => void;
+}
+const SettingsLayout = ({ setHideNavbar }: Props) => {
     const [activePage, setActivePage] = useState('Profil');
     const [isMobile, setIsMobile] = useState(false);
     const [view, setView] = useState<'main' | 'form'>('main'); // 'main' or 'form' view for mobile
-
     useEffect(() => {
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         if (typeof window !== 'undefined') {
@@ -18,11 +21,25 @@ const SettingsLayout = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (view === 'form') {
+            setHideNavbar(true)
+        } else {
+            setHideNavbar(false)
+        }
+    }, [view]);
+
     const renderContent = () => {
         switch (activePage) {
             case 'Profil':
                 return <ProfileForm />;
-            // Add cases for other pages like Alamat, Rekening Bank etc.
+            case 'Alamat':
+                return <AddressPage />;
+            case 'Rekening Bank':
+                return <BankAccountPage />;
+            case 'Rekening':
+                return <BankAccountPage />;
+            // Add cases for other pages
             default:
                 return <div>Konten untuk {activePage}</div>;
         }

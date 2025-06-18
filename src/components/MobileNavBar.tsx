@@ -1,5 +1,6 @@
-import React from 'react'
-// --- BARU: Komponen Navbar Bawah Mobile ---
+import React from 'react';
+import { useRouter } from 'next/router';
+
 const HomeIcon = ({ isActive }: { isActive?: boolean }) => (
     <svg className={`w-6 h-6 ${isActive ? 'text-blue-600' : 'text-gray-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -25,27 +26,59 @@ const AccountIcon = ({ isActive }: { isActive?: boolean }) => (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
     </svg>
 );
+
 function MobileNavBar() {
+    const router = useRouter();
+    const currentPath = router.pathname;
+
     const navItems = [
-        { name: 'Home', icon: HomeIcon, active: true },
-        { name: 'Video', icon: FoodIcon, active: false },
-        { name: 'Promo', icon: PromoIcon, active: false },
-        { name: 'Transaksi', icon: TransactionIcon, active: false },
-        { name: 'Akun', icon: AccountIcon, active: false },
+        { name: 'Home', icon: HomeIcon, href: '/', match: (path: string) => path === '/' },
+        { name: 'Video', icon: FoodIcon, href: '/video', match: (path: string) => path.startsWith('/video') },
+        { name: 'Promo', icon: PromoIcon, href: '/promo', match: (path: string) => path.startsWith('/promo') },
+        { name: 'Transaksi', icon: TransactionIcon, href: '/transactions', match: (path: string) => path.startsWith('/transactions') },
+        {
+            name: 'Akun',
+            icon: AccountIcon,
+            href: '/user-profile',
+            match: (path: string) => path.startsWith('/user-profile') || path.startsWith('/auth/login'),
+            onClick: () => {
+                const user = localStorage.getItem('user');
+                const token = localStorage.getItem('token');
+                if (user && token) {
+                    router.push('/user-profile');
+                } else {
+                    router.push('/auth/login');
+                }
+            }
+        },
     ];
 
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-t-md z-40">
             <div className="flex justify-around items-center h-16">
-                {navItems.map((item) => (
-                    <a href="#" key={item.name} className="flex flex-col items-center justify-center text-center group">
-                        <item.icon isActive={item.active} />
-                        <span className={`text-xs mt-1 ${item.active ? 'text-blue-600' : 'text-gray-500'}`}>{item.name}</span>
-                    </a>
-                ))}
+                {navItems.map((item) => {
+                    const isActive = item.match(currentPath);
+                    const IconComponent = item.icon;
+
+                    return item.name === 'Akun' ? (
+                        <button
+                            key={item.name}
+                            onClick={item.onClick}
+                            className="flex flex-col items-center justify-center text-center group focus:outline-none"
+                        >
+                            <IconComponent isActive={isActive} />
+                            <span className={`text-xs mt-1 ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>{item.name}</span>
+                        </button>
+                    ) : (
+                        <a href={item.href} key={item.name} className="flex flex-col items-center justify-center text-center group">
+                            <IconComponent isActive={isActive} />
+                            <span className={`text-xs mt-1 ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>{item.name}</span>
+                        </a>
+                    );
+                })}
             </div>
         </div>
     );
 }
 
-export default MobileNavBar
+export default MobileNavBar;

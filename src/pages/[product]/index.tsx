@@ -123,7 +123,7 @@ const ProductPage = () => {
             }
         },
         specifications: {
-            'Kategori': ['Shopee', 'Komputer & Aksesoris', 'Laptop', '2-in-1'],
+            'Kategori': ['Zukses', 'Komputer & Aksesoris', 'Laptop', '2-in-1'],
             'Kondisi': 'Bekas',
             'Merek': 'Lenovo',
             'Ukuran Layar Laptop': '< 13 inci',

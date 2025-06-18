@@ -1,10 +1,11 @@
 import Header from 'components/Header'
 import MobileNavBar from 'components/MobileNavBar'
 import SettingsLayout from 'components/userProfile/SettingsLayout'
-import React from 'react'
+import React, { useState } from 'react'
 
+const IndexPage = () => {
+    const [hideNavber, setHideNavbar] = useState<boolean>(false);
 
-const index = () => {
     return (
         <div>
             <div className='hidden md:block'>
@@ -12,14 +13,17 @@ const index = () => {
             </div>
             <div className="bg-gray-100 min-h-screen font-sans">
                 <div className="container mx-auto p-0 md:p-4 md:px-20">
-                    <SettingsLayout />
+                    <SettingsLayout setHideNavbar={setHideNavbar} />
                 </div>
             </div>
-            <div className=' md:hidden'>
-                <MobileNavBar />
-            </div>
+            {
+                !hideNavber &&
+                <div className='md:hidden'>
+                    <MobileNavBar />
+                </div>
+            }
         </div>
     )
 }
 
-export default index
+export default IndexPage

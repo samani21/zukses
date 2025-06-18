@@ -42,10 +42,10 @@ function MobileSearch({ onClose, suggestions }: MobileSearchProps) {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             autoFocus
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
                         />
                     </div>
-                    <button className="px-4 py-2 text-green-600 font-semibold text-sm">
+                    <button className="px-4 py-2 text-blue-600 font-semibold text-sm">
                         Cari
                     </button>
                 </div>
