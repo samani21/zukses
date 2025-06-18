@@ -36,7 +36,7 @@ const VerificationAccount = () => {
             if (res?.data?.status === 'success') {
                 setLoading(false)
                 localStorage.setItem('user', JSON.stringify(res?.data?.data));
-                localStorage.setItem('token', JSON.stringify(res?.data?.token));
+                localStorage.setItem('token', res?.data?.token as string);
                 localStorage.removeItem('timeOtp');
                 router.push('/');
             }

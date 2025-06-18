@@ -49,7 +49,7 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="font-semibold">Pesanan Saya</h2>
                     <button className="flex items-center text-sm text-gray-500">
-                        <span>Lihat Riwayat</span>
+                        <span onClick={() => onNavigate('Pesanan Saya')}>Lihat Riwayat</span>
                         <ChevronRightIcon className="w-4 h-4" />
                     </button>
                 </div>

@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
+import AddBankAccountModal from './AddBankAccountModal';
 
 const BankAccountPage = () => {
+        const [isModalOpen, setIsModalOpen] = useState(false);
     return (
         <div className="w-full">
             <div className="md:flex justify-between items-center mb-6">
@@ -23,6 +25,7 @@ const BankAccountPage = () => {
                     <button className="border border-gray-300 rounded px-6 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition">Hapus</button>
                 </div>
             </div>
+            {isModalOpen && <AddBankAccountModal onClose={() => setIsModalOpen(false)} />}
         </div>
     );
 };

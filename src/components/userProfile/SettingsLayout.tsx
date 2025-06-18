@@ -5,6 +5,7 @@ import DesktopSidebar from './DesktopSidebar';
 import ProfileForm from './ProfileForm';
 import AddressPage from './AddressPage';
 import BankAccountPage from './BankAccountPage';
+import MyOrdersPage from './MyOrdersPage';
 type Props = {
     setHideNavbar: (value: boolean) => void;
 }
@@ -39,6 +40,8 @@ const SettingsLayout = ({ setHideNavbar }: Props) => {
                 return <BankAccountPage />;
             case 'Rekening':
                 return <BankAccountPage />;
+            case 'Pesanan Saya':
+                return <MyOrdersPage />;
             // Add cases for other pages
             default:
                 return <div>Konten untuk {activePage}</div>;
