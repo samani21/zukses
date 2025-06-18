@@ -107,7 +107,7 @@ const Header = () => {
                 <div className="container mx-auto px-4 py-3 md:px-25">
                     <div className="hidden md:block">
                         <div className="flex flex-row items-center gap-4">
-                            <a href="/" className="text-4xl font-bold text-blue-600 shrink-0">
+                            <a onClick={() => window.location.href = '/'} className="text-4xl font-bold text-blue-600 shrink-0">
                                 <img src='/logo/logo.png' width={100} />
                             </a>
                             <button
