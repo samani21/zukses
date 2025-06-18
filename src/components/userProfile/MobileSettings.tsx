@@ -37,7 +37,7 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
                 </div>
                 <div className="bg-white p-3 rounded-lg border flex justify-between items-center">
                     <div>
-                        <h3 className="font-bold text-green-600">PLUS</h3>
+                        <h3 className="font-bold text-blue-600">PLUS</h3>
                         <p className="text-xs text-gray-600">Nikmatin Gratis Ongkir tanpa batas!</p>
                     </div>
                     <ChevronRightIcon className="w-5 h-5 text-gray-400" />

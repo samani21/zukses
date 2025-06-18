@@ -10,7 +10,7 @@ const MyOrdersPage = () => {
             <div className="border-b">
                 <nav className="flex space-x-4 overflow-x-auto no-scrollbar">
                     {tabs.map(tab => (
-                        <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-1 whitespace-nowrap text-sm font-medium ${activeTab === tab ? 'text-orange-600 border-b-2 border-orange-600' : 'text-gray-500 hover:text-gray-700'}`}>
+                        <button key={tab} onClick={() => setActiveTab(tab)} className={`py-2 px-1 whitespace-nowrap text-sm font-medium ${activeTab === tab ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                             {tab}
                         </button>
                     ))}
@@ -18,7 +18,7 @@ const MyOrdersPage = () => {
             </div>
             <div className="relative mt-4 mb-4">
                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input type="text" placeholder="Kamu bisa cari berdasarkan Nama Penjual, No. Pesanan atau Nama Produk" className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                <input type="text" placeholder="Kamu bisa cari berdasarkan Nama Penjual, No. Pesanan atau Nama Produk" className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             {/* Order Item */}
@@ -51,10 +51,10 @@ const MyOrdersPage = () => {
                 <div className="border-t pt-3 border-gray-300">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
                         <p className="text-sm text-gray-500">Dibatalkan secara otomatis oleh sistem Shopee</p>
-                        <p><span className="text-sm">Total Pesanan:</span> <span className="font-bold text-lg text-orange-600">Rp31.000</span></p>
+                        <p><span className="text-sm">Total Pesanan:</span> <span className="font-bold text-lg text-blue-600">Rp31.000</span></p>
                     </div>
                     <div className="flex flex-col sm:flex-row justify-end items-stretch gap-3">
-                        <button className="bg-orange-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-orange-700">Beli Lagi</button>
+                        <button className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-md hover:bg-blue-700">Beli Lagi</button>
                         <button className="border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-100">Tampilkan Rincian Pembatalan</button>
                         <button className="border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-100">Hubungi Penjual</button>
                     </div>
