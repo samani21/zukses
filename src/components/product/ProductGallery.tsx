@@ -111,7 +111,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                 </button>
                 <div ref={thumbnailContainerRef} className="flex space-x-2 overflow-x-auto p-1 scroll-smooth no-scrollbar">
                     {images.map((thumb, index) => (
-                        <button key={thumb.id} onClick={() => setActiveIndex(index)} className={`flex-shrink-0 w-1/5 rounded-md border-2 p-1 transition-colors ${activeIndex === index ? 'border-orange-500' : 'border-transparent'}`}>
+                        <button key={thumb.id} onClick={() => setActiveIndex(index)} className={`flex-shrink-0 w-1/5 rounded-md border-2 p-1 transition-colors ${activeIndex === index ? 'border-blue-500' : 'border-transparent'}`}>
                             <img src={thumb.url.replace('600x400', '100x100')} alt={thumb.alt} className="w-full h-auto rounded" />
                         </button>
                     ))}
