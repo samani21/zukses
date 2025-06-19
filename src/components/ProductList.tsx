@@ -32,7 +32,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 {filteredProducts.map(product => (
                     <a key={product.id} className="bg-white rounded-lg overflow-hidden group" onClick={() => window.location.href = `/${product.name.toLowerCase().replace(/\s+/g, '-')}`}>
                         <img src={product.imageUrl} alt={product.name} className="w-full group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
-                        <div className="p-4">
+                        <div className="p-4 pl-0">
                             <h3 className="text-sm text-gray-700 truncate">{product.name}</h3>
                             <p className="text-base font-bold mt-1">Rp{product.price}</p>
                             <p className="text-xs text-gray-500 mt-2">{product.location}</p>

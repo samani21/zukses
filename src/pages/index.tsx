@@ -71,19 +71,21 @@ const Home: React.FC<HomeLayoutProps> = () => {
   ];
   return (
     <MainLayout>
-      <main className="hidden md:block md:px-20 mx-auto">
-        <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
-      </main>
-      <div className='md:hidden'>
-        <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
+      <div className='lg:px-45'>
+        <main className="md:px-20 mx-auto">
+          <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
+        </main>
+        <div className='md:hidden'>
+          <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
+        </div>
+        <main className='md:px-15'>
+          <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
+        </main>
+        <main className="container mx-auto pb-24 md:px-10">
+          <ProductList products={allProducts} selectedCategory={selectedCategory} />
+        </main>
       </div>
-      <main className='md:px-15'>
-        <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
-      </main>
-      <main className="container mx-auto pb-24 md:px-10">
-        <ProductList products={allProducts} selectedCategory={selectedCategory} />
-      </main>
-      <main className="container mx-auto pb-24 md:px-20">
+      <main className="container mx-auto">
         <SiteFooter />
       </main>
     </MainLayout>
