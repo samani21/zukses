@@ -4,7 +4,7 @@ function SiteFooter() {
     return (
         <footer className="bg-white border-t border-gray-200 mt-8 hidden md:block">
             <div className="container mx-auto py-8">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 px-65">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 px-30">
                     {/* Logo & Desc */}
                     <div className="md:col-span-1">
                         <img src="/logo/logo.png" alt="Zukses Logo" className="h-8 mb-4" />
@@ -57,7 +57,7 @@ function SiteFooter() {
                         </div>
                     </div>
                 </div>
-                <div className="border-t border-gray-200 mt-8 pt-6 px-65">
+                <div className="border-t border-gray-200 mt-8 pt-6 px-30">
                     <h3 className="font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
                     <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
                         <img src="/icon/alfamart-2.webp" alt="Alfamart" />
@@ -68,7 +68,7 @@ function SiteFooter() {
                         <img src="/icon/home-credit.webp" alt="HOMECREDIt" />
                     </div>
                 </div>
-                <div className="border-t border-gray-200 mt-8 pt-6 px-65">
+                <div className="border-t border-gray-200 mt-8 pt-6 px-30">
                     <h3 className="font-bold text-gray-800 mb-4">Jasa Pengiriman</h3>
                     <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
                         <img src="/icon/JNE.webp" alt="JNE" />

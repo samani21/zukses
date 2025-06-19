@@ -71,7 +71,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
   ];
   return (
     <MainLayout>
-      <div className='lg:px-45'>
+      <div className='lg:px-10'>
         <main className="md:px-20 mx-auto">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
