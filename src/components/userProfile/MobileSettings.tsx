@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { ArchiveBoxIcon, ArrowLeftIcon, ChevronRightIcon, Cog6ToothIcon, StarIcon, TruckIcon, UserCircleIcon, WalletIcon } from './Icon';
+import { useRouter } from 'next/router';
 const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
     const orderIcons = [
         { icon: <WalletIcon className="w-6 h-6 text-gray-600" />, label: "Bayar" },
@@ -13,6 +14,12 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
         { icon: <img src='/icon/bank.png' />, label: "Rekening" },
         { icon: <img src='/icon/kemanan.png' />, label: "Keamanan" },
     ];
+    const router = useRouter();
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push('/');
+    }, [router]);
     return (
         <div className="w-full bg-gray-50 md:hidden">
             {/* Header */}
@@ -75,7 +82,7 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
                     ))}
                 </div>
             </div>
-            <div className="p-4 mt-2">
+            <div className="p-4 mt-2" onClick={handleLogout}>
                 <button className="w-full bg-red-500 text-white font-semibold py-3 rounded-lg hover:bg-red-600 transition">
                     Logout
                 </button>
