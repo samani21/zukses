@@ -7,16 +7,29 @@ const urlMap: Record<URLType, string> = {
     zukses: Zukses
 };
 
+// Fungsi untuk membersihkan token dari tanda kutip jika perlu
+const getCleanToken = (token?: string): string | null => {
+    const rawToken = token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+    if (!rawToken) return null;
+
+    try {
+        return JSON.parse(rawToken); // Jika token disimpan sebagai JSON string
+    } catch {
+        return rawToken.replace(/^"|"$/g, ''); // Hilangkan tanda kutip jika ada
+    }
+};
+
 const Delete = <T = unknown>(
     url: URLType,
     path: string,
     token?: string
 ): Promise<AxiosResponse<T>> => {
     const baseUrl = urlMap[url];
-    const bearer = token || localStorage.getItem('token');
-    const config = token || localStorage.getItem('token')
+    const cleanToken = getCleanToken(token);
+
+    const config = cleanToken
         ? {
-            headers: { Authorization: `Bearer ${bearer}` }
+            headers: { Authorization: `Bearer ${cleanToken}` }
         }
         : {};
 
