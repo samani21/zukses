@@ -69,17 +69,23 @@ const AutocompleteAddress = ({
     const [selectedCity, setSelectedCity] = useState<{ id: number; name: string } | null>(null);
     const [selectedDistrict, setSelectedDistrict] = useState<{ id: number; name: string } | null>(null);
     const [options, setOptions] = useState<Option[]>([]);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const inputRef = useRef<HTMLInputElement | null>(null);
-    const wasFocusedOnce = useRef(false);
 
-    // debounce inputValue for 3 seconds
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const wasFocusedOnce = useRef(false);
+    const skipNextDebounce = useRef(false); // 🛡️ Mencegah debounce saat input dari pilihan
     useEffect(() => {
         const handler = setTimeout(() => {
-            if (inputValue.trim()) {
+            if (inputValue.trim() === '') {
+                setDebouncedInputValue('');
+                setTab(0); // Kembali ke tab Province
+                setOptions([]); // Kosongkan list autocomplete
+            } else if (!skipNextDebounce.current) {
                 setDebouncedInputValue(inputValue);
             }
-        }, 500); // ⏳ 3 detik debounce
+
+            skipNextDebounce.current = false;
+        }, 500);
 
         return () => clearTimeout(handler);
     }, [inputValue]);
@@ -154,9 +160,7 @@ const AutocompleteAddress = ({
     }, [isFocused, tab, selectedProvince, selectedCity, selectedDistrict, debouncedInputValue]);
 
     useEffect(() => {
-        if (!openModalAddAddress) {
-            setInputValue('');
-        }
+        if (!openModalAddAddress) setInputValue('');
     }, [openModalAddAddress]);
 
     useEffect(() => {
@@ -165,7 +169,6 @@ const AutocompleteAddress = ({
                 setIsFocused(false);
             }
         };
-
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -173,14 +176,13 @@ const AutocompleteAddress = ({
     }, []);
 
     useEffect(() => {
-        if (dataFullAddress) {
-            setInputValue(dataFullAddress);
-        } else {
-            setInputValue('');
-        }
+        if (dataFullAddress) setInputValue(dataFullAddress);
+        else setInputValue('');
     }, [dataFullAddress]);
 
     const handleSelect = (step: number, code: string, label: string, option?: Option) => {
+        skipNextDebounce.current = true; // 🛡️ mencegah debounce
+
         if (option && isAutocompleteOption(option)) {
             const { province_id, city_id, district_id, postcode_id } = option.compilationID;
             const full = getFullLabel(label);
@@ -227,8 +229,7 @@ const AutocompleteAddress = ({
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        setInputValue(val);
+        setInputValue(e.target.value);
     };
 
     return (
