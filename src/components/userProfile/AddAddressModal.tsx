@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { InformationCircleIcon, XMarkIcon } from './Icon';
 import AutocompleteAddress from 'components/AutocompleteAlamat';
-import GoogleMapsAutocomplete from 'components/AutocompleteStreetAddress';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
 import { AddLocation, InputFlex, LabelContainer, LocationContainer, OptionLabel, SwitchContainer, WrapperInput, WrapperLabel } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
@@ -62,12 +61,14 @@ type GetAddressData = {
 
 type Props = {
     setOpenModalAddAdress: (value: boolean) => void;
+    setIsAdd: (value: boolean) => void;
     setOpenDelete: (value: number) => void;
     handleAdd: (data: AddressData, id?: number) => Promise<void>;
     editData?: GetAddressData | null;
     openModalAddAddress?: boolean;
+    isAdd?: boolean;
 }
-const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress, setOpenDelete }: Props) => {
+const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress, setOpenDelete, isAdd, setIsAdd }: Props) => {
     const [formData, setFormData] = useState<FormData>({
         name: '',
         phone: '',
@@ -83,6 +84,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         postCode: 0,
         tag: ''
     });
+    console.log('formData', formData)
     const [openMaps, setOpenMaps] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isEdit, setIsEdit] = useState(false);
@@ -105,6 +107,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         });
         setErrors({});
         setIsEdit(false);
+        setIsAdd(false)
     };
 
     const populateForm = (data: GetAddressData) => {
@@ -133,6 +136,12 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
             resetForm();
         }
     }, [editData]);
+
+    useEffect(() => {
+        if (isAdd) {
+            resetForm()
+        }
+    }, [isAdd])
 
     const handleChange = <K extends keyof FormData>(key: K, value: FormData[K]) => {
         setFormData((prev) => ({ ...prev, [key]: value }));
@@ -171,6 +180,12 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         setOpenModalAddAdress(false);
         resetForm();
     };
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             {
@@ -233,6 +248,8 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     subdistrict={formData?.fullAddress?.split(',')[1]?.trim() ?? ''}
                                     setLat={(val) => handleChange('lat', val)}
                                     setLong={(val) => handleChange('long', val)}
+                                    setFullAddress={(val) => handleChange('fullAddressStreet', val)}
+                                    dataFullAddress={formData.fullAddressStreet}
                                 />
                                 {errors.fullAddressStreet && (
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
@@ -277,6 +294,9 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     ))}
                                 </WrapperLabel>
                             </LabelContainer>
+                            {errors.tag && (
+                                <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.tag}</div>
+                            )}
                             <LabelContainer>
                                 Atur Sebagai Alamat Utama
                                 <SwitchContainer>

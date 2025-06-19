@@ -2,6 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+// Tambahkan interface untuk menggantikan any
+interface SelectedAddress {
+    mainText: string;
+    secondaryText: string;
+    fullAddress: string;
+    placeId: string;
+    lat: number;
+    lng: number;
+}
+
 // Hook untuk memuat skrip Google Maps
 function useGoogleMapsScript(apiKey: string): boolean {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -46,15 +56,17 @@ function AddressAutocomplete({
     onAddressSelect,
     label = 'Cari alamat',
     filterArea = '',
+    dataFullAddress,
     isScriptLoaded,
 }: {
-    onAddressSelect: (address: any) => void;
+    onAddressSelect: (address: SelectedAddress) => void;
     label?: string;
     filterArea?: string;
+    dataFullAddress?: string;
     isScriptLoaded: boolean;
 }) {
-    const [inputValue, setInputValue] = useState('');
-    const [predictions, setPredictions] = useState<any[]>([]);
+    const [inputValue, setInputValue] = useState<string>(dataFullAddress ?? '');
+    const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
@@ -192,18 +204,19 @@ function AddressAutocomplete({
 
 export default function AddressAutocompleteStreet({
     subdistrict = '',
+    dataFullAddress = '',
     setLat,
     setLong,
+    setFullAddress,
 }: {
     subdistrict?: string;
+    dataFullAddress?: string;
     setLat: (val: number) => void;
     setLong: (val: number) => void;
+    setFullAddress: (val: string) => void;
 }) {
-
     const GOOGLE_MAPS_API_KEY = "AIzaSyBBWc0LFEfssFFSIl4vc95ennI3uRcm6oo";
     const isMapsLoaded = useGoogleMapsScript(GOOGLE_MAPS_API_KEY);
-    console.log(subdistrict)
-    const [selectedAddress, setSelectedAddress] = useState<any>(null);
     const [mapCenter, setMapCenter] = useState({ lat: -3.34, lng: 114.59 });
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
@@ -225,15 +238,14 @@ export default function AddressAutocompleteStreet({
         }
     }, [mapCenter]);
 
-    const handleAddressSelect = (address: any) => {
-        setSelectedAddress(address);
+    const handleAddressSelect = (address: SelectedAddress) => {
+        setFullAddress(address.fullAddress);
         if (address.lat && address.lng) {
             setLat(address.lat);
             setLong(address.lng);
             setMapCenter({ lat: address.lat, lng: address.lng });
         }
     };
-
 
     return (
         <div>
@@ -243,20 +255,10 @@ export default function AddressAutocompleteStreet({
                     onAddressSelect={handleAddressSelect}
                     filterArea={subdistrict}
                     isScriptLoaded={isMapsLoaded}
+                    dataFullAddress={dataFullAddress}
                 />
             ) : (
                 <div className="text-center text-gray-500">Memuat komponen pencarian...</div>
-            )}
-
-            {selectedAddress && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <h3 className="text-lg font-semibold text-blue-800 mb-2">Alamat Terpilih</h3>
-                    <div className="space-y-1 text-sm text-gray-700">
-                        <p><strong>Alamat:</strong> {selectedAddress.fullAddress}</p>
-                        <p><strong>Latitude:</strong> {selectedAddress.lat}</p>
-                        <p><strong>Longitude:</strong> {selectedAddress.lng}</p>
-                    </div>
-                </div>
             )}
         </div>
     );

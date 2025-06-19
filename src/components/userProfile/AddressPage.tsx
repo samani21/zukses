@@ -61,6 +61,7 @@ const AddressPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [addresses, setAddresses] = useState<GetAddressData[]>([]);
     const [dataAddress, setDataAddress] = useState<GetAddressData | null>(null);
+    const [isAdd, setIsAdd] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<{
         message: string;
         type?: 'success' | 'error' | 'info';
@@ -170,7 +171,10 @@ const AddressPage = () => {
     return (
         <div className="w-full">
             <div className="flex justify-end mb-6">
-                <button className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex items-center gap-2" onClick={() => setOpenModalAddAdress(true)}>
+                <button className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex items-center gap-2" onClick={() => {
+                    setOpenModalAddAdress(true)
+                    setIsAdd(true);
+                }}>
                     <span className="text-xl">+</span> Tambah Alamat Baru
                 </button>
             </div>
@@ -206,7 +210,7 @@ const AddressPage = () => {
                     ))}
                 </div>
             </div>
-            {openModalAddAddress && <AddAddressModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} />}
+            {openModalAddAddress && <AddAddressModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd}/>}
             <ModalContainer open={openDelete > 0 ? true : false}>
                 <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
             </ModalContainer>
