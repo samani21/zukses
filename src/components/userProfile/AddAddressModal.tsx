@@ -6,6 +6,7 @@ import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisa
 import { AddLocation, InputFlex, LabelContainer, LocationContainer, OptionLabel, SwitchContainer, WrapperInput, WrapperLabel } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
 import { Checkbox, Switch, TextField } from '@mui/material';
+import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
 
 type FormData = {
     name: string;
@@ -227,14 +228,11 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                                 )}
                             </WrapperInput>
-
                             <WrapperInput>
-                                <GoogleMapsAutocomplete
-                                    setFullAddressStreet={(val) => handleChange('fullAddressStreet', val)}
-                                    openModalAddAddress={openModalAddAddress}
+                                <AddressAutocompleteStreet
+                                    subdistrict={formData?.fullAddress?.split(',')[1]?.trim() ?? ''}
                                     setLat={(val) => handleChange('lat', val)}
                                     setLong={(val) => handleChange('long', val)}
-                                    dataFullAddressStreet={formData.fullAddressStreet}
                                 />
                                 {errors.fullAddressStreet && (
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
