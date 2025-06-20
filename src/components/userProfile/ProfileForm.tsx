@@ -8,6 +8,7 @@ import { Response } from 'services/api/types';
 import Post from 'services/api/Post';
 import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
+import UpdateContactModal from './UpdateContactModal';
 
 function dataURLtoFile(dataurl: string, filename: string): File | null {
     const arr = dataurl.split(',');
@@ -66,8 +67,12 @@ const ProfileForm = () => {
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [user, setUser] = useState<User | null>(null);
     const [profileImage, setProfileImage] = useState<string | null>();
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<'email' | 'hp' | null>(null);
     const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
+    const isValidEmail = (email: unknown): email is string =>
+        typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const [snackbar, setSnackbar] = useState<{
         message: string;
         type?: 'success' | 'error' | 'info';
@@ -168,6 +173,24 @@ const ProfileForm = () => {
         }
     }
 
+    const handleOpenModal = (type: 'email' | 'hp') => {
+        setModalType(type);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setModalType(null);
+    };
+
+    const handleSaveContact = (newValue: string) => {
+        if (modalType) {
+            console.log(`Saving new ${modalType}:`, newValue);
+            // Tambahkan logic update API jika diperlukan
+        }
+        handleCloseModal();
+    };
+
     return (
         <div className="w-full">
             {imageToCrop && (
@@ -175,6 +198,15 @@ const ProfileForm = () => {
                     imageSrc={imageToCrop}
                     onCropComplete={handleCropComplete}
                     onClose={() => setImageToCrop(null)}
+                />
+            )}
+            {isModalOpen && modalType && (
+                <UpdateContactModal
+                    type={modalType}
+                    currentValue={modalType === 'email' ? isValidEmail(user?.email) ? user.email : '' : String(user?.whatsapp)}
+                    onClose={handleCloseModal}
+                    onSave={handleSaveContact}
+                    userId={user?.id}
                 />
             )}
             <div className="flex flex-col lg:flex-row gap-8">
@@ -237,17 +269,19 @@ const ProfileForm = () => {
                                 <div className="md:flex items-center">
                                     <span className="w-full sm:w-1/4 text-sm text-gray-500">Email</span>
                                     <div className="flex-grow text-sm">
-                                        aisyah.......@gmail.com
-                                        <span className="text-blue-600 bg-blue-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span>
-                                        <button className="text-blue-600 ml-4 text-sm hover:underline">Ubah</button>
+                                        {isValidEmail(user?.email) ? user.email : ''}
+                                        {isValidEmail(user?.email) ? <span className="text-blue-600 bg-blue-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span> : ''}
+
+                                        <span className="text-blue-600 ml-4 text-sm hover:underline cursor-pointer" onClick={() => handleOpenModal('email')}>Ubah</span>
                                     </div>
                                 </div>
                                 <div className="md:flex items-center">
                                     <span className="w-full sm:w-1/4 text-sm text-gray-500">Nomor HP</span>
                                     <div className="flex-grow text-sm">
-                                        62853*****3301
-                                        <span className="text-blue-600 bg-blue-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span>
-                                        <button className="text-blue-600 ml-4 text-sm hover:underline">Ubah</button>
+                                        {user?.whatsapp ? user.whatsapp : ''}
+                                        {user?.whatsapp ? <span className="text-blue-600 bg-blue-100 text-xs px-2 py-0.5 rounded-full ml-2">Terverifikasi</span> : ''}
+
+                                        <span className="text-blue-600 ml-4 text-sm hover:underline cursor-pointer" onClick={() => handleOpenModal('hp')}>Ubah</span>
                                     </div>
                                 </div>
                             </div>
