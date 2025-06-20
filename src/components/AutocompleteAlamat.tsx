@@ -11,9 +11,9 @@ import {
     Box,
     CircularProgress,
 } from '@mui/material';
-import axios from 'axios';
-import Get from 'services/api/Get';
+import Get from 'services/api/Get'; // Pastikan path ini sesuai dengan struktur proyek Anda
 
+// --- TYPE DEFINITIONS ---
 type AutocompleteOption = {
     label: string;
     code: string;
@@ -47,10 +47,12 @@ type Props = {
     openModalAddAddress?: boolean;
 };
 
+// --- TYPE GUARD ---
 function isAutocompleteOption(option: Option): option is AutocompleteOption {
     return option !== undefined && typeof option === 'object' && 'compilationID' in option;
 }
 
+// --- REACT COMPONENT ---
 const AutocompleteAddress = ({
     setFullAddress,
     setProv,
@@ -60,6 +62,7 @@ const AutocompleteAddress = ({
     dataFullAddress,
     openModalAddAddress
 }: Props) => {
+    // --- STATE MANAGEMENT ---
     const [inputValue, setInputValue] = useState('');
     const [debouncedInputValue, setDebouncedInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -70,35 +73,62 @@ const AutocompleteAddress = ({
     const [selectedDistrict, setSelectedDistrict] = useState<{ id: number; name: string } | null>(null);
     const [options, setOptions] = useState<Option[]>([]);
 
+    // --- REFS ---
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const wasFocusedOnce = useRef(false);
-    const skipNextDebounce = useRef(false); // 🛡️ Mencegah debounce saat input dari pilihan
+    const skipNextDebounce = useRef(false);
+
+    // --- HOOKS ---
     useEffect(() => {
         const handler = setTimeout(() => {
             if (inputValue.trim() === '') {
                 setDebouncedInputValue('');
-                setTab(0); // Kembali ke tab Province
-                setOptions([]); // Kosongkan list autocomplete
+                setTab(0);
             } else if (!skipNextDebounce.current) {
                 setDebouncedInputValue(inputValue);
             }
-
             skipNextDebounce.current = false;
         }, 500);
 
         return () => clearTimeout(handler);
     }, [inputValue]);
 
-    const getFullLabel = (
-        postcode?: string,
-        district?: string,
-        city?: string,
-        province?: string
-    ) => {
-        return [postcode, district, city, province].filter(Boolean).join(', ');
-    };
+    useEffect(() => {
+        if (isFocused) {
+            fetchOptions();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isFocused, tab, selectedProvince, selectedCity, selectedDistrict, debouncedInputValue]);
 
+    useEffect(() => {
+        if (!openModalAddAddress) {
+            setInputValue(dataFullAddress || '');
+        }
+    }, [openModalAddAddress, dataFullAddress]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsFocused(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (dataFullAddress) {
+            setInputValue(dataFullAddress);
+        } else {
+            setInputValue('');
+        }
+    }, [dataFullAddress]);
+
+
+    // --- DATA FETCHING ---
     const fetchOptions = () => {
         let cancelled = false;
 
@@ -108,7 +138,7 @@ const AutocompleteAddress = ({
 
                 if (debouncedInputValue.trim()) {
                     const res = await Get<{ data: { data: Option[] } }>('zukses', `full-address?search=${debouncedInputValue}`);
-                    if (!cancelled && res) setOptions(res.data?.data);
+                    if (!cancelled && res) setOptions(res.data?.data || []);
                 } else if (tab === 0) {
                     const res = await Get<{ data: Province[] }>('zukses', `master/province?page_size=1000`);
                     if (!cancelled && res) {
@@ -146,79 +176,83 @@ const AutocompleteAddress = ({
         };
     };
 
-    useEffect(() => {
-        let cancelFn: () => void;
-        if (!isFocused) return;
+    // --- HELPER FUNCTIONS ---
+    const getFullLabel = (
+        province?: string,
+        city?: string,
+        district?: string,
+        postcode?: string
+    ) => {
+        return [province, city, district, postcode].filter(Boolean).join(', ');
+    };
 
-        const run = async () => {
-            cancelFn = fetchOptions();
-        };
-        run();
-        return () => {
-            if (typeof cancelFn === 'function') cancelFn();
-        };
-    }, [isFocused, tab, selectedProvince, selectedCity, selectedDistrict, debouncedInputValue]);
+    const escapeRegExp = (str: string) => {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    };
 
-    useEffect(() => {
-        if (!openModalAddAddress) setInputValue('');
-    }, [openModalAddAddress]);
+    const renderHighlightedText = (text: string, highlight: string) => {
+        const trimmedHighlight = highlight.trim();
+        if (!trimmedHighlight) {
+            return <span>{text}</span>;
+        }
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsFocused(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+        const escapedHighlight = escapeRegExp(trimmedHighlight);
+        const regex = new RegExp(`(${escapedHighlight})`, 'gi');
+        const parts = text.split(regex);
 
-    useEffect(() => {
-        if (dataFullAddress) setInputValue(dataFullAddress);
-        else setInputValue('');
-    }, [dataFullAddress]);
+        return (
+            <span>
+                {parts.map((part, index) =>
+                    part.toLowerCase() === trimmedHighlight.toLowerCase() ? (
+                        <strong key={index} style={{ color: 'black' }}>{part}</strong>
+                    ) : (
+                        part
+                    )
+                )}
+            </span>
+        );
+    };
 
+    // --- EVENT HANDLERS ---
     const handleSelect = (step: number, code: string, label: string, option?: Option) => {
-        skipNextDebounce.current = true; // 🛡️ mencegah debounce
+        skipNextDebounce.current = true;
 
         if (option && isAutocompleteOption(option)) {
             const { province_id, city_id, district_id, postcode_id } = option.compilationID;
-            const full = getFullLabel(label);
-            setSelectedProvince({ id: province_id, name: label });
-            setSelectedCity({ id: city_id, name: label });
-            setSelectedDistrict({ id: district_id, name: label });
+            const full = label;
+
             setProv(province_id);
             setCity(city_id);
             setDistrict(district_id);
             setPostCode(postcode_id);
+
             setInputValue(full);
             setFullAddress(full);
+
             setIsFocused(false);
             inputRef.current?.blur();
             return;
         }
 
-        if (step === 0) {
+        if (step === 0) { // Province
             setSelectedProvince({ id: +code, name: label });
             setSelectedCity(null);
             setSelectedDistrict(null);
             setTab(1);
             setInputValue(label);
             setProv(+code);
-        } else if (step === 1) {
+        } else if (step === 1) { // City
             setSelectedCity({ id: +code, name: label });
             setSelectedDistrict(null);
             setTab(2);
             setCity(+code);
             setInputValue(getFullLabel(selectedProvince?.name, undefined, undefined, label));
-        } else if (step === 2) {
+        } else if (step === 2) { // District
             setSelectedDistrict({ id: +code, name: label });
             setTab(3);
             setDistrict(+code);
             setInputValue(getFullLabel(selectedProvince?.name, selectedCity?.name, undefined, label));
-        } else if (step === 3) {
+        } else if (step === 3) { // Postcode
             setPostCode(+code);
             const full = getFullLabel(selectedProvince?.name, selectedCity?.name, selectedDistrict?.name, label);
             setInputValue(full);
@@ -232,6 +266,7 @@ const AutocompleteAddress = ({
         setInputValue(e.target.value);
     };
 
+    // --- RENDER ---
     return (
         <Box sx={{ position: 'relative' }} ref={containerRef}>
             <TextField
@@ -243,17 +278,14 @@ const AutocompleteAddress = ({
                 inputRef={inputRef}
                 onFocus={() => {
                     setIsFocused(true);
-                    setInputValue('');
-                    if (wasFocusedOnce.current) {
+                    if (wasFocusedOnce.current || !dataFullAddress) {
                         setInputValue('');
                         setTab(0);
                         setSelectedProvince(null);
                         setSelectedCity(null);
                         setSelectedDistrict(null);
-                        setOptions([]);
-                    } else {
-                        wasFocusedOnce.current = true;
                     }
+                    wasFocusedOnce.current = true;
                 }}
             />
 
@@ -264,40 +296,54 @@ const AutocompleteAddress = ({
                 />
             )}
 
-            {isFocused && !debouncedInputValue && (
-                <Tabs
-                    value={tab}
-                    onChange={(_, newTab) => setTab(newTab)}
-                    variant="fullWidth"
-                    sx={{ mt: 1 }}
-                >
-                    <Tab label="Province" />
-                    <Tab label="City" disabled={!selectedProvince} />
-                    <Tab label="District" disabled={!selectedCity} />
-                    <Tab label="Postcode" disabled={!selectedDistrict} />
-                </Tabs>
-            )}
-
             {isFocused && (
-                <List sx={{ border: '1px solid #ddd', maxHeight: 200, overflowY: 'auto' }}>
-                    {options?.length > 0 ? (
-                        options.map((option, idx) => (
-                            <ListItemButton
-                                key={idx}
-                                onMouseDown={(e) => {
-                                    e.preventDefault();
-                                    handleSelect(tab, option.code, option.label, option);
-                                }}
-                            >
-                                <Typography>{option.label}</Typography>
-                            </ListItemButton>
-                        ))
-                    ) : (
-                        <Typography sx={{ p: 2 }} variant="body2">
-                            {loading ? 'Loading...' : 'No data found'}
-                        </Typography>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        zIndex: 1200,
+                        width: '100%',
+                        bgcolor: 'background.paper',
+                        border: '1px solid #ddd',
+                        borderRadius: 1,
+                        mt: 1,
+                        boxShadow: 3,
+                    }}
+                >
+                    {!debouncedInputValue && (
+                        <Tabs
+                            value={tab}
+                            onChange={(_, newTab) => setTab(newTab)}
+                            variant="fullWidth"
+                        >
+                            <Tab label="Provinsi" />
+                            <Tab label="Kota" disabled={!selectedProvince} />
+                            <Tab label="Kecamatan" disabled={!selectedCity} />
+                            <Tab label="Kode Pos" disabled={!selectedDistrict} />
+                        </Tabs>
                     )}
-                </List>
+
+                    <List sx={{ maxHeight: 200, overflowY: 'auto', p: 0 }}>
+                        {options?.length > 0 ? (
+                            options.map((option, idx) => (
+                                <ListItemButton
+                                    key={`${option.code}-${idx}`}
+                                    onMouseDown={(e) => {
+                                        e.preventDefault();
+                                        handleSelect(tab, option.code, option.label, option);
+                                    }}
+                                >
+                                    <Typography component="div">
+                                        {renderHighlightedText(option.label, debouncedInputValue)}
+                                    </Typography>
+                                </ListItemButton>
+                            ))
+                        ) : (
+                            <Typography sx={{ p: 2 }} variant="body2" color="text.secondary">
+                                {loading ? 'Memuat...' : 'Data tidak ditemukan'}
+                            </Typography>
+                        )}
+                    </List>
+                </Box>
             )}
         </Box>
     );
