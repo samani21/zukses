@@ -65,7 +65,7 @@ const ProfileForm = () => {
     const [errors, setErrors] = useState<ErrorMap>({})
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [user, setUser] = useState<User | null>(null);
-    const [profileImage, setProfileImage] = useState<string | null>("https://placehold.co/150x150/e2e8f0/333?text=Z");
+    const [profileImage, setProfileImage] = useState<string | null>();
     const [loading, setLoading] = useState(false)
     const [croppedImageFile, setCroppedImageFile] = useState<File | null>(null);
     const [snackbar, setSnackbar] = useState<{
@@ -131,7 +131,7 @@ const ProfileForm = () => {
         if (!name) newErrors.name = 'Nama harus diisi.'
         if (!gender) newErrors.gender = 'Jenis kelamin harus dipilih.'
         if (!tanggal || !bulan || !tahun) newErrors.birthdate = 'Tanggal lahir lengkap harus dipilih.'
-        if (!croppedImageFile) newErrors.image = 'Gambar harus dipilih.'
+        if (!croppedImageFile && !user?.image) newErrors.image = 'Gambar harus dipilih.'
 
         setErrors(newErrors)
 
@@ -158,6 +158,7 @@ const ProfileForm = () => {
                     setSnackbar({ message: 'Data berhasil dikirim!', type: 'success', isOpen: true })
                     fetchUserProfile(user.id)
                     setTimeout(() => window.location.reload(), 1500)
+                    setLoading(false)
                 }
             } catch (err) {
                 setLoading(false)
@@ -179,7 +180,7 @@ const ProfileForm = () => {
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Kolom Kiri: Foto Profil */}
                 <div className="lg:w-1/3 text-center p-4 border-r-0 lg:border-r border-gray-300 lg:pr-8 flex flex-col items-center">
-                    <img src={profileImage || ''} alt="Foto Profil" className="w-32 h-32 rounded-lg mx-auto mb-4 object-cover" />
+                    <img src={profileImage ?? "https://placehold.co/150x150/e2e8f0/333?text=Z"} alt="Foto Profil" className="w-32 h-32 rounded-lg mx-auto mb-4 object-cover" />
                     <input
                         type="file"
                         accept="image/*"
