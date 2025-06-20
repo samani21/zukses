@@ -107,8 +107,8 @@ const AutocompleteAddress = ({
                 setLoading(true);
 
                 if (debouncedInputValue.trim()) {
-                    const res = await axios.get<Option[]>(`/api/search?q=${debouncedInputValue}`);
-                    if (!cancelled && res) setOptions(res.data);
+                    const res = await Get<{ data: { data: Option[] } }>('zukses', `full-address?search=${debouncedInputValue}`);
+                    if (!cancelled && res) setOptions(res.data?.data);
                 } else if (tab === 0) {
                     const res = await Get<{ data: Province[] }>('zukses', `master/province?page_size=1000`);
                     if (!cancelled && res) {
@@ -212,15 +212,15 @@ const AutocompleteAddress = ({
             setSelectedDistrict(null);
             setTab(2);
             setCity(+code);
-            setInputValue(getFullLabel(undefined, undefined, label, selectedProvince?.name));
+            setInputValue(getFullLabel(selectedProvince?.name, undefined, undefined, label));
         } else if (step === 2) {
             setSelectedDistrict({ id: +code, name: label });
             setTab(3);
             setDistrict(+code);
-            setInputValue(getFullLabel(undefined, label, selectedCity?.name, selectedProvince?.name));
+            setInputValue(getFullLabel(selectedProvince?.name, selectedCity?.name, undefined, label));
         } else if (step === 3) {
             setPostCode(+code);
-            const full = getFullLabel(label, selectedDistrict?.name, selectedCity?.name, selectedProvince?.name);
+            const full = getFullLabel(selectedProvince?.name, selectedCity?.name, selectedDistrict?.name, label);
             setInputValue(full);
             setFullAddress(full);
             setIsFocused(false);
@@ -280,7 +280,7 @@ const AutocompleteAddress = ({
 
             {isFocused && (
                 <List sx={{ border: '1px solid #ddd', maxHeight: 200, overflowY: 'auto' }}>
-                    {options.length > 0 ? (
+                    {options?.length > 0 ? (
                         options.map((option, idx) => (
                             <ListItemButton
                                 key={idx}

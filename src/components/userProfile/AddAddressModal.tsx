@@ -116,7 +116,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
             phone: data.number_receiver || '',
             isPrivate: data.is_primary === 1,
             isStore: data.is_store === 1,
-            fullAddress: `${data?.postal_codes}, ${data?.subdistricts}, ${data?.cities}, ${data?.provinces}` || '',
+            fullAddress: `${data?.provinces}, ${data?.cities}, ${data?.subdistricts}, ${data?.postal_codes}` || '',
             fullAddressStreet: data.full_address || '',
             lat: data.lat || 0,
             long: data.long || 0,
@@ -243,6 +243,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                                 )}
                             </WrapperInput>
+                            {formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
                             <WrapperInput>
                                 <AddressAutocompleteStreet
                                     subdistrict={formData?.fullAddress?.split(',')[1]?.trim() ?? ''}
