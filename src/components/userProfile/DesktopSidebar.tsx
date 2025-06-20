@@ -19,7 +19,7 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
     }, [router]);
 
     return (
-        <aside className="w-64 border-r border-gray-300 p-4 hidden md:flex flex-col">
+        <aside className="w-64 mr-[10px] p-4 hidden md:flex flex-col rounded-tr-lg rounded-br-lg bg-white">
             <div className="flex items-center gap-3 p-3 border-b mb-4">
                 <img src="https://placehold.co/40x40/e2e8f0/333?text=I" alt="User Avatar" className="w-10 h-10 rounded-full" />
                 <div>

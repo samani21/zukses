@@ -73,9 +73,9 @@ const SettingsLayout = ({ setHideNavbar }: Props) => {
     }
 
     return (
-        <div className="flex bg-white rounded-lg shadow-md min-h-[80vh]">
+        <div className="flex rounded-lg min-h-[80vh]">
             <DesktopSidebar activePage={activePage} setActivePage={setActivePage} />
-            <main className="flex-grow p-6">
+            <main className="flex-grow p-6 bg-white rounded-tl-lg rounded-bl-lg">
                 <h2 className="text-xl font-bold text-gray-800 mb-6">{activePage}</h2>
                 {renderContent()}
             </main>
