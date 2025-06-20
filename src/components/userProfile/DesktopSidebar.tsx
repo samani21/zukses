@@ -1,9 +1,20 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { CreditCardIcon, CubeIcon, LogoutIcon, MapPinIcon, ShieldCheckIcon, StoreIcon, UserCircleIcon } from './Icon';
 import { useRouter } from 'next/router';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
+interface User {
+    name?: string
+    email?: string
+    whatsapp?: string
+    id?: number
+    username?: string
+    image?: string
+    role?: string
+}
 
 const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, setActivePage: (page: string) => void }) => {
     const router = useRouter();
+    const [user, setUser] = useState<User | null>(null);
     const navItems = [
         { name: 'Profil', icon: <UserCircleIcon className="w-5 h-5" /> },
         { name: 'Alamat', icon: <MapPinIcon className="w-5 h-5" /> },
@@ -18,12 +29,18 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
         router.push('/');
     }, [router]);
 
+    useEffect(() => {
+        const currentUser = getUserInfo()
+        if (currentUser) {
+            setUser(currentUser)
+        }
+    }, [])
     return (
         <aside className="w-64 mr-[10px] p-4 hidden md:flex flex-col rounded-tr-lg rounded-br-lg bg-white">
             <div className="flex items-center gap-3 p-3 border-b mb-4">
-                <img src="https://placehold.co/40x40/e2e8f0/333?text=I" alt="User Avatar" className="w-10 h-10 rounded-full" />
+                <img src={user ? user?.image : "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-10 h-10 rounded-full" />
                 <div>
-                    <h4 className="font-bold text-sm">Irvan Mamala</h4>
+                    <h4 className="font-bold text-sm">{user ? user?.name : "Nama Anda"}</h4>
                     <button onClick={() => setActivePage('Profil')} className="text-xs text-gray-500 hover:text-blue-600">Edit Profil</button>
                 </div>
             </div>
