@@ -72,11 +72,10 @@ const AutocompleteAddress = ({
     const [selectedCity, setSelectedCity] = useState<{ id: number; name: string } | null>(null);
     const [selectedDistrict, setSelectedDistrict] = useState<{ id: number; name: string } | null>(null);
     const [options, setOptions] = useState<Option[]>([]);
-
+    const [placeholder, setPlaceholder] = useState<string>('');
     // --- REFS ---
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
-    const wasFocusedOnce = useRef(false);
     const skipNextDebounce = useRef(false);
 
     // --- HOOKS ---
@@ -111,13 +110,17 @@ const AutocompleteAddress = ({
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setIsFocused(false);
+                // Jika klik di luar dan input kosong, kembalikan nilai dari placeholder
+                if (!inputValue && placeholder) {
+                    setInputValue(placeholder);
+                }
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, []);
+    }, [inputValue, placeholder]);
 
     useEffect(() => {
         if (dataFullAddress) {
@@ -246,12 +249,12 @@ const AutocompleteAddress = ({
             setSelectedDistrict(null);
             setTab(2);
             setCity(+code);
-            setInputValue(getFullLabel(selectedProvince?.name, undefined, undefined, label));
+            setInputValue(getFullLabel(selectedProvince?.name, label));
         } else if (step === 2) { // District
             setSelectedDistrict({ id: +code, name: label });
             setTab(3);
             setDistrict(+code);
-            setInputValue(getFullLabel(selectedProvince?.name, selectedCity?.name, undefined, label));
+            setInputValue(getFullLabel(selectedProvince?.name, selectedCity?.name, label));
         } else if (step === 3) { // Postcode
             setPostCode(+code);
             const full = getFullLabel(selectedProvince?.name, selectedCity?.name, selectedDistrict?.name, label);
@@ -276,20 +279,23 @@ const AutocompleteAddress = ({
                 value={inputValue}
                 onChange={handleInputChange}
                 inputRef={inputRef}
+                placeholder={placeholder}
                 onFocus={() => {
                     setIsFocused(true);
-                    if (wasFocusedOnce.current || !dataFullAddress) {
-                        setInputValue('');
-                        setTab(0);
-                        setSelectedProvince(null);
-                        setSelectedCity(null);
-                        setSelectedDistrict(null);
+                    // Simpan nilai saat ini sebagai placeholder sebelum dikosongkan
+                    if (inputValue) {
+                        setPlaceholder(inputValue);
                     }
-                    wasFocusedOnce.current = true;
+                    // Selalu kosongkan input dan reset state saat fokus
+                    setInputValue('');
+                    setTab(0);
+                    setSelectedProvince(null);
+                    setSelectedCity(null);
+                    setSelectedDistrict(null);
                 }}
             />
 
-            {loading && (
+            {loading && !debouncedInputValue && (
                 <CircularProgress
                     size={20}
                     sx={{ position: 'absolute', top: 16, right: 16 }}
@@ -323,7 +329,11 @@ const AutocompleteAddress = ({
                     )}
 
                     <List sx={{ maxHeight: 200, overflowY: 'auto', p: 0 }}>
-                        {options?.length > 0 ? (
+                        {loading && debouncedInputValue ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+                                <CircularProgress size={24} />
+                            </Box>
+                        ) : options?.length > 0 ? (
                             options.map((option, idx) => (
                                 <ListItemButton
                                     key={`${option.code}-${idx}`}
