@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { InformationCircleIcon, XMarkIcon } from './Icon';
 import AutocompleteAddress from 'components/AutocompleteAlamat';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
-import { AddLocation, InputFlex, LabelContainer, LocationContainer, OptionLabel, SwitchContainer, WrapperInput, WrapperLabel } from 'components/Profile/AddressComponent';
+import { AddLocation, InputFlex, LabelContainer, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
 import { Checkbox, Switch, TextField } from '@mui/material';
 import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
