@@ -271,7 +271,7 @@ const AutocompleteAddress = ({
 
     // --- RENDER ---
     return (
-        <Box sx={{ position: 'relative' }} ref={containerRef}>
+        <Box sx={{ position: 'relative', marginTop: "-15px" }} ref={containerRef}>
             <TextField
                 fullWidth
                 variant="outlined"
@@ -282,17 +282,16 @@ const AutocompleteAddress = ({
                 placeholder={placeholder}
                 onFocus={() => {
                     setIsFocused(true);
-                    // Simpan nilai saat ini sebagai placeholder sebelum dikosongkan
                     if (inputValue) {
                         setPlaceholder(inputValue);
                     }
-                    // Selalu kosongkan input dan reset state saat fokus
                     setInputValue('');
                     setTab(0);
                     setSelectedProvince(null);
                     setSelectedCity(null);
                     setSelectedDistrict(null);
                 }}
+                autoComplete="off"
             />
 
             {loading && !debouncedInputValue && (
@@ -343,7 +342,7 @@ const AutocompleteAddress = ({
                                     }}
                                 >
                                     <Typography component="div">
-                                        {renderHighlightedText(option.label, debouncedInputValue)}
+                                        {renderHighlightedText(option.label.toUpperCase(), debouncedInputValue.toUpperCase())}
                                     </Typography>
                                 </ListItemButton>
                             ))

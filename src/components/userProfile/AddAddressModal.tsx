@@ -198,7 +198,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                     setOpenMaps={setOpenMaps}
                 /> :
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-                        <div className="flex justify-between items-center p-4 border-b">
+                        <div className="flex justify-between items-center p-4">
                             <h2 className="text-lg font-semibold">Alamat Baru</h2>
                             <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                                 <XMarkIcon className="w-6 h-6" />
@@ -215,6 +215,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                         onChange={(e) => handleChange('name', e.target.value)}
                                         error={!!errors.name}
                                         helperText={errors.name}
+                                        autoComplete="off"
                                     />
                                 </WrapperInput>
                                 <WrapperInput>
@@ -226,6 +227,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                         onChange={(e) => handleChange('phone', e.target.value)}
                                         error={!!errors.phone}
                                         helperText={errors.phone}
+                                        autoComplete="off"
                                     />
                                 </WrapperInput>
                             </InputFlex>
@@ -243,7 +245,6 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                                 )}
                             </WrapperInput>
-                            {formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
                             <WrapperInput>
                                 <AddressAutocompleteStreet
                                     subdistrict={formData?.fullAddress?.split(',')[1]?.trim() ?? ''}

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-// Tambahkan interface untuk menggantikan any
+// Interface untuk data alamat yang dipilih
 interface SelectedAddress {
     mainText: string;
     secondaryText: string;
@@ -54,13 +54,11 @@ function useGoogleMapsScript(apiKey: string): boolean {
 // Komponen Autocomplete
 function AddressAutocomplete({
     onAddressSelect,
-    label = 'Cari alamat',
     filterArea = '',
     dataFullAddress,
     isScriptLoaded,
 }: {
     onAddressSelect: (address: SelectedAddress) => void;
-    label?: string;
     filterArea?: string;
     dataFullAddress?: string;
     isScriptLoaded: boolean;
@@ -107,7 +105,14 @@ function AddressAutocomplete({
                             const filtered = newPredictions.filter((p) =>
                                 filterArea ? p.description.toLowerCase().includes(filterArea.toLowerCase()) : true
                             );
-                            setPredictions(filtered);
+
+                            // --- PERUBAHAN DI SINI ---
+                            // Ambil 5 hasil pertama saja dari array yang sudah difilter
+                            const limitedPredictions = filtered.slice(0, 5);
+                            setPredictions(limitedPredictions);
+                            // -------------------------
+
+                            // Buka dropdown jika ada hasil (bahkan jika lebih dari 5)
                             setIsDropdownOpen(filtered.length > 0);
                         } else {
                             setPredictions([]);
@@ -170,19 +175,16 @@ function AddressAutocomplete({
     return (
         <div ref={containerRef} className="relative w-full">
             <div ref={mapDivRef} style={{ height: '1px', width: '1px', overflow: 'hidden' }} />
-            <label htmlFor="address-autocomplete" className="block text-sm font-medium text-gray-700 mb-1">
-                {label}
-            </label>
             <input
                 id="address-autocomplete"
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
                 placeholder="Mulai ketik nama jalan, kota, atau tempat..."
-                className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 onFocus={() => inputValue && predictions.length > 0 && setIsDropdownOpen(true)}
                 autoComplete="off"
-                disabled={!isScriptLoaded}
+                disabled={!filterArea} // Logika disederhanakan: nonaktif jika filterArea kosong
             />
             {isDropdownOpen && (
                 <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -202,8 +204,9 @@ function AddressAutocomplete({
     );
 }
 
+// Komponen utama yang menggunakan AddressAutocomplete
 export default function AddressAutocompleteStreet({
-    subdistrict = '',
+    subdistrict,
     dataFullAddress = '',
     setLat,
     setLong,
@@ -215,9 +218,10 @@ export default function AddressAutocompleteStreet({
     setLong: (val: number) => void;
     setFullAddress: (val: string) => void;
 }) {
-    const GOOGLE_MAPS_API_KEY = "AIzaSyBBWc0LFEfssFFSIl4vc95ennI3uRcm6oo";
-    const isMapsLoaded = useGoogleMapsScript(GOOGLE_MAPS_API_KEY);
-    const [mapCenter, setMapCenter] = useState({ lat: -3.34, lng: 114.59 });
+    // GANTI DENGAN API KEY ANDA YANG VALID. Jangan ekspos API key di client-side untuk aplikasi produksi.
+    const Maps_API_KEY = "AIzaSyBBWc0LFEfssFFSIl4vc95ennI3uRcm6oo";
+    const isMapsLoaded = useGoogleMapsScript(Maps_API_KEY);
+    const [mapCenter, setMapCenter] = useState({ lat: -3.34, lng: 114.59 }); // Default: Banjarmasin
     const mapRef = useRef<HTMLDivElement>(null);
     const mapInstance = useRef<google.maps.Map | null>(null);
 
@@ -251,14 +255,15 @@ export default function AddressAutocompleteStreet({
         <div>
             {isMapsLoaded ? (
                 <AddressAutocomplete
-                    label="Masukkan Alamat Pengiriman"
                     onAddressSelect={handleAddressSelect}
                     filterArea={subdistrict}
                     isScriptLoaded={isMapsLoaded}
                     dataFullAddress={dataFullAddress}
                 />
             ) : (
-                <div className="text-center text-gray-500">Memuat komponen pencarian...</div>
+                <div className="w-full px-4 py-2 text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-md">
+                    Memuat komponen pencarian...
+                </div>
             )}
         </div>
     );
