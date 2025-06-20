@@ -25,6 +25,7 @@ type AddressData = {
     phone: string;
     isPrivate: boolean;
     isStore: boolean;
+    detailAddress: string;
     fullAddress: string;
     fullAddressStreet: string;
     lat: number;
@@ -33,7 +34,6 @@ type AddressData = {
     city: number;
     district: number;
     postCode: number;
-    tag: 'Rumah' | 'Kantor';
 };
 
 type GetAddressData = {
@@ -44,7 +44,7 @@ type GetAddressData = {
     subdistricts?: string;
     postal_codes?: string;
     full_address?: string;
-    label?: string;
+    detail_address?: string;
     id?: number;
     lat?: number;
     long?: number;
@@ -105,7 +105,7 @@ const AddressPage = () => {
             formData.append('subdistrict_id', String(data.district || 0));
             formData.append('postal_code_id', String(data.postCode || 0));
             formData.append('full_address', data.fullAddressStreet);
-            formData.append('label', data.tag);
+            formData.append('detail_address', data.detailAddress);
             formData.append('lat', String(data.lat || 0));
             formData.append('long', String(data.long || 0));
             formData.append('is_primary', String(data.isPrivate ? 1 : 0));
@@ -189,11 +189,11 @@ const AddressPage = () => {
                                     <div className="w-px h-4 bg-gray-300 mx-3"></div>
                                     <span>{address.number_receiver}</span>
                                 </div>
-                                <p>{address.full_address}</p>
+                                <p>{address.full_address},{address?.detail_address}</p>
                                 <p>{`${address?.cities}, ${address?.provinces}, ${address?.postal_codes}`}</p>
                                 <div className="flex gap-2 mt-1">
                                     {address.is_primary ? <span className="text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded-sm">Utama</span> : ''}
-                                    <span className="text-gray-500 border border-gray-300 text-xs px-2 py-0.5 rounded-sm">{address?.label}</span>
+                                    {/* <span className="text-gray-500 border border-gray-300 text-xs px-2 py-0.5 rounded-sm">{address?.label}</span> */}
                                 </div>
                             </div>
                             <div className="flex-shrink-0 flex flex-col items-end gap-2">
@@ -210,7 +210,7 @@ const AddressPage = () => {
                     ))}
                 </div>
             </div>
-            {openModalAddAddress && <AddAddressModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd}/>}
+            {openModalAddAddress && <AddAddressModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd} />}
             <ModalContainer open={openDelete > 0 ? true : false}>
                 <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
             </ModalContainer>

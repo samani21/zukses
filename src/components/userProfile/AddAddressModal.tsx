@@ -20,7 +20,7 @@ type FormData = {
     city: number;
     district: number;
     postCode: number;
-    tag: '' | 'Rumah' | 'Kantor';
+    detailAddress: string;
 };
 
 type AddressData = {
@@ -36,7 +36,7 @@ type AddressData = {
     city: number;
     district: number;
     postCode: number;
-    tag: 'Rumah' | 'Kantor';
+    detailAddress: string;
 };
 
 type GetAddressData = {
@@ -47,6 +47,7 @@ type GetAddressData = {
     subdistricts?: string;
     postal_codes?: string;
     full_address?: string;
+    detail_address?: string;
     label?: string;
     id?: number;
     lat?: number;
@@ -82,7 +83,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         city: 0,
         district: 0,
         postCode: 0,
-        tag: ''
+        detailAddress: ''
     });
     console.log('formData', formData)
     const [openMaps, setOpenMaps] = useState(false);
@@ -103,7 +104,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
             city: 0,
             district: 0,
             postCode: 0,
-            tag: ''
+            detailAddress: ''
         });
         setErrors({});
         setIsEdit(false);
@@ -124,7 +125,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
             city: data.citie_id || 0,
             district: data.subdistrict_id || 0,
             postCode: data.postal_code_id || 0,
-            tag: data.label === 'Rumah' ? 'Rumah' : 'Kantor'
+            detailAddress: data.detail_address || ''
         });
         setIsEdit(true);
     };
@@ -150,12 +151,12 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
     const validateForm = () => {
         const newErrors: typeof errors = {};
         if (!formData.name.trim()) newErrors.name = 'Nama Lengkap tidak boleh kosong';
+        if (!formData.detailAddress.trim()) newErrors.detailAddress = 'Detail alamat tidak boleh kosong';
         if (!formData.phone.trim()) newErrors.phone = 'Nomor Telepon tidak boleh kosong';
         if (!formData.prov || !formData.city || !formData.district || !formData.postCode) {
             newErrors.address = 'Alamat (Provinsi, Kota, Kecamatan, Kode Pos) harus lengkap';
         }
         if (!formData.fullAddressStreet.trim()) newErrors.fullAddressStreet = 'Alamat Jalan tidak boleh kosong';
-        if (!formData.tag) newErrors.tag = 'Pilih label alamat (Rumah atau Kantor)';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -165,7 +166,6 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
 
         const payload: AddressData = {
             ...formData,
-            tag: formData.tag as 'Rumah' | 'Kantor',
         };
 
         if (isEdit) {
@@ -257,6 +257,20 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
                                 )}
                             </WrapperInput>
+                            <WrapperInput>
+                                <input
+                                    id="detailAddress"
+                                    type="text"
+                                    placeholder="Detail Lainnya (cth: Blok / Unit no., Patokan)"
+                                    className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    autoComplete="off"
+                                    value={formData.detailAddress}
+                                    onChange={(e) => handleChange('detailAddress', e.target.value)}
+                                />
+                                {errors.detailAddress && (
+                                    <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
+                                )}
+                            </WrapperInput>
                             <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
                                 <div className="flex">
                                     <div className="flex-shrink-0">
@@ -280,7 +294,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     <AddLocation>+ Tambah Location</AddLocation>
                                 </LocationContainer>
                             )}
-                            <LabelContainer>
+                            {/* <LabelContainer>
                                 Tandai Sebagai
                                 <WrapperLabel>
                                     {(['Rumah', 'Kantor'] as const).map((label) => (
@@ -298,7 +312,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                             </LabelContainer>
                             {errors.tag && (
                                 <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.tag}</div>
-                            )}
+                            )} */}
                             <LabelContainer>
                                 Atur Sebagai Alamat Utama
                                 <SwitchContainer>
@@ -328,7 +342,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     />
                                 </SwitchContainer>
                             </LabelContainer>
-                            <LabelContainer>
+                            {/* <LabelContainer>
                                 Atur Sebagai Alamat Toko
                                 <SwitchContainer>
                                     <Checkbox
@@ -356,7 +370,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                         }}
                                     />
                                 </SwitchContainer>
-                            </LabelContainer>
+                            </LabelContainer> */}
                         </div>
                         <div className="p-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
                             <button onClick={handleClose} className="hidden md:block px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">Nanti Saja</button>
