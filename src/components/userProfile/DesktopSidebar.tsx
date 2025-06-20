@@ -38,7 +38,7 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
     return (
         <aside className="w-64 mr-[10px] p-4 hidden md:flex flex-col rounded-tr-lg rounded-br-lg bg-white">
             <div className="flex items-center gap-3 p-3 border-b mb-4">
-                <img src={user ? user?.image : "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-10 h-10 rounded-full" />
+                <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-10 h-10 rounded-full" />
                 <div>
                     <h4 className="font-bold text-sm">{user ? user?.name : "Nama Anda"}</h4>
                     <button onClick={() => setActivePage('Profil')} className="text-xs text-gray-500 hover:text-blue-600">Edit Profil</button>
