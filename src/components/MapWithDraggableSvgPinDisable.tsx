@@ -1,6 +1,10 @@
 import React, { useMemo } from "react";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-import { ButtonMapsContainer, ButtonShowMaps, MapsContainer } from "./Profile/AddressComponent";
+import { GoogleMap, Marker } from "@react-google-maps/api";
+import {
+    ButtonMapsContainer,
+    ButtonShowMaps,
+    MapsContainer,
+} from "./Profile/AddressComponent";
 
 const containerStyle = {
     width: "100%",
@@ -11,8 +15,9 @@ const mapOptions: google.maps.MapOptions = {
     disableDefaultUI: true,
     draggable: false,
     scrollwheel: false,
-    gestureHandling: "none",
+    gestureHandling: "none", // pastikan nilainya adalah salah satu dari: 'cooperative' | 'greedy' | 'none' | 'auto'
 };
+
 
 type MapWithStaticPinProps = {
     lat: number;
@@ -20,15 +25,17 @@ type MapWithStaticPinProps = {
     setOpenMaps: (value: boolean) => void;
 };
 
-const MapWithStaticPinAndDisable = ({ lat, lng, setOpenMaps }: MapWithStaticPinProps) => {
-    const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    });
-
+const MapWithStaticPinAndDisable = ({
+    lat,
+    lng,
+    setOpenMaps,
+}: MapWithStaticPinProps) => {
     const position = useMemo(() => ({ lat, lng }), [lat, lng]);
 
-    if (loadError) return <div>Error loading maps</div>;
-    if (!isLoaded) return <div>Loading Maps...</div>;
+    // Hindari render jika Google Maps belum siap (di-handle oleh GoogleMapsProvider)
+    if (typeof window === "undefined" || !window.google) {
+        return <div>Loading Maps...</div>;
+    }
 
     return (
         <MapsContainer onClick={() => setOpenMaps(true)}>
@@ -37,6 +44,7 @@ const MapWithStaticPinAndDisable = ({ lat, lng, setOpenMaps }: MapWithStaticPinP
                     Lihat Maps
                 </ButtonShowMaps>
             </ButtonMapsContainer>
+
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={position}

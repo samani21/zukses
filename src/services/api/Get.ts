@@ -11,13 +11,25 @@ interface ErrorResponseData {
     message: string;
 }
 
+// Fungsi untuk membersihkan token dari tanda kutip jika perlu
+const getCleanToken = (token?: string): string | null => {
+    const rawToken = token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+    if (!rawToken) return null;
+
+    try {
+        return JSON.parse(rawToken); // Jika token berupa string JSON
+    } catch {
+        return rawToken.replace(/^"|"$/g, ''); // Jika bukan, hilangkan tanda kutip di awal/akhir jika ada
+    }
+};
+
 const Get = async <T = unknown>(url: URLType, path: string, token?: string): Promise<T | null> => {
     const baseUrl = urlMap[url];
-    const bearerToken = token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+    const cleanToken = getCleanToken(token);
 
-    const config = bearerToken
+    const config = cleanToken
         ? {
-            headers: { Authorization: `Bearer ${bearerToken}` }
+            headers: { Authorization: `Bearer ${cleanToken}` }
         }
         : {};
 
@@ -26,7 +38,6 @@ const Get = async <T = unknown>(url: URLType, path: string, token?: string): Pro
         return result.data;
     } catch (err: unknown) {
         const axiosError = err as AxiosError<ErrorResponseData>;
-
         const message = axiosError.response?.data?.message;
 
         if (message === 'token expired') {

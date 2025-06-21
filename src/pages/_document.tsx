@@ -46,7 +46,12 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href="/logo/zukses_bag_red.png" type="image/x-icon" />
+          <title>Zukses Plaza</title>
+          <meta name="description" content="Deskripsi singkat situs kamu" />
+          <link rel="icon" href="/logo/favicon.ico" type="image/x-icon"></link>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
         </Head>
         <body>
           <Main />

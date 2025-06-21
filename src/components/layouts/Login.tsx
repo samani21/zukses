@@ -103,6 +103,8 @@ export const ButtonNext = styled.button`
   background: ${theme?.colors?.border};
   &:enabled{
     background: ${theme?.colors?.primary};
+    color: #fff;
+    cursor: pointer;
   }
 `;
 

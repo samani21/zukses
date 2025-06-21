@@ -4,7 +4,7 @@ import React from 'react'
 const LoadingContainer = styled.div`
     position: absolute;
     height: 100dvh;
-    background: #0000003e;
+    /* background: #0000003e; */
     top: 0;
     left: 0;
     width: 100%;
@@ -32,7 +32,7 @@ const Loading = () => {
     return (
         <LoadingContainer>
             <LoadingContent>
-                <ImageLoading src='/loading/loading.svg' />
+                <ImageLoading src='/loading/fade-stagger-circles.svg' />
             </LoadingContent>
         </LoadingContainer>
     )

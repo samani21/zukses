@@ -13,13 +13,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     const mode = path.includes('verification-account')
         ? 'verification-account'
         : path.includes('register')
-            ? 'register'
-            : 'unknown';
+            ? 'register' : path.includes('login')
+                ? 'login'
+                : 'unknown';
 
     return (
         <>
             <Root>
-                <Logo src="/logo/logo_header.png" alt="Zukses Logo" />
+                <Logo src="/logo/logo.png" alt="Zukses Logo" />
                 <Container>
                     <Left>
                         <LeftImageContainer>
@@ -35,17 +36,20 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             </Root>
             <RootMobile style={{ backgroundImage: mode === 'verification-account' ? 'none' : '' }}>
                 {
-                    mode === 'register' && <Header>
-                        <IconHeader src='/icon/arrow-left.svg' width={30} />
+                    mode != 'verification-account' && <Header>
+                        <IconHeader src='/icon/arrow-left.svg' width={30} onClick={() => router.push('/')} />
                     </Header>
                 }
                 <ContentMobile>
                     {children}
                 </ContentMobile>
                 {
-                    mode === 'register' && <Footer>
+                    mode === 'register' ? <Footer>
                         Sudah punya akun? <span onClick={() => router.push('/auth/login')}>Masuk</span>
-                    </Footer>
+                    </Footer> :
+                        mode === 'login' ? <Footer>
+                            Sudah punya akun? <span onClick={() => router.push('/auth/register')}>Daftar Sekarang</span>
+                        </Footer> : ''
                 }
 
             </RootMobile>

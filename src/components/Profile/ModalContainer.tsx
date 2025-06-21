@@ -14,6 +14,7 @@ export const ModalContainer = styled.div<ModalContainerProps>`
     display: ${(props) => props?.open ? "flex" : "none"};
     justify-content: center;
     align-items: center;
+    z-index: 100;
 `;
 
 export const HeaderProtect = styled.div`

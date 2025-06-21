@@ -50,33 +50,50 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
     };
 
     useEffect(() => {
-        const loadScript = (src: string, onLoad: () => void) => {
+        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+        if (!apiKey) {
+            console.error("Google Maps API key is missing");
+            return;
+        }
+
+        const loadScript = (src: string, callback: () => void) => {
             const existingScript = document.querySelector(`script[src="${src}"]`);
             if (!existingScript) {
                 const script = document.createElement("script");
                 script.src = src;
                 script.async = true;
                 script.defer = true;
-                script.onload = onLoad;
+                script.onload = () => {
+                    const waitForGoogle = setInterval(() => {
+                        if (window.google?.maps?.places?.Autocomplete && inputRef.current) {
+                            clearInterval(waitForGoogle);
+                            callback();
+                        }
+                    }, 100);
+                };
                 document.head.appendChild(script);
             } else {
-                onLoad();
+                const waitForGoogle = setInterval(() => {
+                    if (window.google?.maps?.places?.Autocomplete && inputRef.current) {
+                        clearInterval(waitForGoogle);
+                        callback();
+                    }
+                }, 100);
             }
         };
 
         const initAutocomplete = () => {
-            if (!inputRef.current || !window.google) return;
+            if (!inputRef.current || !window.google?.maps?.places?.Autocomplete) {
+                console.warn("Google Maps not ready");
+                return;
+            }
 
-            const autocomplete = new window.google.maps.places.Autocomplete(
-                inputRef.current,
-                {
-                    types: ["geocode", "establishment"],
-                }
-            );
+            const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+                types: ["geocode", "establishment"],
+            });
 
             autocomplete.addListener("place_changed", () => {
                 const place = autocomplete.getPlace();
-
                 if (!place.geometry) {
                     setResult(null);
                     setFullAddressStreet("");
@@ -96,16 +113,14 @@ const GoogleMapsAutocomplete: React.FC<Props> = ({
             });
         };
 
-        const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-        if (!window.google) {
+        // jalankan saat modal terbuka (edit atau tambah)
+        if (openModalAddAddress) {
             loadScript(
                 `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`,
                 initAutocomplete
             );
-        } else {
-            initAutocomplete();
         }
-    }, [setFullAddressStreet, setLat, setLong]);
+    }, [openModalAddAddress, setFullAddressStreet, setLat, setLong]);
 
     return (
         <div>
