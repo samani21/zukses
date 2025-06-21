@@ -240,6 +240,15 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     setPostCode={(val) => handleChange('postCode', val)}
                                     openModalAddAddress={openModalAddAddress}
                                     dataFullAddress={formData.fullAddress}
+                                    isEdit={isEdit}
+                                    provinces={editData?.provinces ?? ''}
+                                    cities={editData?.cities ?? ''}
+                                    subdistricts={editData?.subdistricts ?? ''}
+                                    postal_codes={editData?.postal_codes ?? ''}
+                                    province_id={editData?.province_id ?? 0}
+                                    citie_id={editData?.citie_id ?? 0}
+                                    subdistrict_id={editData?.subdistrict_id ?? 0}
+                                    postal_code_id={editData?.postal_code_id ?? 0}
                                 />
                                 {errors.address && (
                                     <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>

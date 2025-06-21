@@ -14,14 +14,19 @@ import {
 import Get from 'services/api/Get'; // Pastikan path ini sesuai dengan struktur proyek Anda
 
 // --- TYPE DEFINITIONS ---
+// PERBAIKAN: Sarannya adalah agar API 'full-address' mengembalikan data nama dan kode yang relevan.
 type AutocompleteOption = {
     label: string;
     code: string;
     compilationID: {
         province_id: number;
+        province_name: string; // HARAP API MENGEMBALIKAN INI
         city_id: number;
+        city_name: string;     // HARAP API MENGEMBALIKAN INI
         district_id: number;
+        district_name: string; // HARAP API MENGEMBALIKAN INI
         postcode_id: number;
+        postcode_code: string; // HARAP API MENGEMBALIKAN INI
     };
 };
 
@@ -45,6 +50,15 @@ type Props = {
     setPostCode: (value: number) => void;
     dataFullAddress?: string;
     openModalAddAddress?: boolean;
+    isEdit?: boolean;
+    provinces: string;
+    cities: string;
+    subdistricts: string;
+    postal_codes: string;
+    province_id: number;
+    citie_id: number;
+    subdistrict_id: number;
+    postal_code_id: number;
 };
 
 // --- TYPE GUARD ---
@@ -60,7 +74,16 @@ const AutocompleteAddress = ({
     setDistrict,
     setPostCode,
     dataFullAddress,
-    openModalAddAddress
+    openModalAddAddress,
+    isEdit,
+    provinces,
+    cities,
+    subdistricts,
+    postal_codes,
+    province_id,
+    citie_id,
+    subdistrict_id,
+    postal_code_id,
 }: Props) => {
     // --- STATE MANAGEMENT ---
     const [inputValue, setInputValue] = useState('');
@@ -71,8 +94,11 @@ const AutocompleteAddress = ({
     const [selectedProvince, setSelectedProvince] = useState<{ id: number; name: string } | null>(null);
     const [selectedCity, setSelectedCity] = useState<{ id: number; name: string } | null>(null);
     const [selectedDistrict, setSelectedDistrict] = useState<{ id: number; name: string } | null>(null);
+    // PERBAIKAN: Tambahkan state untuk kode pos yang dipilih agar lebih konsisten
+    const [selectedPostcode, setSelectedPostcode] = useState<{ id: number; code: string } | null>(null);
     const [options, setOptions] = useState<Option[]>([]);
-    const [placeholder, setPlaceholder] = useState<string>('');
+    const [useTabMode, setUseTabMode] = useState(false);
+    const [inputFullAddress, setInputFUllAddress] = useState<string>('');
     // --- REFS ---
     const inputRef = useRef<HTMLInputElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -81,13 +107,20 @@ const AutocompleteAddress = ({
     // --- HOOKS ---
     useEffect(() => {
         const handler = setTimeout(() => {
+            if (skipNextDebounce.current) {
+                skipNextDebounce.current = false;
+                return;
+            }
             if (inputValue.trim() === '') {
                 setDebouncedInputValue('');
                 setTab(0);
-            } else if (!skipNextDebounce.current) {
+                setSelectedProvince(null);
+                setSelectedCity(null);
+                setSelectedDistrict(null);
+                setSelectedPostcode(null);
+            } else {
                 setDebouncedInputValue(inputValue);
             }
-            skipNextDebounce.current = false;
         }, 500);
 
         return () => clearTimeout(handler);
@@ -99,10 +132,21 @@ const AutocompleteAddress = ({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isFocused, tab, selectedProvince, selectedCity, selectedDistrict, debouncedInputValue]);
+    useEffect(() => {
+        if (isEdit) {
+            setSelectedProvince({ id: province_id, name: provinces });
+            setSelectedCity({ id: citie_id, name: cities });
+            setSelectedDistrict({ id: subdistrict_id, name: subdistricts });
+            setSelectedPostcode({ id: postal_code_id, code: postal_codes });
+            setInputFUllAddress(dataFullAddress ?? '')
+            setTab(3);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isEdit]);
 
     useEffect(() => {
-        if (!openModalAddAddress) {
-            setInputValue(dataFullAddress || '');
+        if (!openModalAddAddress && dataFullAddress) {
+            setInputValue(dataFullAddress);
         }
     }, [openModalAddAddress, dataFullAddress]);
 
@@ -110,9 +154,8 @@ const AutocompleteAddress = ({
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setIsFocused(false);
-                // Jika klik di luar dan input kosong, kembalikan nilai dari placeholder
-                if (!inputValue && placeholder) {
-                    setInputValue(placeholder);
+                if (dataFullAddress) {
+                    setInputValue(dataFullAddress);
                 }
             }
         };
@@ -120,16 +163,20 @@ const AutocompleteAddress = ({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [inputValue, placeholder]);
+    }, [dataFullAddress]);
 
     useEffect(() => {
         if (dataFullAddress) {
             setInputValue(dataFullAddress);
         } else {
             setInputValue('');
+            setSelectedProvince(null);
+            setSelectedCity(null);
+            setSelectedDistrict(null);
+            setSelectedPostcode(null);
+            setTab(0);
         }
     }, [dataFullAddress]);
-
 
     // --- DATA FETCHING ---
     const fetchOptions = () => {
@@ -139,7 +186,10 @@ const AutocompleteAddress = ({
             try {
                 setLoading(true);
 
-                if (debouncedInputValue.trim()) {
+                // PERBAIKAN: Kondisi ini dibuat lebih akurat dengan membandingkan dengan alamat yang sudah tersusun
+                const constructedAddress = getFullLabel(selectedProvince?.name, selectedCity?.name, selectedDistrict?.name, selectedPostcode?.code);
+
+                if (debouncedInputValue.trim() && debouncedInputValue !== constructedAddress) {
                     const res = await Get<{ data: { data: Option[] } }>('zukses', `full-address?search=${debouncedInputValue}`);
                     if (!cancelled && res) setOptions(res.data?.data || []);
                 } else if (tab === 0) {
@@ -180,12 +230,7 @@ const AutocompleteAddress = ({
     };
 
     // --- HELPER FUNCTIONS ---
-    const getFullLabel = (
-        province?: string,
-        city?: string,
-        district?: string,
-        postcode?: string
-    ) => {
+    const getFullLabel = (province?: string, city?: string, district?: string, postcode?: string) => {
         return [province, city, district, postcode].filter(Boolean).join(', ');
     };
 
@@ -195,14 +240,12 @@ const AutocompleteAddress = ({
 
     const renderHighlightedText = (text: string, highlight: string) => {
         const trimmedHighlight = highlight.trim();
-        if (!trimmedHighlight) {
+        if (!trimmedHighlight || debouncedInputValue !== inputValue) {
             return <span>{text}</span>;
         }
-
         const escapedHighlight = escapeRegExp(trimmedHighlight);
         const regex = new RegExp(`(${escapedHighlight})`, 'gi');
         const parts = text.split(regex);
-
         return (
             <span>
                 {parts.map((part, index) =>
@@ -217,56 +260,114 @@ const AutocompleteAddress = ({
     };
 
     // --- EVENT HANDLERS ---
+    // PERBAIKAN: Logika `handleSelect` dirombak untuk menangani autocomplete dan tab dengan benar.
+    // Ganti keseluruhan fungsi handleSelect Anda dengan ini
+    // Ganti sekali lagi fungsi handleSelect Anda dengan versi final ini
     const handleSelect = (step: number, code: string, label: string, option?: Option) => {
         skipNextDebounce.current = true;
 
+        // Handle selection dari pencarian alamat lengkap (autocomplete)
         if (option && isAutocompleteOption(option)) {
-            const { province_id, city_id, district_id, postcode_id } = option.compilationID;
-            const full = label;
+            const {
+                province_id, province_name,
+                city_id, city_name,
+                district_id, district_name,
+                postcode_id, postcode_code
+            } = option.compilationID;
 
+            // 1. Update semua state yang diperlukan (ID dan Objek)
             setProv(province_id);
             setCity(city_id);
             setDistrict(district_id);
             setPostCode(postcode_id);
+            setSelectedProvince({ id: province_id, name: province_name });
+            setSelectedCity({ id: city_id, name: city_name });
+            setSelectedDistrict({ id: district_id, name: district_name });
+            setSelectedPostcode({ id: postcode_id, code: postcode_code });
 
-            setInputValue(full);
-            setFullAddress(full);
+            // 2. Update nilai input
+            setInputValue(option.label);
+            setFullAddress(option.label);
+            setInputFUllAddress(option.label);
+            setUseTabMode(false);
+            // 3. Update state tab ke langkah terakhir (ini penting untuk saat dropdown dibuka kembali)
+            setTab(3);
+            setDebouncedInputValue('');
 
+            // --- PERBAIKAN UTAMA DI SINI ---
+            // 4. Kembalikan baris ini untuk menutup dropdown (menghilangkan fokus) secara otomatis
             setIsFocused(false);
             inputRef.current?.blur();
             return;
         }
+        const provinsi = inputFullAddress.split(',').slice(0, 1).map(s => s.trim()).join(', ');
+        const kota = inputFullAddress.split(',').slice(1, 2).map(s => s.trim()).join(', ');
+        const kecamatan = inputFullAddress.split(',').slice(2, 3).map(s => s.trim()).join(', ');
 
+        // Handle selection dari Tabs (logika ini tetap sama)
         if (step === 0) { // Province
             setSelectedProvince({ id: +code, name: label });
+            setProv(+code);
             setSelectedCity(null);
             setSelectedDistrict(null);
+            setSelectedPostcode(null);
+            setCity(0);
+            setDistrict(0);
+            setPostCode(0);
             setTab(1);
             setInputValue(label);
-            setProv(+code);
         } else if (step === 1) { // City
             setSelectedCity({ id: +code, name: label });
-            setSelectedDistrict(null);
-            setTab(2);
             setCity(+code);
-            setInputValue(getFullLabel(selectedProvince?.name, label));
+            setSelectedDistrict(null);
+            setSelectedPostcode(null);
+            setDistrict(0);
+            setPostCode(0);
+            setTab(2);
+            setInputValue(getFullLabel(selectedProvince?.name || provinsi, label));
         } else if (step === 2) { // District
-            setSelectedDistrict({ id: +code, name: label });
-            setTab(3);
+            setSelectedDistrict({ id: +code, name: label?.toUpperCase() });
             setDistrict(+code);
-            setInputValue(getFullLabel(selectedProvince?.name, selectedCity?.name, label));
+            setSelectedPostcode(null);
+            setPostCode(0);
+            setTab(3);
+            setInputValue(getFullLabel(selectedProvince?.name || provinsi, selectedCity?.name || kota, label?.toUpperCase()));
         } else if (step === 3) { // Postcode
+            setSelectedPostcode({ id: +code, code: label });
             setPostCode(+code);
-            const full = getFullLabel(selectedProvince?.name, selectedCity?.name, selectedDistrict?.name, label);
-            setInputValue(full);
+
+            const full = getFullLabel(selectedProvince?.name ?? provinsi, selectedCity?.name ?? kota, selectedDistrict?.name ?? kecamatan, label);
+            setInputFUllAddress(full)
             setFullAddress(full);
             setIsFocused(false);
+            setInputValue(full)
             inputRef.current?.blur();
+            // if (inputFullAddress) {
+            //     const provinsi = inputFullAddress.split(',').slice(0, 1).map(s => s.trim()).join(', ');
+            //     const kota = inputFullAddress.split(',').slice(0, 2).map(s => s.trim()).join(', ');
+            //     const kecamatan = inputFullAddress.split(',').slice(0, 3).map(s => s.trim()).join(', ');
+            //     const inputNew = provinsi + ', ' + kota + ', ' + kecamatan + ', ' + label
+            //     setFullAddress(inputNew);
+            // }
         }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value);
+        const newValue = e.target.value;
+        setInputValue(newValue);
+
+        // Jika sebelumnya hasil autocomplete, lalu diubah manual → beralih ke mode tab
+        if (!useTabMode) {
+            setUseTabMode(true);
+            setDebouncedInputValue(''); // kosongkan agar pakai tab
+        }
+    };
+
+    const handleFocus = () => {
+        setIsFocused(true);
+        // Hapus debounced value saat fokus agar beralih ke mode Tab
+        // Jika state (selectedProvince, dll.) sudah terisi, tab akan berada di posisi yang benar.
+        setDebouncedInputValue('');
     };
 
     // --- RENDER ---
@@ -278,26 +379,15 @@ const AutocompleteAddress = ({
                 label="Provinsi, Kota, Kecamatan, Kode Pos"
                 value={inputValue}
                 onChange={handleInputChange}
+                onFocus={handleFocus}
                 inputRef={inputRef}
-                placeholder={placeholder}
-                onFocus={() => {
-                    setIsFocused(true);
-                    if (inputValue) {
-                        setPlaceholder(inputValue);
-                    }
-                    setInputValue('');
-                    setTab(0);
-                    setSelectedProvince(null);
-                    setSelectedCity(null);
-                    setSelectedDistrict(null);
-                }}
                 autoComplete="off"
             />
 
-            {loading && !debouncedInputValue && (
+            {loading && !debouncedInputValue && isFocused && (
                 <CircularProgress
                     size={20}
-                    sx={{ position: 'absolute', top: 16, right: 16 }}
+                    sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
                 />
             )}
 
@@ -314,16 +404,17 @@ const AutocompleteAddress = ({
                         boxShadow: 3,
                     }}
                 >
+                    {/* Tampilkan Tabs hanya jika tidak dalam mode pencarian aktif */}
                     {!debouncedInputValue && (
                         <Tabs
                             value={tab}
                             onChange={(_, newTab) => setTab(newTab)}
                             variant="fullWidth"
                         >
-                            <Tab label="Provinsi" />
-                            <Tab label="Kota" disabled={!selectedProvince} />
-                            <Tab label="Kecamatan" disabled={!selectedCity} />
-                            <Tab label="Kode Pos" disabled={!selectedDistrict} />
+                            <Tab label="Provinsi" sx={{ color: selectedProvince ? 'primary.main' : 'inherit', fontWeight: selectedProvince ? 'bold' : 'normal' }} />
+                            <Tab label="Kota" disabled={!selectedProvince} sx={{ color: selectedCity ? 'primary.main' : 'inherit', fontWeight: selectedCity ? 'bold' : 'normal' }} />
+                            <Tab label="Kecamatan" disabled={!selectedCity} sx={{ color: selectedDistrict ? 'primary.main' : 'inherit', fontWeight: selectedDistrict ? 'bold' : 'normal' }} />
+                            <Tab label="Kode Pos" disabled={!selectedDistrict} sx={{ color: selectedDistrict ? 'primary.main' : 'inherit', fontWeight: selectedDistrict ? 'bold' : 'normal' }} />
                         </Tabs>
                     )}
 
@@ -333,19 +424,24 @@ const AutocompleteAddress = ({
                                 <CircularProgress size={24} />
                             </Box>
                         ) : options?.length > 0 ? (
-                            options.map((option, idx) => (
-                                <ListItemButton
-                                    key={`${option.code}-${idx}`}
-                                    onMouseDown={(e) => {
-                                        e.preventDefault();
-                                        handleSelect(tab, option.code, option.label, option);
-                                    }}
-                                >
-                                    <Typography component="div">
-                                        {renderHighlightedText(option.label.toUpperCase(), debouncedInputValue.toUpperCase())}
-                                    </Typography>
-                                </ListItemButton>
-                            ))
+                            options.map((option, idx) => {
+                                // Tentukan tab saat ini berdasarkan mode (pencarian atau tab)
+                                const currentStep = debouncedInputValue ? (isAutocompleteOption(option) ? 4 : 0) : tab;
+
+                                return (
+                                    <ListItemButton
+                                        key={`${option.code}-${idx}`}
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            handleSelect(currentStep, option.code, option.label, option);
+                                        }}
+                                    >
+                                        <Typography component="div">
+                                            {renderHighlightedText(option.label.toUpperCase(), inputValue.toUpperCase())}
+                                        </Typography>
+                                    </ListItemButton>
+                                );
+                            })
                         ) : (
                             <Typography sx={{ p: 2 }} variant="body2" color="text.secondary">
                                 {loading ? 'Memuat...' : 'Data tidak ditemukan'}

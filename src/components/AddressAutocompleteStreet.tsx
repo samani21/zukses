@@ -140,7 +140,7 @@ const AddressForm: React.FC<AddressAutocompleteStreetProps> = ({
 
             // Jika input kosong, masukkan karakter dummy
             if (input.value === '') {
-                input.value = subdistrict; // trigger autocomplete
+                input.value = ''; // trigger autocomplete
                 google.maps.event.trigger(input, 'focus');
                 google.maps.event.trigger(input, 'input');
 
