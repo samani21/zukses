@@ -6,6 +6,7 @@ import { AddLocation, InputFlex, LabelContainer, LocationContainer, SwitchContai
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
 import { Checkbox, Switch, TextField } from '@mui/material';
 import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
+import { GoogleMapsProvider } from 'components/GoogleMapsProvider';
 
 type FormData = {
     name: string;
@@ -89,6 +90,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
     const [openMaps, setOpenMaps] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isEdit, setIsEdit] = useState(false);
+
 
     const resetForm = () => {
         setFormData({
@@ -187,123 +189,124 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         };
     }, []);
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            {
-                openMaps ? <ModalMaps
-                    fullAddressStreet={formData.fullAddressStreet}
-                    lat={formData.lat}
-                    long={formData.long}
-                    setLat={(val) => handleChange('lat', val)}
-                    setLong={(val) => handleChange('long', val)}
-                    setOpenMaps={setOpenMaps}
-                /> :
-                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-                        <div className="flex justify-between items-center p-4">
-                            <h2 className="text-lg font-semibold">Alamat Baru</h2>
-                            <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-                                <XMarkIcon className="w-6 h-6" />
-                            </button>
-                        </div>
-                        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
-                            <InputFlex>
+        <GoogleMapsProvider>
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                {
+                    openMaps ? <ModalMaps
+                        fullAddressStreet={formData.fullAddressStreet}
+                        lat={formData.lat}
+                        long={formData.long}
+                        setLat={(val) => handleChange('lat', val)}
+                        setLong={(val) => handleChange('long', val)}
+                        setOpenMaps={setOpenMaps}
+                    /> :
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+                            <div className="flex justify-between items-center p-4">
+                                <h2 className="text-lg font-semibold">Alamat Baru</h2>
+                                <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+                                    <XMarkIcon className="w-6 h-6" />
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                                <InputFlex>
+                                    <WrapperInput>
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            label="Nama Lengkap"
+                                            value={formData.name}
+                                            onChange={(e) => handleChange('name', e.target.value)}
+                                            error={!!errors.name}
+                                            helperText={errors.name}
+                                            autoComplete="off"
+                                        />
+                                    </WrapperInput>
+                                    <WrapperInput>
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            label="Nomor Telepon"
+                                            value={formData.phone}
+                                            onChange={(e) => handleChange('phone', e.target.value)}
+                                            error={!!errors.phone}
+                                            helperText={errors.phone}
+                                            autoComplete="off"
+                                        />
+                                    </WrapperInput>
+                                </InputFlex>
                                 <WrapperInput>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Nama Lengkap"
-                                        value={formData.name}
-                                        onChange={(e) => handleChange('name', e.target.value)}
-                                        error={!!errors.name}
-                                        helperText={errors.name}
-                                        autoComplete="off"
+                                    <AutocompleteAddress
+                                        setFullAddress={(val) => handleChange('fullAddress', val)}
+                                        setProv={(val) => handleChange('prov', val)}
+                                        setCity={(val) => handleChange('city', val)}
+                                        setDistrict={(val) => handleChange('district', val)}
+                                        setPostCode={(val) => handleChange('postCode', val)}
+                                        openModalAddAddress={openModalAddAddress}
+                                        dataFullAddress={formData.fullAddress}
+                                        isEdit={isEdit}
+                                        provinces={editData?.provinces ?? ''}
+                                        cities={editData?.cities ?? ''}
+                                        subdistricts={editData?.subdistricts ?? ''}
+                                        postal_codes={editData?.postal_codes ?? ''}
+                                        province_id={editData?.province_id ?? 0}
+                                        citie_id={editData?.citie_id ?? 0}
+                                        subdistrict_id={editData?.subdistrict_id ?? 0}
+                                        postal_code_id={editData?.postal_code_id ?? 0}
                                     />
+                                    {errors.address && (
+                                        <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
+                                    )}
                                 </WrapperInput>
                                 <WrapperInput>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Nomor Telepon"
-                                        value={formData.phone}
-                                        onChange={(e) => handleChange('phone', e.target.value)}
-                                        error={!!errors.phone}
-                                        helperText={errors.phone}
-                                        autoComplete="off"
+                                    <AddressAutocompleteStreet
+                                        subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
+                                        setLat={(val) => handleChange('lat', val)}
+                                        setLong={(val) => handleChange('long', val)}
+                                        setFullAddress={(val) => handleChange('fullAddressStreet', val)}
+                                        dataFullAddress={formData.fullAddressStreet}
                                     />
+                                    {errors.fullAddressStreet && (
+                                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
+                                    )}
                                 </WrapperInput>
-                            </InputFlex>
-                            <WrapperInput>
-                                <AutocompleteAddress
-                                    setFullAddress={(val) => handleChange('fullAddress', val)}
-                                    setProv={(val) => handleChange('prov', val)}
-                                    setCity={(val) => handleChange('city', val)}
-                                    setDistrict={(val) => handleChange('district', val)}
-                                    setPostCode={(val) => handleChange('postCode', val)}
-                                    openModalAddAddress={openModalAddAddress}
-                                    dataFullAddress={formData.fullAddress}
-                                    isEdit={isEdit}
-                                    provinces={editData?.provinces ?? ''}
-                                    cities={editData?.cities ?? ''}
-                                    subdistricts={editData?.subdistricts ?? ''}
-                                    postal_codes={editData?.postal_codes ?? ''}
-                                    province_id={editData?.province_id ?? 0}
-                                    citie_id={editData?.citie_id ?? 0}
-                                    subdistrict_id={editData?.subdistrict_id ?? 0}
-                                    postal_code_id={editData?.postal_code_id ?? 0}
-                                />
-                                {errors.address && (
-                                    <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
-                                )}
-                            </WrapperInput>
-                            <WrapperInput>
-                                <AddressAutocompleteStreet
-                                    subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
-                                    setLat={(val) => handleChange('lat', val)}
-                                    setLong={(val) => handleChange('long', val)}
-                                    setFullAddress={(val) => handleChange('fullAddressStreet', val)}
-                                    dataFullAddress={formData.fullAddressStreet}
-                                />
-                                {errors.fullAddressStreet && (
-                                    <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
-                                )}
-                            </WrapperInput>
-                            <WrapperInput>
-                                <input
-                                    id="detailAddress"
-                                    type="text"
-                                    placeholder="Detail Lainnya (cth: Blok / Unit no., Patokan)"
-                                    className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    autoComplete="off"
-                                    value={formData.detailAddress}
-                                    onChange={(e) => handleChange('detailAddress', e.target.value)}
-                                />
-                                {errors.detailAddress && (
-                                    <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
-                                )}
-                            </WrapperInput>
-                            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                                <div className="flex">
-                                    <div className="flex-shrink-0">
-                                        <InformationCircleIcon className="h-5 w-5 text-yellow-400" />
-                                    </div>
-                                    <div className="ml-3">
-                                        <p className="text-sm text-yellow-700">
-                                            Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.
-                                        </p>
+                                <WrapperInput>
+                                    <input
+                                        id="detailAddress"
+                                        type="text"
+                                        placeholder="Detail Lainnya (cth: Blok / Unit no., Patokan)"
+                                        className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        autoComplete="off"
+                                        value={formData.detailAddress}
+                                        onChange={(e) => handleChange('detailAddress', e.target.value)}
+                                    />
+                                    {errors.detailAddress && (
+                                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
+                                    )}
+                                </WrapperInput>
+                                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <InformationCircleIcon className="h-5 w-5 text-yellow-400" />
+                                        </div>
+                                        <div className="ml-3">
+                                            <p className="text-sm text-yellow-700">
+                                                Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            {formData.lat && formData.long ? (
-                                <MapWithDraggableSvgPinDisable
-                                    lat={formData.lat}
-                                    lng={formData.long}
-                                    setOpenMaps={setOpenMaps}
-                                />
-                            ) : (
-                                <LocationContainer>
-                                    <AddLocation>+ Tambah Location</AddLocation>
-                                </LocationContainer>
-                            )}
-                            {/* <LabelContainer>
+                                {formData.lat && formData.long ? (
+                                    <MapWithDraggableSvgPinDisable
+                                        lat={formData.lat}
+                                        lng={formData.long}
+                                        setOpenMaps={setOpenMaps}
+                                    />
+                                ) : (
+                                    <LocationContainer>
+                                        <AddLocation>+ Tambah Location</AddLocation>
+                                    </LocationContainer>
+                                )}
+                                {/* <LabelContainer>
                                 Tandai Sebagai
                                 <WrapperLabel>
                                     {(['Rumah', 'Kantor'] as const).map((label) => (
@@ -322,36 +325,36 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                             {errors.tag && (
                                 <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.tag}</div>
                             )} */}
-                            <LabelContainer>
-                                Atur Sebagai Alamat Utama
-                                <SwitchContainer>
-                                    <Checkbox
-                                        checked={formData.isPrivate}
-                                        onChange={(e) => handleChange('isPrivate', e.target.checked)}
-                                        sx={{
-                                            color: 'var(--primary-color)',
-                                            '&.Mui-checked': {
+                                <LabelContainer>
+                                    Atur Sebagai Alamat Utama
+                                    <SwitchContainer>
+                                        <Checkbox
+                                            checked={formData.isPrivate}
+                                            onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                                            sx={{
                                                 color: 'var(--primary-color)',
-                                            },
-                                        }}
-                                    />
-                                </SwitchContainer>
-                                <SwitchContainer className='mobile'>
-                                    <Switch
-                                        checked={formData.isPrivate}
-                                        onChange={(e) => handleChange('isPrivate', e.target.checked)}
-                                        sx={{
-                                            '& .MuiSwitch-switchBase.Mui-checked': {
-                                                color: 'var(--primary-color)',
-                                                '& + .MuiSwitch-track': {
-                                                    backgroundColor: 'var(--primary-color)',
+                                                '&.Mui-checked': {
+                                                    color: 'var(--primary-color)',
                                                 },
-                                            },
-                                        }}
-                                    />
-                                </SwitchContainer>
-                            </LabelContainer>
-                            {/* <LabelContainer>
+                                            }}
+                                        />
+                                    </SwitchContainer>
+                                    <SwitchContainer className='mobile'>
+                                        <Switch
+                                            checked={formData.isPrivate}
+                                            onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                                            sx={{
+                                                '& .MuiSwitch-switchBase.Mui-checked': {
+                                                    color: 'var(--primary-color)',
+                                                    '& + .MuiSwitch-track': {
+                                                        backgroundColor: 'var(--primary-color)',
+                                                    },
+                                                },
+                                            }}
+                                        />
+                                    </SwitchContainer>
+                                </LabelContainer>
+                                {/* <LabelContainer>
                                 Atur Sebagai Alamat Toko
                                 <SwitchContainer>
                                     <Checkbox
@@ -380,23 +383,24 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                     />
                                 </SwitchContainer>
                             </LabelContainer> */}
+                            </div>
+                            <div className="p-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
+                                <button onClick={handleClose} className="hidden md:block px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">Nanti Saja</button>
+                                {
+                                    editData &&
+                                    <button onClick={() => {
+                                        setOpenDelete(editData?.id || 0)
+                                        setOpenModalAddAdress(false)
+                                    }} className="md:hidden px-6 py-2 rounded-lg border border-gray-300 text-white hover:bg-gray-100 transition bg-red-600">Hapus</button>
+                                }
+                                <button onClick={handleSubmit} className="px-8 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                                    OK
+                                </button>
+                            </div>
                         </div>
-                        <div className="p-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
-                            <button onClick={handleClose} className="hidden md:block px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">Nanti Saja</button>
-                            {
-                                editData &&
-                                <button onClick={() => {
-                                    setOpenDelete(editData?.id || 0)
-                                    setOpenModalAddAdress(false)
-                                }} className="md:hidden px-6 py-2 rounded-lg border border-gray-300 text-white hover:bg-gray-100 transition bg-red-600">Hapus</button>
-                            }
-                            <button onClick={handleSubmit} className="px-8 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
-                                OK
-                            </button>
-                        </div>
-                    </div>
-            }
-        </div>
+                }
+            </div>
+        </GoogleMapsProvider>
     )
 }
 

@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-    GoogleMap,
-    Marker,
-    useJsApiLoader,
-    OverlayView,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker, OverlayView } from "@react-google-maps/api";
 import { ButtonContainer, ButtonHold, ButtonOk } from "./Profile/AddressComponent";
 
 const containerStyle = {
@@ -25,11 +20,14 @@ type Props = {
     setOpenMaps: (value: boolean) => void;
 };
 
-const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Props) => {
-    const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    });
-
+const MapWithDraggableSvgPin = ({
+    lat,
+    long,
+    setLat,
+    setLong,
+    setOpenMaps,
+}: Props) => {
+    // Default posisi awal
     const initialPosition = {
         lat: lat ?? defaultCenter.lat,
         lng: long ?? defaultCenter.lng,
@@ -51,11 +49,10 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
 
     const onDragEnd = useCallback((e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
-            const newPos = {
+            setTempMarkerPos({
                 lat: e.latLng.lat(),
                 lng: e.latLng.lng(),
-            };
-            setTempMarkerPos(newPos); // Simpan sementara
+            });
         }
         setIsDragging(false);
     }, []);
@@ -63,11 +60,13 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
     const handleConfirmLocation = () => {
         setLat(tempMarkerPos.lat);
         setLong(tempMarkerPos.lng);
-        setOpenMaps(false)
+        setOpenMaps(false);
     };
 
-    if (loadError) return <div>Error loading maps</div>;
-    if (!isLoaded) return <div>Loading Maps...</div>;
+    // Cegah render jika belum tersedia
+    if (typeof window === "undefined" || !window.google) {
+        return <div>Loading Maps...</div>;
+    }
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -116,7 +115,7 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
                                 alignItems: "center",
                                 transform: "translate(-50%, -110%)",
                                 marginTop: "-40px",
-                                width: "100vh"
+                                width: "100vh",
                             }}
                         >
                             <div
@@ -154,12 +153,8 @@ const MapWithDraggableSvgPin = ({ lat, long, setLat, setLong, setOpenMaps }: Pro
             </GoogleMap>
 
             <ButtonContainer style={{ padding: "20px", marginTop: "0px" }}>
-                <ButtonHold onClick={() => setOpenMaps(false)}>
-                    Nanti Saja
-                </ButtonHold>
-                <ButtonOk onClick={handleConfirmLocation}>
-                    Konfirmasi
-                </ButtonOk>
+                <ButtonHold onClick={() => setOpenMaps(false)}>Nanti Saja</ButtonHold>
+                <ButtonOk onClick={handleConfirmLocation}>Konfirmasi</ButtonOk>
             </ButtonContainer>
         </div>
     );
