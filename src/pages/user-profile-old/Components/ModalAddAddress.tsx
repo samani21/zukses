@@ -7,7 +7,6 @@ import {
     SwitchContainer,
     WrapperInput, WrapperLabel
 } from 'components/Profile/AddressComponent';
-import AutocompleteAddress from 'components/AutocompleteAlamat';
 import AutocompleteStreetAddress from 'components/AutocompleteStreetAddress';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
 import ModalMaps from './ModalMaps';
@@ -225,7 +224,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                 </InputFlex>
 
                 <WrapperInput>
-                    <AutocompleteAddress
+                    {/* <AutocompleteAddress
                         setFullAddress={(val) => handleChange('fullAddress', val)}
                         setProv={(val) => handleChange('prov', val)}
                         setCity={(val) => handleChange('city', val)}
@@ -233,7 +232,7 @@ const ModalAddAddress = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                         setPostCode={(val) => handleChange('postCode', val)}
                         openModalAddAddress={openModalAddAddress}
                         dataFullAddress={formData.fullAddress}
-                    />
+                    /> */}
                     {errors.address && (
                         <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                     )}
