@@ -1,270 +1,203 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-// Interface untuk data alamat yang dipilih
-interface SelectedAddress {
-    mainText: string;
-    secondaryText: string;
-    fullAddress: string;
-    placeId: string;
-    lat: number;
-    lng: number;
+// Ganti dengan API Key Anda dari Google Maps Platform
+const API_KEY = "AIzaSyBBWc0LFEfssFFSIl4vc95ennI3uRcm6oo";
+const LIBRARIES = 'places,geocoding';
+
+interface AddressAutocompleteStreetProps {
+    subdistrict: string;
+    setLat: (lat: number) => void;
+    setLong: (lng: number) => void;
+    setFullAddress: (address: string) => void;
+    dataFullAddress?: string;
 }
 
-// Hook untuk memuat skrip Google Maps
-function useGoogleMapsScript(apiKey: string): boolean {
-    const [isLoaded, setIsLoaded] = useState(false);
+export default function AddressAutocompleteStreet({
+    subdistrict,
+    setLat,
+    setLong,
+    setFullAddress,
+    dataFullAddress,
+}: AddressAutocompleteStreetProps) {
+    const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
     useEffect(() => {
-        if (window.google?.maps) {
-            setIsLoaded(true);
+        if (window.google && window.google.maps) {
+            setIsScriptLoaded(true);
             return;
         }
 
-        const scriptId = 'google-maps-script';
-        const existingScript = document.getElementById(scriptId);
-
-        if (existingScript) {
-            const checkInterval = setInterval(() => {
-                if (window.google?.maps) {
-                    setIsLoaded(true);
-                    clearInterval(checkInterval);
-                }
-            }, 100);
+        if (document.querySelector(`script[src*="${API_KEY}"]`)) {
             return;
         }
 
         const script = document.createElement('script');
-        script.id = scriptId;
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=${LIBRARIES}`;
         script.async = true;
         script.defer = true;
-        script.onload = () => setIsLoaded(true);
-        script.onerror = () => {
-            console.error("Error: Gagal memuat skrip Google Maps.");
-            setIsLoaded(false);
-        };
+        script.onload = () => setIsScriptLoaded(true);
+        script.onerror = () => console.error('Google Maps script failed to load.');
         document.head.appendChild(script);
-    }, [apiKey]);
-
-    return isLoaded;
-}
-
-// Komponen Autocomplete
-function AddressAutocomplete({
-    onAddressSelect,
-    filterArea = '',
-    dataFullAddress,
-    isScriptLoaded,
-}: {
-    onAddressSelect: (address: SelectedAddress) => void;
-    filterArea?: string;
-    dataFullAddress?: string;
-    isScriptLoaded: boolean;
-}) {
-    const [inputValue, setInputValue] = useState<string>(dataFullAddress ?? '');
-    const [predictions, setPredictions] = useState<google.maps.places.AutocompletePrediction[]>([]);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-    const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null);
-    const placesService = useRef<google.maps.places.PlacesService | null>(null);
-    const mapDivRef = useRef<HTMLDivElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
-
-    useEffect(() => {
-        if (isScriptLoaded && window.google?.maps?.places) {
-            autocompleteService.current = new window.google.maps.places.AutocompleteService();
-            if (mapDivRef.current) {
-                placesService.current = new window.google.maps.places.PlacesService(mapDivRef.current);
-            }
-        }
-    }, [isScriptLoaded]);
-
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
-        setInputValue(value);
-
-        if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-
-        debounceTimeout.current = setTimeout(() => {
-            const query = filterArea ? `${value}, ${filterArea}` : value;
-
-            if (value && autocompleteService.current) {
-                autocompleteService.current.getPlacePredictions(
-                    {
-                        input: query,
-                        componentRestrictions: { country: 'id' },
-                    },
-                    (newPredictions, status) => {
-                        if (
-                            status === window.google.maps.places.PlacesServiceStatus.OK &&
-                            newPredictions
-                        ) {
-                            const filtered = newPredictions.filter((p) =>
-                                filterArea ? p.description.toLowerCase().includes(filterArea.toLowerCase()) : true
-                            );
-
-                            // --- PERUBAHAN DI SINI ---
-                            // Ambil 5 hasil pertama saja dari array yang sudah difilter
-                            const limitedPredictions = filtered.slice(0, 5);
-                            setPredictions(limitedPredictions);
-                            // -------------------------
-
-                            // Buka dropdown jika ada hasil (bahkan jika lebih dari 5)
-                            setIsDropdownOpen(filtered.length > 0);
-                        } else {
-                            setPredictions([]);
-                            setIsDropdownOpen(false);
-                        }
-                    }
-                );
-            } else {
-                setPredictions([]);
-                setIsDropdownOpen(false);
-            }
-        }, 500);
-    };
-
-    const handleSelect = useCallback(
-        (prediction: google.maps.places.AutocompletePrediction) => {
-            setInputValue(prediction.description);
-            setIsDropdownOpen(false);
-
-            if (!placesService.current) return;
-
-            placesService.current.getDetails(
-                {
-                    placeId: prediction.place_id,
-                    fields: ['geometry.location', 'name', 'formatted_address'],
-                },
-                (details, status) => {
-                    if (
-                        status === window.google.maps.places.PlacesServiceStatus.OK &&
-                        details &&
-                        details.geometry?.location
-                    ) {
-                        const lat = details.geometry.location.lat();
-                        const lng = details.geometry.location.lng();
-                        onAddressSelect({
-                            mainText: prediction.structured_formatting.main_text,
-                            secondaryText: prediction.structured_formatting.secondary_text,
-                            fullAddress: details.formatted_address || prediction.description,
-                            placeId: prediction.place_id,
-                            lat,
-                            lng,
-                        });
-                    }
-                }
-            );
-        },
-        [onAddressSelect]
-    );
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-                setIsDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     return (
-        <div ref={containerRef} className="relative w-full">
-            <div ref={mapDivRef} style={{ height: '1px', width: '1px', overflow: 'hidden' }} />
-            <input
-                id="address-autocomplete"
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange}
-                placeholder="Mulai ketik nama jalan, kota, atau tempat..."
-                className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                onFocus={() => inputValue && predictions.length > 0 && setIsDropdownOpen(true)}
-                autoComplete="off"
-                disabled={!filterArea} // Logika disederhanakan: nonaktif jika filterArea kosong
+        isScriptLoaded && (
+            <AddressForm
+                subdistrict={subdistrict}
+                setLat={setLat}
+                setLong={setLong}
+                setFullAddress={setFullAddress}
+                dataFullAddress={dataFullAddress}
             />
-            {isDropdownOpen && (
-                <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {predictions.map((prediction) => (
-                        <li
-                            key={prediction.place_id}
-                            onClick={() => handleSelect(prediction)}
-                            className="px-4 py-3 cursor-pointer hover:bg-gray-100"
-                        >
-                            <p className="font-semibold text-gray-800">{prediction.structured_formatting.main_text}</p>
-                            <p className="text-sm text-gray-500">{prediction.structured_formatting.secondary_text}</p>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
+        )
     );
 }
 
-// Komponen utama yang menggunakan AddressAutocomplete
-export default function AddressAutocompleteStreet({
+const AddressForm: React.FC<AddressAutocompleteStreetProps> = ({
     subdistrict,
-    dataFullAddress = '',
     setLat,
     setLong,
     setFullAddress,
-}: {
-    subdistrict?: string;
-    dataFullAddress?: string;
-    setLat: (val: number) => void;
-    setLong: (val: number) => void;
-    setFullAddress: (val: string) => void;
-}) {
-    // GANTI DENGAN API KEY ANDA YANG VALID. Jangan ekspos API key di client-side untuk aplikasi produksi.
-    const Maps_API_KEY = "AIzaSyBBWc0LFEfssFFSIl4vc95ennI3uRcm6oo";
-    const isMapsLoaded = useGoogleMapsScript(Maps_API_KEY);
-    const [mapCenter, setMapCenter] = useState({ lat: -3.34, lng: 114.59 }); // Default: Banjarmasin
-    const mapRef = useRef<HTMLDivElement>(null);
-    const mapInstance = useRef<google.maps.Map | null>(null);
+    dataFullAddress,
+}) => {
+    const [areaName, setAreaName] = useState(subdistrict || '');
+    const [selectedAddress, setSelectedAddress] = useState<string>(dataFullAddress || '');
+    const [error, setError] = useState<string>('');
+    const [isAddressInputDisabled, setAddressInputDisabled] = useState(true);
+
+    const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+    const geocoderRef = useRef<google.maps.Geocoder | null>(null);
+    const addressInputRef = useRef<HTMLInputElement>(null);
+
+    const onPlaceChanged = useCallback(() => {
+        if (autocompleteRef.current) {
+            const place = autocompleteRef.current.getPlace();
+            if (place.geometry?.location && place.formatted_address) {
+                const lat = place.geometry.location.lat();
+                const lng = place.geometry.location.lng();
+                setLat(lat);
+                setLong(lng);
+                setFullAddress(place.formatted_address);
+                setSelectedAddress(place.formatted_address);
+                console.log("Alamat dipilih:", place.formatted_address);
+            }
+        }
+    }, [setLat, setLong, setFullAddress]);
+
+    const applyAreaRestriction = useCallback(() => {
+        if (!geocoderRef.current) return;
+        const geocoder = geocoderRef.current;
+
+        if (!areaName) {
+            autocompleteRef.current?.setBounds(
+                new window.google.maps.LatLngBounds()
+            );
+            autocompleteRef.current?.setOptions({ strictBounds: false });
+            setAddressInputDisabled(false);
+            return;
+        }
+
+        geocoder.geocode({ address: `${areaName}, Indonesia` }, (results, status) => {
+            if (status === 'OK' && results && results[0]) {
+                const viewport = results[0].geometry.viewport;
+                autocompleteRef.current?.setBounds(viewport);
+                autocompleteRef.current?.setOptions({ strictBounds: true });
+                setAddressInputDisabled(false);
+            } else {
+                setAddressInputDisabled(true);
+                setError(`Wilayah "${areaName}" tidak ditemukan.`);
+            }
+        });
+    }, [areaName]);
 
     useEffect(() => {
-        if (isMapsLoaded && mapRef.current && !mapInstance.current) {
-            mapInstance.current = new window.google.maps.Map(mapRef.current, {
-                center: mapCenter,
-                zoom: 13,
-                disableDefaultUI: true,
-            });
+        if (window.google && addressInputRef.current) {
+            if (!geocoderRef.current) {
+                geocoderRef.current = new window.google.maps.Geocoder();
+            }
+            if (!autocompleteRef.current) {
+                autocompleteRef.current = new window.google.maps.places.Autocomplete(
+                    addressInputRef.current,
+                    {
+                        fields: ["address_components", "geometry", "name", "formatted_address"],
+                    }
+                );
+                autocompleteRef.current.addListener('place_changed', onPlaceChanged);
+            }
+            applyAreaRestriction();
         }
-    }, [isMapsLoaded, mapCenter]);
+    }, [onPlaceChanged, applyAreaRestriction]);
 
     useEffect(() => {
-        if (mapInstance.current) {
-            mapInstance.current.setCenter(mapCenter);
-            mapInstance.current.setZoom(15);
-        }
-    }, [mapCenter]);
+        setAreaName(subdistrict);
+    }, [subdistrict]);
 
-    const handleAddressSelect = (address: SelectedAddress) => {
-        setFullAddress(address.fullAddress);
-        if (address.lat && address.lng) {
-            setLat(address.lat);
-            setLong(address.lng);
-            setMapCenter({ lat: address.lat, lng: address.lng });
+    const handleAddressInputClick = () => {
+        if (autocompleteRef.current && addressInputRef.current) {
+            const input = addressInputRef.current;
+
+            // Jika input kosong, masukkan karakter dummy
+            if (input.value === '') {
+                input.value = subdistrict; // trigger autocomplete
+                google.maps.event.trigger(input, 'focus');
+                google.maps.event.trigger(input, 'input');
+
+                // Hapus kembali agar terlihat kosong
+                setTimeout(() => {
+                    input.value = '';
+                }, 100);
+            }
         }
     };
 
+    // Inject custom styles untuk hasil autocomplete
+    useEffect(() => {
+        const styleId = 'pac-container-styles';
+        if (document.getElementById(styleId)) return;
+
+        const styleEl = document.createElement('style');
+        styleEl.id = styleId;
+        styleEl.innerHTML = `
+        .pac-container {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            border: 1px solid #e2e8f0;
+            z-index: 9999 !important;
+        }
+        .pac-item {
+            padding: 0.75rem;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .pac-item:hover {
+            background-color: #f7fafc;
+        }
+        .pac-item-query {
+            font-weight: 600;
+        }
+        `;
+        document.head.appendChild(styleEl);
+    }, []);
+
     return (
-        <div>
-            {isMapsLoaded ? (
-                <AddressAutocomplete
-                    onAddressSelect={handleAddressSelect}
-                    filterArea={subdistrict}
-                    isScriptLoaded={isMapsLoaded}
-                    dataFullAddress={dataFullAddress}
-                />
-            ) : (
-                <div className="w-full px-4 py-2 text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-md">
-                    Memuat komponen pencarian...
-                </div>
+        <>
+            <input
+                ref={addressInputRef}
+                defaultValue={selectedAddress}
+                id="alamat-input"
+                type="text"
+                placeholder={isAddressInputDisabled ? "Tentukan batas wilayah dulu..." : "Ketik atau klik di sini..."}
+                onClick={handleAddressInputClick}
+                disabled={areaName ? false : true}
+                autoComplete='off'
+                className="w-full px-4 py-3 text-base text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            />
+            {error && (
+                <p className="text-sm text-red-600 mt-1">{error}</p>
             )}
-        </div>
+        </>
     );
-}
+};

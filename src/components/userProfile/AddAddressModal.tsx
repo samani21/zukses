@@ -247,7 +247,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                             </WrapperInput>
                             <WrapperInput>
                                 <AddressAutocompleteStreet
-                                    subdistrict={formData?.fullAddress?.split(',')[1]?.trim() ?? ''}
+                                    subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
                                     setLat={(val) => handleChange('lat', val)}
                                     setLong={(val) => handleChange('long', val)}
                                     setFullAddress={(val) => handleChange('fullAddressStreet', val)}
