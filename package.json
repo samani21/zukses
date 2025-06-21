@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.14.0",
     "@googlemaps/js-api-loader": "^1.16.8",
     "@mui/icons-material": "^7.1.0",
+    "@mui/lab": "^7.0.0-beta.13",
     "@mui/material": "^7.1.0",
     "@react-google-maps/api": "^2.20.6",
     "axios": "^1.9.0",
@@ -21,7 +22,8 @@
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.4.2",
     "reactjs-otp-input": "^2.0.10",
-    "styled-components": "^6.1.18"
+    "styled-components": "^6.1.18",
+    "tailwind-scrollbar-hide": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
