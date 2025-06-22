@@ -1,5 +1,5 @@
 import { ButtonContainer, ButtonHold, ButtonOk, DeleteComponentComponent } from 'components/Profile/ModalDelete';
-import React, { useEffect } from 'react'
+import React from 'react'
 
 type Props = {
     handleDelete: (id?: number) => Promise<void>;
