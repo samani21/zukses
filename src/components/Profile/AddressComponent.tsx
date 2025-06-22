@@ -371,6 +371,9 @@ export const ButtonHold = styled.div`
     &:hover{
         background: #e5e5e5;
     }
+    @media (max-width: 768px) {
+        display: none;
+    }
 `;
 
 export const ButtonOk = styled.button`
