@@ -277,19 +277,21 @@ const AutocompleteAddress = ({
         const query = isMobile ? debouncedMobileQuery : debouncedInputValue;
         const constructedAddress = getFullLabel(selectedProvince?.name, selectedCity?.name, selectedDistrict?.name, selectedPostcode?.code);
         try {
+            const kota = dataFullAddress?.split(',').slice(1, 2).map(s => s.trim()).join(', ');
+            const kecamatan = dataFullAddress?.split(',').slice(2, 3).map(s => s.trim()).join(', ');
             if (query.trim() && query !== constructedAddress) {
                 const res = await Get<{ data: { data: Option[] } }>('zukses', `full-address?search=${query}`);
                 if (res) setOptions(res.data?.data || []);
             } else if (tab === 0) {
                 const res = await Get<{ data: Province[] }>('zukses', `master/province?page_size=1000`); if (res) setOptions(res.data.map(p => ({ label: p.name, code: p.id.toString() })));
             } else if (tab === 1 && selectedProvince) {
-                const res = await Get<{ data: City[] }>('zukses', `master/city?page_size=1000&province=${selectedProvince.id}`);
+                const res = await Get<{ data: City[] }>('zukses', `master/city?page_size=1000&province=${selectedProvince.id}&search=${kota}`);
                 if (res) setOptions(res.data.map(c => ({ label: c.name, code: c.id.toString() })));
             } else if (tab === 2 && selectedCity) {
-                const res = await Get<{ data: District[] }>('zukses', `master/subdistrict?page_size=1000&city=${selectedCity.id}`);
+                const res = await Get<{ data: District[] }>('zukses', `master/subdistrict?page_size=1000&city=${selectedCity.id}&search=${kecamatan}`);
                 if (res) setOptions(res.data.map(d => ({ label: d.name, code: d.id.toString() })));
             } else if (tab === 3 && selectedDistrict) {
-                const res = await Get<{ data: Postcode[] }>('zukses', `master/postal_code?page_size=1000&subdistrict_id=${selectedDistrict.id}`);
+                const res = await Get<{ data: Postcode[] }>('zukses', `master/postal_code?page_size=1000&subdistrict_id=${selectedDistrict.id}&search=${kecamatan}`);
                 if (res) setOptions(res.data.map(p => ({ label: p.code, code: p.id.toString() })));
             } else {
                 setOptions([]);

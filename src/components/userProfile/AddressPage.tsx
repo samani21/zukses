@@ -191,7 +191,7 @@ const AddressPage = () => {
                                     <span>{address.number_receiver}</span>
                                 </div>
                                 <p>{address.full_address},{address?.detail_address}</p>
-                                <p>{`${address?.cities}, ${address?.provinces}, ${address?.postal_codes}`}</p>
+                                <p>{`${address?.provinces},${address?.cities}, ${address?.subdistricts}, ${address?.postal_codes}`}</p>
                                 <div className="flex gap-2 mt-1">
                                     {address.is_primary ? <span className="text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded-sm">Utama</span> : ''}
                                     {/* <span className="text-gray-500 border border-gray-300 text-xs px-2 py-0.5 rounded-sm">{address?.label}</span> */}
