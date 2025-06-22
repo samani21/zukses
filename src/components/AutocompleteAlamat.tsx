@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
     TextField,
     List,
@@ -51,6 +51,7 @@ interface District { id: number; name: string; }
 interface Postcode { id: number; code: string; }
 type Props = {
     setFullAddress: (value: string) => void;
+    setFullAddressStreet: (value: string) => void;
     setProv: (value: number) => void;
     setCity: (value: number) => void;
     setDistrict: (value: number) => void;
@@ -66,7 +67,27 @@ type Props = {
     citie_id: number;
     subdistrict_id: number;
     postal_code_id: number;
+    setLat: (lat: number) => void;
+    setLong: (lng: number) => void;
+    setKodePos: (lng: string) => void;
 };
+
+interface LocationDetails {
+    province: string;
+    city: string;
+    district: string;
+    postalCode: string;
+    fullAddress: string;
+    latitude: number;
+    longitude: number;
+}
+
+// Define the structure for Google Maps API address components
+interface AddressComponent {
+    long_name: string;
+    short_name: string;
+    types: string[];
+}
 function isAutocompleteOption(option: Option): option is AutocompleteOption {
     return option !== undefined && typeof option === 'object' && 'compilationID' in option;
 }
@@ -88,6 +109,10 @@ const AutocompleteAddress = ({
     citie_id,
     subdistrict_id,
     postal_code_id,
+    setFullAddressStreet,
+    setLat,
+    setLong,
+    setKodePos
 }: Props) => {
     // State dari kode asli Anda (dipertahankan)
     const [inputValue, setInputValue] = useState(dataFullAddress || '');
@@ -119,7 +144,64 @@ const AutocompleteAddress = ({
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    // --- HOOKS ---
+
+    const API_KEY = 'AIzaSyBBWc0LFEfssFFSIl4vc95ennI3uRcm6oo';
+
+    const findComponent = (components: AddressComponent[], type: string): string => {
+        const component = components.find(c => c.types.includes(type));
+        return component ? component.long_name : '';
+    };
+    const handleGetLocation = useCallback(() => {
+        // Reset state before starting a new request
+
+        // Check if geolocation is supported by the browser
+        if (!navigator.geolocation) {
+            return;
+        }
+
+        // Get current GPS position
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${API_KEY}&language=id`;
+
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+
+                    if (data.status !== 'OK') {
+                        throw new Error(data.error_message || 'Failed to fetch location data from Google Maps API.');
+                    }
+
+                    // Get the first and most relevant address result
+                    const result = data.results[0];
+                    if (!result) {
+                        throw new Error('No address found for the current location.');
+                    }
+
+                    const components = result.address_components as AddressComponent[];
+
+                    // Extract address details based on Indonesian administrative levels
+                    const details: LocationDetails = {
+                        province: findComponent(components, 'administrative_area_level_1'),
+                        city: findComponent(components, 'administrative_area_level_2'),
+                        district: findComponent(components, 'administrative_area_level_3'),
+                        postalCode: findComponent(components, 'postal_code'),
+                        fullAddress: result.formatted_address,
+                        latitude: latitude,
+                        longitude: longitude,
+                    };
+
+                    setFullAddress(details?.province?.toUpperCase() + ", " + details?.city?.toUpperCase() + ", " + details?.district?.toUpperCase() + ", " + details?.postalCode)
+                    setFullAddressStreet(details?.fullAddress)
+                    setIsFocused(false)
+                    setLat(details?.latitude)
+                    setLong(details?.longitude)
+                    setKodePos(details?.postalCode)
+                } catch { }
+            },
+        );
+    }, [API_KEY]);
     useEffect(() => {
         const handler = setTimeout(() => {
             if (isMobile) {
@@ -255,6 +337,7 @@ const AutocompleteAddress = ({
             setTab(3);
             setDebouncedInputValue('');
             setIsFocused(false);
+            setKodePos(postcode_code);
             inputRef.current?.blur();
             return;
         }
@@ -296,6 +379,7 @@ const AutocompleteAddress = ({
             setFullAddress(full);
             setIsFocused(false);
             setInputValue(full);
+            setKodePos(label);
             inputRef.current?.blur();
         }
     };
@@ -340,11 +424,12 @@ const AutocompleteAddress = ({
             setDestrictd(option?.compilationID?.district_id);
             setCodePos(option?.compilationID?.postcode_id);
             setCity(id.city_id);
-            setProv(id.city_id);
+            setProv(id.province_id);
             setDistrict(id.district_id);
             setPostCode(id.postcode_id);
             setMobileViewOpen(false);
             setIsFocused(false)
+            setKodePos(option?.label?.split(',')[3]?.trim() ?? '');
             resetSelection();
             return;
         }
@@ -375,7 +460,7 @@ const AutocompleteAddress = ({
             setInputValue(full);
             setPostCode(+code);
             setCodePos(+code);
-
+            setKodePos(label)
             setMobileViewOpen(false);
             setIsFocused(false)
 
@@ -396,7 +481,7 @@ const AutocompleteAddress = ({
         }
     };
 
-    const handleUseCurrentLocation = async () => alert("Fitur 'Gunakan Lokasi Saat Ini' perlu diimplementasikan.");
+    const handleUseCurrentLocation = async () => handleGetLocation();
 
 
     // --- RENDER ---

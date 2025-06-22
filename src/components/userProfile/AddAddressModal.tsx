@@ -4,10 +4,10 @@ import AutocompleteAddress from 'components/AutocompleteAlamat';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
 import { AddLocation, InputFlex, LabelContainer, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
-import { Checkbox, Switch, TextField } from '@mui/material';
+import { Checkbox, IconButton, Switch, TextField } from '@mui/material';
 import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
 import { GoogleMapsProvider } from 'components/GoogleMapsProvider';
-
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 type FormData = {
     name: string;
     phone: string;
@@ -22,6 +22,7 @@ type FormData = {
     district: number;
     postCode: number;
     detailAddress: string;
+    kodePos: string;
 };
 
 type AddressData = {
@@ -70,7 +71,7 @@ type Props = {
     openModalAddAddress?: boolean;
     isAdd?: boolean;
 }
-const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModalAddAddress, setOpenDelete, isAdd, setIsAdd }: Props) => {
+const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDelete, isAdd, setIsAdd }: Props) => {
     const [formData, setFormData] = useState<FormData>({
         name: '',
         phone: '',
@@ -84,13 +85,14 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         city: 0,
         district: 0,
         postCode: 0,
-        detailAddress: ''
+        detailAddress: '',
+        kodePos: ''
     });
     console.log('formData', formData)
     const [openMaps, setOpenMaps] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isEdit, setIsEdit] = useState(false);
-
+    const [openAutoCompletAddress, setOpenAutoCompleteAddress] = useState<boolean>(false);
 
     const resetForm = () => {
         setFormData({
@@ -106,7 +108,8 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
             city: 0,
             district: 0,
             postCode: 0,
-            detailAddress: ''
+            detailAddress: '',
+            kodePos: ''
         });
         setErrors({});
         setIsEdit(false);
@@ -127,7 +130,8 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
             city: data.citie_id || 0,
             district: data.subdistrict_id || 0,
             postCode: data.postal_code_id || 0,
-            detailAddress: data.detail_address || ''
+            detailAddress: data.detail_address || '',
+            kodePos: data?.postal_codes || '',
         });
         setIsEdit(true);
     };
@@ -155,7 +159,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         if (!formData.name.trim()) newErrors.name = 'Nama Lengkap tidak boleh kosong';
         if (!formData.detailAddress.trim()) newErrors.detailAddress = 'Detail alamat tidak boleh kosong';
         if (!formData.phone.trim()) newErrors.phone = 'Nomor Telepon tidak boleh kosong';
-        if (!formData.prov || !formData.city || !formData.district || !formData.postCode) {
+        if (!formData.kodePos) {
             newErrors.address = 'Alamat (Provinsi, Kota, Kecamatan, Kode Pos) harus lengkap';
         }
         if (!formData.fullAddressStreet.trim()) newErrors.fullAddressStreet = 'Alamat Jalan tidak boleh kosong';
@@ -182,6 +186,10 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
         setOpenModalAddAdress(false);
         resetForm();
     };
+    const handleSelectAddress = async () => {
+        setOpenAutoCompleteAddress(false)
+        setOpenMaps(true)
+    }
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
@@ -201,11 +209,17 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                         setOpenMaps={setOpenMaps}
                     /> :
                         <div className="bg-white h-full md:h-50% md:rounded-lg shadow-xl w-full max-w-2xl">
-                            <div className="flex justify-between items-center p-4">
+                            <div className="hidden md:block flex justify-between items-center p-4">
                                 <h2 className="text-lg font-semibold">Alamat Baru</h2>
                                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                                     <XMarkIcon className="w-6 h-6" />
                                 </button>
+                            </div>
+                            <div className=" md:hidden flex justify-left items-center p-4">
+                                <IconButton edge="start" color="inherit" onClick={handleClose}>
+                                    <ArrowBackIcon sx={{ color: "black" }} />
+                                </IconButton>
+                                <h2 className="text-lg font-semibold ml-4">Alamat Baru</h2>
                             </div>
                             <div className="p-6 space-y-4 max-h-[80vh] md:max-h-[70vh] overflow-y-auto">
                                 <InputFlex>
@@ -241,7 +255,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                         setCity={(val) => handleChange('city', val)}
                                         setDistrict={(val) => handleChange('district', val)}
                                         setPostCode={(val) => handleChange('postCode', val)}
-                                        openModalAddAddress={openModalAddAddress}
+                                        setKodePos={(val) => handleChange('kodePos', val)}
                                         dataFullAddress={formData.fullAddress}
                                         isEdit={isEdit}
                                         provinces={editData?.provinces ?? ''}
@@ -252,22 +266,72 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                         citie_id={editData?.citie_id ?? 0}
                                         subdistrict_id={editData?.subdistrict_id ?? 0}
                                         postal_code_id={editData?.postal_code_id ?? 0}
+                                        setFullAddressStreet={(val) => handleChange('fullAddressStreet', val)}
+                                        setLat={(val) => handleChange('lat', val)}
+                                        setLong={(val) => handleChange('long', val)}
                                     />
                                     {errors.address && (
                                         <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                                     )}
                                 </WrapperInput>
                                 <WrapperInput>
-                                    <AddressAutocompleteStreet
-                                        subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
-                                        setLat={(val) => handleChange('lat', val)}
-                                        setLong={(val) => handleChange('long', val)}
-                                        setFullAddress={(val) => handleChange('fullAddressStreet', val)}
-                                        dataFullAddress={formData.fullAddressStreet}
-                                    />
-                                    {errors.fullAddressStreet && (
-                                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
-                                    )}
+                                    <div className='hidden md:block'>
+                                        <AddressAutocompleteStreet
+                                            subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
+                                            setLat={(val) => handleChange('lat', val)}
+                                            setLong={(val) => handleChange('long', val)}
+                                            setFullAddress={(val) => handleChange('fullAddressStreet', val)}
+                                            dataFullAddress={formData.fullAddressStreet}
+                                        />
+                                        {errors.fullAddressStreet && (
+                                            <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
+                                        )}
+                                    </div>
+                                    <div className='md:hidden'>
+                                        <input
+                                            id="alamat-input"
+                                            type="text"
+                                            placeholder={'Tentukan batas wilayah dulu...'}
+                                            value={formData.fullAddressStreet}
+                                            onClick={() => setOpenAutoCompleteAddress(true)}
+                                            disabled={formData?.fullAddress?.split(',')[2]?.trim() ?? '' ? false : true}
+                                            autoComplete='off'
+                                            className="w-full px-4 py-3 text-base text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                                        />
+                                        {errors.detailAddress && (
+                                            <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
+                                        )}
+                                        {
+                                            openAutoCompletAddress && <div style={{ position: "absolute", left: '0', top: '0', width: "100%", height: "100dvh", background: "white", zIndex: 2, padding: "10px" }}>
+                                                <div style={{ marginBottom: "20px" }}>
+                                                    <IconButton edge="start" color="inherit" onClick={() => setOpenAutoCompleteAddress(false)}>
+                                                        <ArrowBackIcon sx={{ color: "black" }} />
+                                                    </IconButton>
+                                                </div>
+                                                <AddressAutocompleteStreet
+                                                    subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
+                                                    setLat={(val) => handleChange('lat', val)}
+                                                    setLong={(val) => handleChange('long', val)}
+                                                    setFullAddress={(val) => handleChange('fullAddressStreet', val)}
+                                                    dataFullAddress={formData.fullAddressStreet}
+                                                />
+                                                <input
+                                                    id="detailAddress"
+                                                    type="text"
+                                                    placeholder="Detail Lainnya (cth: Blok / Unit no., Patokan)"
+                                                    className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-5"
+                                                    autoComplete="off"
+                                                    value={formData.detailAddress}
+                                                    onChange={(e) => handleChange('detailAddress', e.target.value)}
+                                                />
+                                                <div style={{ position: "absolute", bottom: "0px", padding: "10px", width: "100%", left: "0" }}>
+                                                    <div className='w-full rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition p-4 flex justify-center cursor-pointer' onClick={handleSelectAddress}>
+                                                        Selanjutnya
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
                                 </WrapperInput>
                                 <WrapperInput>
                                     <input
@@ -384,16 +448,16 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, openModal
                                 </SwitchContainer>
                             </LabelContainer> */}
                             </div>
-                            <div className="p-4 bg-gray-50 rounded-b-lg flex justify-end gap-3">
+                            <div className="p-4 bg-gray-50 rounded-b-lg flex justify-between md:justify-end gap-3">
                                 <button onClick={handleClose} className="hidden md:block px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">Nanti Saja</button>
                                 {
                                     editData &&
                                     <button onClick={() => {
                                         setOpenDelete(editData?.id || 0)
                                         setOpenModalAddAdress(false)
-                                    }} className="md:hidden px-6 py-2 rounded-lg border border-gray-300 text-white hover:bg-gray-100 transition bg-red-600">Hapus</button>
+                                    }} className="md:hidden px-6 py-2 rounded-lg border border-gray-300 text-white hover:bg-gray-100 w-full transition bg-red-600">Hapus</button>
                                 }
-                                <button onClick={handleSubmit} className="px-8 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">
+                                <button onClick={handleSubmit} className="px-8 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition w-full md:w-1/5">
                                     OK
                                 </button>
                             </div>

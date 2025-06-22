@@ -105,6 +105,7 @@ const AddressPage = () => {
             formData.append('subdistrict_id', String(data.district || 0));
             formData.append('postal_code_id', String(data.postCode || 0));
             formData.append('full_address', data.fullAddressStreet);
+            formData.append('full_location', data.fullAddress);
             formData.append('detail_address', data.detailAddress);
             formData.append('lat', String(data.lat || 0));
             formData.append('long', String(data.long || 0));
