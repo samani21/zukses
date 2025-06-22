@@ -8,12 +8,7 @@ type Props = {
 }
 
 const ModalDeleteBank = ({ handleDelete, id, setOpenDelete }: Props) => {
-    useEffect(() => {
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = 'auto';
-        };
-    }, [])
+
     return (
         <DeleteComponentComponent>
             Hapus Akun bank?
