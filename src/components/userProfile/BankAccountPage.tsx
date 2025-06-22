@@ -6,6 +6,10 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import { Response } from 'services/api/types';
 import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
+import Get from 'services/api/Get';
+import { ModalContainer } from 'components/Profile/ModalContainer';
+import ModalDeleteBank from './ModalDeleteBank';
+import Delete from 'services/api/Delete';
 
 type BankAccountData = {
     bank_id: number;
@@ -22,10 +26,19 @@ interface User {
     image?: string;
     role?: string;
 }
+type GetAccountBank = {
+    name_bank?: string;
+    account_name?: string;
+    icon?: string;
+    account_number?: number;
+    id?: number;
+};
 const BankAccountPage = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
+    const [bankAccount, setBankAccount] = useState<GetAccountBank[]>([]);
+    const [openDelete, setOpenDelete] = useState<number>(0);
     const [snackbar, setSnackbar] = useState<{
         message: string;
         type?: 'success' | 'error' | 'info';
@@ -36,8 +49,25 @@ const BankAccountPage = () => {
         const currentUser = getUserInfo();
         if (currentUser) {
             setUser(currentUser);
+            getBankAccounts(currentUser?.id)
         }
     }, []);
+    const getBankAccounts = async (userId?: number) => {
+        if (!userId) return;
+        console.log('userId', userId);
+        setLoading(true);
+        const res = await Get<Response>('zukses', `bank-accounts/${userId}/show`);
+        setLoading(false);
+
+        console.log('data', res)
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res.data as GetAccountBank[];
+            setBankAccount(data);
+        } else {
+            console.warn('Account Bank tidak ditemukan atau bukan array:');
+        }
+    };
+
     const handleAdd = async (data: BankAccountData): Promise<void> => {
         try {
             console.log('data', data)
@@ -51,8 +81,24 @@ const BankAccountPage = () => {
             if (res?.data?.status === 'success') {
                 setLoading(false);
                 setIsModalOpen(false)
-                // getUserAddress(user?.id); // refresh address list
-                // setIsModalOpen(false)
+                getBankAccounts(user?.id); // refresh address list
+            }
+        } catch (err) {
+            setLoading(false);
+            const error = err as AxiosError<{ message?: string }>;
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
+        }
+    };
+
+    const handleDelete = async (id?: number): Promise<void> => {
+        try {
+            setLoading(true);
+            const res = await Delete<Response>('zukses', `bank-accounts/${id}`);
+            setLoading(false);
+
+            if (res?.data?.status === 'success') {
+                getBankAccounts(user?.id); // refresh address list
+                setOpenDelete(0)
             }
         } catch (err) {
             setLoading(false);
@@ -72,20 +118,27 @@ const BankAccountPage = () => {
                 </button>
             </div>
             <div>
-                <div className="border-t pt-4 flex flex-col md:flex-row gap-4 items-start">
-                    <img src="/icon/bni.webp" alt="BNI Logo" className="" />
-                    <div className="flex-grow">
-                        <p className="text-sm text-gray-800 font-semibold">PT. BANK NEGARA INDONESIA (BNI) (PERSERO)</p>
-                        <p className="text-gray-700">0435866872</p>
-                        <p className="text-sm text-gray-500">a.n Ibu ANDI NAIFA</p>
-                    </div>
-                    <button className="border border-gray-300 rounded px-6 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition">Hapus</button>
-                </div>
+                {
+                    bankAccount?.map((ab, i) => (
+                        <div className="border-t pt-4 flex flex-col md:flex-row gap-4 items-start" key={i}>
+                            <img src={ab?.icon} alt={ab?.name_bank} className="" width={100} />
+                            <div className="flex-grow">
+                                <p className="text-sm text-gray-800 font-semibold">{ab?.name_bank}</p>
+                                <p className="text-gray-700">{ab?.account_number}</p>
+                                <p className="text-sm text-gray-500">a.n {ab?.account_name}</p>
+                            </div>
+                            <button className="border border-gray-300 rounded px-6 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition" onClick={() => setOpenDelete(ab?.id ?? 0)}>Hapus</button>
+                        </div>
+                    ))
+                }
             </div>
             {isModalOpen && <AddBankAccountModal onClose={() => setIsModalOpen(false)} handleAdd={handleAdd} />}
             {
                 loading && <Loading />
             }
+            <ModalContainer open={openDelete > 0 ? true : false}>
+                <ModalDeleteBank id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
+            </ModalContainer>
             {snackbar.isOpen && (
                 <Snackbar
                     message={snackbar.message}

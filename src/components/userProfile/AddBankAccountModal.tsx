@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { InformationCircleIcon, XMarkIcon } from './Icon';
-import Get from 'services/api/Get';
-import Post from 'services/api/Post'; // Asumsi Anda punya service untuk POST
+import Get from 'services/api/Get';// Asumsi Anda punya service untuk POST
 import { Response } from 'services/api/types';
 
 type Banks = {
@@ -37,7 +36,6 @@ const AddBankAccountModal = ({ onClose, handleAdd }: Props) => {
     const [accountHolderName, setAccountHolderName] = useState<string | null>(null);
 
     // --- State untuk Loading ---
-    const [isFetchingBanks, setIsFetchingBanks] = useState<boolean>(false);
     const [isCheckingName, setIsCheckingName] = useState<boolean>(false);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -53,7 +51,6 @@ const AddBankAccountModal = ({ onClose, handleAdd }: Props) => {
     }, []);
 
     const getBanks = async () => {
-        setIsFetchingBanks(true);
         try {
             const res = await Get<Response>('zukses', `banks`);
             if (res?.status === 'success' && Array.isArray(res.data)) {
@@ -66,7 +63,6 @@ const AddBankAccountModal = ({ onClose, handleAdd }: Props) => {
             console.error('Error fetching banks:', error);
             setErrors(prev => ({ ...prev, submit: 'Terjadi kesalahan saat memuat daftar bank.' }));
         } finally {
-            setIsFetchingBanks(false);
         }
     };
 

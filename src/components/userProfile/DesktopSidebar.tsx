@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { CreditCardIcon, CubeIcon, LogoutIcon, MapPinIcon, ShieldCheckIcon, StoreIcon, UserCircleIcon } from './Icon';
+import { LogoutIcon } from './Icon';
 import { useRouter } from 'next/router';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 interface User {
@@ -16,12 +16,12 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
     const navItems = [
-        { name: 'Profil', icon: <UserCircleIcon className="w-5 h-5" /> },
-        { name: 'Alamat', icon: <MapPinIcon className="w-5 h-5" /> },
-        { name: 'Rekening Bank', icon: <CreditCardIcon className="w-5 h-5" /> },
-        { name: 'Pesanan Saya', icon: <CubeIcon className="w-5 h-5" /> },
-        { name: 'PIN Toko', icon: <ShieldCheckIcon className="w-5 h-5" /> },
-        { name: 'Toko Saya', icon: <StoreIcon className="w-5 h-5" /> }
+        { name: 'Profil', icon: <img src='/icon/user-1.png' className="w-5 h-5" /> },
+        { name: 'Alamat', icon: <img src='/icon/alamat-1.png' className="w-5 h-5" /> },
+        { name: 'Rekening Bank', icon: <img src='/icon/bank-1.png' className="w-5 h-5" /> },
+        { name: 'Pesanan Saya', icon: <img src='/icon/pesanan_saya-1.png' className="w-5 h-5" /> },
+        { name: 'PIN Toko', icon: <img src='/icon/pin-1.png' className="w-5 h-5" /> },
+        { name: 'Toko Saya', icon: <img src='/icon/toko_saya-1.png' className="w-5 h-5" /> }
     ];
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
