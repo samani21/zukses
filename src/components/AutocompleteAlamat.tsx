@@ -330,6 +330,7 @@ const AutocompleteAddress = ({
             setSelectedCity({ id: city_id, name: city_name });
             setSelectedDistrict({ id: district_id, name: district_name });
             setSelectedPostcode({ id: postcode_id, code: postcode_code });
+            setKodePos(String(postcode_code));
             setInputValue(option.label);
             setFullAddress(option.label);
             setInputFUllAddress(option.label);
@@ -337,7 +338,6 @@ const AutocompleteAddress = ({
             setTab(3);
             setDebouncedInputValue('');
             setIsFocused(false);
-            setKodePos(postcode_code);
             inputRef.current?.blur();
             return;
         }
