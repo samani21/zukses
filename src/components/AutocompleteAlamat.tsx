@@ -340,6 +340,7 @@ const AutocompleteAddress = ({
             setDestrictd(option?.compilationID?.district_id);
             setCodePos(option?.compilationID?.postcode_id);
             setCity(id.city_id);
+            setProv(id.city_id);
             setDistrict(id.district_id);
             setPostCode(id.postcode_id);
             setMobileViewOpen(false);
