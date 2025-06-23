@@ -94,7 +94,7 @@ const SectionTitle: FC<{ title: string; required?: boolean; }> = ({ title, requi
     <div className="mb-3">
         <h3 className="text-md font-semibold text-gray-800 flex items-center">
             {title}
-            {required && <span className="text-orange-500 ml-1">*</span>}
+            {required && <span className="text-blue-500 ml-1">*</span>}
         </h3>
     </div>
 );
@@ -197,11 +197,11 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
                 {/* --- Form sections --- */}
                 <SectionTitle title="Foto Produk" required />
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                    <button onClick={() => setPhotoRatio('1:1')} className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${photoRatio === '1:1' ? 'text-orange-600 bg-orange-100' : 'hover:bg-gray-100'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${photoRatio === '1:1' ? 'border-orange-500' : 'border-gray-400'}`}>{photoRatio === '1:1' && <div className="w-2 h-2 bg-orange-500 rounded-full"></div>}</div>Foto 1:1</button>
-                    <button onClick={() => setPhotoRatio('3:4')} className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${photoRatio === '3:4' ? 'text-orange-600 bg-orange-100' : 'hover:bg-gray-100'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${photoRatio === '3:4' ? 'border-orange-500' : 'border-gray-400'}`}>{photoRatio === '3:4' && <div className="w-2 h-2 bg-orange-500 rounded-full"></div>}</div>Foto 3:4</button>
+                    <button onClick={() => setPhotoRatio('1:1')} className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${photoRatio === '1:1' ? 'text-blue-600 bg-blue-100' : 'hover:bg-gray-100'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${photoRatio === '1:1' ? 'border-blue-500' : 'border-gray-400'}`}>{photoRatio === '1:1' && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}</div>Foto 1:1</button>
+                    <button onClick={() => setPhotoRatio('3:4')} className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${photoRatio === '3:4' ? 'text-blue-600 bg-blue-100' : 'hover:bg-gray-100'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${photoRatio === '3:4' ? 'border-blue-500' : 'border-gray-400'}`}>{photoRatio === '3:4' && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}</div>Foto 3:4</button>
                     <a href="#" className="text-blue-500 hover:underline">Lihat Contoh</a>
                 </div>
-                <div className="mt-4"><button className="w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed border-orange-400 rounded-sm bg-white text-center text-orange-500 hover:bg-orange-50 transition-colors"><Camera className="h-8 w-8" strokeWidth={1.5} /><span className="text-xs mt-1">Tambahkan Foto (0/9)</span></button></div>
+                <div className="mt-4"><button className="w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-sm bg-white text-center text-blue-500 hover:bg-blue-50 transition-colors"><Camera className="h-8 w-8" strokeWidth={1.5} /><span className="text-xs mt-1">Tambahkan Foto (0/9)</span></button></div>
                 <div className="h-8"></div>
 
                 {/* --- Sections made responsive --- */}
@@ -214,13 +214,13 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
 
                 {/* --- Other form sections --- */}
                 <SectionTitle title="Nama Produk" required />
-                <div className="relative flex-grow"><input type="text" id="productName" value={productName} maxLength={255} onChange={(e) => setProductName(e.target.value)} placeholder="Merek + Tipe + Fitur Produk" className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-orange-500 focus:border-orange-500 pr-16" /><span className="absolute inset-y-0 right-3 flex items-center text-sm text-gray-400">{productName.length}/255</span></div>
+                <div className="relative flex-grow"><input type="text" id="productName" value={productName} maxLength={255} onChange={(e) => setProductName(e.target.value)} placeholder="Merek + Tipe + Fitur Produk" className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 pr-16" /><span className="absolute inset-y-0 right-3 flex items-center text-sm text-gray-400">{productName.length}/255</span></div>
                 <div className="h-8"></div>
                 <SectionTitle title="Kategori" required />
                 <button className="w-full flex justify-between items-center text-left p-2 border border-gray-300 rounded-sm bg-white hover:bg-gray-50 transition-colors"><span className="text-gray-700">Pakaian Wanita &gt; Atasan &gt; Tanktop & Kamisol</span><Edit2 className="text-gray-400" size={16} /></button>
                 <div className="h-8"></div>
                 <SectionTitle title="Deskripsi Produk" required />
-                <textarea id="description" rows={8} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-orange-500 focus:border-orange-500" />
+                <textarea id="description" rows={8} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                 <div className="h-8"></div>
 
                 {/* --- Variation Setup Section --- */}
@@ -228,12 +228,12 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
                 <div className="space-y-4">
                     {variations.map((v, i) => (
                         <div key={v.id} className="bg-gray-50 border border-gray-200 rounded-md p-4">
-                            <div className="flex justify-between items-center mb-4"><div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full"><label htmlFor={`v-name-${v.id}`} className="text-sm font-medium text-gray-700">Variasi {i + 1}</label><input type="text" id={`v-name-${v.id}`} value={v.name} onChange={(e) => handleVariationNameChange(v.id, e.target.value)} maxLength={14} placeholder="Nama Variasi (cth: Warna)" className="w-full sm:w-1/3 border-gray-300 rounded-sm shadow-sm focus:ring-orange-500 focus:border-orange-500 text-sm" /></div><button onClick={() => removeVariation(v.id)} className="text-gray-400 hover:text-red-500"><Trash2 size={18} /></button></div>
+                            <div className="flex justify-between items-center mb-4"><div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full"><label htmlFor={`v-name-${v.id}`} className="text-sm font-medium text-gray-700">Variasi {i + 1}</label><input type="text" id={`v-name-${v.id}`} value={v.name} onChange={(e) => handleVariationNameChange(v.id, e.target.value)} maxLength={14} placeholder="Nama Variasi (cth: Warna)" className="w-full sm:w-1/3 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" /></div><button onClick={() => removeVariation(v.id)} className="text-gray-400 hover:text-red-500"><Trash2 size={18} /></button></div>
                             <label className="text-sm font-medium text-gray-700 block mb-2">Opsi</label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">{v.options.map(o => (<div key={o.id} className="relative flex items-center"><input type="text" value={o.name} onChange={(e) => handleOptionNameChange(v.id, o.id, e.target.value)} maxLength={20} placeholder="Opsi (cth: Merah)" className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-orange-500 focus:border-orange-500 text-sm pr-12" /><span className="absolute inset-y-0 right-8 flex items-center text-xs text-gray-400">{o.name.length}/20</span><button onClick={() => removeOption(v.id, o.id)} className="absolute right-2 text-gray-400 hover:text-red-500"><Trash2 size={16} /></button></div>))}<button onClick={() => addOption(v.id)} className="w-full border-2 border-dashed border-orange-400 text-orange-500 rounded-sm py-2 text-sm hover:bg-orange-50 transition-colors">+ Tambah Opsi</button></div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">{v.options.map(o => (<div key={o.id} className="relative flex items-center"><input type="text" value={o.name} onChange={(e) => handleOptionNameChange(v.id, o.id, e.target.value)} maxLength={20} placeholder="Opsi (cth: Merah)" className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm pr-12" /><span className="absolute inset-y-0 right-8 flex items-center text-xs text-gray-400">{o.name.length}/20</span><button onClick={() => removeOption(v.id, o.id)} className="absolute right-2 text-gray-400 hover:text-red-500"><Trash2 size={16} /></button></div>))}<button onClick={() => addOption(v.id)} className="w-full border-2 border-dashed border-blue-400 text-blue-500 rounded-sm py-2 text-sm hover:bg-blue-50 transition-colors">+ Tambah Opsi</button></div>
                         </div>
                     ))}
-                    <button onClick={addVariation} className="w-full border-2 border-dashed border-gray-300 text-gray-600 rounded-sm py-2 hover:border-orange-400 hover:text-orange-500 transition-colors">+ Tambah Variasi</button>
+                    <button onClick={addVariation} className="w-full border-2 border-dashed border-gray-300 text-gray-600 rounded-sm py-2 hover:border-blue-400 hover:text-blue-500 transition-colors">+ Tambah Variasi</button>
                 </div>
                 <div className="h-8"></div>
 
@@ -249,13 +249,13 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
                                 <div className="col-span-2 sm:col-span-1"><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={bulkData.price} onChange={e => handleBulkDataChange('price', e.target.value)} className="w-full border-gray-300 rounded-sm shadow-sm pl-8" /></div></div>
                                 <div className="col-span-1"><input type="number" value={bulkData.stock} onChange={e => handleBulkDataChange('stock', e.target.value)} placeholder="Stok" className="w-full border-gray-300 rounded-sm shadow-sm" /></div>
                                 <div className="col-span-2 sm:col-span-1"><input type="text" value={bulkData.sku} onChange={e => handleBulkDataChange('sku', e.target.value)} placeholder="Kode Variasi" className="w-full border-gray-300 rounded-sm shadow-sm" /></div>
-                                <button onClick={applyBulkData} className="col-span-2 sm:col-span-1 bg-orange-500 text-white rounded-sm py-2 hover:bg-orange-600 transition-colors h-full">Terapkan Ke Semua</button>
+                                <button onClick={applyBulkData} className="col-span-2 sm:col-span-1 bg-blue-500 text-white rounded-sm py-2 hover:bg-blue-600 transition-colors h-full">Terapkan Ke Semua</button>
                             </div>
 
                             {/* Desktop Table */}
                             <table className="w-full mt-4 text-sm text-left hidden md:table">
                                 <thead className="bg-gray-50"><tr>{variations.filter(v => v.name).map(v => <th key={v.id} className="p-2 font-medium text-gray-600">{v.name}</th>)}<th className="p-2 font-medium text-gray-600">Harga</th><th className="p-2 font-medium text-gray-600">Stok</th><th className="p-2 font-medium text-gray-600">Kode Variasi</th></tr></thead>
-                                <tbody>{productVariants.map((variant, index) => (<tr key={index} className="border-b">{Object.values(variant.combination).map((o, i) => (<td key={i} className="p-2 align-top">{o}{i === 0 && (<button className="mt-2 w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-orange-400 hover:text-orange-500"><PlusSquare size={20} /></button>)}</td>))}<td className="p-2 align-top"><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', Number(e.target.value))} className="w-full border-gray-300 rounded-sm shadow-sm pl-8" /></div></td><td className="p-2 align-top"><input type="number" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', Number(e.target.value))} className="w-full border-gray-300 rounded-sm shadow-sm" /></td><td className="p-2 align-top"><input type="text" value={variant.sku} onChange={e => handleVariantChange(index, 'sku', e.target.value)} placeholder="Mohon masukkan" className="w-full border-gray-300 rounded-sm shadow-sm" /></td></tr>))}</tbody>
+                                <tbody>{productVariants.map((variant, index) => (<tr key={index} className="border-b">{Object.values(variant.combination).map((o, i) => (<td key={i} className="p-2 align-top">{o}{i === 0 && (<button className="mt-2 w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-blue-400 hover:text-blue-500"><PlusSquare size={20} /></button>)}</td>))}<td className="p-2 align-top"><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', Number(e.target.value))} className="w-full border-gray-300 rounded-sm shadow-sm pl-8" /></div></td><td className="p-2 align-top"><input type="number" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', Number(e.target.value))} className="w-full border-gray-300 rounded-sm shadow-sm" /></td><td className="p-2 align-top"><input type="text" value={variant.sku} onChange={e => handleVariantChange(index, 'sku', e.target.value)} placeholder="Mohon masukkan" className="w-full border-gray-300 rounded-sm shadow-sm" /></td></tr>))}</tbody>
                             </table>
 
                             {/* Mobile Card List */}
@@ -264,7 +264,7 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
                                     <div key={index} className="border rounded-md p-4">
                                         <div className="flex justify-between items-start">
                                             <div className="font-semibold text-gray-800">{Object.values(variant.combination).join(' / ')}</div>
-                                            <button className="w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-orange-400 hover:text-orange-500 flex-shrink-0 ml-4"><PlusSquare size={20} /></button>
+                                            <button className="w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-blue-400 hover:text-blue-500 flex-shrink-0 ml-4"><PlusSquare size={20} /></button>
                                         </div>
                                         <div className="mt-4 space-y-3">
                                             <div><label className="text-xs text-gray-500">Harga</label><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', Number(e.target.value))} className="w-full border-gray-300 rounded-sm shadow-sm pl-8" /></div></div>
@@ -283,12 +283,12 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                     <div>
                         <SectionTitle title="Min. Jumlah Pembelian" required />
-                        <input type="number" value={minPurchase} onChange={(e) => setMinPurchase(e.target.value ? Number(e.target.value) : '')} className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-orange-500 focus:border-orange-500" />
+                        <input type="number" value={minPurchase} onChange={(e) => setMinPurchase(e.target.value ? Number(e.target.value) : '')} className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                         <p className="text-xs text-gray-500 mt-2">Min. jumlah pembelian adalah min. jumlah yang harus dipesan Pembeli untuk membeli produk atau variasi.</p>
                     </div>
                     <div>
                         <SectionTitle title="Maks. Jumlah Pembelian" />
-                        <input type="text" value={maxPurchase} onChange={(e) => setMaxPurchase(e.target.value)} placeholder="Tanpa Batas" className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-orange-500 focus:border-orange-500" />
+                        <input type="text" value={maxPurchase} onChange={(e) => setMaxPurchase(e.target.value)} placeholder="Tanpa Batas" className="w-full border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                 </div>
 
@@ -297,7 +297,7 @@ const AddProductForm: FC<{ onSave: (product: Product) => void; onCancel: () => v
             <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 pt-6 sticky bottom-0 bg-gray-50/95 backdrop-blur-sm py-4 border-t border-gray-200 -mx-4 sm:-mx-8 px-4 sm:px-8">
                 <button onClick={onCancel} className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-sm text-gray-700 bg-white hover:bg-gray-100 transition-colors">Kembali</button>
                 <button className="w-full sm:w-auto px-6 py-2 border border-gray-300 rounded-sm text-gray-700 bg-white hover:bg-gray-100 transition-colors">Simpan & Arsipkan</button>
-                <button onClick={handleSaveClick} className="w-full sm:w-auto px-6 py-2 bg-orange-500 border border-transparent text-white rounded-sm hover:bg-orange-600 transition-colors">Simpan & Tampilkan</button>
+                <button onClick={handleSaveClick} className="w-full sm:w-auto px-6 py-2 bg-blue-500 border border-transparent text-white rounded-sm hover:bg-blue-600 transition-colors">Simpan & Tampilkan</button>
             </div>
         </div>
     );
