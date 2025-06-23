@@ -45,7 +45,7 @@ const ImageCropper = ({ imageSrc, onCropComplete }: { imageSrc: string; onCropCo
             ctx.fillRect(0, normalizedRect.y + normalizedRect.height, canvas.width, canvas.height - (normalizedRect.y + normalizedRect.height));
 
             // Gambar bingkai
-            ctx.strokeStyle = '#FF6600';
+            ctx.strokeStyle = '#0075C9';
             ctx.lineWidth = 2;
             ctx.strokeRect(normalizedRect.x, normalizedRect.y, normalizedRect.width, normalizedRect.height);
 
@@ -148,10 +148,10 @@ const ImageCropper = ({ imageSrc, onCropComplete }: { imageSrc: string; onCropCo
                 </div>
                 <div className="flex flex-col items-center gap-2">
                     <p className="text-sm font-semibold text-gray-600">Pratinjau</p>
-                    <canvas ref={previewCanvasRef} className="rounded-full border bg-gray-100" width="100" height="100"></canvas>
+                    <canvas ref={previewCanvasRef} className="rounded-full border bg-gray-100 hidden" width="100" height="100"></canvas>
                 </div>
             </div>
-            <button onClick={handleSave} className="mt-6 bg-orange-500 text-white font-bold py-2 px-8 rounded-sm hover:bg-orange-600 transition">
+            <button onClick={handleSave} className="mt-6 bg-blue-500 text-white font-bold py-2 px-8 rounded-sm hover:bg-blue-600 transition">
                 Simpan Potongan
             </button>
         </div>

@@ -152,7 +152,7 @@ const BasicInfoForm = () => {
                             <label className="text-sm text-gray-500 md:text-right md:col-span-1 pt-2">Nama Toko</label>
                             <div className="md:col-span-4">
                                 <div className="relative max-w-md">
-                                    <input type="text" value={storeName} onChange={(e) => setStoreName(e.target.value)} maxLength={30} className={`w-full border rounded-md px-3 py-2 focus:ring-1 focus:border-orange-500 transition ${errors.storeName ? 'border-red-500' : 'border-gray-300'}`} />
+                                    <input type="text" value={storeName} onChange={(e) => setStoreName(e.target.value)} maxLength={30} className={`w-full border rounded-md px-3 py-2 focus:ring-1 focus:border-blue-500 transition ${errors.storeName ? 'border-red-500' : 'border-gray-300'}`} />
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">{storeName.length}/30</span>
                                 </div>
                                 {errors.storeName && <p className="text-red-500 text-xs mt-1">{errors.storeName}</p>}
@@ -180,7 +180,7 @@ const BasicInfoForm = () => {
                             <label className="text-sm text-gray-500 md:text-right pt-2 md:col-span-1">Deskripsi Toko</label>
                             <div className="md:col-span-4">
                                 <div className="relative max-w-md">
-                                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} rows={5} className={`w-full border rounded-md px-3 py-2 focus:ring-1 focus:border-orange-500 transition ${errors.description ? 'border-red-500' : 'border-gray-300'}`} />
+                                    <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} rows={5} className={`w-full border rounded-md px-3 py-2 focus:ring-1 focus:border-blue-500 transition ${errors.description ? 'border-red-500' : 'border-gray-300'}`} />
                                     <span className="absolute bottom-2 right-3 text-sm text-gray-400">{description.length}/500</span>
                                 </div>
                                 {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
@@ -190,7 +190,7 @@ const BasicInfoForm = () => {
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 pt-4">
                             <div className="md:col-start-2 md:col-span-4">
                                 <div className="flex items-center space-x-3">
-                                    <button type="submit" className="bg-orange-500 text-white font-bold py-2 px-8 rounded-sm hover:bg-orange-600 transition">Simpan</button>
+                                    <button type="submit" className="bg-blue-500 text-white font-bold py-2 px-8 rounded-sm hover:bg-blue-600 transition">Simpan</button>
                                     <button type="button" className="bg-gray-200 text-gray-700 py-2 px-8 rounded-sm hover:bg-gray-300 transition">Batal</button>
                                 </div>
                                 {submissionStatus.message && (
