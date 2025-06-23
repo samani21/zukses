@@ -21,7 +21,6 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
         { name: 'Rekening Bank', icon: <img src='/icon/bank-1.png' className="w-5 h-5" /> },
         { name: 'Pesanan Saya', icon: <img src='/icon/pesanan_saya-1.png' className="w-5 h-5" /> },
         { name: 'PIN Toko', icon: <img src='/icon/pin-1.png' className="w-5 h-5" /> },
-        { name: 'Toko Saya', icon: <img src='/icon/toko_saya-1.png' className="w-5 h-5" /> }
     ];
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
@@ -47,7 +46,7 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
             <nav className="flex-grow">
                 <ul>
                     {navItems.map(item => (
-                        <li key={item.name}>
+                        <li key={item.name} onClick={() => router.push('/my-store')}>
                             <button
                                 onClick={() => setActivePage(item.name)}
                                 className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${activePage === item.name
@@ -60,6 +59,14 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
                             </button>
                         </li>
                     ))}
+                    <li onClick={() => router.push('/my-store')}>
+                        <button
+                            className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100`}
+                        >
+                            <img src='/icon/toko_saya-1.png' className="w-5 h-5" />
+                            <span>Toko Saya</span>
+                        </button>
+                    </li>
                 </ul>
             </nav>
             <div className="mt-4 pt-4 border-t border-gray-300">
