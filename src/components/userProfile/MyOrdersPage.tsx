@@ -50,7 +50,7 @@ const MyOrdersPage = () => {
                 </div>
                 <div className="border-t pt-3 border-gray-300">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-                        <p className="text-sm text-gray-500">Dibatalkan secara otomatis oleh sistem Shopee</p>
+                        <p className="text-sm text-gray-500">Dibatalkan secara otomatis oleh sistem Zukses</p>
                         <p><span className="text-sm">Total Pesanan:</span> <span className="font-bold text-lg text-blue-600">Rp31.000</span></p>
                     </div>
                     <div className="flex flex-col sm:flex-row justify-end items-stretch gap-3">

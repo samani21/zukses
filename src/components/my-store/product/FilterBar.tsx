@@ -20,7 +20,7 @@ const FilterBar: FC = () => (
             />
             <Edit2 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
         </div>
-        <CustomDropdown placeholder="Program Shopee" />
+        <CustomDropdown placeholder="Program Zukses" />
         <CustomDropdown placeholder="Tipe Produk" />
         <div className="flex items-center space-x-3 md:col-span-2 lg:col-span-4">
             <button className="px-6 py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 transition-colors">

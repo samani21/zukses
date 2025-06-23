@@ -41,13 +41,13 @@ const index = () => {
                         </div>
                     </Card>
 
-                    {/* Iklan Shopee */}
+                    {/* Iklan Zukses */}
                     <Card>
-                        <CardHeader title="Iklan Shopee" linkText="Lainnya" />
+                        <CardHeader title="Iklan Zukses" linkText="Lainnya" />
                         <div className="flex flex-col sm:flex-row items-center">
                             <div className="flex-1 text-center sm:text-left">
-                                <h4 className="font-semibold text-gray-800">Maksimalkan penjualanmu dengan Iklan Shopee</h4>
-                                <p className="text-sm text-gray-500 mt-2">Dengan Iklan Shopee, tokomu bisa menarik lebih banyak pengunjung.</p>
+                                <h4 className="font-semibold text-gray-800">Maksimalkan penjualanmu dengan Iklan Zukses</h4>
+                                <p className="text-sm text-gray-500 mt-2">Dengan Iklan Zukses, tokomu bisa menarik lebih banyak pengunjung.</p>
                             </div>
                             <button className="bg-blue-500 text-white font-bold py-2 px-6 rounded-md hover:bg-blue-600 transition-colors duration-200 mt-4 sm:mt-0 sm:ml-8 flex-shrink-0">
                                 Pasang Iklan
@@ -69,7 +69,7 @@ const index = () => {
                         <Card className="bg-blue-50">
                             <CardHeader title="Livestream" linkText="Lihat semua" />
                             <div className="flex items-center">
-                                <div className="flex-1" style={{ backgroundImage: "url(/image/ilustrasi-live.png)", height: "350px", backgroundSize: "cover", backgroundPosition: "center",padding:"10px" }}>
+                                <div className="flex-1" style={{ backgroundImage: "url(/image/ilustrasi-live.png)", height: "350px", backgroundSize: "cover", backgroundPosition: "center", padding: "10px" }}>
                                     <h4 className="font-semibold text-dark">Buat Livestream</h4>
                                     <p className="text-sm text-white mt-1">Tingkatkan konversi hingga 2x!</p>
                                     <button className="mt-4 bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-blue-600">

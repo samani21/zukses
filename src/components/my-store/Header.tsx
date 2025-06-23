@@ -22,7 +22,7 @@ const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => v
         <header className="bg-white h-16 border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20 shadow-sm">
             <div className="flex items-center">
                 <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden mr-4 text-gray-600"><Menu size={24} /></button>
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-800 cursor-pointer">Shopee Seller Centre</h1>
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-800 cursor-pointer">Zukses Seller Centre</h1>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-6">
                 <button className="text-gray-600 hover:text-blue-500 p-2 rounded-full"><Bell size={22} /></button>
