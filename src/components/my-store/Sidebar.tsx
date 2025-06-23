@@ -1,16 +1,33 @@
+'use client';
 import { X } from 'lucide-react';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SidebarSection from './SidebarSection';
 
-const SubNavLink = ({ text, active = false, url }: { text: string; active?: boolean, url?: string }) => (
-    <a href="#" className={`block py-2 pr-4 pl-8 text-sm relative transition-colors duration-200 ${active ? 'text-blue-500' : 'text-gray-500 hover:text-gray-900'}`} onClick={() => window.location.href = url ?? ''}>
-        {active && <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-blue-500"></div>}
-        <span className={active ? 'font-semibold' : 'font-normal'}>{text}</span>
-    </a>
-);
+const SubNavLink = ({ text, url }: { text: string; url?: string }) => {
+    const [currentPath, setCurrentPath] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setCurrentPath(window.location.pathname);
+        }
+    }, []);
+
+    const isActive = currentPath === url;
+
+    return (
+        <a
+            href={url ?? '#'}
+            className={`block py-2 pr-4 pl-8 text-sm relative transition-colors duration-200 ${isActive ? 'text-blue-500' : 'text-gray-500 hover:text-gray-900'}`}
+        >
+            {isActive && <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-blue-500"></div>}
+            <span className={isActive ? 'font-semibold' : 'font-normal'}>{text}</span>
+        </a>
+    );
+};
+
+
 const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; }) => (
     <>
-        {/* Overlay for mobile */}
         <div
             className={`fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
             onClick={() => setIsOpen(false)}
@@ -32,10 +49,11 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
                     <SubNavLink text="Pengaturan Pengiriman" />
                 </SidebarSection>
                 <SidebarSection title="Produk" defaultOpen={true}>
-                    <SubNavLink text="Produk Saya" active={true} url='/my-store' />
-                    <SubNavLink text="Tambah Produk Baru" />
-                    <SubNavLink text="Manajemen Merek" />
+                    <SubNavLink text="Produk Saya" url="/my-store" />
+                    <SubNavLink text="Tambah Produk Baru" url="/my-store/product" />
+                    <SubNavLink text="Manajemen Merek" url="/my-store/brand" />
                 </SidebarSection>
+
                 <SidebarSection title="Pusat Promosi" defaultOpen={true}>
                     <SubNavLink text="Promosi Saya" />
                 </SidebarSection>
