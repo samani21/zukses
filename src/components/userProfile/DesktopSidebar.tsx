@@ -46,7 +46,7 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
             <nav className="flex-grow">
                 <ul>
                     {navItems.map(item => (
-                        <li key={item.name} onClick={() => router.push('/my-store')}>
+                        <li key={item.name}>
                             <button
                                 onClick={() => setActivePage(item.name)}
                                 className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${activePage === item.name
