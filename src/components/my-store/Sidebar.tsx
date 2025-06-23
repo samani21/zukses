@@ -42,10 +42,10 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
             </div>
             <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
                 <SidebarSection title="Pesanan" defaultOpen={true}>
-                    <SubNavLink text="Pesanan Saya" />
+                    <SubNavLink text="Pesanan Saya" url="/my-store/my-order" />
                     <SubNavLink text="Pengiriman Massal" />
                     <SubNavLink text="Kelola Faktur Pesanan" />
-                    <SubNavLink text="Pengembalian/Pembatalan" />
+                    <SubNavLink text="Pengembalian/Pembatalan" url="/my-store/return" />
                     <SubNavLink text="Pengaturan Pengiriman" />
                 </SidebarSection>
                 <SidebarSection title="Produk" defaultOpen={true}>
