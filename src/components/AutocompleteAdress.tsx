@@ -135,6 +135,7 @@ const AutocompleteAddress = ({
     const [mobileViewOpen, setMobileViewOpen] = useState(false);
     const [mobileSearchQuery, setMobileSearchQuery] = useState('');
     const [debouncedMobileQuery, setDebouncedMobileQuery] = useState('');
+    const [placeholder, setPlaceHolder] = useState<string>('');
 
     // REFS
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -399,7 +400,8 @@ const AutocompleteAddress = ({
     const handleFocus = () => {
         setIsFocused(true);
         setDebouncedInputValue('');
-
+        setPlaceHolder(inputValue)
+        setInputValue('')
     };
 
 
@@ -502,6 +504,7 @@ const AutocompleteAddress = ({
                 onFocus={() => {
                     setMobileViewOpen(true)
                     setIsFocused(true)
+                    setPlaceHolder(inputValue)
                 }}
                 InputProps={{ readOnly: true }}
                 sx={{ marginTop: "-15px" }} /> : <>
@@ -517,7 +520,7 @@ const AutocompleteAddress = ({
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                placeholder="Cari Kota, Kecamatan, atau Kode Pos"
+                                placeholder={placeholder || "Cari Kota, Kecamatan, atau Kode Pos"}
                                 value={mobileSearchQuery}
                                 onChange={(e) => setMobileSearchQuery(e.target.value)}
                                 InputProps={{
@@ -665,7 +668,7 @@ const AutocompleteAddress = ({
     // Tampilan Desktop (Kode Asli Anda, tidak diubah)
     return (
         <Box sx={{ position: 'relative', marginTop: "-15px" }} ref={containerRef}>
-            <TextField fullWidth variant="outlined" label="Provinsi, Kota, Kecamatan, Kode Pos" value={inputValue} onChange={handleInputChange} onFocus={handleFocus} inputRef={inputRef} autoComplete="off" />
+            <TextField fullWidth variant="outlined" label="Provinsi, Kota, Kecamatan, Kode Pos" value={inputValue} onChange={handleInputChange} onFocus={handleFocus} inputRef={inputRef} autoComplete="off" placeholder={placeholder} />
             {loading && !debouncedInputValue && isFocused && (<CircularProgress size={20} sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }} />)}
             {isFocused && (
                 <Box sx={{ position: 'absolute', zIndex: 1200, width: '100%', bgcolor: 'background.paper', border: '1px solid #ddd', borderRadius: 1, mt: 1, boxShadow: 3 }}>
