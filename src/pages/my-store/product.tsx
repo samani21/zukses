@@ -1,3 +1,4 @@
+import AddProductForm from 'components/my-store/product/AddProductForm';
 import FilterBar from 'components/my-store/product/FilterBar';
 import PageHeader from 'components/my-store/product/PageHeader';
 import ProductGrid from 'components/my-store/product/ProductGrid';
@@ -60,7 +61,7 @@ const dummyProducts: Product[] = [
 //    Ini adalah konvensi standar untuk komponen React.
 const ProductPage = () => {
     const [activeTab, setActiveTab] = useState<string>('Semua');
-
+    const [view, setView] = useState<'list' | 'form'>('list');
     // 2. Inisialisasi state langsung dengan data dummy.
     //    Tidak perlu menggunakan useState(null) dan useEffect untuk data statis.
     const [products, setProducts] = useState<Product[] | null>(null);
@@ -73,72 +74,80 @@ const ProductPage = () => {
         { name: 'Tinjau Rincian Produk', count: 0 },
     ];
 
+
+    const handleSaveProduct = (newProduct: Product) => {
+        setProducts(prevProducts => [newProduct, ...(prevProducts ?? [])]);
+        setView('list');
+    };
     useEffect(() => {
         setProducts(dummyProducts)
     }, [])
     return (
         <MyStoreLayout>
-            <div className="bg-gray-50 min-h-screen font-sans">
-                <PageHeader />
-                <div className="max-w-7xl mx-auto">
-                    <div className="bg-white rounded-lg shadow-sm w-full">
-                        <div className="border-b border-gray-200">
-                            <nav className="flex flex-wrap -mb-px space-x-4 sm:space-x-6 px-4 sm:px-6">
-                                {tabs.map((tab) => (
-                                    <button
-                                        key={tab.name}
-                                        onClick={() => setActiveTab(tab.name)}
-                                        className={`py-4 px-1 text-sm font-medium transition-colors duration-200
+            {
+                view == 'form' ? <AddProductForm onSave={handleSaveProduct} onCancel={() => setView('list')} /> :
+                    <div className="bg-gray-50 min-h-screen font-sans">
+                        <PageHeader setView={setView} />
+                        <div className="max-w-7xl mx-auto">
+                            <div className="bg-white rounded-lg shadow-sm w-full">
+                                <div className="border-b border-gray-200">
+                                    <nav className="flex flex-wrap -mb-px space-x-4 sm:space-x-6 px-4 sm:px-6">
+                                        {tabs.map((tab) => (
+                                            <button
+                                                key={tab.name}
+                                                onClick={() => setActiveTab(tab.name)}
+                                                className={`py-4 px-1 text-sm font-medium transition-colors duration-200
                                         ${activeTab === tab.name
-                                                ? 'border-b-2 border-blue-500 text-blue-600'
-                                                : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'
-                                            }`}
-                                    >
-                                        {/* 3. Menghilangkan optional chaining (?) karena 'products' tidak akan pernah null */}
-                                        {tab.name} ({tab.count})
-                                    </button>
-                                ))}
-                            </nav>
-                        </div>
+                                                        ? 'border-b-2 border-blue-500 text-blue-600'
+                                                        : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'
+                                                    }`}
+                                            >
+                                                {/* 3. Menghilangkan optional chaining (?) karena 'products' tidak akan pernah null */}
+                                                {tab.name} ({tab.count})
+                                            </button>
+                                        ))}
+                                    </nav>
+                                </div>
 
-                        <UpgradeBanner />
+                                <UpgradeBanner />
 
-                        <div className="p-4 sm:p-6 space-y-6">
-                            <FilterBar />
+                                <div className="p-4 sm:p-6 space-y-6">
+                                    <FilterBar />
 
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-6 border-t border-gray-200">
-                                <p className="text-sm text-gray-700 font-medium mb-2 sm:mb-0">
-                                    {products?.length} Product
-                                </p>
-                                <div className="flex items-center space-x-2">
-                                    <button
-                                        onClick={() => setViewMode('list')}
-                                        className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:bg-gray-100'}`}
-                                        aria-label="List view"
-                                    >
-                                        <List size={20} />
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode('grid')}
-                                        className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:bg-gray-100'}`}
-                                        aria-label="Grid view"
-                                    >
-                                        <Grid size={20} />
-                                    </button>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-6 border-t border-gray-200">
+                                        <p className="text-sm text-gray-700 font-medium mb-2 sm:mb-0">
+                                            {products?.length} Product
+                                        </p>
+                                        <div className="flex items-center space-x-2">
+                                            <button
+                                                onClick={() => setViewMode('list')}
+                                                className={`p-1.5 rounded-md ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:bg-gray-100'}`}
+                                                aria-label="List view"
+                                            >
+                                                <List size={20} />
+                                            </button>
+                                            <button
+                                                onClick={() => setViewMode('grid')}
+                                                className={`p-1.5 rounded-md ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:bg-gray-100'}`}
+                                                aria-label="Grid view"
+                                            >
+                                                <Grid size={20} />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* 4. Menghilangkan nullish coalescing (?? null) karena 'products' tidak pernah null */}
+                                    {viewMode === 'list' ? (
+                                        <ProductTable products={products} />
+                                    ) : (
+                                        <ProductGrid products={products} />
+                                    )}
+
                                 </div>
                             </div>
-
-                            {/* 4. Menghilangkan nullish coalescing (?? null) karena 'products' tidak pernah null */}
-                            {viewMode === 'list' ? (
-                                <ProductTable products={products} />
-                            ) : (
-                                <ProductGrid products={products} />
-                            )}
-
                         </div>
                     </div>
-                </div>
-            </div>
+            }
         </MyStoreLayout>
     );
 }
