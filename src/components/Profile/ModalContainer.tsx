@@ -5,7 +5,7 @@ interface ModalContainerProps {
 }
 
 export const ModalContainer = styled.div<ModalContainerProps>`
-    position: absolute;
+    position: fixed;
     top: 0;
     width: 100%;
     left: 0;

@@ -1,0 +1,55 @@
+import { Edit2 } from 'lucide-react';
+import React, { FC } from 'react'
+import EmptyState from './EmptyState';
+type Product = {
+    id: string;
+    name: string;
+    sku: string;
+    imageUrl?: string;
+    sales: number;
+    price: number;
+    stock: number;
+    qualityScore: number;
+};
+
+const ProductGrid: FC<{ products: Product[] | null }> = ({ products }) => {
+    if (products?.length === 0) return <EmptyState />;
+
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {products?.map((product) => (
+                <div key={product.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
+                    <div className="relative">
+                        <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover" />
+                        <input type="checkbox" className="absolute top-2 left-2 h-5 w-5 rounded border-gray-400 bg-white/70 text-blue-600 focus:ring-blue-500" />
+                    </div>
+                    <div className="p-4 flex flex-col flex-grow">
+                        <p className="text-sm font-semibold text-gray-800 line-clamp-2 flex-grow">{product.name}</p>
+                        <p className="text-xs text-gray-500 mt-1">SKU: {product.sku}</p>
+                        <div className="mt-3">
+                            <p className="text-base font-bold text-blue-600">Rp{product.price.toLocaleString('id-ID')}</p>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 border-t border-gray-200 text-center">
+                        <div className="p-2 border-r border-gray-200">
+                            <p className="text-xs text-gray-500">Stok</p>
+                            <p className={`text-sm font-medium ${product.stock > 0 ? 'text-gray-800' : 'text-red-500'}`}>{product.stock > 0 ? product.stock : 'Habis'}</p>
+                        </div>
+                        <div className="p-2 border-r border-gray-200">
+                            <p className="text-xs text-gray-500">Penjualan</p>
+                            <p className="text-sm font-medium text-gray-800">{product.sales}</p>
+                        </div>
+                        <div className="p-2">
+                            <p className="text-xs text-gray-500">Aksi</p>
+                            <button className="text-blue-600 hover:text-blue-900 mx-auto mt-0.5">
+                                <Edit2 size={18} />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+export default ProductGrid

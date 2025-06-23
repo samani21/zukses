@@ -105,6 +105,7 @@ const AddressPage = () => {
             formData.append('subdistrict_id', String(data.district || 0));
             formData.append('postal_code_id', String(data.postCode || 0));
             formData.append('full_address', data.fullAddressStreet);
+            formData.append('full_location', data.fullAddress);
             formData.append('detail_address', data.detailAddress);
             formData.append('lat', String(data.lat || 0));
             formData.append('long', String(data.long || 0));
@@ -190,7 +191,7 @@ const AddressPage = () => {
                                     <span>{address.number_receiver}</span>
                                 </div>
                                 <p>{address.full_address},{address?.detail_address}</p>
-                                <p>{`${address?.cities}, ${address?.provinces}, ${address?.postal_codes}`}</p>
+                                <p>{`${address?.provinces},${address?.cities}, ${address?.subdistricts}, ${address?.postal_codes}`}</p>
                                 <div className="flex gap-2 mt-1">
                                     {address.is_primary ? <span className="text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded-sm">Utama</span> : ''}
                                     {/* <span className="text-gray-500 border border-gray-300 text-xs px-2 py-0.5 rounded-sm">{address?.label}</span> */}

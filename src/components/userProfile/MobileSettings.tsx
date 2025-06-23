@@ -39,7 +39,7 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
                     <img src="https://placehold.co/60x60/e2e8f0/333?text=IT" alt="Foto Profil" className="w-16 h-16 rounded-full border-2 border-white" />
                     <div className="flex-grow">
                         <h2 className="font-bold text-lg">Irvan Mamala</h2>
-                        <button className="w-full bg-blue-600 text-white rounded-lg py-2 px-6 mt-1 font-semibold">Toko Saya</button>
+                        <button className="w-full bg-blue-600 text-white rounded-lg py-2 px-6 mt-1 font-semibold" onClick={() => window.location.href = '/my-store'}>Toko Saya</button>
                     </div>
                 </div>
                 <div className="bg-white p-3 rounded-lg border flex justify-between items-center">

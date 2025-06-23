@@ -80,6 +80,7 @@ const AddressForm: React.FC<AddressAutocompleteStreetProps> = ({
                 setLat(lat);
                 setLong(lng);
                 setFullAddress(place.formatted_address);
+                // handleSelectAddress()
                 setSelectedAddress(place.formatted_address);
                 console.log("Alamat dipilih:", place.formatted_address);
             }
@@ -137,7 +138,6 @@ const AddressForm: React.FC<AddressAutocompleteStreetProps> = ({
     const handleAddressInputClick = () => {
         if (autocompleteRef.current && addressInputRef.current) {
             const input = addressInputRef.current;
-
             // Jika input kosong, masukkan karakter dummy
             if (input.value === '') {
                 input.value = ''; // trigger autocomplete
