@@ -36,6 +36,14 @@ export type FormErrors = {
     description?: string;
     productPhotos?: string;
     promoPhoto?: string;
+    category?: string;
+    price?: string;
+    stock?: string;
+
+    // Mengizinkan kunci dinamis untuk error per varian (cth: 'variant_price_0')
+    [key: string]: string | undefined;
 };
+
+
 
 export type TabName = 'dasar' | 'media' | 'spesifikasi' | 'lainnya';

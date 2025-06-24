@@ -1,12 +1,17 @@
+import { AxiosError } from 'axios';
+import Loading from 'components/Loading';
 import AddProductForm from 'components/my-store/product/AddProductForm';
 import FilterBar from 'components/my-store/product/FilterBar';
 import PageHeader from 'components/my-store/product/PageHeader';
 import ProductGrid from 'components/my-store/product/ProductGrid';
 import ProductTable from 'components/my-store/product/ProductTable';
 import UpgradeBanner from 'components/my-store/product/UpgradeBanner';
+import Snackbar from 'components/Snackbar';
 import { Grid, List } from 'lucide-react';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useState } from 'react'; // Menghapus useEffect karena tidak lagi diperlukan
+import Post from 'services/api/Post';
+import { Response } from 'services/api/types';
 
 // Tipe data produk
 type Product = {
@@ -65,7 +70,12 @@ const ProductPage = () => {
     // 2. Inisialisasi state langsung dengan data dummy.
     //    Tidak perlu menggunakan useState(null) dan useEffect untuk data statis.
     const [products, setProducts] = useState<Product[] | null>(null);
-
+    const [loading, setLoading] = useState<boolean>(false);
+    const [snackbar, setSnackbar] = useState<{
+        message: string;
+        type?: 'success' | 'error' | 'info';
+        isOpen: boolean;
+    }>({ message: '', type: 'info', isOpen: false });
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const tabs = [
         // Menggunakan products.length langsung karena state sudah diinisialisasi
@@ -75,8 +85,18 @@ const ProductPage = () => {
     ];
 
 
-    const handleSaveProduct = () => {
-        setView('list');
+    const handleSaveProduct = async (form: FormData) => {
+        try {
+            const res = await Post<Response>('zukses', `product`, form)
+            if (res?.data?.status === 'success') {
+                setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
+                setView('list');
+            }
+        } catch (err) {
+            setLoading(false)
+            const error = err as AxiosError<{ message?: string }>
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true })
+        }
     };
     useEffect(() => {
         setProducts(dummyProducts)
@@ -146,6 +166,19 @@ const ProductPage = () => {
                             </div>
                         </div>
                     </div>
+            }
+            {
+                snackbar.isOpen && (
+                    <Snackbar
+                        message={snackbar.message}
+                        type={snackbar.type}
+                        isOpen={snackbar.isOpen}
+                        onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                    />
+                )
+            }
+            {
+                loading && <Loading />
             }
         </MyStoreLayout>
     );
