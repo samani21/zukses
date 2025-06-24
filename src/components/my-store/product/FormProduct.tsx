@@ -38,8 +38,12 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
     const [apiCategories, setApiCategories] = useState<Category[]>([]);
     const [categoryLoading, setCategoryLoading] = useState(true);
     const [categoryError, setCategoryError] = useState<string | null>(null);
+
+    // State untuk media
     const [productPhotos, setProductPhotos] = useState<FileWithPreview[]>([]);
+    const [promoPhoto, setPromoPhoto] = useState<FileWithPreview | null>(null);
     const [productVideo, setProductVideo] = useState<FileWithPreview | null>(null);
+
     const [variations, setVariations] = useState<Variation[]>([]);
     const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
     const [minPurchase, setMinPurchase] = useState<number | string>(1);
@@ -47,6 +51,7 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
     const [errors, setErrors] = useState<FormErrors>({});
 
     const productPhotoInputRef = useRef<HTMLInputElement>(null);
+    const promoPhotoInputRef = useRef<HTMLInputElement>(null);
     const videoInputRef = useRef<HTMLInputElement>(null);
     const variantInputRef = useRef<HTMLInputElement>(null);
 
@@ -95,38 +100,64 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
     useEffect(() => {
         return () => {
             productPhotos.forEach(file => URL.revokeObjectURL(file.preview));
+            if (promoPhoto) URL.revokeObjectURL(promoPhoto.preview);
             if (productVideo) URL.revokeObjectURL(productVideo.preview);
             productVariants.forEach(variant => { if (variant.image) URL.revokeObjectURL(variant.image.preview); });
         };
-    }, [productPhotos, productVideo, productVariants]);
+    }, [productPhotos, promoPhoto, productVideo, productVariants]);
 
     const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>, callback: (files: File[]) => void) => {
         const files = Array.from(e.target.files || []);
         if (files.length > 0) callback(files);
         e.target.value = '';
     };
+
     const handleProductPhotosChange = (files: File[]) => {
         const newPhotos = files.map(file => ({ file, preview: URL.createObjectURL(file) }));
         setProductPhotos(prev => [...prev, ...newPhotos].slice(0, 9));
         if (errors.media) setErrors(prev => ({ ...prev, media: undefined }));
     };
+
     const removeProductPhoto = (index: number) => {
         const photoToRemove = productPhotos[index];
         URL.revokeObjectURL(photoToRemove.preview);
         setProductPhotos(productPhotos.filter((_, i) => i !== index));
     };
+
+    const handlePromoPhotoChange = (files: File[]) => {
+        const file = files[0];
+        if (promoPhoto) URL.revokeObjectURL(promoPhoto.preview);
+        setPromoPhoto({ file, preview: URL.createObjectURL(file) });
+        if (errors.promoPhoto) setErrors(prev => ({ ...prev, promoPhoto: undefined }));
+    };
+
+    const removePromoPhoto = () => {
+        if (promoPhoto) {
+            URL.revokeObjectURL(promoPhoto.preview);
+            setPromoPhoto(null);
+        }
+    };
+
     const handleVideoChange = (files: File[]) => {
         const file = files[0];
         if (file.size > 30 * 1024 * 1024) { alert("Ukuran file video tidak boleh melebihi 30MB."); return; }
         if (productVideo) URL.revokeObjectURL(productVideo.preview);
         setProductVideo({ file, preview: URL.createObjectURL(file) });
     };
+
+    const removeVideo = () => {
+        if (productVideo) {
+            URL.revokeObjectURL(productVideo.preview);
+            setProductVideo(null);
+        }
+    }
+
     const addVariation = () => setVariations([...variations, { id: Date.now(), name: '', options: [{ id: Date.now(), name: '' }] }]);
     const removeVariation = (id: number) => setVariations(variations.filter(v => v.id !== id));
     const handleVariationNameChange = (id: number, name: string) => setVariations(variations.map(v => v.id === id ? { ...v, name } : v));
     const addOption = (vId: number) => setVariations(variations.map(v => v.id === vId ? { ...v, options: [...v.options, { id: Date.now(), name: '' }] } : v));
     const removeOption = (vId: number, oId: number) => setVariations(variations.map(v => v.id === vId ? { ...v, options: v.options.filter(o => o.id !== oId) } : v));
-    const handleOptionNameChange = (vId: number, oId: number, name: string) => setVariations(variations.map(v => v.id === vId ? { ...v, options: v.options.map(o => o.id === oId ? { ...o, name } : o) } : v));
+    const handleOptionNameChange = (vId: number, oId: number, name: string) => setVariations(variations.map(v => v.id === vId ? { ...v, options: v.options.map(o => o.id === oId ? { ...o, name } : v) } : v));
     const handleVariantChange = (index: number, field: keyof Omit<ProductVariant, 'combination' | 'image'>, value: string | number) => {
         const updated = [...productVariants];
         updated[index] = { ...updated[index], [field]: value };
@@ -164,7 +195,9 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
         if (!description.trim()) newErrors.description = 'Deskripsi Produk harus diisi.';
         if (!idCategorie) newErrors.category_id = 'Kategori produk harus dipilih.';
         if (productPhotos.length === 0) newErrors.media = 'Mohon unggah minimal 1 Foto Produk.';
+        if (!promoPhoto) newErrors.promoPhoto = 'Foto Produk Promosi harus diunggah.';
         if (minPurchase === '' || Number(minPurchase) < 1) newErrors.min_purchase = "Pembelian minimum harus diisi (minimal 1).";
+
         if (!hasVariations) {
             if (price === '' || Number(price) <= 0) newErrors.price = 'Harga harus diisi dan lebih dari 0.';
             if (stock === '' || Number(stock) < 0) newErrors.stock = 'Stok harus diisi (minimal 0).';
@@ -180,7 +213,6 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
 
     const handleSave = (status: 'PUBLISHED' | 'ARCHIVED') => {
         if (!validateForm()) {
-            alert("Harap periksa kembali form Anda. Masih ada data yang belum valid.");
             return;
         }
         const formData = new FormData();
@@ -201,6 +233,10 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
             const videoIndex = productPhotos.length;
             formData.append(`media[${videoIndex}][file]`, productVideo.file);
             formData.append(`media[${videoIndex}][type]`, 'video');
+        }
+
+        if (promoPhoto) {
+            formData.append('image_url', promoPhoto.file);
         }
 
         if (hasVariations) {
@@ -228,6 +264,7 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
     return (
         <div className="bg-gray-50 rounded-lg font-sans">
             <input type="file" ref={productPhotoInputRef} onChange={(e) => handleFileSelection(e, handleProductPhotosChange)} accept="image/jpeg,image/png" multiple style={{ display: 'none' }} />
+            <input type="file" ref={promoPhotoInputRef} onChange={(e) => handleFileSelection(e, handlePromoPhotoChange)} accept="image/jpeg,image/png" style={{ display: 'none' }} />
             <input type="file" ref={videoInputRef} onChange={(e) => handleFileSelection(e, handleVideoChange)} accept="video/mp4" style={{ display: 'none' }} />
             <input type="file" ref={variantInputRef} className="hidden" accept="image/*" onChange={(e) => { const index = e.currentTarget.dataset.index; if (index) handleFileSelection(e, (files) => handleVariantImageChange(files, parseInt(index, 10))) }} />
 
@@ -237,6 +274,77 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
 
             <div className="bg-white rounded-md shadow-sm">
                 <div className="p-4 sm:p-8 space-y-10">
+
+                    {/* --- Media Upload Section --- */}
+                    <div className="space-y-8">
+                        {/* 1. Product Photos */}
+                        <div>
+                            <SectionTitle title="Foto Produk" required />
+                            <p className="text-xs text-gray-500 mb-4">Upload 1-9 foto. Foto pertama akan menjadi foto utama produk Anda.</p>
+                            <div className="flex flex-wrap gap-4 items-center">
+                                {productPhotos.map((photo, index) => (
+                                    <div key={photo.preview} className="relative w-28 h-28 flex-shrink-0">
+                                        <img src={photo.preview} alt={`preview ${index}`} className="w-full h-full object-cover rounded-sm border" />
+                                        <button onClick={() => removeProductPhoto(index)} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
+                                        {index === 0 && <div className="absolute bottom-0 left-0 w-full bg-blue-600 text-white text-center text-xs py-0.5">Utama</div>}
+                                    </div>
+                                ))}
+                                {productPhotos.length < 9 && (
+                                    <button onClick={() => productPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center hover:bg-blue-50 transition-colors ${errors.media ? 'border-red-500 text-red-500' : 'border-blue-400 text-blue-500'}`}>
+                                        <Camera className="h-8 w-8" strokeWidth={1.5} />
+                                        <span className="text-xs mt-1">Tambahkan Foto ({productPhotos.length}/9)</span>
+                                    </button>
+                                )}
+                            </div>
+                            {errors.media && <p className="text-red-500 text-xs mt-2">{errors.media}</p>}
+                        </div>
+
+                        {/* 2. Promo Photo */}
+                        <div>
+                            <SectionTitle title="Foto Produk Promosi" required />
+                            <p className="text-xs text-gray-500 mb-4">
+                                • Upload Foto dengan rasio 1:1. <br />
+                                • Foto ini akan digunakan di halaman promosi, hasil pencarian, rekomendasi, dll.
+                            </p>
+                            <div className="flex flex-wrap gap-4 items-center">
+                                {promoPhoto ? (
+                                    <div className="relative w-28 h-28 flex-shrink-0">
+                                        <img src={promoPhoto.preview} alt="promo preview" className="w-full h-full object-cover rounded-sm border" />
+                                        <button onClick={removePromoPhoto} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
+                                    </div>
+                                ) : (
+                                    <button onClick={() => promoPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center hover:bg-blue-50 transition-colors ${errors.promoPhoto ? 'border-red-500 text-red-500' : 'border-blue-400 text-blue-500'}`}>
+                                        <Camera className="h-8 w-8" strokeWidth={1.5} />
+                                        <span className="text-xs mt-1">Upload Foto (0/1)</span>
+                                    </button>
+                                )}
+                            </div>
+                            {errors.promoPhoto && <p className="text-red-500 text-xs mt-2">{errors.promoPhoto}</p>}
+                        </div>
+
+                        {/* 3. Product Video */}
+                        <div>
+                            <SectionTitle title="Video Produk" />
+                            <p className="text-xs text-gray-500 mb-4">
+                                • Ukuran file video maks. 30MB. <br />
+                                • Durasi: 10-60 detik. Format: MP4.
+                            </p>
+                            <div className="flex flex-wrap gap-4 items-center">
+                                {productVideo ? (
+                                    <div className="relative w-28 h-28 flex-shrink-0">
+                                        <video src={productVideo.preview} className="w-full h-full object-cover rounded-sm border" />
+                                        <button onClick={removeVideo} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
+                                    </div>
+                                ) : (
+                                    <button onClick={() => videoInputRef.current?.click()} className="w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center text-blue-500 border-blue-400 hover:bg-blue-50 transition-colors">
+                                        <Video className="h-8 w-8" strokeWidth={1.5} />
+                                        <span className="text-xs mt-1">Tambah Video</span>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    {/* --- End of Media Upload Section --- */}
                     <div className="space-y-8">
                         <div>
                             <SectionTitle title="Nama Produk" required />
@@ -259,26 +367,6 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
                             <div className="flex items-center space-x-6"><label className="flex items-center space-x-2 cursor-pointer"><input type="radio" name="is_used" checked={!isUsed} onChange={() => setIsUsed(false)} className="form-radio text-blue-600" /><span className="text-sm">Baru</span></label><label className="flex items-center space-x-2 cursor-pointer"><input type="radio" name="is_used" checked={isUsed} onChange={() => setIsUsed(true)} className="form-radio text-blue-600" /><span className="text-sm">Bekas</span></label></div>
                         </div>
                     </div>
-
-                    <div className="space-y-8">
-                        <div>
-                            <SectionTitle title="Foto & Video Produk" required />
-                            <p className="text-xs text-gray-500 mb-4">Upload minimal 1 foto. Foto pertama akan menjadi foto utama produk.</p>
-                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-                                {productPhotos.map((photo, index) => (
-                                    <div key={photo.preview} className="relative w-28 h-28">
-                                        <img src={photo.preview} alt={`preview ${index}`} className="w-full h-full object-cover rounded-sm border" />
-                                        <button onClick={() => removeProductPhoto(index)} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
-                                        {index === 0 && <div className="absolute bottom-0 left-0 w-full bg-blue-600 text-white text-center text-xs py-0.5">Utama</div>}
-                                    </div>
-                                ))}
-                                {productPhotos.length < 9 && (<button onClick={() => productPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center hover:bg-blue-50 transition-colors ${errors.media ? 'border-red-500 text-red-500' : 'border-blue-400 text-blue-500'}`}><Camera className="h-8 w-8" strokeWidth={1.5} /><span className="text-xs mt-1">Foto ({productPhotos.length}/9)</span></button>)}
-                                {productVideo ? (<div className="relative w-28 h-28 flex-shrink-0"><video src={productVideo.preview} className="w-full h-full object-cover rounded-sm border" /><button onClick={() => { if (productVideo) URL.revokeObjectURL(productVideo.preview); setProductVideo(null); }} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button></div>) : (<button onClick={() => videoInputRef.current?.click()} className="w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center text-blue-500 border-blue-400 hover:bg-blue-50 transition-colors"><Video className="h-8 w-8" strokeWidth={1.5} /><span className="text-xs mt-1">Video (Opsional)</span></button>)}
-                            </div>
-                            {errors.media && <p className="text-red-500 text-xs mt-2">{errors.media}</p>}
-                        </div>
-                    </div>
-
                     <div>
                         <SectionTitle title="Deskripsi Produk" required />
                         <textarea id="description" rows={8} value={description} onChange={(e) => { setDescription(e.target.value); if (errors.description) setErrors(p => ({ ...p, description: undefined })); }} className={`w-full border p-2 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'}`} placeholder="Deskripsikan produkmu secara lengkap di sini..." />
