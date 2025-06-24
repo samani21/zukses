@@ -29,7 +29,7 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
     const [mobileViewOpen, setMobileViewOpen] = useState(false);
     const [mobileSearchQuery, setMobileSearchQuery] = useState('');
     const [debouncedMobileQuery, setDebouncedMobileQuery] = useState('');
-    const [placeholder, setPlaceHolder] = useState<string>('');
+    const [placeholder, setPlaceHolder] = useState<string>('123');
 
     // REFS
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -105,11 +105,15 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
                 if (skipNextDebounce.current) { skipNextDebounce.current = false; return; }
                 if (inputValue.trim() === '') {
                     setDebouncedInputValue('');
-                    setTab(0);
-                    setSelectedProvince(null);
-                    setSelectedCity(null);
-                    setSelectedDistrict(null);
-                    setSelectedPostcode(null);
+                    if (placeholder) {
+                        setTab(3);
+                    } else {
+                        setSelectedProvince(null);
+                        setSelectedDistrict(null);
+                        setSelectedPostcode(null);
+                        setSelectedCity(null);
+                        setTab(0);
+                    }
                 }
                 else { setDebouncedInputValue(inputValue); }
             }
@@ -519,10 +523,10 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
                                     spacing={1.5}
                                     sx={{ position: 'relative', zIndex: 1, bgcolor: '#fafafa' }}>
                                     <FiberManualRecordIcon
-                                        color="error" sx={{ fontSize: '12px' }} />
+                                        color="primary" sx={{ fontSize: '12px' }} />
                                     <Typography
                                         variant="body2"
-                                        color="error"
+                                        color="primary"
                                         fontWeight="bold">
                                         {getMobileTitle()}
                                     </Typography>
@@ -546,12 +550,21 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
                                 sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
                                 <CircularProgress />
                             </Box>) : (
-                            <List sx={{ pt: 0 }}>{options.map((option, index) => (
-                                <ListItemButton key={`${option.code}-${index}`} onClick={() => handleMobileSelect(option)}>
-                                    {/* ===== PERBAIKAN ERROR DI SINI ===== */}
-                                    <ListItemText primary={String(option.label || '').toUpperCase()} />
-                                </ListItemButton>
-                            ))}</List>
+                            <List sx={{ pt: 0 }}>{options.map((option, index) => {
+                                const input = inputValue || placeholder
+                                const locationParts = input.split(',').map(part => part.trim());
+                                const labelUpper = option.label.toUpperCase();
+
+                                // Cek apakah label persis sama dengan salah satu bagian setelah dipisah koma
+                                const isActive = locationParts.includes(labelUpper)
+                                return (
+
+                                    <ListItemButton key={`${option.code}-${index}`} onClick={() => handleMobileSelect(option)} sx={{ color: isActive ? "#0075C9" : "black", }}>
+                                        {/* ===== PERBAIKAN ERROR DI SINI ===== */}
+                                        <ListItemText primary={String(option.label || '').toUpperCase()} />
+                                    </ListItemButton>
+                                )
+                            })}</List>
                         )}
                     </Box>
                 </Dialog >
@@ -578,8 +591,20 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
                         {loading && debouncedInputValue ? (<Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}><CircularProgress size={24} /></Box>
                         ) : options?.length > 0 ? (
                             options.map((option, idx) => {
+                                const input = inputValue || placeholder
+                                const locationParts = input.split(',').map(part => part.trim());
+                                const labelUpper = option.label.toUpperCase();
+
+                                // Cek apakah label persis sama dengan salah satu bagian setelah dipisah koma
+                                const isActive = locationParts.includes(labelUpper)
                                 const currentStep = debouncedInputValue ? (isAutocompleteOption(option) ? 4 : 0) : tab;
-                                return (<ListItemButton key={`${option.code}-${idx}`} onMouseDown={(e) => { e.preventDefault(); handleSelect(currentStep, option.code, option.label, option); }}><Typography component="div">{renderHighlightedText(option.label.toUpperCase(), inputValue.toUpperCase())}</Typography></ListItemButton>);
+                                return (
+                                    <ListItemButton key={`${option.code}-${idx}`} onMouseDown={(e) => { e.preventDefault(); handleSelect(currentStep, option.code, option.label, option); }}>
+                                        <Typography component="div" sx={{
+                                            color: isActive ? "#0075C9" : "black",
+                                            cursor: "pointer",
+                                        }}>{renderHighlightedText(option.label.toUpperCase(), inputValue.toUpperCase())}</Typography>
+                                    </ListItemButton>);
                             })
                         ) : (<Typography sx={{ p: 2 }} variant="body2" color="text.secondary">{loading ? 'Memuat...' : 'Data tidak ditemukan'}</Typography>)}
                     </List>
