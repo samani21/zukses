@@ -29,7 +29,7 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
     const [mobileViewOpen, setMobileViewOpen] = useState(false);
     const [mobileSearchQuery, setMobileSearchQuery] = useState('');
     const [debouncedMobileQuery, setDebouncedMobileQuery] = useState('');
-    const [placeholder, setPlaceHolder] = useState<string>('123');
+    const [placeholder, setPlaceHolder] = useState<string>('');
 
     // REFS
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -105,7 +105,7 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
                 if (skipNextDebounce.current) { skipNextDebounce.current = false; return; }
                 if (inputValue.trim() === '') {
                     setDebouncedInputValue('');
-                    if (placeholder) {
+                    if (placeholder != '') {
                         setTab(3);
                     } else {
                         setSelectedProvince(null);

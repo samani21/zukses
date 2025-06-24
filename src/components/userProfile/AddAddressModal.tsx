@@ -209,7 +209,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                         setOpenMaps={setOpenMaps}
                     /> :
                         <div className="bg-white h-full md:h-50% md:rounded-lg shadow-xl w-full max-w-2xl">
-                            <div className="hidden md:block flex justify-between items-center p-4">
+                            <div className="hidden md:flex justify-between items-center p-4">
                                 <h2 className="text-lg font-semibold">Alamat Baru</h2>
                                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                                     <XMarkIcon className="w-6 h-6" />
