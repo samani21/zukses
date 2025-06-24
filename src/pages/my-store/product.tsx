@@ -10,6 +10,7 @@ import Snackbar from 'components/Snackbar';
 import { Grid, List } from 'lucide-react';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useState } from 'react'; // Menghapus useEffect karena tidak lagi diperlukan
+import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 
@@ -18,7 +19,7 @@ type Product = {
     id: string;
     name: string;
     sku: string;
-    imageUrl?: string;
+    image_url?: string;
     sales: number;
     price: number;
     stock: number;
@@ -29,38 +30,7 @@ type Product = {
 // DATA DUMMY
 // Data ini konstan dan tidak berubah, jadi bisa diletakkan di luar komponen.
 // ============================================================================
-const dummyProducts: Product[] = [
-    {
-        id: 'P001',
-        name: 'Kemeja Lengan Panjang Pria Modern',
-        sku: 'SKU-KLP-001',
-        imageUrl: 'https://placehold.co/80x80/f0f0f0/333?text=Kemeja',
-        sales: 120,
-        price: 150000,
-        stock: 85,
-        qualityScore: 95,
-    },
-    {
-        id: 'P002',
-        name: 'Celana Jeans Sobek-sobek Kekinian',
-        sku: 'SKU-CJS-002',
-        imageUrl: 'https://placehold.co/80x80/e0e0e0/333?text=Celana',
-        sales: 95,
-        price: 250000,
-        stock: 40,
-        qualityScore: 88,
-    },
-    {
-        id: 'P003',
-        name: 'Sneakers Putih Casual Unisex',
-        sku: 'SKU-SNK-003',
-        imageUrl: 'https://placehold.co/80x80/d0d0d0/333?text=Sepatu',
-        sales: 250,
-        price: 320000,
-        stock: 150,
-        qualityScore: 98,
-    },
-];
+
 
 // 1. Mengganti nama komponen dari 'product' menjadi 'ProductPage' (PascalCase)
 //    Ini adalah konvensi standar untuk komponen React.
@@ -90,6 +60,7 @@ const ProductPage = () => {
             const res = await Post<Response>('zukses', `product`, form)
             if (res?.data?.status === 'success') {
                 setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
+                getProduct()
                 setView('list');
             }
         } catch (err) {
@@ -98,8 +69,20 @@ const ProductPage = () => {
             setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true })
         }
     };
+    const getProduct = async () => {
+        setLoading(true)
+        const res = await Get<Response>('zukses', `product/show`)
+        console.log('res', res)
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res?.data as Product[];
+            setProducts(data)
+            setLoading(false)
+        } else {
+            console.warn('User profile tidak ditemukan atau gagal diambil')
+        }
+    }
     useEffect(() => {
-        setProducts(dummyProducts)
+        getProduct()
     }, [])
     return (
         <MyStoreLayout>
