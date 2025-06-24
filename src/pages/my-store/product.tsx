@@ -75,8 +75,7 @@ const ProductPage = () => {
     ];
 
 
-    const handleSaveProduct = (newProduct: Product) => {
-        setProducts(prevProducts => [newProduct, ...(prevProducts ?? [])]);
+    const handleSaveProduct = () => {
         setView('list');
     };
     useEffect(() => {
