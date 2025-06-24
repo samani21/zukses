@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { InformationCircleIcon, XMarkIcon } from './Icon';
-import AutocompleteAddress from 'components/AutocompleteAdress';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
 import { AddLocation, InputFlex, LabelContainer, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
@@ -8,6 +7,7 @@ import { Checkbox, IconButton, Switch, TextField } from '@mui/material';
 import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
 import { GoogleMapsProvider } from 'components/GoogleMapsProvider';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AutocompleteAddress from 'components/AutocompleteAddress/AutocompleteAddress';
 type FormData = {
     name: string;
     phone: string;
