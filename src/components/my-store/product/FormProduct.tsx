@@ -1,10 +1,9 @@
 import Modal from 'components/common/Modal';
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Get from 'services/api/Get';
-import { Category, FileWithPreview, FormErrors, ProductVariant, TabName, Variation, VariationOption } from 'services/api/product';
+import { Category, FileWithPreview, FormErrors, ProductVariant, Variation, VariationOption } from 'services/api/product';
 import { Response } from 'services/api/types';
 import CategorySelector from './CategorySelector';
-import TabButton from 'components/common/TabButton';
 import SectionTitle from 'components/common/SectionTitle';
 import { Edit2Icon, ImageIcon } from 'components/common/icons';
 import { Camera } from 'lucide-react';
@@ -15,7 +14,6 @@ import PlusSquare from 'components/common/icons/PlusSquare';
 
 const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => void; }> = ({ onSave, onCancel }) => {
     // --- State Management ---
-    const [activeTab, setActiveTab] = useState<TabName>('dasar');
     const [productName, setProductName] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('Pakaian Wanita > Atasan > Blouse > Blouse Lengan Pendek');
@@ -241,15 +239,6 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
         if (!promoPhoto) newErrors.promoPhoto = 'Foto Produk Promosi wajib diisi.';
 
         setErrors(newErrors);
-
-        if (Object.keys(newErrors).length > 0) {
-            if (newErrors.productName || newErrors.description) {
-                setActiveTab('dasar');
-            } else if (newErrors.productPhotos || newErrors.promoPhoto) {
-                setActiveTab('media');
-            }
-            return false;
-        }
         return true;
     };
 
@@ -310,11 +299,6 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
                 isOpen={isCategoryModalOpen}
                 onClose={() => setCategoryModalOpen(false)}
                 title="Pilih Kategori"
-                footer={
-                    <button onClick={handleConfirmCategory} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300" disabled={!tempCategory}>
-                        Konfirmasi
-                    </button>
-                }
             >
                 <CategorySelector
                     onSelectCategory={setTempCategory}
@@ -323,6 +307,8 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
                     isLoading={categoryLoading}
                     error={categoryError}
                     setIdCategorie={setIdCategorie}
+                    setCategoryModalOpen={setCategoryModalOpen}
+                    handleConfirmCategory={handleConfirmCategory}
                 />
             </Modal>
 
@@ -331,156 +317,141 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
 
             <div className="bg-white rounded-md shadow-sm">
                 {/* Navigasi Tab */}
-                <div className="border-b border-gray-200">
-                    <div className="px-4 sm:px-8 flex flex-wrap">
-                        <TabButton label="Informasi Dasar" isActive={activeTab === 'dasar'} onClick={() => setActiveTab('dasar')} hasError={!!(errors.productName || errors.description)} />
-                        <TabButton label="Media" isActive={activeTab === 'media'} onClick={() => setActiveTab('media')} hasError={!!(errors.productPhotos || errors.promoPhoto)} />
-                        <TabButton label="Spesifikasi" isActive={activeTab === 'spesifikasi'} onClick={() => setActiveTab('spesifikasi')} hasError={false} />
-                        <TabButton label="Lainnya" isActive={activeTab === 'lainnya'} onClick={() => setActiveTab('lainnya')} hasError={false} />
-                    </div>
-                </div>
 
                 {/* Konten Tab */}
                 <div className="p-4 sm:p-8">
-                    {activeTab === 'dasar' && (
-                        <div className="space-y-8">
-                            <div>
-                                <SectionTitle title="Nama Produk" required />
-                                <div className="relative flex-grow">
-                                    <input type="text" id="productName" value={productName} maxLength={255} onChange={(e) => { setProductName(e.target.value); if (errors.productName) setErrors(p => ({ ...p, productName: undefined })); }} placeholder="Merek + Tipe + Fitur Produk" className={`w-full p-2 border rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 pr-16 ${errors.productName ? 'border-red-500' : 'border-gray-300'}`} />
-                                    <span className="absolute inset-y-0 right-3 flex items-center text-sm text-gray-400">{productName.length}/255</span>
-                                </div>
-                                {errors.productName && <p className="text-red-500 text-xs mt-1">{errors.productName}</p>}
+
+                    <div className="space-y-8">
+                        <div>
+                            <SectionTitle title="Nama Produk" required />
+                            <div className="relative flex-grow">
+                                <input type="text" id="productName" value={productName} maxLength={255} onChange={(e) => { setProductName(e.target.value); if (errors.productName) setErrors(p => ({ ...p, productName: undefined })); }} placeholder="Merek + Tipe + Fitur Produk" className={`w-full p-2 border rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 pr-16 ${errors.productName ? 'border-red-500' : 'border-gray-300'}`} />
+                                <span className="absolute inset-y-0 right-3 flex items-center text-sm text-gray-400">{productName.length}/255</span>
                             </div>
-                            <div>
-                                <SectionTitle title="Kategori" required />
-                                <button onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }} className="w-full flex justify-between items-center text-left p-2 border border-gray-300 rounded-sm bg-white hover:bg-gray-50 transition-colors">
-                                    <span className="text-gray-700">{category || "Pilih Kategori"}</span>
-                                    <Edit2Icon className="text-gray-400" size={16} />
-                                </button>
+                            {errors.productName && <p className="text-red-500 text-xs mt-1">{errors.productName}</p>}
+                        </div>
+                        <div>
+                            <SectionTitle title="Kategori" required />
+                            <button onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }} className="w-full flex justify-between items-center text-left p-2 border border-gray-300 rounded-sm bg-white hover:bg-gray-50 transition-colors">
+                                <span className="text-gray-700">{category || "Pilih Kategori"}</span>
+                                <Edit2Icon className="text-gray-400" size={16} />
+                            </button>
+                        </div>
+                        <div>
+                            <SectionTitle title="Deskripsi Produk" required />
+                            <textarea id="description" rows={8} value={description} onChange={(e) => { setDescription(e.target.value); if (errors.description) setErrors(p => ({ ...p, description: undefined })); }} className={`w-full border p-2 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'}`} placeholder="Deskripsikan produkmu secara lengkap di sini..." />
+                            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+                        </div>
+                    </div>
+
+                    <div className="space-y-8">
+                        <div>
+                            <SectionTitle title="Foto Produk" required />
+                            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                                {productPhotos.map((photo, index) => (
+                                    <div key={photo.preview} className="relative w-28 h-28">
+                                        <img src={photo.preview} alt={`preview ${index}`} className="w-full h-full object-cover rounded-sm border" />
+                                        <button onClick={() => removeProductPhoto(index)} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
+                                    </div>
+                                ))}
+                                {productPhotos.length < 9 && (
+                                    <button onClick={() => productPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center hover:bg-blue-50 transition-colors ${errors.productPhotos ? 'border-red-500 text-red-500' : 'border-blue-400 text-blue-500'}`}><Camera className="h-8 w-8" strokeWidth={1.5} /><span className="text-xs mt-1">Tambahkan Foto ({productPhotos.length}/9)</span></button>
+                                )}
                             </div>
-                            <div>
-                                <SectionTitle title="Deskripsi Produk" required />
-                                <textarea id="description" rows={8} value={description} onChange={(e) => { setDescription(e.target.value); if (errors.description) setErrors(p => ({ ...p, description: undefined })); }} className={`w-full border p-2 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 ${errors.description ? 'border-red-500' : 'border-gray-300'}`} placeholder="Deskripsikan produkmu secara lengkap di sini..." />
-                                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+                            {errors.productPhotos && <p className="text-red-500 text-xs mt-2">{errors.productPhotos}</p>}
+                        </div>
+                        <div>
+                            <SectionTitle title="Foto Produk Promosi" required />
+                            <div className="flex flex-col sm:flex-row items-start gap-4">
+                                {promoPhoto ? (
+                                    <div className="relative w-28 h-28 flex-shrink-0">
+                                        <img src={promoPhoto.preview} alt="promo preview" className="w-full h-full object-cover rounded-sm border" />
+                                        <button onClick={() => { if (promoPhoto) URL.revokeObjectURL(promoPhoto.preview); setPromoPhoto(null); }} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
+                                    </div>
+                                ) : (
+                                    <button onClick={() => promoPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border rounded-sm bg-white text-center hover:bg-gray-50 flex-shrink-0 transition-colors ${errors.promoPhoto ? 'border-red-500 text-red-500' : 'border-gray-300 text-gray-500'}`}><ImageIcon className={`h-8 w-8 ${errors.promoPhoto ? 'text-red-400' : 'text-gray-400'}`} strokeWidth={1.5} /><span className="text-xs mt-1">Upload Foto (0/1)</span></button>
+                                )}
+                                <div className="text-xs text-gray-500 sm:pt-2 space-y-1"><p>&bull; Upload Foto dengan rasio 1:1.</p><p>&bull; Foto ini akan digunakan di halaman promosi, hasil pencarian, rekomendasi, dll.</p></div>
+                            </div>
+                            {errors.promoPhoto && <p className="text-red-500 text-xs mt-2">{errors.promoPhoto}</p>}
+                        </div>
+                        <div>
+                            <SectionTitle title="Video Produk" />
+                            <div className="flex flex-col sm:flex-row items-start gap-4">
+                                {productVideo ? (
+                                    <div className="relative w-28 h-28 flex-shrink-0">
+                                        <video src={productVideo.preview} className="w-full h-full object-cover rounded-sm border" controls />
+                                        <button onClick={() => { if (productVideo) URL.revokeObjectURL(productVideo.preview); setProductVideo(null); }} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
+                                    </div>
+                                ) : (
+                                    <button onClick={() => videoInputRef.current?.click()} className="w-28 h-28 flex flex-col items-center justify-center border border-gray-300 rounded-sm bg-white text-center text-gray-500 hover:bg-gray-50 flex-shrink-0 transition-colors"><Video className="h-8 w-8 text-gray-400" strokeWidth={1.5} /><span className="text-xs mt-1">Tambah Video</span></button>
+                                )}
+                                <div className="text-xs text-gray-500 sm:pt-2 space-y-1"><p>&bull; Ukuran file video maks. 30MB.</p><p>&bull; Durasi: 10-60 detik. Format: MP4.</p></div>
                             </div>
                         </div>
-                    )}
+                    </div>
 
-                    {activeTab === 'media' && (
-                        <div className="space-y-8">
-                            <div>
-                                <SectionTitle title="Foto Produk" required />
-                                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                                    {productPhotos.map((photo, index) => (
-                                        <div key={photo.preview} className="relative w-28 h-28">
-                                            <img src={photo.preview} alt={`preview ${index}`} className="w-full h-full object-cover rounded-sm border" />
-                                            <button onClick={() => removeProductPhoto(index)} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
-                                        </div>
-                                    ))}
-                                    {productPhotos.length < 9 && (
-                                        <button onClick={() => productPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed rounded-sm bg-white text-center hover:bg-blue-50 transition-colors ${errors.productPhotos ? 'border-red-500 text-red-500' : 'border-blue-400 text-blue-500'}`}><Camera className="h-8 w-8" strokeWidth={1.5} /><span className="text-xs mt-1">Tambahkan Foto ({productPhotos.length}/9)</span></button>
-                                    )}
-                                </div>
-                                {errors.productPhotos && <p className="text-red-500 text-xs mt-2">{errors.productPhotos}</p>}
-                            </div>
-                            <div>
-                                <SectionTitle title="Foto Produk Promosi" required />
-                                <div className="flex flex-col sm:flex-row items-start gap-4">
-                                    {promoPhoto ? (
-                                        <div className="relative w-28 h-28 flex-shrink-0">
-                                            <img src={promoPhoto.preview} alt="promo preview" className="w-full h-full object-cover rounded-sm border" />
-                                            <button onClick={() => { if (promoPhoto) URL.revokeObjectURL(promoPhoto.preview); setPromoPhoto(null); }} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
-                                        </div>
-                                    ) : (
-                                        <button onClick={() => promoPhotoInputRef.current?.click()} className={`w-28 h-28 flex flex-col items-center justify-center border rounded-sm bg-white text-center hover:bg-gray-50 flex-shrink-0 transition-colors ${errors.promoPhoto ? 'border-red-500 text-red-500' : 'border-gray-300 text-gray-500'}`}><ImageIcon className={`h-8 w-8 ${errors.promoPhoto ? 'text-red-400' : 'text-gray-400'}`} strokeWidth={1.5} /><span className="text-xs mt-1">Upload Foto (0/1)</span></button>
-                                    )}
-                                    <div className="text-xs text-gray-500 sm:pt-2 space-y-1"><p>&bull; Upload Foto dengan rasio 1:1.</p><p>&bull; Foto ini akan digunakan di halaman promosi, hasil pencarian, rekomendasi, dll.</p></div>
-                                </div>
-                                {errors.promoPhoto && <p className="text-red-500 text-xs mt-2">{errors.promoPhoto}</p>}
-                            </div>
-                            <div>
-                                <SectionTitle title="Video Produk" />
-                                <div className="flex flex-col sm:flex-row items-start gap-4">
-                                    {productVideo ? (
-                                        <div className="relative w-28 h-28 flex-shrink-0">
-                                            <video src={productVideo.preview} className="w-full h-full object-cover rounded-sm border" controls />
-                                            <button onClick={() => { if (productVideo) URL.revokeObjectURL(productVideo.preview); setProductVideo(null); }} className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-0.5 hover:bg-black/80 transition-colors"><X size={14} /></button>
-                                        </div>
-                                    ) : (
-                                        <button onClick={() => videoInputRef.current?.click()} className="w-28 h-28 flex flex-col items-center justify-center border border-gray-300 rounded-sm bg-white text-center text-gray-500 hover:bg-gray-50 flex-shrink-0 transition-colors"><Video className="h-8 w-8 text-gray-400" strokeWidth={1.5} /><span className="text-xs mt-1">Tambah Video</span></button>
-                                    )}
-                                    <div className="text-xs text-gray-500 sm:pt-2 space-y-1"><p>&bull; Ukuran file video maks. 30MB.</p><p>&bull; Durasi: 10-60 detik. Format: MP4.</p></div>
-                                </div>
+
+                    <div className="space-y-8">
+                        <div>
+                            <SectionTitle title="Variasi Produk" />
+                            <div className="space-y-4">
+                                {variations.map((v, i) => (<div key={v.id} className="bg-gray-50 border border-gray-200 rounded-md p-4"><div className="flex justify-between items-center mb-4"><div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full"><label htmlFor={`v-name-${v.id}`} className="text-sm font-medium text-gray-700">Variasi {i + 1}</label><input type="text" id={`v-name-${v.id}`} value={v.name} onChange={(e) => handleVariationNameChange(v.id, e.target.value)} maxLength={14} placeholder="Nama Variasi (cth: Warna)" className="p-2 w-full sm:w-1/3 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" /></div><button onClick={() => removeVariation(v.id)} className="text-gray-400 hover:text-red-500"><Trash2 size={18} /></button></div><label className="text-sm font-medium text-gray-700 block mb-2">Opsi</label><div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">{v.options.map(o => (<div key={o.id} className="relative flex items-center"><input type="text" value={o.name} onChange={(e) => handleOptionNameChange(v.id, o.id, e.target.value)} maxLength={20} placeholder="Opsi (cth: Merah)" className="w-full p-2 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm pr-12" /><span className="absolute inset-y-0 right-8 flex items-center text-xs text-gray-400">{o.name.length}/20</span><button onClick={() => removeOption(v.id, o.id)} className="absolute right-2 text-gray-400 hover:text-red-500"><Trash2 size={16} /></button></div>))}<button onClick={() => addOption(v.id)} className="w-full border-2 border-dashed border-blue-400 text-blue-500 rounded-sm py-2 text-sm hover:bg-blue-50 transition-colors">+ Tambah Opsi</button></div></div>))}
+                                {variations.length < 2 && <button onClick={addVariation} className="w-full border-2 border-dashed border-gray-300 text-gray-600 rounded-sm py-2 hover:border-blue-400 hover:text-blue-500 transition-colors">+ Tambah Grup Variasi</button>}
                             </div>
                         </div>
-                    )}
 
-                    {activeTab === 'spesifikasi' && (
-                        <div className="space-y-8">
+                        {productVariants.length > 0 && (
                             <div>
-                                <SectionTitle title="Variasi Produk" />
-                                <div className="space-y-4">
-                                    {variations.map((v, i) => (<div key={v.id} className="bg-gray-50 border border-gray-200 rounded-md p-4"><div className="flex justify-between items-center mb-4"><div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full"><label htmlFor={`v-name-${v.id}`} className="text-sm font-medium text-gray-700">Variasi {i + 1}</label><input type="text" id={`v-name-${v.id}`} value={v.name} onChange={(e) => handleVariationNameChange(v.id, e.target.value)} maxLength={14} placeholder="Nama Variasi (cth: Warna)" className="p-2 w-full sm:w-1/3 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" /></div><button onClick={() => removeVariation(v.id)} className="text-gray-400 hover:text-red-500"><Trash2 size={18} /></button></div><label className="text-sm font-medium text-gray-700 block mb-2">Opsi</label><div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">{v.options.map(o => (<div key={o.id} className="relative flex items-center"><input type="text" value={o.name} onChange={(e) => handleOptionNameChange(v.id, o.id, e.target.value)} maxLength={20} placeholder="Opsi (cth: Merah)" className="w-full p-2 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm pr-12" /><span className="absolute inset-y-0 right-8 flex items-center text-xs text-gray-400">{o.name.length}/20</span><button onClick={() => removeOption(v.id, o.id)} className="absolute right-2 text-gray-400 hover:text-red-500"><Trash2 size={16} /></button></div>))}<button onClick={() => addOption(v.id)} className="w-full border-2 border-dashed border-blue-400 text-blue-500 rounded-sm py-2 text-sm hover:bg-blue-50 transition-colors">+ Tambah Opsi</button></div></div>))}
-                                    {variations.length < 2 && <button onClick={addVariation} className="w-full border-2 border-dashed border-gray-300 text-gray-600 rounded-sm py-2 hover:border-blue-400 hover:text-blue-500 transition-colors">+ Tambah Grup Variasi</button>}
-                                </div>
-                            </div>
-
-                            {productVariants.length > 0 && (
-                                <div>
-                                    <SectionTitle title="Daftar Variasi" />
-                                    <div className="overflow-x-auto rounded-md bg-gray-50/50">
-                                        <table className="w-full text-sm text-left hidden md:table">
-                                            <thead className="bg-gray-100"><tr>{variations.filter(v => v.name).map(v => <th key={v.id} className="p-2 font-medium text-gray-600">{v.name}</th>)}<th className="p-2 font-medium text-gray-600">Harga</th><th className="p-2 font-medium text-gray-600">Stok</th><th className="p-2 font-medium text-gray-600">Kode Variasi</th></tr></thead>
-                                            <tbody>{productVariants.map((variant, index) => (<tr key={Object.values(variant.combination).join('-')} className="border-b border-gray-200 bg-white">{Object.values(variant.combination).map((o, i) => (<td key={i} className="p-2 align-top">{o}
-                                                {i === 0 && (
-                                                    <div className="mt-2">
-                                                        {variant.image ? (
-                                                            <div className="relative w-16 h-16">
-                                                                <img src={variant.image.preview} alt="variant preview" className="w-full h-full object-cover rounded-sm border" />
-                                                                <button onClick={() => removeVariantImage(index)} className="absolute -top-1 -right-1 bg-black/60 text-white rounded-full p-0.5 hover:bg-black/80"><X size={12} /></button>
-                                                            </div>
-                                                        ) : (
-                                                            <button onClick={() => triggerVariantImageUpload(index)} className="w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-blue-400 hover:text-blue-500"><PlusSquare size={20} /></button>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </td>))}<td className="p-2 align-top"><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm pl-8" /></div></td><td className="p-2 align-top"><input type="number" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></td><td className="p-2 align-top"><input type="text" value={variant.sku} onChange={e => handleVariantChange(index, 'sku', e.target.value)} placeholder="Masukkan SKU" className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></td></tr>))}</tbody>
-                                        </table>
-                                        <div className="space-y-4 md:hidden">
-                                            {productVariants.map((variant, index) => (<div key={Object.values(variant.combination).join('-')} className="border rounded-md border-gray-200 p-4 bg-white shadow-sm"><div className="flex justify-between items-start"><div className="font-semibold text-gray-800">{Object.values(variant.combination).join(' / ')}</div>
-                                                {variant.image ? (
-                                                    <div className="relative w-16 h-16 flex-shrink-0 ml-4">
-                                                        <img src={variant.image.preview} alt="variant preview" className="w-full h-full object-cover rounded-sm border" />
-                                                        <button onClick={() => removeVariantImage(index)} className="absolute -top-1 -right-1 bg-black/60 text-white rounded-full p-0.5 hover:bg-black/80"><X size={12} /></button>
-                                                    </div>
-                                                ) : (
-                                                    <button onClick={() => triggerVariantImageUpload(index)} className="w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-blue-400 hover:text-blue-500 flex-shrink-0 ml-4"><PlusSquare size={20} /></button>
-                                                )}
-                                            </div><div className="mt-4 space-y-3"><div><label className="text-xs text-gray-500 block mb-1">Harga</label><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm pl-8" /></div></div><div><label className="text-xs text-gray-500 block mb-1">Stok</label><input type="number" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></div><div><label className="text-xs text-gray-500 block mb-1">Kode Variasi</label><input type="text" value={variant.sku} onChange={e => handleVariantChange(index, 'sku', e.target.value)} placeholder="Masukkan SKU" className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></div></div></div>))}
-                                        </div>
+                                <SectionTitle title="Daftar Variasi" />
+                                <div className="overflow-x-auto rounded-md bg-gray-50/50">
+                                    <table className="w-full text-sm text-left hidden md:table">
+                                        <thead className="bg-gray-100"><tr>{variations.filter(v => v.name).map(v => <th key={v.id} className="p-2 font-medium text-gray-600">{v.name}</th>)}<th className="p-2 font-medium text-gray-600">Harga</th><th className="p-2 font-medium text-gray-600">Stok</th><th className="p-2 font-medium text-gray-600">Kode Variasi</th></tr></thead>
+                                        <tbody>{productVariants.map((variant, index) => (<tr key={Object.values(variant.combination).join('-')} className="border-b border-gray-200 bg-white">{Object.values(variant.combination).map((o, i) => (<td key={i} className="p-2 align-top">{o}
+                                            {i === 0 && (
+                                                <div className="mt-2">
+                                                    {variant.image ? (
+                                                        <div className="relative w-16 h-16">
+                                                            <img src={variant.image.preview} alt="variant preview" className="w-full h-full object-cover rounded-sm border" />
+                                                            <button onClick={() => removeVariantImage(index)} className="absolute -top-1 -right-1 bg-black/60 text-white rounded-full p-0.5 hover:bg-black/80"><X size={12} /></button>
+                                                        </div>
+                                                    ) : (
+                                                        <button onClick={() => triggerVariantImageUpload(index)} className="w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-blue-400 hover:text-blue-500"><PlusSquare size={20} /></button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </td>))}<td className="p-2 align-top"><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm pl-8" /></div></td><td className="p-2 align-top"><input type="number" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></td><td className="p-2 align-top"><input type="text" value={variant.sku} onChange={e => handleVariantChange(index, 'sku', e.target.value)} placeholder="Masukkan SKU" className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></td></tr>))}</tbody>
+                                    </table>
+                                    <div className="space-y-4 md:hidden">
+                                        {productVariants.map((variant, index) => (<div key={Object.values(variant.combination).join('-')} className="border rounded-md border-gray-200 p-4 bg-white shadow-sm"><div className="flex justify-between items-start"><div className="font-semibold text-gray-800">{Object.values(variant.combination).join(' / ')}</div>
+                                            {variant.image ? (
+                                                <div className="relative w-16 h-16 flex-shrink-0 ml-4">
+                                                    <img src={variant.image.preview} alt="variant preview" className="w-full h-full object-cover rounded-sm border" />
+                                                    <button onClick={() => removeVariantImage(index)} className="absolute -top-1 -right-1 bg-black/60 text-white rounded-full p-0.5 hover:bg-black/80"><X size={12} /></button>
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => triggerVariantImageUpload(index)} className="w-16 h-16 flex flex-col items-center justify-center border border-dashed rounded-sm text-gray-400 hover:border-blue-400 hover:text-blue-500 flex-shrink-0 ml-4"><PlusSquare size={20} /></button>
+                                            )}
+                                        </div><div className="mt-4 space-y-3"><div><label className="text-xs text-gray-500 block mb-1">Harga</label><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">Rp</span><input type="number" value={variant.price} onChange={e => handleVariantChange(index, 'price', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm pl-8" /></div></div><div><label className="text-xs text-gray-500 block mb-1">Stok</label><input type="number" value={variant.stock} onChange={e => handleVariantChange(index, 'stock', e.target.value)} className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></div><div><label className="text-xs text-gray-500 block mb-1">Kode Variasi</label><input type="text" value={variant.sku} onChange={e => handleVariantChange(index, 'sku', e.target.value)} placeholder="Masukkan SKU" className="w-full p-2 border-gray-300 rounded-sm shadow-sm" /></div></div></div>))}
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    )}
-
-                    {activeTab === 'lainnya' && (
-                        <div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                                <div>
-                                    <SectionTitle title="Min. Jumlah Pembelian" required />
-                                    <input type="number" value={minPurchase} onChange={(e) => setMinPurchase(e.target.value ? Number(e.target.value) : '')} className="w-full p-2 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                    <p className="text-xs text-gray-500 mt-2">Jumlah minimum produk yang harus dibeli oleh pelanggan dalam satu transaksi.</p>
-                                </div>
-                                <div>
-                                    <SectionTitle title="Maks. Jumlah Pembelian" />
-                                    <input type="text" value={maxPurchase} onChange={(e) => setMaxPurchase(e.target.value)} placeholder="Tanpa Batas" className="w-full p-2 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-                                    <p className="text-xs text-gray-500 mt-2">Jumlah maksimum produk yang dapat dibeli. Kosongkan jika tanpa batas.</p>
-                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                            <div>
+                                <SectionTitle title="Min. Jumlah Pembelian" required />
+                                <input type="number" value={minPurchase} onChange={(e) => setMinPurchase(e.target.value ? Number(e.target.value) : '')} className="w-full p-2 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                <p className="text-xs text-gray-500 mt-2">Jumlah minimum produk yang harus dibeli oleh pelanggan dalam satu transaksi.</p>
+                            </div>
+                            <div>
+                                <SectionTitle title="Maks. Jumlah Pembelian" />
+                                <input type="text" value={maxPurchase} onChange={(e) => setMaxPurchase(e.target.value)} placeholder="Tanpa Batas" className="w-full p-2 border-gray-300 rounded-sm shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                                <p className="text-xs text-gray-500 mt-2">Jumlah maksimum produk yang dapat dibeli. Kosongkan jika tanpa batas.</p>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
 

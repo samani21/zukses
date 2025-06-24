@@ -1,15 +1,18 @@
-import ChevronRight from 'components/common/icons/ChevronRight';
+
+import { ChevronRightIcon, SearchIcon, XIcon } from 'lucide-react';
 import React, { FC, useState, useEffect } from 'react';
 import { Category } from 'services/api/product';
 
 const CategorySelector: FC<{
     onSelectCategory: (path: string) => void;
+    setCategoryModalOpen: (path: boolean) => void;
     initialCategory: string;
     categories: Category[];
     isLoading: boolean;
     error: string | null;
+    handleConfirmCategory: () => void;
     setIdCategorie: (value: number) => void;
-}> = ({ onSelectCategory, initialCategory, categories, isLoading, error, setIdCategorie }) => {
+}> = ({ onSelectCategory, initialCategory, categories, isLoading, error, setIdCategorie, setCategoryModalOpen, handleConfirmCategory }) => {
     const [selectionPath, setSelectionPath] = useState<Category[]>([]);
     const [columns, setColumns] = useState<Category[][]>([categories]);
     const [selectedCategoryName, setSelectedCategoryName] = useState(initialCategory);
@@ -66,31 +69,90 @@ const CategorySelector: FC<{
     }
 
     return (
-        <div>
-            <div className="mb-4 p-2 bg-gray-100 rounded-md">
-                <span className="text-sm text-gray-500">Kategori Dipilih: </span>
-                <span className="font-semibold text-gray-800">{selectedCategoryName || 'Belum ada'}</span>
-            </div>
-            <div className="flex space-x-4 min-h-[300px]">
-                {columns.map((column, colIndex) => (
-                    <div key={colIndex} className="w-1/3 border-r pr-2 last:border-r-0 overflow-y-auto">
-                        <ul className="space-y-1">
-                            {column.map(cat => (
-                                <li key={cat.id}>
-                                    <button
-                                        onClick={() => handleSelect(cat, colIndex)}
-                                        className={`w-full flex justify-between items-center text-left p-2 rounded-md text-sm transition-colors ${selectionPath[colIndex]?.id === cat.id ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100'}`}
-                                    >
-                                        <span>{cat.name}</span>
-                                        {cat.children && cat.children.length > 0 && <ChevronRight size={16} className="text-gray-400" />}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 bg-opacity-60 font-sans">
+            <div className="bg-white rounded-md shadow-lg w-full max-w-4xl h-[700px] flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b">
+                    <h2 className="text-lg font-semibold text-gray-800">Ubah Kategori</h2>
+                    <button
+                        onClick={() => setCategoryModalOpen(false)}
+                        className="text-gray-500 hover:text-gray-800">
+                        <XIcon size={24} />
+                    </button>
+                </div>
+
+                {/* Search Bar */}
+                <div className="p-4 border-b">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Masukkan nama kategori"
+                            // value={searchTerm}
+                            // onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full p-2 pl-10 border rounded-sm focus:outline-none focus:ring-2 focus:ring-[#EE4D2D]"
+                        />
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <SearchIcon size={20} className="text-gray-400" />
+                        </div>
                     </div>
-                ))}
+                </div>
+
+                {/* Category Columns */}
+                <div className="flex-grow flex flex-row overflow-x-auto min-h-0">
+                    {columns.map((column, colIndex) => (
+                        <div
+                            key={colIndex}
+                            className="w-1/4 h-full border-r overflow-y-auto flex-shrink-0"
+                        >
+                            <ul>
+                                {column.map((cat) => (
+                                    <li key={cat.id}>
+                                        <button
+                                            onClick={() => handleSelect(cat, colIndex)}
+                                            className={`w-full flex justify-between items-center text-left p-3 text-sm transition-colors ${selectionPath[colIndex]?.id === cat.id
+                                                ? 'bg-[#FFFBF8] border-l-2 border-[#EE4D2D] text-[#EE4D2D] font-semibold'
+                                                : 'hover:bg-gray-100'
+                                                }`}
+                                        >
+                                            <span className="truncate pr-2">{cat.name}</span>
+                                            {cat.children && cat.children.length > 0 && (
+                                                <ChevronRightIcon size={16} className="text-gray-400 flex-shrink-0" />
+                                            )}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Footer */}
+                <div className="p-4 border-t mt-auto">
+                    <div className="flex justify-between items-center">
+                        <div className="text-sm truncate pr-4">
+                            <span className="text-gray-500">Dipilih: </span>
+                            <span className="font-semibold text-gray-800">{selectedCategoryName || 'Pilih kategori untuk melanjutkan'}</span>
+                        </div>
+                        <div>
+                            <button
+                                onClick={() => setCategoryModalOpen(false)}
+                                className="px-6 py-2 mr-2 border rounded-sm text-gray-700 hover:bg-gray-50"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleConfirmCategory}
+                                disabled={selectionPath.length === 0}
+                                className="px-6 py-2 bg-[#EE4D2D] text-white rounded-sm disabled:bg-opacity-70 disabled:cursor-not-allowed"
+                            >
+                                Konfirmasi
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
 };
+
 export default CategorySelector;
