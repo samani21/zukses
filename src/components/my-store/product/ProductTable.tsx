@@ -6,13 +6,16 @@ type Product = {
     id: string;
     name: string;
     sku: string;
-    imageUrl?: string;
+    image_url?: string;
     sales: number;
     price: number;
     stock: number;
     qualityScore: number;
 };
-const ProductTable: FC<{ products: Product[] | null }> = ({ products }) => {
+const ProductTable: FC<{
+    products: Product[] | null;
+    handelEdit: (data: Product) => void;
+}> = ({ products, handelEdit }) => {
     if (products?.length === 0) return <EmptyState />;
 
     return (
@@ -44,7 +47,7 @@ const ProductTable: FC<{ products: Product[] | null }> = ({ products }) => {
                             <td className="px-3 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0 h-16 w-16 sm:h-20 sm:w-20">
-                                        <img className="h-full w-full rounded-md object-cover" src={product.imageUrl} alt={product.name} />
+                                        <img className="h-full w-full rounded-md object-cover" src={product.image_url} alt={product.name} />
                                     </div>
                                     <div className="ml-3">
                                         <div className="text-sm font-medium text-gray-900 line-clamp-2 max-w-[150px] sm:max-w-xs">{product.name}</div>
@@ -52,9 +55,9 @@ const ProductTable: FC<{ products: Product[] | null }> = ({ products }) => {
                                     </div>
                                 </div>
                             </td>
-                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">{product.sales}</td>
+                            <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">{product.sales || 0}</td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
-                                Rp{product.price.toLocaleString('id-ID')}
+                                Rp{product?.price?.toLocaleString('id-ID') || 0}
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm">
                                 {product.stock > 0 ? (
@@ -65,11 +68,11 @@ const ProductTable: FC<{ products: Product[] | null }> = ({ products }) => {
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap">
                                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {product.qualityScore}%
+                                    {product.qualityScore || 0}%
                                 </span>
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
-                                <button className="text-blue-600 hover:text-blue-900">
+                                <button className="text-blue-600 hover:text-blue-900" onClick={() => handelEdit(product)}>
                                     <Edit2 size={18} />
                                 </button>
                             </td>

@@ -1,19 +1,25 @@
+import { AxiosError } from 'axios';
+import Loading from 'components/Loading';
 import AddProductForm from 'components/my-store/product/AddProductForm';
 import FilterBar from 'components/my-store/product/FilterBar';
 import PageHeader from 'components/my-store/product/PageHeader';
 import ProductGrid from 'components/my-store/product/ProductGrid';
 import ProductTable from 'components/my-store/product/ProductTable';
 import UpgradeBanner from 'components/my-store/product/UpgradeBanner';
+import Snackbar from 'components/Snackbar';
 import { Grid, List } from 'lucide-react';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useState } from 'react'; // Menghapus useEffect karena tidak lagi diperlukan
+import Get from 'services/api/Get';
+import Post from 'services/api/Post';
+import { Response } from 'services/api/types';
 
 // Tipe data produk
 type Product = {
     id: string;
     name: string;
     sku: string;
-    imageUrl?: string;
+    image_url?: string;
     sales: number;
     price: number;
     stock: number;
@@ -24,38 +30,7 @@ type Product = {
 // DATA DUMMY
 // Data ini konstan dan tidak berubah, jadi bisa diletakkan di luar komponen.
 // ============================================================================
-const dummyProducts: Product[] = [
-    {
-        id: 'P001',
-        name: 'Kemeja Lengan Panjang Pria Modern',
-        sku: 'SKU-KLP-001',
-        imageUrl: 'https://placehold.co/80x80/f0f0f0/333?text=Kemeja',
-        sales: 120,
-        price: 150000,
-        stock: 85,
-        qualityScore: 95,
-    },
-    {
-        id: 'P002',
-        name: 'Celana Jeans Sobek-sobek Kekinian',
-        sku: 'SKU-CJS-002',
-        imageUrl: 'https://placehold.co/80x80/e0e0e0/333?text=Celana',
-        sales: 95,
-        price: 250000,
-        stock: 40,
-        qualityScore: 88,
-    },
-    {
-        id: 'P003',
-        name: 'Sneakers Putih Casual Unisex',
-        sku: 'SKU-SNK-003',
-        imageUrl: 'https://placehold.co/80x80/d0d0d0/333?text=Sepatu',
-        sales: 250,
-        price: 320000,
-        stock: 150,
-        qualityScore: 98,
-    },
-];
+
 
 // 1. Mengganti nama komponen dari 'product' menjadi 'ProductPage' (PascalCase)
 //    Ini adalah konvensi standar untuk komponen React.
@@ -65,7 +40,13 @@ const ProductPage = () => {
     // 2. Inisialisasi state langsung dengan data dummy.
     //    Tidak perlu menggunakan useState(null) dan useEffect untuk data statis.
     const [products, setProducts] = useState<Product[] | null>(null);
-
+    const [dataProduct, setDataProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [snackbar, setSnackbar] = useState<{
+        message: string;
+        type?: 'success' | 'error' | 'info';
+        isOpen: boolean;
+    }>({ message: '', type: 'info', isOpen: false });
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const tabs = [
         // Menggunakan products.length langsung karena state sudah diinisialisasi
@@ -75,17 +56,54 @@ const ProductPage = () => {
     ];
 
 
-    const handleSaveProduct = (newProduct: Product) => {
-        setProducts(prevProducts => [newProduct, ...(prevProducts ?? [])]);
-        setView('list');
+    const handleSaveProduct = async (form: FormData) => {
+        try {
+            if (dataProduct) {
+                const res = await Post<Response>('zukses', `product/${dataProduct?.id}`, form)
+                if (res?.data?.status === 'success') {
+                    setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
+                    getProduct()
+                    setView('list');
+                }
+            } else {
+                const res = await Post<Response>('zukses', `product`, form)
+                if (res?.data?.status === 'success') {
+                    setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
+                    getProduct()
+                    setView('list');
+                }
+            }
+
+        } catch (err) {
+            setLoading(false)
+            const error = err as AxiosError<{ message?: string }>
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true })
+        }
     };
+    const getProduct = async () => {
+        setLoading(true)
+        const res = await Get<Response>('zukses', `product/show`)
+        console.log('res', res)
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res?.data as Product[];
+            setProducts(data)
+            setLoading(false)
+        } else {
+            console.warn('User profile tidak ditemukan atau gagal diambil')
+        }
+    }
+
+    const handelEdit = (data: Product) => {
+        setDataProduct(data)
+        setView('form')
+    }
     useEffect(() => {
-        setProducts(dummyProducts)
+        getProduct()
     }, [])
     return (
         <MyStoreLayout>
             {
-                view == 'form' ? <AddProductForm onSave={handleSaveProduct} onCancel={() => setView('list')} /> :
+                view == 'form' ? <AddProductForm onSave={handleSaveProduct} onCancel={() => setView('list')} dataProduct={dataProduct} /> :
                     <div className="bg-gray-50 min-h-screen font-sans">
                         <PageHeader setView={setView} />
                         <div className="max-w-7xl mx-auto">
@@ -138,15 +156,28 @@ const ProductPage = () => {
 
                                     {/* 4. Menghilangkan nullish coalescing (?? null) karena 'products' tidak pernah null */}
                                     {viewMode === 'list' ? (
-                                        <ProductTable products={products} />
+                                        <ProductTable products={products} handelEdit={handelEdit} />
                                     ) : (
-                                        <ProductGrid products={products} />
+                                        <ProductGrid products={products} handelEdit={handelEdit} />
                                     )}
 
                                 </div>
                             </div>
                         </div>
                     </div>
+            }
+            {
+                snackbar.isOpen && (
+                    <Snackbar
+                        message={snackbar.message}
+                        type={snackbar.type}
+                        isOpen={snackbar.isOpen}
+                        onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                    />
+                )
+            }
+            {
+                loading && <Loading />
             }
         </MyStoreLayout>
     );
