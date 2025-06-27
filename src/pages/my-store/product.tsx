@@ -14,17 +14,13 @@ import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 
-// Tipe data produk
-type Product = {
-    id: string;
-    name: string;
-    sku: string;
-    image_url?: string;
-    sales: number;
-    price: number;
-    stock: number;
-    qualityScore: number;
-};
+type Media = { id: string; url: string; type: string; };
+type VarianPrice = { id: number; product_id: number; image: string; price: number | string; stock: number; variant_code?: string; };
+type Value = { id: number; variant_id: number; value: string; ordinal: number; }
+type Variant = { id: number; product_id: number; ordinal: number; values?: Value[] | null; };
+type Product = { id: number; saller_id: number; name: string; category_id: number; category_name: string; is_used: number; price: number; stock: number; sales: number; desc: string; sku: string; min_purchase: number; max_purchase: string | number; image_url: string; media?: Media[] | null; status: string; variant_prices?: VarianPrice[] | null; variants?: Variant[]; variant_group_names?: string[]; };
+
+
 
 // ============================================================================
 // DATA DUMMY
@@ -40,6 +36,7 @@ const ProductPage = () => {
     // 2. Inisialisasi state langsung dengan data dummy.
     //    Tidak perlu menggunakan useState(null) dan useEffect untuk data statis.
     const [products, setProducts] = useState<Product[] | null>(null);
+    const [dataProduct, setDataProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<{
         message: string;
@@ -57,12 +54,22 @@ const ProductPage = () => {
 
     const handleSaveProduct = async (form: FormData) => {
         try {
-            const res = await Post<Response>('zukses', `product`, form)
-            if (res?.data?.status === 'success') {
-                setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
-                getProduct()
-                setView('list');
+            if (dataProduct) {
+                const res = await Post<Response>('zukses', `product/${dataProduct?.id}`, form)
+                if (res?.data?.status === 'success') {
+                    setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
+                    getProduct()
+                    setView('list');
+                }
+            } else {
+                const res = await Post<Response>('zukses', `product`, form)
+                if (res?.data?.status === 'success') {
+                    setSnackbar({ message: 'Data berhasil disimpan!', type: 'success', isOpen: true })
+                    getProduct()
+                    setView('list');
+                }
             }
+
         } catch (err) {
             setLoading(false)
             const error = err as AxiosError<{ message?: string }>
@@ -81,13 +88,18 @@ const ProductPage = () => {
             console.warn('User profile tidak ditemukan atau gagal diambil')
         }
     }
+
+    const handelEdit = (data: Product) => {
+        setDataProduct(data)
+        setView('form')
+    }
     useEffect(() => {
         getProduct()
     }, [])
     return (
         <MyStoreLayout>
             {
-                view == 'form' ? <AddProductForm onSave={handleSaveProduct} onCancel={() => setView('list')} /> :
+                view == 'form' ? <AddProductForm onSave={handleSaveProduct} onCancel={() => setView('list')} dataProduct={dataProduct} /> :
                     <div className="bg-gray-50 min-h-screen font-sans">
                         <PageHeader setView={setView} />
                         <div className="max-w-7xl mx-auto">
@@ -140,9 +152,9 @@ const ProductPage = () => {
 
                                     {/* 4. Menghilangkan nullish coalescing (?? null) karena 'products' tidak pernah null */}
                                     {viewMode === 'list' ? (
-                                        <ProductTable products={products} />
+                                        <ProductTable products={products} handelEdit={handelEdit} />
                                     ) : (
-                                        <ProductGrid products={products} />
+                                        <ProductGrid products={products} handelEdit={handelEdit} />
                                     )}
 
                                 </div>
