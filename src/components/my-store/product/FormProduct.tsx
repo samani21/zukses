@@ -50,7 +50,6 @@ const FormProduct: FC<{ onSave: (formData: FormData) => void; onCancel: () => vo
     const [categoryLoading, setCategoryLoading] = useState(true);
     const [categoryError, setCategoryError] = useState<string | null>(null);
     const [productPhotos, setProductPhotos] = useState<FileWithPreview[]>([]);
-    console.log('productPhotos', productPhotos)
     const [productVideo, setProductVideo] = useState<FileWithPreview | null>(null);
     const [variations, setVariations] = useState<Variation[]>([]);
     const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
