@@ -13,7 +13,7 @@ const isValidEmail = (value: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 const isValidPhone = (value: string) =>
-    /^(\+62|62|0)8[1-9][0-9]{6,9}$/.test(value);
+    /^(\+62|62|0)8[1-9][0-9]{7,12}$/.test(value);
 // Convert local phone numbers to 628 format
 const formatPhoneNumberTo62 = (phone: string) => {
     const trimmed = phone.trim();
