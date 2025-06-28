@@ -2,16 +2,13 @@ import React, { FC } from 'react'
 import HeaderWithInfo from './HeaderWithInfo';
 import { Edit2 } from 'lucide-react';
 import EmptyState from './EmptyState';
-type Product = {
-    id: string;
-    name: string;
-    sku: string;
-    image_url?: string;
-    sales: number;
-    price: number;
-    stock: number;
-    qualityScore: number;
-};
+type Media = { id: string; url: string; type: string; };
+type VarianPrice = { id: number; product_id: number; image: string; price: number | string; stock: number; variant_code?: string; };
+type Value = { id: number; variant_id: number; value: string; ordinal: number; }
+type Variant = { id: number; product_id: number; ordinal: number; values?: Value[] | null; };
+type Product = { id: number; saller_id: number; name: string; category_id: number; category_name: string; is_used: number; price: number; stock: number; sales: number; desc: string; sku: string; min_purchase: number; max_purchase: string | number; image_url: string; media?: Media[] | null; status: string; variant_prices?: VarianPrice[] | null; variants?: Variant[]; variant_group_names?: string[]; };
+
+
 const ProductTable: FC<{
     products: Product[] | null;
     handelEdit: (data: Product) => void;
@@ -68,7 +65,7 @@ const ProductTable: FC<{
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap">
                                 <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {product.qualityScore || 0}%
+                                    0%
                                 </span>
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">

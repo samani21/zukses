@@ -1,7 +1,8 @@
 // src/types/product.ts
 
 export type FileWithPreview = {
-    file: File;
+    file: File | null;
+    id?: string | undefined;
     preview: string;
 };
 

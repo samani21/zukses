@@ -14,17 +14,13 @@ import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
 
-// Tipe data produk
-type Product = {
-    id: string;
-    name: string;
-    sku: string;
-    image_url?: string;
-    sales: number;
-    price: number;
-    stock: number;
-    qualityScore: number;
-};
+type Media = { id: string; url: string; type: string; };
+type VarianPrice = { id: number; product_id: number; image: string; price: number | string; stock: number; variant_code?: string; };
+type Value = { id: number; variant_id: number; value: string; ordinal: number; }
+type Variant = { id: number; product_id: number; ordinal: number; values?: Value[] | null; };
+type Product = { id: number; saller_id: number; name: string; category_id: number; category_name: string; is_used: number; price: number; stock: number; sales: number; desc: string; sku: string; min_purchase: number; max_purchase: string | number; image_url: string; media?: Media[] | null; status: string; variant_prices?: VarianPrice[] | null; variants?: Variant[]; variant_group_names?: string[]; };
+
+
 
 // ============================================================================
 // DATA DUMMY
