@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { Modal } from 'components/Modal';
 import { variationNameRecommendations, variationOptionRecommendations } from 'components/my-store/addProduct/Constants';
 import Header from 'components/my-store/addProduct/Header';
@@ -8,15 +9,17 @@ import TipsCard from 'components/my-store/addProduct/TipsCard';
 import { ActiveDropdown, FileWithPreview, HighlightedSection, MaxPurchaseMode, MaxPurchasePerPeriod, PackageDimensions, ProductVariant, Variation } from 'components/my-store/addProduct/Type';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiah, parseRupiah } from 'components/Rupiah';
+import Snackbar from 'components/Snackbar';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Get from 'services/api/Get';
+import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
 import { Response } from 'services/api/types';
 
 
-// --- MAIN FORM COMPONENT ---
+// --- MAIN FORM COMPONENT --- 
 const AddProductPage = () => {
-  // State
+  // State 
   const [productName, setProductName] = useState('Baju Sasirangan Khas Banjarmasin');
   const [description, setDescription] = useState('Ini adalah deskripsi produk baju sasirangan yang sangat bagus dan berkualitas tinggi, dibuat oleh pengrajin lokal dari Banjarmasin.');
   const [category, setCategory] = useState('');
@@ -30,12 +33,12 @@ const AddProductPage = () => {
   const [specifications, setSpecifications] = useState<{ [key: string]: string }>({
     'Merek': 'Tidak Ada Merek',
     'Jenis Kelamin': 'Pria',
-    'Negara Asal': 'Jepang',
+    'Negara Asal': 'Indonesia',
     'Produk Custom': 'Ya',
     'Mystery Box': 'Ya',
   });
-  const [focusedField, setFocusedField] = useState<string | null>(null); // For desktop tips
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null); // For mobile tooltips
+  const [focusedField, setFocusedField] = useState<string | null>(null); // For desktop tips 
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null); // For mobile tooltips 
   const [previewMediaIndex, setPreviewMediaIndex] = useState(0);
   const [isVariationActive, setIsVariationActive] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown | null>(null);
@@ -68,7 +71,7 @@ const AddProductPage = () => {
   const [highlightedPreviewSection, setHighlightedPreviewSection] = useState<HighlightedSection>(null);
 
 
-  // Other states...
+  // Other states... 
   const [loading, setLoading] = useState<boolean>(false);
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -77,10 +80,11 @@ const AddProductPage = () => {
   const [categoryLoading, setCategoryLoading] = useState(true);
   const [editingPhotoIndex, setEditingPhotoIndex] = useState<number | null>(null);
   const [editingVariantImageIndex, setEditingVariantImageIndex] = useState<number | null>(null);
+  const [stock, setStock] = useState<number>(1);
   const [isWeightInvalid, setIsWeightInvalid] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Refs
+  // Refs 
   const productPhotoInputRef = useRef<HTMLInputElement>(null);
   const replacePhotoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -99,6 +103,11 @@ const AddProductPage = () => {
     'lainnya': useRef<HTMLDivElement>(null),
   };
   const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{
+    message: string;
+    type?: 'success' | 'error' | 'info';
+    isOpen: boolean;
+  }>({ message: '', type: 'info', isOpen: false });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -120,12 +129,12 @@ const AddProductPage = () => {
     fetchCategories();
   }, []);
 
-  // Effects
+  // Effects 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
     };
-    handleResize(); // call on initial load
+    handleResize(); // call on initial load 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -135,7 +144,6 @@ const AddProductPage = () => {
       if (activeDropdown && variationsRef.current && !variationsRef.current.contains(event.target as Node)) {
         setActiveDropdown(null);
       }
-      // Close tooltips on outside click
       const target = event.target as HTMLElement;
       if (!target.closest('.relative')) {
         setActiveTooltip(null);
@@ -149,7 +157,7 @@ const AddProductPage = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 100; // Adjusted offset for sticky navs
+      const scrollPosition = window.scrollY + 100;
 
       let currentTab: string | null = null;
       for (const key in sectionRefs) {
@@ -242,7 +250,7 @@ const AddProductPage = () => {
     return (productVideo ? [productVideo] : []).concat(productPhotos);
   }, [selectedPreviewOption, productVariants, productPhotos, productVideo, activeVariations, hoveredPhotoIndex]);
 
-  // Handlers
+  // Handlers 
   const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>, callback: (files: File[]) => void) => { const files = Array.from(e.target.files || []); if (files.length > 0) callback(files); e.target.value = ''; };
   const handleProductPhotosChange = (files: File[]) => { const newPhotos = files.map(file => ({ file, preview: URL.createObjectURL(file), type: 'image' as const })); setProductPhotos(prev => [...prev, ...newPhotos].slice(0, 9)); };
   const triggerProductPhotoReplace = (index: number) => { setEditingPhotoIndex(index); replacePhotoInputRef.current?.click(); };
@@ -250,32 +258,107 @@ const AddProductPage = () => {
   const removeProductPhoto = (index: number) => { const photoToRemove = productPhotos[index]; if (photoToRemove.file) URL.revokeObjectURL(photoToRemove.preview); setProductPhotos(productPhotos.filter((_, i) => i !== index)); };
   const handleVideoChange = (files: File[]) => { const file = files[0]; setProductVideo({ file, preview: URL.createObjectURL(file), type: 'video' }); setPreviewMediaIndex(0); };
   const handleRemoveVideo = () => { if (productVideo?.file) { URL.revokeObjectURL(productVideo.preview) }; setProductVideo(null); setPreviewMediaIndex(0); };
-
   const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
-  const handleSave = (status: 'PUBLISHED' | 'ARCHIVED') => {
-    if (!shippingPerVariation && !shippingWeight) {
-      setIsWeightInvalid(true);
+
+  // ===================================================================
+  // KODE HANDLE SAVE FINAL YANG SUDAH DIPERBAIKI
+  // ===================================================================
+  const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
+    setLoading(true);
+
+    // Validasi Sederhana di Frontend
+    if (!productName || !category || !idCategorie || productPhotos.length === 0 || (!shippingPerVariation && !shippingWeight)) {
+      setSnackbar({ message: 'Harap lengkapi semua field yang wajib diisi (*).', type: 'error', isOpen: true });
+      setLoading(false);
       return;
     }
-    // Mock saving logic
-    console.log("Saving product with status:", status);
-    const formData = {
-      productName,
-      description,
-      category,
-      idCategorie,
-      productPhotos,
-      productVideo,
-      price,
-      variations,
-      productVariants,
-      specifications,
-      // ... all other states
-    };
-    console.log("Form Data:", formData);
-    setLoading(false)
 
+    const formData = new FormData();
+
+    // 1. Append data-data sederhana dan boolean
+    formData.append('productName', productName);
+    formData.append('description', description);
+    formData.append('idCategorie', String(idCategorie));
+    formData.append('parentSku', parentSku);
+    formData.append('condition', condition);
+    formData.append('scheduledDate', scheduledDate);
+    formData.append('status', status);
+    formData.append('isHazardous', isHazardous ? '1' : '0');
+    formData.append('isProductPreOrder', isProductPreOrder ? '1' : '0');
+    formData.append('shippingInsurance', shippingInsurance ? '1' : '0');
+    formData.append('isVariationActive', isVariationActive ? '1' : '0');
+    formData.append('shippingPerVariation', shippingPerVariation ? '1' : '0');
+
+    // 2. Append file-file produk utama
+    productPhotos.forEach((photo, index) => {
+      if (photo.file) {
+        formData.append(`productPhotos[${index}]`, photo.file);
+      }
+    });
+    if (productVideo && productVideo.file) {
+      formData.append('productVideo', productVideo.file);
+    }
+
+    // 3. Append data variasi (dengan perbaikan)
+    if (isVariationActive) {
+      formData.append('variations', JSON.stringify(variations));
+
+      const variantsForBackend = productVariants.map(variant => ({
+        id: variant.id,
+        combination: variant.combination,
+        price: variant.price || '',
+        stock: variant.stock || '',
+        sku: variant.sku || '',
+        weight: variant.weight || '',
+        length: variant.length || '',
+        width: variant.width || '',
+        height: variant.height || '',
+        dikirimDalam: variant.dikirimDalam || ''
+      }));
+      formData.append('productVariants', JSON.stringify(variantsForBackend));
+
+      // Mengirim file gambar varian dengan nama field yang berbeda ('variant_images')
+      productVariants.forEach((variant, index) => {
+        if (variant.image && variant.image.file) {
+          formData.append(`variant_images[${index}]`, variant.image.file);
+        }
+      });
+
+    } else {
+      formData.append('price', price);
+      formData.append('stock', stock.toString());
+    }
+
+    // 4. Append data pengiriman dan spesifikasi
+    if (!shippingPerVariation) {
+      formData.append('shippingWeight', shippingWeight);
+      formData.append('packageDimensions', JSON.stringify(packageDimensions));
+    }
+    formData.append('specifications', JSON.stringify(specifications));
+
+    // --- KIRIM KE BACKEND ---
+    try {
+      const res = await Post<Response>('zukses', `product`, formData);
+      if (res?.data?.status === 'success') {
+        setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+        window.location.href = '/my-store/product'
+      }
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string, errors?: Record<string, string[]> }>;
+      let errorMessage = error.response?.data?.message || 'Terjadi kesalahan saat menyimpan produk.';
+      const validationErrors = error.response?.data?.errors;
+      if (validationErrors) {
+        errorMessage = Object.values(validationErrors)[0][0];
+      }
+      setSnackbar({ message: errorMessage, type: 'error', isOpen: true });
+    } finally {
+      setLoading(false);
+    }
   };
+  // ===================================================================
+  // AKHIR DARI KODE HANDLE SAVE
+  // ===================================================================
+
   const handleSaveAndPublish = () => handleSave('PUBLISHED');
   const handleSaveAndArchive = () => handleSave('ARCHIVED');
 
@@ -286,7 +369,7 @@ const AddProductPage = () => {
   const nextPreview = () => setPreviewMediaIndex(prev => (prev + 1) % previewMedia.length);
   const prevPreview = () => setPreviewMediaIndex(prev => (prev - 1 + previewMedia.length) % previewMedia.length);
 
-  // --- Variation Handlers ---
+  // --- Variation Handlers --- 
   const addVariation = () => {
     setVariations([...variations, { id: Date.now(), name: '', options: [] }]);
   };
@@ -337,7 +420,7 @@ const AddProductPage = () => {
     }));
   };
 
-  // --- Drag and Drop Handlers ---
+  // --- Drag and Drop Handlers --- 
   const handleDragStart = (variationId: number, position: number) => {
     dragVariationId.current = variationId;
     dragItem.current = position;
@@ -396,7 +479,6 @@ const AddProductPage = () => {
 
     const variantToUpdate = productVariants[editingVariantImageIndex];
 
-    // Find all other variants that share the same first option and update their image too
     const firstVarName = activeVariations[0]?.name;
     const firstVarOptionValue = variantToUpdate.combination[firstVarName];
 
@@ -453,7 +535,7 @@ const AddProductPage = () => {
   };
 
   const handleTabClick = (tabId: keyof typeof sectionRefs) => {
-    const yOffset = -80; // height of sticky headers
+    const yOffset = -80;
     const element = sectionRefs[tabId].current;
     if (element) {
       const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
@@ -472,6 +554,16 @@ const AddProductPage = () => {
               type="text"
               value={formatRupiah(price)}
               onChange={e => setPrice(parseRupiah(e.target.value))}
+              className="w-full p-2 border rounded-md"
+              placeholder="Rp"
+            />
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2 text-gray-700">stock</h4>
+            <input
+              type="text"
+              value={stock}
+              onChange={e => setStock(Number(e.target.value))}
               className="w-full p-2 border rounded-md"
               placeholder="Rp"
             />
@@ -1376,13 +1468,23 @@ const AddProductPage = () => {
                 </button>
               )}
               <div className="flex items-center gap-3 w-full justify-end">
-                <button className="px-4 sm:px-6 py-2 border border-gray-300 rounded-md text-gray-800 bg-white hover:bg-gray-100 transition-colors">Kembali</button>
+                <button className="px-4 sm:px-6 py-2 border border-gray-300 rounded-md text-gray-800 bg-white hover:bg-gray-100 transition-colors" onClick={() => window.location.href = '/my-store/product'}>Kembali</button>
                 <button onClick={handleSaveAndArchive} className="px-4 sm:px-6 py-2 border border-orange-500 rounded-md text-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors">Arsipkan</button>
                 <button onClick={handleSaveAndPublish} className="px-4 sm:px-6 py-2 bg-orange-500 border border-transparent text-white rounded-md hover:bg-orange-600 transition-colors">Tampilkan</button>
               </div>
             </div>
           </div>
         </div>
+        {
+          snackbar.isOpen && (
+            <Snackbar
+              message={snackbar.message}
+              type={snackbar.type}
+              isOpen={snackbar.isOpen}
+              onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+            />
+          )
+        }
         {loading && <Loading />}
       </div>
     </div>
