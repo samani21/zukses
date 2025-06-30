@@ -49,8 +49,8 @@ const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: b
                     <SubNavLink text="Pengaturan Pengiriman" />
                 </SidebarSection>
                 <SidebarSection title="Produk" defaultOpen={true}>
-                    <SubNavLink text="Produk Saya" url="/my-store" />
-                    <SubNavLink text="Tambah Produk Baru" url="/my-store/product" />
+                    <SubNavLink text="Produk Saya" url="/my-store/product" />
+                    <SubNavLink text="Tambah Produk Baru" url="/my-store/add-product" />
                     <SubNavLink text="Manajemen Merek" url="/my-store/brand" />
                 </SidebarSection>
 
