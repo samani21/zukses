@@ -1,4 +1,4 @@
-import { Edit2 } from 'lucide-react';
+import { Edit2, Trash2 } from 'lucide-react';
 import React, { FC } from 'react'
 import EmptyState from './EmptyState';
 type Media = { id: string; url: string; type: string; };
@@ -10,7 +10,8 @@ type Product = { id: number; saller_id: number; name: string; category_id: numbe
 
 const ProductGrid: FC<{
     products: Product[] | null;
-}> = ({ products }) => {
+    onDeleteClick: (product: Product) => void;
+}> = ({ products, onDeleteClick }) => {
     if (products?.length === 0) return <EmptyState />;
 
     return (
@@ -39,6 +40,13 @@ const ProductGrid: FC<{
                         </div>
                         <div className="p-2">
                             <p className="text-xs text-gray-500">Aksi</p>
+                            <button
+                                onClick={() => onDeleteClick(product)} // Panggil fungsi dari props
+                                className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors"
+                                aria-label={`Hapus ${product.name}`}
+                            >
+                                <Trash2 size={18} />
+                            </button>
                             <button className="text-blue-600 hover:text-blue-900 mx-auto mt-0.5" >
                                 <Edit2 size={18} />
                             </button>
