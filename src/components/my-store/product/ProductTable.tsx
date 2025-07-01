@@ -68,7 +68,11 @@ const ProductTable: FC<{
                                 </span>
                             </td>
                             <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
-                                <button className="text-blue-600 hover:text-blue-900">
+                                <button className="text-blue-600 hover:text-blue-900"
+                                    onClick={() => {
+                                        window.location.href = '/my-store/add-product?type=edit'
+                                        localStorage.setItem('EditProduct', JSON.stringify(product))
+                                    }}>
                                     <Edit2 size={18} />
                                 </button>
                             </td>

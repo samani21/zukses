@@ -6,28 +6,79 @@ import { Calendar, Camera, CheckCircle, ChevronLeft, ChevronRight, Edit2Icon, Ey
 import InfoLabel from 'components/my-store/addProduct/InfoLabel';
 import Loading from 'components/my-store/addProduct/Loading';
 import TipsCard from 'components/my-store/addProduct/TipsCard';
-import { ActiveDropdown, FileWithPreview, HighlightedSection, MaxPurchaseMode, MaxPurchasePerPeriod, PackageDimensions, ProductVariant, Variation } from 'components/my-store/addProduct/Type';
+import { ActiveDropdown, FileWithPreview, HighlightedSection, PackageDimensions, ProductVariant, Variation } from 'components/my-store/addProduct/Type';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiah, parseRupiah } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
 import { Response } from 'services/api/types';
 
+interface MediaItem {
+  type: 'image' | 'video';
+  url: string;
+}
 
-// --- MAIN FORM COMPONENT --- 
+interface Specification {
+  name: string;
+  value: string;
+}
+
+interface Delivery {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+  is_dangerous_product: number;
+  is_pre_order: number;
+  is_cost_by_seller: number;
+}
+
+interface Variant {
+  variant: string;
+  options: string[];
+}
+
+interface Combination {
+  combination: string;
+  price: number;
+  stock: number;
+  sku: string;
+  image?: string;
+}
+
+interface ProductEditData {
+  id: number;
+  name: string;
+  desc: string;
+  category: string;
+  category_id: number;
+  price: number;
+  stock: number;
+  sku: string;
+  is_used: number;
+  scheduled_date?: string;
+  media: MediaItem[];
+  specifications?: Specification[];
+  delivery?: Delivery;
+  variants?: Variant[];
+  combinations: Combination[];
+}
 const AddProductPage = () => {
-  // State 
-  const [productName, setProductName] = useState('Baju Sasirangan Khas Banjarmasin');
-  const [description, setDescription] = useState('Ini adalah deskripsi produk baju sasirangan yang sangat bagus dan berkualitas tinggi, dibuat oleh pengrajin lokal dari Banjarmasin.');
+  const router = useRouter()
+  const params = router?.query;
+
+  const [productName, setProductName] = useState('');
+  const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [idCategorie, setIdCategorie] = useState<number | undefined>();
   const [productPhotos, setProductPhotos] = useState<FileWithPreview[]>([]);
   const [productVideo, setProductVideo] = useState<FileWithPreview | null>(null);
   const [activeFormTab, setActiveFormTab] = useState('informasi-produk');
-  const [price, setPrice] = useState('150000');
+  const [price, setPrice] = useState('');
   const [variations, setVariations] = useState<Variation[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
   const [specifications, setSpecifications] = useState<{ [key: string]: string }>({
@@ -37,8 +88,8 @@ const AddProductPage = () => {
     'Produk Custom': 'Ya',
     'Mystery Box': 'Ya',
   });
-  const [focusedField, setFocusedField] = useState<string | null>(null); // For desktop tips 
-  const [activeTooltip, setActiveTooltip] = useState<string | null>(null); // For mobile tooltips 
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [previewMediaIndex, setPreviewMediaIndex] = useState(0);
   const [isVariationActive, setIsVariationActive] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<ActiveDropdown | null>(null);
@@ -47,16 +98,7 @@ const AddProductPage = () => {
   const [bulkStock, setBulkStock] = useState('');
   const [bulkSku, setBulkSku] = useState('');
   const [isPreOrder, setIsPreOrder] = useState(false);
-  const [minPurchase, setMinPurchase] = useState('1');
   const [selectedPreviewOption, setSelectedPreviewOption] = useState<string | null>(null);
-  const [maxPurchaseMode, setMaxPurchaseMode] = useState<MaxPurchaseMode>('unlimited');
-  const [maxPurchasePerOrder, setMaxPurchasePerOrder] = useState('');
-  const [maxPurchasePerPeriod, setMaxPurchasePerPeriod] = useState<MaxPurchasePerPeriod>({
-    startDate: '',
-    maxQty: '',
-    days: '',
-    recurring: false,
-  });
   const [shippingWeight, setShippingWeight] = useState('');
   const [packageDimensions, setPackageDimensions] = useState<PackageDimensions>({ length: '', width: '', height: '' });
   const [isHazardous, setIsHazardous] = useState(false);
@@ -69,9 +111,6 @@ const AddProductPage = () => {
   const [hoveredPhotoIndex, setHoveredPhotoIndex] = useState<number | null>(null);
   const [isPhotoSectionHovered, setIsPhotoSectionHovered] = useState(false);
   const [highlightedPreviewSection, setHighlightedPreviewSection] = useState<HighlightedSection>(null);
-
-
-  // Other states... 
   const [loading, setLoading] = useState<boolean>(false);
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -83,8 +122,11 @@ const AddProductPage = () => {
   const [stock, setStock] = useState<number>(1);
   const [isWeightInvalid, setIsWeightInvalid] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [dataEdit, setDataEdit] = useState<ProductEditData | null>(null);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
+  const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
+  const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false); // State baru untuk menandai data selesai dimuat
 
-  // Refs 
   const productPhotoInputRef = useRef<HTMLInputElement>(null);
   const replacePhotoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -94,7 +136,6 @@ const AddProductPage = () => {
   const dragOverItem = useRef<number | null>(null);
   const dragVariationId = useRef<number | null>(null);
   const daftarVariasiRef = useRef<HTMLHeadingElement>(null);
-
   const sectionRefs = {
     'informasi-produk': useRef<HTMLDivElement>(null),
     'spesifikasi': useRef<HTMLDivElement>(null),
@@ -102,12 +143,85 @@ const AddProductPage = () => {
     'pengiriman': useRef<HTMLDivElement>(null),
     'lainnya': useRef<HTMLDivElement>(null),
   };
-  const [categoryError, setCategoryError] = useState<string | null>(null);
-  const [snackbar, setSnackbar] = useState<{
-    message: string;
-    type?: 'success' | 'error' | 'info';
-    isOpen: boolean;
-  }>({ message: '', type: 'info', isOpen: false });
+
+  useEffect(() => {
+    if (dataEdit && !isInitialLoadComplete) {
+      setProductName(dataEdit.name);
+      setDescription(dataEdit.desc);
+      setCategory(dataEdit.category);
+      setIdCategorie(dataEdit.category_id);
+      setPrice(String(dataEdit.price));
+      setStock(dataEdit.stock);
+      setParentSku(dataEdit.sku);
+      setCondition(dataEdit.is_used === 0 ? 'Baru' : 'Pernah Dipakai');
+      setScheduledDate(dataEdit.scheduled_date ? dataEdit.scheduled_date.split(" ")[0] : '');
+
+
+      const photos = dataEdit.media
+        .filter((m: { type: string }) => m.type === 'image')
+        .map((img: { url: string }) => ({ file: null, preview: img.url, type: 'image' as const }));
+      setProductPhotos(photos);
+
+      const video = dataEdit.media.find((m: { type: string }) => m.type === 'video');
+      if (video) {
+        setProductVideo({ file: null, preview: video.url, type: 'video' as const });
+      }
+
+      if (dataEdit.specifications && Array.isArray(dataEdit.specifications)) {
+        const formattedSpecs = dataEdit.specifications.reduce((acc: { [key: string]: string }, spec: { name: string, value: string }) => {
+          if (spec.name && spec.value) {
+            acc[spec.name] = spec.value;
+          }
+          return acc;
+        }, {});
+        setSpecifications(prevSpecs => ({ ...prevSpecs, ...formattedSpecs }));
+      }
+
+      if (dataEdit.delivery) {
+        const d = dataEdit.delivery;
+        setShippingWeight(String(d.weight));
+        setPackageDimensions({ length: String(d.length), width: String(d.width), height: String(d.height) });
+        setIsHazardous(d.is_dangerous_product == 1);
+        setIsProductPreOrder(d.is_pre_order == 1);
+        setShippingInsurance(d.is_cost_by_seller == 1);
+      }
+
+      if (dataEdit.variants && dataEdit.variants.length > 0) {
+        setIsVariationActive(true);
+        const formattedVariations = dataEdit.variants.map((v: { variant: string, options: string[] }, index: number) => ({
+          id: Date.now() + index,
+          name: v.variant,
+          options: v.options,
+        }));
+        setVariations(formattedVariations);
+
+        const formattedCombinations = dataEdit.combinations.map(
+          (c: {
+            combination: string;
+            price: number;
+            stock: number;
+            sku: string;
+            image?: string;
+          }, index: number) => ({
+            id: Date.now() + index,
+            combination: JSON.parse(c.combination),
+            price: String(c.price),
+            stock: String(c.stock),
+            sku: c.sku,
+            image: c.image ? { file: null, preview: c.image, type: 'image' as const } : null,
+            weight: '',
+            length: '',
+            width: '',
+            height: '',
+          })
+        );
+
+        setProductVariants(formattedCombinations);
+      }
+      // Tandai bahwa data awal selesai dimuat
+      setIsInitialLoadComplete(true);
+    }
+  }, [dataEdit, isInitialLoadComplete]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -129,16 +243,23 @@ const AddProductPage = () => {
     fetchCategories();
   }, []);
 
-  // Effects 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
     };
-    handleResize(); // call on initial load 
     window.addEventListener('resize', handleResize);
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
+  useEffect(() => {
+    if (params?.type === 'edit') {
+      const dataString = localStorage.getItem('EditProduct');
+      if (dataString) {
+        const parsedData = JSON.parse(dataString);
+        setDataEdit(parsedData)
+      }
+    }
+  }, [params]);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (activeDropdown && variationsRef.current && !variationsRef.current.contains(event.target as Node)) {
@@ -182,16 +303,30 @@ const AddProductPage = () => {
     [variations]
   );
 
+  // Perbaikan Logika: Effect ini sekarang berjalan setelah data awal dimuat,
+  // memungkinkan penambahan varian baru di halaman edit.
+  // Ganti useEffect yang lama dengan yang ini
   useEffect(() => {
+    // 1. Jika ini halaman edit, jangan jalankan sebelum data awal selesai dimuat
+    if (dataEdit && !isInitialLoadComplete) {
+      return;
+    }
+
+    // 2. Jika variasi tidak aktif, kosongkan tabel dan hentikan proses
+    if (!isVariationActive) {
+      setProductVariants([]);
+      return;
+    }
+
+    // 3. Jika tidak ada variasi yang valid (belum diisi nama/opsi), kosongkan tabel
     if (activeVariations.length === 0) {
       setProductVariants([]);
       return;
     }
 
+    // Fungsi untuk membuat kombinasi
     const getCombinations = (arrays: string[][]): string[][] => {
-      if (arrays.length === 0) return [
-        []
-      ];
+      if (arrays.length === 0) return [[]];
       const firstArr = arrays[0];
       const rest = getCombinations(arrays.slice(1));
       const result: string[][] = [];
@@ -206,6 +341,7 @@ const AddProductPage = () => {
     const variationOptions = activeVariations.map(v => v.options.filter(opt => opt.trim() !== ''));
     const combinations = getCombinations(variationOptions);
 
+    // Buat ulang daftar variasi berdasarkan kombinasi baru
     setProductVariants(prevVariants => {
       return combinations.map((combo, index) => {
         const combinationObject: Record<string, string> = {};
@@ -230,8 +366,8 @@ const AddProductPage = () => {
         };
       });
     });
-
-  }, [variations, activeVariations]);
+    // Tambahkan `dataEdit` ke dependency array
+  }, [variations, activeVariations, isVariationActive, isInitialLoadComplete, dataEdit]);
 
   const previewMedia = useMemo(() => {
     if (hoveredPhotoIndex !== null) {
@@ -247,26 +383,25 @@ const AddProductPage = () => {
         }
       }
     }
-    return (productVideo ? [productVideo] : []).concat(productPhotos);
+    const mediaList = [...productPhotos];
+    if (productVideo) {
+      mediaList.unshift(productVideo);
+    }
+    return mediaList;
   }, [selectedPreviewOption, productVariants, productPhotos, productVideo, activeVariations, hoveredPhotoIndex]);
 
-  // Handlers 
   const handleFileSelection = (e: React.ChangeEvent<HTMLInputElement>, callback: (files: File[]) => void) => { const files = Array.from(e.target.files || []); if (files.length > 0) callback(files); e.target.value = ''; };
   const handleProductPhotosChange = (files: File[]) => { const newPhotos = files.map(file => ({ file, preview: URL.createObjectURL(file), type: 'image' as const })); setProductPhotos(prev => [...prev, ...newPhotos].slice(0, 9)); };
   const triggerProductPhotoReplace = (index: number) => { setEditingPhotoIndex(index); replacePhotoInputRef.current?.click(); };
-  const handleProductPhotoReplace = (files: File[]) => { const file = files[0]; if (!file || editingPhotoIndex === null) return; const newPhoto: FileWithPreview = { file, preview: URL.createObjectURL(file), type: 'image' }; setProductPhotos(currentPhotos => currentPhotos.map((photo, index) => { if (index === editingPhotoIndex) { if (photo.file) URL.revokeObjectURL(photo.preview); return newPhoto; } return photo; })); setEditingPhotoIndex(null); };
-  const removeProductPhoto = (index: number) => { const photoToRemove = productPhotos[index]; if (photoToRemove.file) URL.revokeObjectURL(photoToRemove.preview); setProductPhotos(productPhotos.filter((_, i) => i !== index)); };
+  const handleProductPhotoReplace = (files: File[]) => { const file = files[0]; if (!file || editingPhotoIndex === null) return; const newPhoto: FileWithPreview = { file, preview: URL.createObjectURL(file), type: 'image' }; setProductPhotos(currentPhotos => currentPhotos.map((photo, index) => { if (index === editingPhotoIndex) { if (photo.preview) URL.revokeObjectURL(photo.preview); return newPhoto; } return photo; })); setEditingPhotoIndex(null); };
+  const removeProductPhoto = (index: number) => { const photoToRemove = productPhotos[index]; if (photoToRemove.preview) URL.revokeObjectURL(photoToRemove.preview); setProductPhotos(productPhotos.filter((_, i) => i !== index)); };
   const handleVideoChange = (files: File[]) => { const file = files[0]; setProductVideo({ file, preview: URL.createObjectURL(file), type: 'video' }); setPreviewMediaIndex(0); };
-  const handleRemoveVideo = () => { if (productVideo?.file) { URL.revokeObjectURL(productVideo.preview) }; setProductVideo(null); setPreviewMediaIndex(0); };
+  const handleRemoveVideo = () => { if (productVideo?.preview) { URL.revokeObjectURL(productVideo.preview) }; setProductVideo(null); setPreviewMediaIndex(0); };
   const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
 
-  // ===================================================================
-  // KODE HANDLE SAVE FINAL YANG SUDAH DIPERBAIKI
-  // ===================================================================
   const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
     setLoading(true);
 
-    // Validasi Sederhana di Frontend
     if (!productName || !category || !idCategorie || productPhotos.length === 0 || (!shippingPerVariation && !shippingWeight)) {
       setSnackbar({ message: 'Harap lengkapi semua field yang wajib diisi (*).', type: 'error', isOpen: true });
       setLoading(false);
@@ -275,7 +410,6 @@ const AddProductPage = () => {
 
     const formData = new FormData();
 
-    // 1. Append data-data sederhana dan boolean
     formData.append('productName', productName);
     formData.append('description', description);
     formData.append('idCategorie', String(idCategorie));
@@ -289,35 +423,21 @@ const AddProductPage = () => {
     formData.append('isVariationActive', isVariationActive ? '1' : '0');
     formData.append('shippingPerVariation', shippingPerVariation ? '1' : '0');
 
-    // 2. Append file-file produk utama
-    productPhotos.forEach((photo, index) => {
+    productPhotos.forEach((photo) => {
       if (photo.file) {
-        formData.append(`productPhotos[${index}]`, photo.file);
+        formData.append('productPhotos[]', photo.file);
+      } else {
+        formData.append('existing_media[]', photo.preview);
       }
     });
     if (productVideo && productVideo.file) {
       formData.append('productVideo', productVideo.file);
     }
 
-    // 3. Append data variasi (dengan perbaikan)
     if (isVariationActive) {
       formData.append('variations', JSON.stringify(variations));
+      formData.append('productVariants', JSON.stringify(productVariants));
 
-      const variantsForBackend = productVariants.map(variant => ({
-        id: variant.id,
-        combination: variant.combination,
-        price: variant.price || '',
-        stock: variant.stock || '',
-        sku: variant.sku || '',
-        weight: variant.weight || '',
-        length: variant.length || '',
-        width: variant.width || '',
-        height: variant.height || '',
-        dikirimDalam: variant.dikirimDalam || ''
-      }));
-      formData.append('productVariants', JSON.stringify(variantsForBackend));
-
-      // Mengirim file gambar varian dengan nama field yang berbeda ('variant_images')
       productVariants.forEach((variant, index) => {
         if (variant.image && variant.image.file) {
           formData.append(`variant_images[${index}]`, variant.image.file);
@@ -329,23 +449,41 @@ const AddProductPage = () => {
       formData.append('stock', stock.toString());
     }
 
-    // 4. Append data pengiriman dan spesifikasi
     if (!shippingPerVariation) {
       formData.append('shippingWeight', shippingWeight);
       formData.append('packageDimensions', JSON.stringify(packageDimensions));
+      formData.append('height', packageDimensions?.height);
+      formData.append('length', packageDimensions?.length);
+      formData.append('width', packageDimensions?.width);
     }
     formData.append('specifications', JSON.stringify(specifications));
 
-    // --- KIRIM KE BACKEND ---
     try {
-      const res = await Post<Response>('zukses', `product`, formData);
-      if (res?.data?.status === 'success') {
-        setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        window.location.href = '/my-store/product'
+      // Logic untuk memilih antara create atau update
+      if (dataEdit?.id) {
+        productPhotos.forEach((photo, index) => {
+          formData.append(`productPhotosPreview[${index}]`, photo.preview);
+        });
+        if (productVideo) {
+          formData.append('productVideoPreview', productVideo.preview);
+        }
+        const res = await Post<Response>('zukses', `product/${dataEdit?.id}`, formData);
+        if (res?.data?.status === 'success') {
+          setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+          window.location.href = '/my-store/product'
+          localStorage.removeItem('EditProduct');
+        }
+      } else {
+        const res = await Post<Response>('zukses', `product`, formData);
+        if (res?.data?.status === 'success') {
+          setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+          window.location.href = '/my-store/product'
+          localStorage.removeItem('EditProduct');
+        }
       }
     } catch (err) {
       const error = err as AxiosError<{ message?: string, errors?: Record<string, string[]> }>;
-      let errorMessage = error.response?.data?.message || 'Terjadi kesalahan saat menyimpan produk.';
+      let errorMessage = error.response?.data?.message || `Terjadi kesalahan saat ${params?.type === 'edit' ? 'memperbarui' : 'menyimpan'} produk.`;
       const validationErrors = error.response?.data?.errors;
       if (validationErrors) {
         errorMessage = Object.values(validationErrors)[0][0];
@@ -355,9 +493,6 @@ const AddProductPage = () => {
       setLoading(false);
     }
   };
-  // ===================================================================
-  // AKHIR DARI KODE HANDLE SAVE
-  // ===================================================================
 
   const handleSaveAndPublish = () => handleSave('PUBLISHED');
   const handleSaveAndArchive = () => handleSave('ARCHIVED');
@@ -369,9 +504,10 @@ const AddProductPage = () => {
   const nextPreview = () => setPreviewMediaIndex(prev => (prev + 1) % previewMedia.length);
   const prevPreview = () => setPreviewMediaIndex(prev => (prev - 1 + previewMedia.length) % previewMedia.length);
 
-  // --- Variation Handlers --- 
   const addVariation = () => {
-    setVariations([...variations, { id: Date.now(), name: '', options: [] }]);
+    if (variations.length < 2) {
+      setVariations([...variations, { id: Date.now(), name: '', options: [] }]);
+    }
   };
 
   const removeVariation = (id: number) => {
@@ -420,7 +556,6 @@ const AddProductPage = () => {
     }));
   };
 
-  // --- Drag and Drop Handlers --- 
   const handleDragStart = (variationId: number, position: number) => {
     dragVariationId.current = variationId;
     dragItem.current = position;
@@ -490,7 +625,7 @@ const AddProductPage = () => {
 
     setProductVariants(prev => prev.map(v => {
       if (v.combination[firstVarName] === firstVarOptionValue) {
-        if (v.image?.preview) {
+        if (v.image?.preview && v.image.file) {
           URL.revokeObjectURL(v.image.preview);
         }
         return { ...v, image: newImage };
@@ -509,7 +644,7 @@ const AddProductPage = () => {
   const PriceRangeWarning = () => {
     if (productVariants.length < 2) return null;
 
-    const prices = productVariants.map(v => Number(parseRupiah(v.price))).filter(p => p > 0);
+    const prices = productVariants.map(v => Number(parseRupiah(String(v.price)))).filter(p => p > 0);
     if (prices.length < 2) return null;
 
     const minPrice = Math.min(...prices);
@@ -559,13 +694,13 @@ const AddProductPage = () => {
             />
           </div>
           <div>
-            <h4 className="font-semibold mb-2 text-gray-700">stock</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Stok</h4>
             <input
-              type="text"
+              type="number"
               value={stock}
               onChange={e => setStock(Number(e.target.value))}
               className="w-full p-2 border rounded-md"
-              placeholder="Rp"
+              placeholder="Jumlah"
             />
           </div>
           <button
@@ -688,20 +823,23 @@ const AddProductPage = () => {
           )
         })}
 
-        <button
-          onClick={addVariation}
-          className="w-full text-center py-3 border-2 border-dashed border-gray-300 rounded-lg text-orange-600 font-semibold hover:bg-orange-50 transition flex items-center justify-center gap-2"
-        >
-          <Plus size={18} /> Tambah Variasi {variations.length + 1}
-        </button>
+        {variations.length < 2 && (
+          <button
+            onClick={addVariation}
+            className="w-full text-center py-3 border-2 border-dashed border-gray-300 rounded-lg text-orange-600 font-semibold hover:bg-orange-50 transition flex items-center justify-center gap-2"
+          >
+            <Plus size={18} /> Tambah Variasi {variations.length + 1}
+          </button>
+        )}
 
-        {variations.length > 0 && (
+
+        {productVariants.length > 0 && (
           <div className="space-y-4 mt-6">
             <h4 ref={daftarVariasiRef} className="font-semibold text-gray-700">Daftar Variasi</h4>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 border rounded-md flex-grow">
                 <input type="text" placeholder="Harga" value={formatRupiah(bulkPrice)} onChange={e => setBulkPrice(parseRupiah(e.target.value))} className="p-2 border-b sm:border-b-0 sm:border-r" />
-                <input type="text" placeholder="Stok" value={bulkStock} onChange={e => setBulkStock(e.target.value)} className="p-2 border-b sm:border-b-0 sm:border-r" />
+                <input type="number" placeholder="Stok" value={bulkStock} onChange={e => setBulkStock(e.target.value)} className="p-2 border-b sm:border-b-0 sm:border-r" />
                 <input type="text" placeholder="Kode Variasi" value={bulkSku} onChange={e => setBulkSku(e.target.value)} className="p-2" />
               </div>
               <button onClick={handleApplyToAll} className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors shrink-0">Terapkan Ke Semua</button>
@@ -710,193 +848,100 @@ const AddProductPage = () => {
               <input type="checkbox" id="preOrder" checked={isPreOrder} onChange={e => setIsPreOrder(e.target.checked)} className="h-4 w-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500" />
               <label htmlFor="preOrder" className="text-sm">Atur Dikirim Dalam untuk variasi</label>
             </div>
-            {productVariants.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-max text-sm text-left text-gray-500">
-                  <thead className="text-xs text-gray-700 uppercase bg-gray-100">
-                    <tr>
-                      {activeVariations.map(v => <th key={v.id} scope="col" className="px-4 py-3">{v.name}</th>)}
-                      <th scope="col" className="px-4 py-3">*Harga</th>
-                      <th scope="col" className="px-4 py-3">*Stok</th>
-                      {shippingPerVariation && <th scope="col" className="px-4 py-3">*Berat (gr)</th>}
-                      {shippingPerVariation && <th scope="col" className="px-4 py-3">Ukuran Paket (cm)</th>}
-                      <th scope="col" className="px-4 py-3">Kode Variasi</th>
-                      {isPreOrder && <th scope="col" className="px-4 py-3">Dikirim Dalam</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {productVariants.map((variant, index) => {
-                      const firstVarName = activeVariations[0]?.name;
-                      const showFirstVarCell = firstVarName && (index === 0 || variant.combination[firstVarName] !== productVariants[index - 1].combination[firstVarName]);
 
-                      let rowSpan = 1;
-                      if (showFirstVarCell) {
-                        const firstVarValue = variant.combination[firstVarName];
-                        for (let i = index + 1; i < productVariants.length; i++) {
-                          if (productVariants[i].combination[firstVarName] === firstVarValue) {
-                            rowSpan++;
-                          } else {
-                            break;
-                          }
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-max text-sm text-left text-gray-500">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-100">
+                  <tr>
+                    {activeVariations.map(v => <th key={v.id} scope="col" className="px-4 py-3">{v.name}</th>)}
+                    <th scope="col" className="px-4 py-3">*Harga</th>
+                    <th scope="col" className="px-4 py-3">*Stok</th>
+                    {shippingPerVariation && <th scope="col" className="px-4 py-3">*Berat (gr)</th>}
+                    {shippingPerVariation && <th scope="col" className="px-4 py-3">Ukuran Paket (cm)</th>}
+                    <th scope="col" className="px-4 py-3">Kode Variasi</th>
+                    {isPreOrder && <th scope="col" className="px-4 py-3">Dikirim Dalam</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {productVariants.map((variant, index) => {
+                    const firstVarName = activeVariations[0]?.name;
+                    const showFirstVarCell = firstVarName && (index === 0 || variant.combination[firstVarName] !== productVariants[index - 1]?.combination[firstVarName]);
+
+                    let rowSpan = 1;
+                    if (showFirstVarCell) {
+                      const firstVarValue = variant.combination[firstVarName];
+                      for (let i = index + 1; i < productVariants.length; i++) {
+                        if (productVariants[i].combination[firstVarName] === firstVarValue) {
+                          rowSpan++;
+                        } else {
+                          break;
                         }
                       }
+                    }
 
-                      return (
-                        <tr key={variant.id} className="bg-white border-b">
-                          {activeVariations.map((v, vIndex) => {
-                            if (vIndex === 0) {
-                              if (showFirstVarCell) {
-                                return (
-                                  <td key={`${variant.id}-${v.id}`} className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap align-top" rowSpan={rowSpan}>
-                                    <div className="flex flex-col items-start gap-2">
-                                      <span>{variant.combination[v.name]}</span>
-                                      <button type="button" onClick={() => triggerVariantImageUpload(index)} className="w-20 h-20 border-2 border-dashed rounded-md flex items-center justify-center text-gray-400 hover:text-orange-500 hover:border-orange-500">
-                                        {variant.image ? <img src={variant.image.preview} alt="variant" className="w-full h-full object-cover rounded-md" /> : <Camera size={24} />}
-                                      </button>
-                                    </div>
-                                  </td>
-                                )
-                              }
+                    return (
+                      <tr key={variant.id} className="bg-white border-b">
+                        {activeVariations.map((v, vIndex) => {
+                          if (vIndex === 0) {
+                            if (showFirstVarCell) {
+                              return (
+                                <td key={`${variant.id}-${v.id}`} className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap align-top" rowSpan={rowSpan}>
+                                  <div className="flex flex-col items-start gap-2">
+                                    <span>{variant.combination[v.name]}</span>
+                                    <button type="button" onClick={() => triggerVariantImageUpload(index)} className="w-20 h-20 border-2 border-dashed rounded-md flex items-center justify-center text-gray-400 hover:text-orange-500 hover:border-orange-500">
+                                      {variant.image ? <img src={variant.image.preview} alt="variant" className="w-full h-full object-cover rounded-md" /> : <Camera size={24} />}
+                                    </button>
+                                  </div>
+                                </td>
+                              );
+                            } else {
                               return null;
                             }
+                          } else {
                             return (
                               <td key={`${variant.id}-${v.id}`} className="px-4 py-4 font-medium text-gray-900 whitespace-nowrap align-middle">
                                 {variant.combination[v.name]}
                               </td>
-                            )
-                          })}
-                          <td className="px-2 py-2 align-middle">
-                            <input type="text" value={formatRupiah(variant.price)} onChange={e => handleVariantChange(variant.id, 'price', e.target.value)} className="w-full p-2 border rounded-md" placeholder="Rp" />
-                          </td>
-                          <td className="px-2 py-2 align-middle">
-                            <input type="number" value={variant.stock} onChange={e => handleVariantChange(variant.id, 'stock', e.target.value)} className="w-24 p-2 border rounded-md" />
-                          </td>
-                          {shippingPerVariation && (
-                            <>
-                              <td className="px-2 py-2 align-middle">
-                                <input type="number" value={variant.weight} onChange={e => handleVariantChange(variant.id, 'weight', e.target.value)} className="w-24 p-2 border rounded-md" placeholder="gr" />
-                              </td>
-                              <td className="px-2 py-2 align-middle">
-                                <div className="flex flex-col sm:flex-row gap-1">
-                                  <input type="number" value={variant.length} onChange={e => handleVariantChange(variant.id, 'length', e.target.value)} className="w-16 p-2 border rounded-md" placeholder="P" />
-                                  <input type="number" value={variant.width} onChange={e => handleVariantChange(variant.id, 'width', e.target.value)} className="w-16 p-2 border rounded-md" placeholder="L" />
-                                  <input type="number" value={variant.height} onChange={e => handleVariantChange(variant.id, 'height', e.target.value)} className="w-16 p-2 border rounded-md" placeholder="T" />
-                                </div>
-                              </td>
-                            </>
-                          )}
-                          <td className="px-2 py-2 align-middle">
-                            <input type="text" value={variant.sku} onChange={e => handleVariantChange(variant.id, 'sku', e.target.value)} className="w-full p-2 border rounded-md" />
-                          </td>
-                          {isPreOrder && (
+                            );
+                          }
+                        })}
+
+                        <td className="px-2 py-2 align-middle">
+                          <input type="text" value={formatRupiah(String(variant.price))} onChange={e => handleVariantChange(variant.id, 'price', e.target.value)} className="w-full p-2 border rounded-md" placeholder="Rp" />
+                        </td>
+                        <td className="px-2 py-2 align-middle">
+                          <input type="number" value={variant.stock} onChange={e => handleVariantChange(variant.id, 'stock', e.target.value)} className="w-24 p-2 border rounded-md" />
+                        </td>
+                        {shippingPerVariation && (
+                          <>
                             <td className="px-2 py-2 align-middle">
-                              <input type="text" value={variant.dikirimDalam || ''} onChange={e => handleVariantChange(variant.id, 'dikirimDalam', e.target.value)} className="w-full p-2 border rounded-md" />
+                              <input type="number" value={variant.weight} onChange={e => handleVariantChange(variant.id, 'weight', e.target.value)} className="w-24 p-2 border rounded-md" placeholder="gr" />
                             </td>
-                          )}
-                        </tr>
-                      )
-                    }
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                            <td className="px-2 py-2 align-middle">
+                              <div className="flex flex-col sm:flex-row gap-1">
+                                <input type="number" value={variant.length} onChange={e => handleVariantChange(variant.id, 'length', e.target.value)} className="w-16 p-2 border rounded-md" placeholder="P" />
+                                <input type="number" value={variant.width} onChange={e => handleVariantChange(variant.id, 'width', e.target.value)} className="w-16 p-2 border rounded-md" placeholder="L" />
+                                <input type="number" value={variant.height} onChange={e => handleVariantChange(variant.id, 'height', e.target.value)} className="w-16 p-2 border rounded-md" placeholder="T" />
+                              </div>
+                            </td>
+                          </>
+                        )}
+                        <td className="px-2 py-2 align-middle">
+                          <input type="text" value={variant.sku} onChange={e => handleVariantChange(variant.id, 'sku', e.target.value)} className="w-full p-2 border rounded-md" />
+                        </td>
+                        {isPreOrder && (
+                          <td className="px-2 py-2 align-middle">
+                            <input type="text" value={variant.dikirimDalam || ''} onChange={e => handleVariantChange(variant.id, 'dikirimDalam', e.target.value)} className="w-full p-2 border rounded-md" />
+                          </td>
+                        )}
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+
             <PriceRangeWarning />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-              <div>
-                <label htmlFor="min-purchase" className="block text-sm font-medium text-gray-700 mb-1">* Min. Jumlah Pembelian</label>
-                <input id="min-purchase" type="number" value={minPurchase} onChange={e => setMinPurchase(e.target.value)} className="w-full p-2 border rounded-md" />
-                <p className="text-xs text-gray-500 mt-1">Min. jumlah pembelian adalah min. jumlah yang harus dipesan Pembeli untuk membeli produk atau variasi.</p>
-              </div>
-              <div>
-                <label htmlFor="max-purchase" className="block text-sm font-medium text-gray-700 mb-1">Maks. Jumlah Pembelian</label>
-                <select
-                  id="max-purchase"
-                  value={maxPurchaseMode}
-                  onChange={e => setMaxPurchaseMode(e.target.value as MaxPurchaseMode)}
-                  className="w-full p-2 border rounded-md bg-white"
-                >
-                  <option value="unlimited">Tanpa Batas</option>
-                  <option value="per_order">Per Pesanan</option>
-                  <option value="per_period">Per Periode</option>
-                </select>
-              </div>
-            </div>
-
-            {maxPurchaseMode === 'per_order' && (
-              <div className="p-4 bg-gray-50 rounded-lg border">
-                <label htmlFor="max-purchase-per-order" className="block text-sm font-medium text-gray-700 mb-1">* Jumlah</label>
-                <input id="max-purchase-per-order" type="number" value={maxPurchasePerOrder} onChange={e => setMaxPurchasePerOrder(e.target.value)} className="w-full p-2 border rounded-md" />
-              </div>
-            )}
-
-            {maxPurchaseMode === 'per_period' && (
-              <div className="p-4 bg-gray-50 rounded-lg border space-y-4">
-                <div className="relative">
-                  <label htmlFor="start-date" className="block text-sm font-medium text-gray-700 mb-1">* Tanggal Mulai</label>
-                  <input
-                    id="start-date"
-                    type="date"
-                    value={maxPurchasePerPeriod.startDate}
-                    onChange={e => setMaxPurchasePerPeriod(p => ({ ...p, startDate: e.target.value }))}
-                    className="w-full p-2 border rounded-md pr-10"
-                  />
-                  <Calendar size={18} className="absolute right-3 top-9 text-gray-400" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">* Maks. Jumlah Pembelian</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      value={maxPurchasePerPeriod.maxQty}
-                      onChange={e => setMaxPurchasePerPeriod(p => ({ ...p, maxQty: e.target.value }))}
-                      className="w-full p-2 border rounded-md"
-                    />
-                    <span className="text-sm">produk untuk</span>
-                    <input
-                      type="number"
-                      value={maxPurchasePerPeriod.days}
-                      onChange={e => setMaxPurchasePerPeriod(p => ({ ...p, days: e.target.value }))}
-                      className="w-24 p-2 border rounded-md"
-                    />
-                    <span className="text-sm">hari</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tipe Periode</label>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center">
-                      <input
-                        id="non-recurring"
-                        name="period-type"
-                        type="radio"
-                        checked={!maxPurchasePerPeriod.recurring}
-                        onChange={() => setMaxPurchasePerPeriod(p => ({ ...p, recurring: false }))}
-                        className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500"
-                      />
-                      <label htmlFor="non-recurring" className="ml-2 block text-sm text-gray-900">Tidak Berulang</label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        id="recurring"
-                        name="period-type"
-                        type="radio"
-                        checked={maxPurchasePerPeriod.recurring}
-                        onChange={() => setMaxPurchasePerPeriod(p => ({ ...p, recurring: true }))}
-                        className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500"
-                      />
-                      <label htmlFor="recurring" className="ml-2 block text-sm text-gray-900">Berulang</label>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500">Batas pembelian akan berlaku mulai - 00:00 dan setiap Pembeli hanya dapat membeli maks. - produk ini setiap - hari. Pengaturan ini akan berulang 1 kali dan maks. batas pembelian akan berakhir pada - 23:59.</p>
-              </div>
-            )}
-
-            <div className="pt-4">
-              <h4 className="font-semibold text-gray-700">Grosir</h4>
-              <p className="text-sm text-gray-500">Harga grosir hanya tersedia untuk semua variasi yang memiliki harga yang sama.</p>
-            </div>
           </div>
         )}
       </div>
@@ -1301,7 +1346,6 @@ const AddProductPage = () => {
           </div>
         ) : (
           <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Sidebar */}
             <div className="lg:col-span-3">
               <div className="sticky top-24 space-y-6">
                 <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -1320,7 +1364,6 @@ const AddProductPage = () => {
               </div>
             </div>
 
-            {/* Main Content */}
             <div className="lg:col-span-6 space-y-4">
               <div className="bg-white rounded-lg shadow-sm">
                 <div className="sticky top-[61px] bg-white z-10 border-b border-gray-200">
@@ -1442,7 +1485,7 @@ const AddProductPage = () => {
                 </div>
               </div>
             </div>
-            {/* Right Preview */}
+
             <div className="lg:col-span-3">
               <div className="sticky top-24 bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="p-4 border-b">
@@ -1456,8 +1499,6 @@ const AddProductPage = () => {
           </div>
         )}
 
-
-        {/* Bottom Action Bar */}
         <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-3 gap-3">
@@ -1468,9 +1509,15 @@ const AddProductPage = () => {
                 </button>
               )}
               <div className="flex items-center gap-3 w-full justify-end">
-                <button className="px-4 sm:px-6 py-2 border border-gray-300 rounded-md text-gray-800 bg-white hover:bg-gray-100 transition-colors" onClick={() => window.location.href = '/my-store/product'}>Kembali</button>
+                <button className="px-4 sm:px-6 py-2 border border-gray-300 rounded-md text-gray-800 bg-white hover:bg-gray-100 transition-colors" onClick={() => {
+                  window.location.href = '/my-store/product'
+                  localStorage.removeItem('EditProduct');
+
+                }}>Kembali</button>
                 <button onClick={handleSaveAndArchive} className="px-4 sm:px-6 py-2 border border-orange-500 rounded-md text-orange-600 bg-orange-50 hover:bg-orange-100 transition-colors">Arsipkan</button>
-                <button onClick={handleSaveAndPublish} className="px-4 sm:px-6 py-2 bg-orange-500 border border-transparent text-white rounded-md hover:bg-orange-600 transition-colors">Tampilkan</button>
+                <button onClick={handleSaveAndPublish} className="px-4 sm:px-6 py-2 bg-orange-500 border border-transparent text-white rounded-md hover:bg-orange-600 transition-colors">
+                  {params?.type === 'edit' ? 'Perbarui' : 'Tampilkan'}
+                </button>
               </div>
             </div>
           </div>
