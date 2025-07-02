@@ -10,6 +10,7 @@ import { ActiveDropdown, FileWithPreview, HighlightedSection, PackageDimensions,
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiah, parseRupiah } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
+import { ShopProfile } from 'components/types/ShopProfile';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Get from 'services/api/Get';
@@ -144,6 +145,8 @@ const AddProductPage = () => {
     'lainnya': useRef<HTMLDivElement>(null),
   };
 
+  const [shopProfile, setShopProfile] = useState<ShopProfile | null>(null)
+
   useEffect(() => {
     if (dataEdit && !isInitialLoadComplete) {
       setProductName(dataEdit.name);
@@ -227,6 +230,11 @@ const AddProductPage = () => {
   }, [dataEdit, isInitialLoadComplete]);
 
   useEffect(() => {
+    const dataString = localStorage.getItem('shopProfile');
+    if (dataString) {
+      const parsedData = JSON.parse(dataString);
+      setShopProfile(parsedData)
+    }
     const fetchCategories = async () => {
       setCategoryLoading(true);
       try {
@@ -1133,8 +1141,8 @@ const AddProductPage = () => {
         ) : (
           <div className="flex justify-between items-center mt-2">
             <div className="flex items-center gap-1">
-              <div className="w-5 h-5 rounded-full bg-gray-300"></div>
-              <p className="font-semibold text-xs text-gray-600">special-moment.info</p>
+              <img src={shopProfile?.logo_url} className='w-5 h-5 rounded-full bg-gray-300' />
+              <p className="font-semibold text-xs text-gray-600">{shopProfile?.shop_name}</p>
             </div>
             <button className="px-3 py-1 border border-orange-500 text-orange-500 text-xs font-semibold rounded-sm hover:bg-orange-50">Kunjungi</button>
           </div>
@@ -1209,7 +1217,10 @@ const AddProductPage = () => {
 
   return (
     <div className="font-sans">
-      <Header />
+      {
+        shopProfile &&
+        <Header shopProfile={shopProfile} />
+      }
 
       <div className="bg-gray-100 min-h-screen pb-32">
         <input type="file" ref={productPhotoInputRef} onChange={(e) => handleFileSelection(e, handleProductPhotosChange)} accept="image/jpeg,image/png" multiple style={{ display: 'none' }} />
@@ -1304,14 +1315,14 @@ const AddProductPage = () => {
                             <option>Sasirangan Idola</option>
                           </select>
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
                           <select value={specifications['Jenis Kelamin']} onChange={e => handleSpecChange('Jenis Kelamin', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
                             <option>Pria</option>
                             <option>Wanita</option>
                             <option>Unisex</option>
                           </select>
-                        </div>
+                        </div> */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Negara Asal</label>
                           <select value={specifications['Negara Asal']} onChange={e => handleSpecChange('Negara Asal', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
@@ -1320,7 +1331,7 @@ const AddProductPage = () => {
                             <option>Korea</option>
                           </select>
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Produk Custom</label>
                           <select value={specifications['Produk Custom']} onChange={e => handleSpecChange('Produk Custom', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
                             <option>Ya</option>
@@ -1333,7 +1344,7 @@ const AddProductPage = () => {
                             <option>Ya</option>
                             <option>Tidak</option>
                           </select>
-                        </div>
+                        </div> */}
                       </div>
                     </>
                   ), sectionRefs['spesifikasi']) : renderDisabledSection("Spesifikasi", sectionRefs['spesifikasi'])}
@@ -1446,14 +1457,14 @@ const AddProductPage = () => {
                             <option>Sasirangan Idola</option>
                           </select>
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
                           <select value={specifications['Jenis Kelamin']} onChange={e => handleSpecChange('Jenis Kelamin', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
                             <option>Pria</option>
                             <option>Wanita</option>
                             <option>Unisex</option>
                           </select>
-                        </div>
+                        </div> */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Negara Asal</label>
                           <select value={specifications['Negara Asal']} onChange={e => handleSpecChange('Negara Asal', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
@@ -1462,7 +1473,7 @@ const AddProductPage = () => {
                             <option>Korea</option>
                           </select>
                         </div>
-                        <div>
+                        {/* <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Produk Custom</label>
                           <select value={specifications['Produk Custom']} onChange={e => handleSpecChange('Produk Custom', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
                             <option>Ya</option>
@@ -1475,7 +1486,7 @@ const AddProductPage = () => {
                             <option>Ya</option>
                             <option>Tidak</option>
                           </select>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ), sectionRefs['spesifikasi']) : renderDisabledSection("Spesifikasi", sectionRefs['spesifikasi'])}

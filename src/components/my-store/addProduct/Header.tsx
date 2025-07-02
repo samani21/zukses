@@ -1,7 +1,12 @@
 import React, { FC } from 'react'
 import { ChevronDownIcon, ChevronRight, GridIcon, ListIcon, ShoppingBag } from './Icon';
+import { ShopProfile } from 'components/types/ShopProfile';
 
-const Header: FC = () => {
+interface HeaderProps {
+    shopProfile: ShopProfile;
+}
+
+const Header: FC<HeaderProps> = ({ shopProfile }) => {
     return (
         <header className="bg-white shadow-sm sticky top-0 z-30">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,10 +35,8 @@ const Header: FC = () => {
                         </button>
                         <div className="w-px h-6 bg-gray-200"></div>
                         <button className="flex items-center gap-2 text-sm p-1 rounded-md hover:bg-gray-100">
-                            <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center">
-                                <ShoppingBag size={14} className="text-gray-600" />
-                            </div>
-                            <span className="hidden sm:inline font-semibold text-gray-800">special_moment.info</span>
+                            <img src={shopProfile?.logo_url} className='w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center' />
+                            <span className="hidden sm:inline font-semibold text-gray-800">{shopProfile?.shop_name}</span>
                             <ChevronDownIcon size={16} className="text-gray-500" />
                         </button>
                     </div>
