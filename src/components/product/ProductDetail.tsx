@@ -149,24 +149,30 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <div className="grid md:flex items-start">
-                                <span className="w-24 text-gray-500">Voucher</span>
-                                <div className="flex flex-wrap gap-1 mt-2 md:mt-0">
-                                    {product?.vouchers?.map(v => (
-                                        <span key={v} className="bg-blue-100 text-blue-600 text-xs px-2 py-[2px] rounded">{v}</span>
-                                    ))}
+                            {
+                                product?.vouchers?.length > 0 &&
+                                <div className="grid md:flex items-start">
+                                    <span className="w-24 text-gray-500">Voucher</span>
+                                    <div className="flex flex-wrap gap-1 mt-2 md:mt-0">
+                                        {product?.vouchers?.map(v => (
+                                            <span key={v} className="bg-blue-100 text-blue-600 text-xs px-2 py-[2px] rounded">{v}</span>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="grid md:flex items-start">
-                                <span className="w-24 text-gray-500">Pilihan</span>
-                                <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
-                                    {product?.variants?.map(v => (
-                                        <button key={v?.id} onClick={() => handleVariantSelect(v)} className={`px-3 py-1 rounded text-xs border ${activeVariant?.id === v?.id ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-300'}`}>
-                                            {v?.combination_label}
-                                        </button>
-                                    ))}
+                            }
+                            {
+                                product?.variants?.length > 0 &&
+                                <div className="grid md:flex items-start">
+                                    <span className="w-24 text-gray-500">Pilihan</span>
+                                    <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
+                                        {product?.variants?.map(v => (
+                                            <button key={v?.id} onClick={() => handleVariantSelect(v)} className={`px-3 py-1 rounded text-xs border ${activeVariant?.id === v?.id ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-300'}`}>
+                                                {v?.combination_label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             <div className="grid md:flex items-center">
                                 <span className="w-24 text-gray-500">Kuantitas</span>
                                 <div className="flex items-center border border-gray-300 rounded overflow-hidden w-fit">

@@ -197,14 +197,17 @@ const AddProductPage = () => {
 
         const formattedCombinations = dataEdit.combinations.map(
           (c: {
-            combination: string;
+            combination: string | Record<string, string>;
             price: number;
             stock: number;
             sku: string;
             image?: string;
           }, index: number) => ({
             id: Date.now() + index,
-            combination: JSON.parse(c.combination),
+            combination:
+              typeof c.combination === "string"
+                ? JSON.parse(c.combination)
+                : c.combination,
             price: String(c.price),
             stock: String(c.stock),
             sku: c.sku,
