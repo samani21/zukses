@@ -1,9 +1,11 @@
+import { ShopProfile } from 'components/types/ShopProfile';
 import { Bell, ChevronDown, HelpCircle, Menu, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react'
 
 const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => void; }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [shopProfile, setShopProfile] = useState<ShopProfile | null>(null)
     const dropdownRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     // Menutup dropdown saat klik di luar
@@ -16,6 +18,13 @@ const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => v
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [dropdownRef]);
+    useEffect(() => {
+        const dataString = localStorage.getItem('shopProfile');
+        if (dataString) {
+            const parsedData = JSON.parse(dataString);
+            setShopProfile(parsedData)
+        }
+    }, []);
 
 
     return (
@@ -31,9 +40,9 @@ const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => v
                 <div className="hidden sm:block h-8 border-l border-gray-200"></div>
                 <div className="relative" ref={dropdownRef}>
                     <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center cursor-pointer group">
-                        <img src="https://placehold.co/32x32/cccccc/FFFFFF?text=A" alt="Avatar Pengguna" className="w-8 h-8 rounded-full" />
+                        <img src={shopProfile?.logo_url || "https://placehold.co/32x32/cccccc/FFFFFF?text=Z"} alt="Avatar Pengguna" className="w-8 h-8 rounded-full" />
                         <div className='hidden md:block ml-3 text-left'>
-                            <span className="text-sm font-medium text-gray-800 group-hover:text-blue-500">andikafirmanslah</span>
+                            <span className="text-sm font-medium text-gray-800 group-hover:text-blue-500">{shopProfile?.shop_name || "Belum ada Akun"}</span>
                         </div>
                         <ChevronDown size={18} className={`ml-1 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </div>

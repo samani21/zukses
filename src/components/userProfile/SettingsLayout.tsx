@@ -6,14 +6,32 @@ import ProfileForm from './ProfileForm';
 import AddressPage from './AddressPage';
 import BankAccountPage from './BankAccountPage';
 import MyOrdersPage from './MyOrdersPage';
+import Get from 'services/api/Get';
+import { Response } from 'services/api/types';
 type Props = {
     setHideNavbar: (value: boolean) => void;
+}
+interface ShopData {
+    logo_url?: string;
+    shop_name?: string;
+    description?: string;
 }
 const SettingsLayout = ({ setHideNavbar }: Props) => {
     const [activePage, setActivePage] = useState('Profil');
     const [isMobile, setIsMobile] = useState(false);
-    const [view, setView] = useState<'main' | 'form'>('main'); // 'main' or 'form' view for mobile
+    const [view, setView] = useState<'main' | 'form'>('main');
+
+    const fetchShopProfile = async () => {
+        const res = await Get<Response>('zukses', `shop/profile`)
+        if (res?.status === 'success' && res.data) {
+            const data = res?.data as ShopData
+            localStorage.setItem('shopProfile', JSON.stringify(data));
+        } else {
+            console.warn('User profile tidak ditemukan atau gagal diambil')
+        }
+    }
     useEffect(() => {
+        fetchShopProfile()
         const checkMobile = () => setIsMobile(window.innerWidth < 768);
         if (typeof window !== 'undefined') {
             checkMobile();
