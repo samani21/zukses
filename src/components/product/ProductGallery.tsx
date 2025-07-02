@@ -18,13 +18,16 @@ interface Thumbnail {
     alt: string;
 }
 
-
 interface ProductGalleryProps {
     images: Thumbnail[];
     activeIndex: number;
     setActiveIndex: (index: number) => void;
     onImageClick: (index: number) => void;
 }
+
+const isVideo = (url: string): boolean => {
+    return url.match(/\.(mp4|webm|ogg)$/i) !== null;
+};
 
 const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, setActiveIndex, onImageClick }) => {
     const thumbnailContainerRef = useRef<HTMLDivElement>(null);
@@ -70,10 +73,13 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
         <div className="lg:col-span-2">
             <div className="mb-4 relative group overflow-hidden rounded-lg">
                 <div
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => {
+                        window.location.href = '/'
+                        localStorage.removeItem('product')
+                    }}
                     className="flex items-center justify-center w-10 h-10 absolute top-2 left-2 z-20 bg-white/80 hover:bg-white text-gray-800 rounded-full shadow md:hidden"
                 >
-                    <ChevronLeftIcon className="w-6 h-6" />
+                    <ChevronLeftIcon />
                 </div>
                 <div
                     className="flex transition-transform duration-300 ease-in-out"
@@ -86,14 +92,22 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                     onMouseLeave={handleDragEnd}
                     onTouchEnd={handleDragEnd}
                 >
-                    {images.map((image) => (
-                        <div key={image.id} className="flex-shrink-0 w-full" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
-                            <img
-                                src={image.url}
-                                alt={image.alt}
-                                className="w-full h-auto object-cover shadow-sm select-none"
-                                onClick={() => !isDragging && dragOffset === 0 && onImageClick(activeIndex)}
-                            />
+                    {images.map((media, index) => (
+                        <div key={media.id} className="flex-shrink-0 w-full" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
+                            {isVideo(media.url) ? (
+                                <video
+                                    src={media.url}
+                                    controls
+                                    className="w-full h-auto object-cover shadow-sm select-none"
+                                />
+                            ) : (
+                                <img
+                                    src={media.url}
+                                    alt={media.alt}
+                                    className="w-full h-auto object-cover shadow-sm select-none"
+                                    onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
@@ -105,14 +119,32 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                     <ChevronRightIcon className="w-8 h-8" />
                 </button>
             </div>
+
             <div className="relative">
                 <button onClick={() => thumbnailContainerRef.current?.scrollBy({ left: -100, behavior: 'smooth' })} className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 z-10 shadow-md">
                     <ChevronLeftIcon className="w-6 h-6 text-gray-700" />
                 </button>
                 <div ref={thumbnailContainerRef} className="flex space-x-2 overflow-x-auto p-1 scroll-smooth no-scrollbar">
                     {images.map((thumb, index) => (
-                        <button key={thumb.id} onClick={() => setActiveIndex(index)} className={`flex-shrink-0 w-1/5 rounded-md border-2 p-1 transition-colors ${activeIndex === index ? 'border-blue-500' : 'border-transparent'}`}>
-                            <img src={thumb.url.replace('600x400', '100x100')} alt={thumb.alt} className="w-full h-auto rounded" />
+                        <button
+                            key={thumb.id}
+                            onClick={() => setActiveIndex(index)}
+                            className={`flex-shrink-0 w-1/5 rounded-md border-2 p-1 transition-colors ${activeIndex === index ? 'border-blue-500' : 'border-transparent'}`}
+                        >
+                            {isVideo(thumb.url) ? (
+                                <video
+                                    src={thumb.url}
+                                    className="w-full h-auto rounded object-cover"
+                                    muted
+                                    playsInline
+                                />
+                            ) : (
+                                <img
+                                    src={thumb.url.replace('600x400', '100x100')}
+                                    alt={thumb.alt}
+                                    className="w-full h-auto rounded"
+                                />
+                            )}
                         </button>
                     ))}
                 </div>
@@ -121,6 +153,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                 </button>
             </div>
         </div>
-    )
-}
+    );
+};
+
 export default ProductGallery;

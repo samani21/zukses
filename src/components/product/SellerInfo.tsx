@@ -1,3 +1,4 @@
+import { Seller } from 'components/types/Product';
 import React from 'react'
 
 const StarIcon = ({ className = "w-4 h-4 text-blue-400" }: { className?: string }) => (
@@ -16,24 +17,6 @@ const StoreIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.25m11.25 0h8.25m-11.25 0V11.25a.75.75 0 0 0-.75-.75H9.75a.75.75 0 0 0-.75.75V21m-4.5 0H2.25m9 0V3.75a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0h.008v.008H11.25v-.008Z" />
     </svg>
 );
-
-interface Seller {
-    name: string;
-    avatarUrl: string;
-    lastActive: string;
-    location: string;
-    stats: {
-        rating: number;
-        reviewsCount: number;
-        reviews: string;
-        products: number;
-        chatResponseRate: string;
-        chatResponseTime: string;
-        joined: string;
-        followers: string;
-    };
-}
-
 interface SellerInfoProps {
     seller: Seller;
 }
@@ -46,7 +29,7 @@ const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
                 <div className="flex justify-between items-start gap-4">
                     <div className="flex items-center gap-3">
                         <div className="relative flex-shrink-0">
-                            <img src={seller.avatarUrl} alt={seller.name} className="w-14 h-14 rounded-full border" />
+                            <img src={seller?.avatarUrl} alt={seller?.name} className="w-14 h-14 rounded-full border" />
                             <div className="absolute -bottom-1 -right-1 block bg-red-600 text-white text-[10px] font-bold px-1 rounded-sm">
                                 Star+
                             </div>
