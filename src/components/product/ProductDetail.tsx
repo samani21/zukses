@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
 import { Product, Thumbnail, variant } from 'components/types/Product';
@@ -23,7 +23,6 @@ const ChatBubbleIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
     </svg>
 );
 
-
 interface ProductDetailProps {
     product: Product;
 }
@@ -38,6 +37,7 @@ const MobileActionFooter: React.FC = () => (
     </div>
 );
 
+
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -46,6 +46,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
 
     const allImages = useMemo(() => {
+        // ... (logika `allImages` tidak berubah)
         const imageMap = new Map<string, Thumbnail>();
 
         // 1. Gambar utama dari product.image (jika ada)
@@ -98,20 +99,55 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         return Array.from(imageMap.values());
     }, [product?.image, product?.variants, product?.thumbnails, product?.media]);
 
+    // ✨ BARU: Hitung rentang harga dari varian
+    const priceRange = useMemo(() => {
+        if (!product?.variants || product.variants.length === 0) {
+            return null; // Tidak ada varian, tidak ada rentang harga
+        }
+
+        const prices = product.variants.map(v => v.price);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+
+        return {
+            min: minPrice,
+            max: maxPrice,
+            isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
+        };
+    }, [product?.variants]);
+
+
+    useEffect(() => {
+        if (!product?.variants || product.variants.length === 0) return;
+
+        const activeImageUrl = allImages[activeImageIndex]?.url;
+        if (!activeImageUrl) return;
+
+        const correspondingVariant = product.variants.find(
+            (v) => v.image === activeImageUrl
+        );
+
+        if (correspondingVariant) {
+            // Cek untuk menghindari loop render yang tidak perlu
+            if (activeVariant?.id !== correspondingVariant.id) {
+                setActiveVariant(correspondingVariant);
+            }
+        }
+
+    }, [activeImageIndex, allImages, product?.variants, activeVariant]);
+
 
     const handleVariantSelect = (variant: variant) => {
         setActiveVariant(variant);
-
         const foundIndex = allImages.findIndex(img => img.url === variant.image);
         if (foundIndex !== -1) {
             setActiveImageIndex(foundIndex);
         }
     };
 
-
     const handleImageClick = (index: number) => {
         if (window.innerWidth < 1024) return;
-        setLightboxInitialIndex(index); // Gunakan index
+        setLightboxInitialIndex(index);
         setIsLightboxOpen(true);
     };
 
@@ -121,6 +157,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             currency: 'IDR',
             minimumFractionDigits: 0,
         }).format(amount);
+
+    const renderPriceDisplay = () => {
+        if (activeVariant) {
+            return formatRupiah(activeVariant.price);
+        }
+        if (priceRange) {
+            if (priceRange.isRange) {
+                return `${formatRupiah(priceRange.min)} - ${formatRupiah(priceRange.max)}`;
+            }
+            return formatRupiah(priceRange.min);
+        }
+
+        return formatRupiah(product?.price);
+    };
+
 
     return (
         <>
@@ -144,8 +195,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         </div>
                         <div className="bg-gray-50 p-3 rounded-md my-3">
                             <div className="flex items-baseline space-x-2">
-                                <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice | 100000)}</span>
-                                <span className="text-blue-600 text-xl font-semibold">{formatRupiah(product?.price)}</span>
+                                <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span>
+                                <span className="text-blue-600 text-xl font-semibold">{renderPriceDisplay()}</span>
                             </div>
                         </div>
                         <div className="space-y-3">

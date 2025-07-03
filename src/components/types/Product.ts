@@ -8,6 +8,7 @@ export type variant = {
     id: number;
     combination_label: string;
     image: string;
+    price: number
 };
 
 export interface SellerStats {
