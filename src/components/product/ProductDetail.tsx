@@ -195,7 +195,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         </div>
                         <div className="bg-gray-50 p-3 rounded-md my-3">
                             <div className="flex items-baseline space-x-2">
-                                <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span>
+                                {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
                                 <span className="text-blue-600 text-xl font-semibold">{renderPriceDisplay()}</span>
                             </div>
                         </div>
