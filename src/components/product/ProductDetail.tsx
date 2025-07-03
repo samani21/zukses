@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
+import { Product, Thumbnail, variant } from 'components/types/Product';
 
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -22,31 +23,6 @@ const ChatBubbleIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
     </svg>
 );
 
-interface Thumbnail {
-    id: number;
-    url: string;
-    alt: string;
-}
-
-interface Variant {
-    id: number;
-    name: string;
-    imageUrl: string;
-}
-
-interface Product {
-    id: string;
-    name: string;
-    rating: number;
-    reviewsCount: number;
-    soldCount: number;
-    originalPrice: number;
-    discountedPrice: number;
-    vouchers: string[];
-    variants: Variant[];
-    thumbnails: Thumbnail[];
-}
-
 interface ProductDetailProps {
     product: Product;
 }
@@ -61,27 +37,117 @@ const MobileActionFooter: React.FC = () => (
     </div>
 );
 
+
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
-    const [activeVariant, setActiveVariant] = useState<Variant>(product.variants[0]);
+    const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState<number>(1);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
 
     const allImages = useMemo(() => {
+        // ... (logika `allImages` tidak berubah)
         const imageMap = new Map<string, Thumbnail>();
-        product.variants.forEach((v, i) => imageMap.set(v.imageUrl, { id: 1000 + i, url: v.imageUrl, alt: v.name }));
-        product.thumbnails.forEach((t) => imageMap.set(t.url, t));
-        return Array.from(imageMap.values());
-    }, [product.variants, product.thumbnails]);
 
-    const handleVariantSelect = (variant: Variant) => {
+        // 1. Gambar utama dari product.image (jika ada)
+        if (product?.image) {
+            imageMap.set(product.image, {
+                id: -1,
+                url: product.image,
+                alt: 'Gambar utama produk',
+            });
+        }
+
+        // 2. Tambahkan media video (jika ada)
+        product?.media?.forEach((m, i) => {
+            if (/\.(mp4|webm|ogg)$/i.test(m.url)) {
+                imageMap.set(m.url, {
+                    id: m.id ?? 1000 + i,
+                    url: m.url,
+                    alt: 'Video produk',
+                });
+            }
+        });
+
+        // 3. Tambahkan dari variants
+        product?.variants?.forEach((v, i) => {
+            if (v.image) {
+                imageMap.set(v.image, {
+                    id: v?.id + i,
+                    url: v.image,
+                    alt: v.combination_label,
+                });
+            }
+        });
+
+        // 4. Tambahkan dari thumbnails
+        product?.thumbnails?.forEach((t) => {
+            imageMap.set(t.url, t);
+        });
+
+        // 5. Tambahkan media gambar (non-video)
+        product?.media?.forEach((m, i) => {
+            if (!/\.(mp4|webm|ogg)$/i.test(m.url)) {
+                imageMap.set(m.url, {
+                    id: m.id ?? 2000 + i,
+                    url: m.url,
+                    alt: m.url,
+                });
+            }
+        });
+
+        return Array.from(imageMap.values());
+    }, [product?.image, product?.variants, product?.thumbnails, product?.media]);
+
+    // ✨ BARU: Hitung rentang harga dari varian
+    const priceRange = useMemo(() => {
+        if (!product?.variants || product.variants.length === 0) {
+            return null; // Tidak ada varian, tidak ada rentang harga
+        }
+
+        const prices = product.variants.map(v => v.price);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+
+        return {
+            min: minPrice,
+            max: maxPrice,
+            isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
+        };
+    }, [product?.variants]);
+
+
+    useEffect(() => {
+        if (!product?.variants || product.variants.length === 0) return;
+
+        const activeImageUrl = allImages[activeImageIndex]?.url;
+        if (!activeImageUrl) return;
+
+        const correspondingVariant = product.variants.find(
+            (v) => v.image === activeImageUrl
+        );
+
+        if (correspondingVariant) {
+            // Cek untuk menghindari loop render yang tidak perlu
+            if (activeVariant?.id !== correspondingVariant.id) {
+                setActiveVariant(correspondingVariant);
+            }
+        }
+
+    }, [activeImageIndex, allImages, product?.variants, activeVariant]);
+
+
+    const handleVariantSelect = (variant: variant) => {
         setActiveVariant(variant);
+        const foundIndex = allImages.findIndex(img => img.url === variant.image);
+        if (foundIndex !== -1) {
+            setActiveImageIndex(foundIndex);
+        }
     };
 
     const handleImageClick = (index: number) => {
         if (window.innerWidth < 1024) return;
-        setLightboxInitialIndex(index); // Gunakan index
+        setLightboxInitialIndex(index);
         setIsLightboxOpen(true);
     };
 
@@ -91,6 +157,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             currency: 'IDR',
             minimumFractionDigits: 0,
         }).format(amount);
+
+    const renderPriceDisplay = () => {
+        if (activeVariant) {
+            return formatRupiah(activeVariant.price);
+        }
+        if (priceRange) {
+            if (priceRange.isRange) {
+                return `${formatRupiah(priceRange.min)} - ${formatRupiah(priceRange.max)}`;
+            }
+            return formatRupiah(priceRange.min);
+        }
+
+        return formatRupiah(product?.price);
+    };
+
 
     return (
         <>
@@ -103,40 +184,46 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         onImageClick={handleImageClick}
                     />
                     <div className="lg:col-span-3">
-                        <h1 className="text-base sm:text-lg font-semibold text-gray-800">{product.name}</h1>
+                        <h1 className="text-base sm:text-lg font-semibold text-gray-800">{product?.name}</h1>
                         <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
                             <div className="flex items-center">
-                                <span className="text-blue-500 font-medium mr-1">{product.rating.toFixed(1)}</span>
+                                <span className="text-blue-500 font-medium mr-1">{product?.rating?.toFixed(1)}</span>
                                 <div className="flex">{Array.from({ length: 5 }).map((_, i) => <StarIcon key={i} />)}</div>
                             </div>
-                            <span className="font-medium">{product.reviewsCount} Penilaian</span>
-                            <span className="text-gray-500">{product.soldCount} Terjual</span>
+                            <span className="font-medium">{product?.reviewsCount || '5'} Penilaian</span>
+                            <span className="text-gray-500">{product?.soldCount || '1jt'} Terjual</span>
                         </div>
                         <div className="bg-gray-50 p-3 rounded-md my-3">
                             <div className="flex items-baseline space-x-2">
-                                <span className="text-gray-500 text-sm line-through">{formatRupiah(product.originalPrice)}</span>
-                                <span className="text-blue-600 text-xl font-semibold">{formatRupiah(product.discountedPrice)}</span>
+                                {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
+                                <span className="text-blue-600 text-xl font-semibold">{renderPriceDisplay()}</span>
                             </div>
                         </div>
                         <div className="space-y-3">
-                            <div className="grid md:flex items-start">
-                                <span className="w-24 text-gray-500">Voucher</span>
-                                <div className="flex flex-wrap gap-1 mt-2 md:mt-0">
-                                    {product.vouchers.map(v => (
-                                        <span key={v} className="bg-blue-100 text-blue-600 text-xs px-2 py-[2px] rounded">{v}</span>
-                                    ))}
+                            {
+                                product?.vouchers?.length > 0 &&
+                                <div className="grid md:flex items-start">
+                                    <span className="w-24 text-gray-500">Voucher</span>
+                                    <div className="flex flex-wrap gap-1 mt-2 md:mt-0">
+                                        {product?.vouchers?.map(v => (
+                                            <span key={v} className="bg-blue-100 text-blue-600 text-xs px-2 py-[2px] rounded">{v}</span>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="grid md:flex items-start">
-                                <span className="w-24 text-gray-500">Pilihan</span>
-                                <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
-                                    {product.variants.map(v => (
-                                        <button key={v.id} onClick={() => handleVariantSelect(v)} className={`px-3 py-1 rounded text-xs border ${activeVariant.id === v.id ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-300'}`}>
-                                            {v.name}
-                                        </button>
-                                    ))}
+                            }
+                            {
+                                product?.variants?.length > 0 &&
+                                <div className="grid md:flex items-start">
+                                    <span className="w-24 text-gray-500">Pilihan</span>
+                                    <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
+                                        {product?.variants?.map(v => (
+                                            <button key={v?.id} onClick={() => handleVariantSelect(v)} className={`px-3 py-1 rounded text-xs border ${activeVariant?.id === v?.id ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-300'}`}>
+                                                {v?.combination_label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            }
                             <div className="grid md:flex items-center">
                                 <span className="w-24 text-gray-500">Kuantitas</span>
                                 <div className="flex items-center border border-gray-300 rounded overflow-hidden w-fit">

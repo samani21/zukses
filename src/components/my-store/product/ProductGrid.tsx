@@ -47,7 +47,11 @@ const ProductGrid: FC<{
                             >
                                 <Trash2 size={18} />
                             </button>
-                            <button className="text-blue-600 hover:text-blue-900 mx-auto mt-0.5" >
+                            <button className="text-blue-600 hover:text-blue-900 mx-auto mt-0.5"
+                                onClick={() => {
+                                    window.location.href = '/my-store/add-product?type=edit'
+                                    localStorage.setItem('EditProduct', JSON.stringify(product))
+                                }}>
                                 <Edit2 size={18} />
                             </button>
                         </div>

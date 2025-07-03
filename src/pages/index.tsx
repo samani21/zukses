@@ -6,6 +6,10 @@ import UserGreeting from 'components/UserGreeting';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import ProductList from 'components/ProductList';
 import SiteFooter from 'components/SiteFooter';
+import Get from 'services/api/Get';
+import { Response } from 'services/api/types';
+import { Product } from 'components/types/Product';
+import Loading from 'components/my-store/addProduct/Loading';
 interface Banner {
   id: number;
   src: string;
@@ -21,7 +25,8 @@ const Home: React.FC<HomeLayoutProps> = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ whatsapp?: string, id?: string, email?: string, role?: string, name?: string } | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('Semua');
-
+  const [products, setProducts] = useState<Product[] | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
@@ -59,16 +64,25 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { name: "Otomotif", icon: "/icon/otomotif.png" }
   ];
 
-  const allProducts = [
-    { id: 1, name: "Smart TV 4K 50 inch", category: "Elektronik", price: "4.500.000", location: "Jakarta Pusat", imageUrl: "/image/televisi.jpg", rating: 4.9, sold: 100 },
-    { id: 2, name: "Keyboard Mechanical RGB", category: "Komputer & Aksesoris", price: "850.000", location: "Kota Bandung", imageUrl: "/image/keyboard.png", rating: 4.8, sold: 250 },
-    { id: 3, name: "Kemeja Lengan Panjang Pria", category: "Pakaian Pria", price: "220.000", location: "Kota Surabaya", imageUrl: "/image/kemeja.webp", rating: 4.9, sold: 500 },
-    { id: 4, name: "Blouse Wanita Modern", category: "Pakaian Wanita", price: "180.000", location: "DI Yogyakarta", imageUrl: "/image/blouse.jpeg", rating: 4.8, sold: 300 },
-    { id: 5, name: "Gamis Syar'i Premium", category: "Fashion Muslim", price: "350.000", location: "Kota Medan", imageUrl: "/image/gamis.jpg", rating: 4.9, sold: 150 },
-    { id: 6, name: "Setelan Baju Anak Lucu", category: "Fashion Bayi & Anak", price: "120.000", location: "Kota Makassar", imageUrl: "/image/baju anak.jpg", rating: 4.9, sold: 400 },
-    { id: 7, name: "Serum Wajah Glowing", category: "Perawatan & Kecantikan", price: "150.000", location: "Jakarta Barat", imageUrl: "/image/serum.jpeg", rating: 5.0, sold: 1000 },
-    { id: 8, name: "Laptop Gaming Core i7", category: "Elektronik", price: "15.500.000", location: "Jakarta Selatan", imageUrl: "/image/laptop.jpg", rating: 4.8, sold: 50 },
-  ];
+
+  const getProduct = async () => {
+    setLoading(true);
+    const res = await Get<Response>('zukses', `product`);
+    if (res?.status === 'success' && Array.isArray(res.data)) {
+      const data = res?.data as Product[];
+      setProducts(data);
+    } else {
+      console.warn('Produk tidak ditemukan atau gagal diambil');
+
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    localStorage.removeItem('product')
+    localStorage.removeItem('EditProduct')
+    getProduct();
+  }, []);
   return (
     <MainLayout>
       <div className='lg:px-10'>
@@ -82,12 +96,18 @@ const Home: React.FC<HomeLayoutProps> = () => {
           <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
         </main>
         <main className="container mx-auto pb-24 md:px-10">
-          <ProductList products={allProducts} selectedCategory={selectedCategory} />
+          {
+            products &&
+            <ProductList products={products} selectedCategory={selectedCategory} />
+          }
         </main>
       </div>
       <main className="container mx-auto">
         <SiteFooter />
       </main>
+      {
+        loading && <Loading />
+      }
     </MainLayout>
   );
 };

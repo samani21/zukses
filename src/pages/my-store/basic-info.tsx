@@ -116,6 +116,7 @@ const BasicInfoForm = () => {
                 const res = await Post<Response>('zukses', `shop/profile`, formData)
                 let isSuccess = false;
                 if (res?.data?.status === 'success') {
+                    localStorage.setItem('shopProfile', JSON.stringify(res?.data?.data));
                     setSnackbar({ message: 'Data berhasil dikirim!', type: 'success', isOpen: true })
                     setLoading(false);
                     fetchShopProfile()
