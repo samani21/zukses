@@ -116,10 +116,7 @@ const AddProductPage = () => {
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
   const [specifications, setSpecifications] = useState<{ [key: string]: string }>({
     'Merek': 'Tidak Ada Merek',
-    'Jenis Kelamin': 'Pria',
     'Negara Asal': 'Indonesia',
-    'Produk Custom': 'Ya',
-    'Mystery Box': 'Ya',
   });
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
@@ -166,6 +163,7 @@ const AddProductPage = () => {
   const [productNameError, setProductNameError] = useState<string | null>(null);
   const [categoryError, setCategoryError] = useState<string | null>(null);
   const [shippingWeightError, setShippingWeightError] = useState<string | null>(null);
+  const [relisProduct, setRelisProduct] = useState<string | null>(null);
 
 
   // +++ STATE BARU UNTUK CROPPER +++
@@ -607,6 +605,10 @@ const AddProductPage = () => {
     }
     if (!productVideo) {
       setVideoError('Video produk wajib diunggah.');
+      isValid = false;
+    }
+    if (!scheduledDate) {
+      setRelisProduct('Tanggal ditamplkan wajib diisi.');
       isValid = false;
     }
     if (!shippingPerVariation && !shippingWeight) {
@@ -1215,6 +1217,7 @@ const AddProductPage = () => {
           className="w-full p-2 border rounded-md pr-10"
         />
         <Calendar size={18} className="absolute right-3 top-9 text-gray-400" />
+        {relisProduct && <p className="text-xs text-red-600 mt-2 mb-2">{relisProduct}</p>}
       </div>
       <div>
         <InfoLabel label="SKU Induk" tooltipKey="parentSku" activeTooltip={activeTooltip} setActiveTooltip={setActiveTooltip} />
