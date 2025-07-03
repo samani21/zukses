@@ -13,13 +13,13 @@ const Header: FC<HeaderProps> = ({ shopProfile }) => {
                 <div className="flex justify-between items-center py-3">
                     {/* Left side: Logo and Breadcrumbs */}
                     <div className="flex items-center gap-4 text-sm">
-                        <div className="bg-orange-500 p-1.5 rounded-md flex-shrink-0">
+                        <div className="bg-blue-500 p-1.5 rounded-md flex-shrink-0">
                             <ShoppingBag size={20} className="text-white" />
                         </div>
                         <nav className="hidden md:flex items-center gap-2 text-gray-500 whitespace-nowrap">
-                            <a href="#" className="hover:text-orange-500">Beranda</a>
+                            <a onClick={() => window.location.href = '/my-store'} className="hover:text-blue-500 cursor-pointer">Beranda</a>
                             <ChevronRight size={16} />
-                            <a href="#" className="hover:text-orange-500">Produk Saya</a>
+                            <a onClick={() => window.location.href = '/my-store/product'} className="hover:text-blue-500 cursor-pointer">Produk Saya</a>
                             <ChevronRight size={16} />
                             <span className="font-semibold text-gray-800">Tambah Produk Baru</span>
                         </nav>

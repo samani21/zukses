@@ -38,8 +38,8 @@ const ProductPage = () => {
                     <nav className="hidden md:block text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
                         <ol className="list-none p-0 inline-flex space-x-2">
                             <li className="flex items-center"><a href="#" className="text-blue-600 hover:underline" onClick={() => window.location.href = '/'}>Zuksess</a></li>
-                            <li className="flex items-center"><span className="mx-2">›</span><a href="#" className="hover:underline">Komputer & Aksesoris</a></li>
-                            <li className="flex items-center"><span className="mx-2">›</span><span className="text-gray-700">LAPTOP LENOVO THINKPAD</span></li>
+                            <li className="flex items-center"><span className="mx-2">›</span><a href="#" className="hover:underline">{detailProduct?.category?.split(" > ")[0]}</a></li>
+                            <li className="flex items-center"><span className="mx-2">›</span><span className="text-gray-700">{detailProduct?.name}</span></li>
                         </ol>
                     </nav>
 
@@ -50,7 +50,7 @@ const ProductPage = () => {
                             <SellerInfo seller={detailProduct?.seller} />
                             <ProductSpecification specifications={detailProduct.specifications} />
                             <ProductDescription description={detailProduct.desc} />
-                            
+
                             <ProductReviews reviews={detailProduct.reviews} productRating={detailProduct.rating} />
                         </>
                     }

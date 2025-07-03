@@ -1,7 +1,7 @@
 import { ShopProfile } from 'components/types/ShopProfile';
 import { Bell, ChevronDown, HelpCircle, Menu, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => void; }) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -26,7 +26,11 @@ const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => v
         }
     }, []);
 
-
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push('/');
+    }, [router]);
     return (
         <header className="bg-white h-16 border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-20 shadow-sm">
             <div className="flex items-center">
@@ -55,8 +59,8 @@ const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => v
                                     router.push('/my-store/basic-info')
                                 }}
                                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Informasi Dasar</a>
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pengaturan Toko</a>
-                            <a href="#" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</a>
+                            <a onClick={() => router.push('/user-profile')} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Kembali</a>
+                            <a href="#" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onClick={handleLogout}>Logout</a>
                         </div>
                     )}
                 </div>
