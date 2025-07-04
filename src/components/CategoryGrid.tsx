@@ -11,8 +11,6 @@ const ChevronLeftIcon = () => (
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
     </svg>
 );
-
-// --- Komponen Grid Kategori ---
 interface Category {
     name: string;
     icon: string;
@@ -32,26 +30,32 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
         const container = scrollContainerRef.current;
         if (container) {
             setCanScrollLeft(container.scrollLeft > 0);
-            setCanScrollRight(container.scrollLeft + container.offsetWidth < container.scrollWidth);
+            setCanScrollRight(container.scrollLeft + container.offsetWidth < container.scrollWidth - 1);
         }
     };
 
     useEffect(() => {
-        updateScrollButtons();
         const container = scrollContainerRef.current;
         if (!container) return;
 
+        updateScrollButtons();
+
         const handleScroll = () => updateScrollButtons();
+        const handleResize = () => updateScrollButtons(); 
         container.addEventListener('scroll', handleScroll);
-        return () => container.removeEventListener('scroll', handleScroll);
-    }, []);
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            container.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [categories]);
 
     const scrollByAmount = 300;
 
     return (
         <div className="container mx-auto md:p-4">
             <div className="bg-white rounded-lg shadow p-4 relative">
-                {/* Tombol kiri */}
                 {canScrollLeft && (
                     <button
                         onClick={() => {
@@ -63,7 +67,6 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     </button>
                 )}
 
-                {/* Scrollable Container */}
                 <div
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto scroll-smooth scrollbar-hide"
@@ -73,9 +76,9 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                             <button
                                 onClick={() => onCategorySelect(category.name)}
                                 key={category.name}
-                                className="flex flex-col items-center justify-start w-24 text-center group"
+                                className="flex flex-col items-center justify-start w-24 text-center group border-2 border-[#7952B3] rounded-[10px]"
                             >
-                                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2 group-hover:bg-gray-200 transition-colors">
+                                <div className="w-16 h-16 flex items-center justify-center mb-2 group-hover:border-blue-500 transition-colors">
                                     <img
                                         src={category.icon}
                                         alt={category.name}
@@ -91,7 +94,6 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     </div>
                 </div>
 
-                {/* Tombol kanan */}
                 {canScrollRight && (
                     <button
                         onClick={() => {
