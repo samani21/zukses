@@ -116,6 +116,7 @@ const UserProfile: React.FC<UserProfileLayoutProps> = ({ children, mode }) => {
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('shopProfile');
         router.push('/auth-old/login');
     }, [router]);
 

@@ -47,8 +47,6 @@ interface Variant {
   variant: string;
   options: string[];
 }
-
-// Perbarui tipe data Combination untuk mencakup dimensi
 interface Combination {
   combination: string | Record<string, string>;
   price: number;
@@ -77,9 +75,9 @@ interface ProductEditData {
   delivery?: Delivery;
   variants?: Variant[];
   combinations: Combination[];
+  is_cod_enabled?: number;
 }
 
-// +++ HELPER FUNCTION UNTUK CROP (di luar komponen) +++
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
@@ -115,8 +113,8 @@ const AddProductPage = () => {
   const [variations, setVariations] = useState<Variation[]>([]);
   const [productVariants, setProductVariants] = useState<ProductVariant[]>([]);
   const [specifications, setSpecifications] = useState<{ [key: string]: string }>({
-    'Merek': 'Tidak Ada Merek',
-    'Negara Asal': 'Indonesia',
+    'Merek': '',
+    'Negara Asal': '',
   });
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
@@ -156,6 +154,8 @@ const AddProductPage = () => {
   const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [variantError, setVariantError] = useState<string | null>(null);
+
+  const [isCodEnabled, setIsCodEnabled] = useState(false);
 
   // State untuk validasi error inline
   const [photoError, setPhotoError] = useState<string | null>(null);
@@ -261,6 +261,12 @@ const AddProductPage = () => {
       setParentSku(dataEdit.sku);
       setCondition(dataEdit.is_used === 0 ? 'Baru' : 'Pernah Dipakai');
       setScheduledDate(dataEdit.scheduled_date ? dataEdit.scheduled_date.split(" ")[0] : '');
+
+      // +++ PENGATURAN STATE COD DARI DATA EDIT +++
+      if (typeof dataEdit.is_cod_enabled !== 'undefined') {
+        setIsCodEnabled(dataEdit.is_cod_enabled === 1);
+      }
+
       const photos = dataEdit.media
         .filter((m) => m.type === 'image')
         .map((img) => ({ file: null, preview: img.url, type: 'image' as const }));
@@ -599,14 +605,11 @@ const AddProductPage = () => {
       setCategoryError('Kategori produk wajib dipilih.');
       isValid = false;
     }
-    if (productPhotos.length < 3) {
-      setPhotoError('Minimal 3 foto produk wajib diunggah.');
+    if (productPhotos.length < 1) {
+      setPhotoError('Minimal 1 foto produk wajib diunggah.');
       isValid = false;
     }
-    if (!productVideo) {
-      setVideoError('Video produk wajib diunggah.');
-      isValid = false;
-    }
+
     if (!scheduledDate) {
       setRelisProduct('Tanggal ditamplkan wajib diisi.');
       isValid = false;
@@ -655,6 +658,9 @@ const AddProductPage = () => {
     formData.append('shippingInsurance', shippingInsurance ? '1' : '0');
     formData.append('isVariationActive', isVariationActive ? '1' : '0');
     formData.append('shippingPerVariation', shippingPerVariation ? '1' : '0');
+
+    formData.append('isCodEnabled', isCodEnabled ? '1' : '0');
+
     productPhotos.forEach((photo) => {
       if (photo.file) {
         formData.append('productPhotos[]', photo.file);
@@ -1088,7 +1094,7 @@ const AddProductPage = () => {
                         </td>
                         {isPreOrder && (
                           <td className="px-2 py-2 align-middle">
-                            <input type="text" value={variant.dikirimDalam || ''} onChange={e => handleVariantChange(variant.id, 'dikirimDalam', e.target.value)} className="w-full p-2 border rounded-md" />
+                            <input type="text" value={(variant).dikirimDalam || ''} onChange={e => handleVariantChange(variant.id, 'dikirimDalam', e.target.value)} className="w-full p-2 border rounded-md" />
                           </td>
                         )}
                       </tr>
@@ -1222,6 +1228,28 @@ const AddProductPage = () => {
       <div>
         <InfoLabel label="SKU Induk" tooltipKey="parentSku" activeTooltip={activeTooltip} setActiveTooltip={setActiveTooltip} />
         <input id="parent-sku" type="text" value={parentSku} onChange={e => setParentSku(e.target.value)} className="w-full p-2 border rounded-md mt-1" />
+      </div>
+
+      {/* +++ INPUTAN COD BARU +++ */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Pembayaran di Tempat (COD)</label>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-md">
+          <div className="mb-2 sm:mb-0">
+            <h5 className="font-semibold">Aktifkan COD</h5>
+            <p className="text-xs text-gray-600">Izinkan pembeli untuk membayar secara tunai saat produk diterima.</p>
+          </div>
+          <label htmlFor="cod-toggle" className="inline-flex relative items-center cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isCodEnabled}
+              onChange={e => setIsCodEnabled(e.target.checked)}
+              id="cod-toggle"
+              className="sr-only peer"
+            />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+          </label>
+        </div>
+        <p className="text-xs text-gray-500 mt-1">Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
       </div>
     </div>
   );
@@ -1498,20 +1526,13 @@ const AddProductPage = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Merek <span className="text-red-500">*</span></label>
-                          <select value={specifications['Merek']} onChange={e => handleSpecChange('Merek', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
-                            <option>Tidak Ada Merek</option>
-                            <option>Sasirangan Idola</option>
-                          </select>
+                          <input value={specifications['Merek']} onChange={e => handleSpecChange('Merek', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Negara Asal</label>
-                          <select value={specifications['Negara Asal']} onChange={e => handleSpecChange('Negara Asal', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
-                            <option>Indonesia</option>
-                            <option>Jepang</option>
-                            <option>Korea</option>
-                          </select>
+                          <input value={specifications['Negara Asal']} onChange={e => handleSpecChange('Negara Asal', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md" />
                         </div>
-                      </div>
+                      </div >
                     </>
                   ), sectionRefs['spesifikasi']) : renderDisabledSection("Spesifikasi", sectionRefs['spesifikasi'])}
 
@@ -1522,7 +1543,7 @@ const AddProductPage = () => {
                   {idCategorie ? renderSection("Lainnya", renderLainnyaInformation(), sectionRefs['lainnya']) : renderDisabledSection("Lainnya", sectionRefs['lainnya'])}
                 </div>
               </div>
-            </div>
+            </div >
           </div>
         ) : (
           <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -1533,8 +1554,8 @@ const AddProductPage = () => {
                     <h3 className="font-semibold text-white">Rekomendasi</h3>
                   </div>
                   <ul className="space-y-3 text-sm text-gray-600 p-4">
-                    <li className="flex items-center gap-2"><CheckCircle className={productPhotos.length >= 3 ? "text-green-500" : "text-gray-400"} /> Tambah min. 3 foto</li>
-                    <li className="flex items-center gap-2"><CheckCircle className={productVideo ? "text-green-500" : "text-gray-400"} /> Tambah video</li>
+                    <li className="flex items-center gap-2"><CheckCircle className={productPhotos.length >= 3 ? "text-green-500" : "text-gray-400"} /> Tambah min. 1 foto</li>
+                    {/* <li className="flex items-center gap-2"><CheckCircle className={productVideo ? "text-green-500" : "text-gray-400"} /> Tambah video</li> */}
                     <li className="flex items-center gap-2"><CheckCircle className={productName.length >= 25 ? "text-green-500" : "text-gray-400"} /> Nama 25+ karakter</li>
                     <li className="flex items-center gap-2"><CheckCircle className={description.length >= 100 && productPhotos.length > 0 ? "text-green-500" : "text-gray-400"} /> Deskripsi 100+ karakter</li>
                     <li className="flex items-center gap-2"><CheckCircle className={Object.values(specifications).some(v => v) ? "text-green-500" : "text-gray-400"} /> Tambah info merek</li>
@@ -1621,18 +1642,11 @@ const AddProductPage = () => {
                       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Merek <span className="text-red-500">*</span></label>
-                          <select value={specifications['Merek']} onChange={e => handleSpecChange('Merek', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
-                            <option>Tidak Ada Merek</option>
-                            <option>Sasirangan Idola</option>
-                          </select>
+                          <input value={specifications['Merek']} onChange={e => handleSpecChange('Merek', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Negara Asal</label>
-                          <select value={specifications['Negara Asal']} onChange={e => handleSpecChange('Negara Asal', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md">
-                            <option>Indonesia</option>
-                            <option>Jepang</option>
-                            <option>Korea</option>
-                          </select>
+                          <input value={specifications['Negara Asal']} onChange={e => handleSpecChange('Negara Asal', e.target.value)} className="w-full p-2 border border-gray-300 rounded-md" />
                         </div>
                       </div>
                     </div>
@@ -1643,6 +1657,29 @@ const AddProductPage = () => {
                   {idCategorie ? renderSection("Pengiriman", renderShippingInformation(), sectionRefs['pengiriman']) : renderDisabledSection("Pengiriman", sectionRefs['pengiriman'])}
 
                   {idCategorie ? renderSection("Lainnya", renderLainnyaInformation(), sectionRefs['lainnya']) : renderDisabledSection("Lainnya", sectionRefs['lainnya'])}
+                  <div className="relative bottom-0 left-0 w-full bg-white border-t border-gray-200 z-20">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                      <div className="flex justify-between items-center py-3 gap-3">
+                        {isMobile && (
+                          <button onClick={() => setIsPreviewModalOpen(true)} className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-gray-800 bg-white hover:bg-gray-100 transition-colors">
+                            <Eye size={16} />
+                            <span className="hidden sm:inline">Lihat Preview</span>
+                          </button>
+                        )}
+                        <div className="flex items-center gap-3 w-full justify-end">
+                          <button className="px-4 sm:px-6 py-2 border border-gray-300 rounded-md text-gray-800 bg-white hover:bg-gray-100 transition-colors" onClick={() => {
+                            window.location.href = '/my-store/product'
+                            localStorage.removeItem('EditProduct');
+
+                          }}>Kembali</button>
+                          <button onClick={handleSaveAndArchive} className="px-4 sm:px-6 py-2 border border-blue-500 rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors">Arsipkan</button>
+                          <button onClick={handleSaveAndPublish} className="px-4 sm:px-6 py-2 bg-blue-500 border border-transparent text-white rounded-md hover:bg-blue-600 transition-colors">
+                            {params?.type === 'edit' ? 'Perbarui' : 'Tampilkan'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1659,8 +1696,7 @@ const AddProductPage = () => {
             </div>
           </div>
         )}
-
-        <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-20">
+        <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-3 gap-3">
               {isMobile && (
@@ -1695,7 +1731,7 @@ const AddProductPage = () => {
         }
         {loading && <Loading />}
       </div>
-    </div>
+    </div >
   );
 };
 

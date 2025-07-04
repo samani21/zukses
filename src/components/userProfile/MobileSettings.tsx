@@ -17,6 +17,7 @@ const MobileSettings = ({ onNavigate }: { onNavigate: (page: string) => void }) 
     const router = useRouter();
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
+        localStorage.removeItem('shopProfile');
         localStorage.removeItem('user');
         router.push('/');
     }, [router]);
