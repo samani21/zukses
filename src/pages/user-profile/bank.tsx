@@ -1,12 +1,13 @@
+import BankAccountPage from 'components/userProfile/BankAccountPage'
 import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
 
-const BankPagge = () => {
+const BankPage = () => {
     return (
         <UserProfile>
-            BankPagge
+            <BankAccountPage />
         </UserProfile>
     )
 }
 
-export default BankPagge
+export default BankPage
