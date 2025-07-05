@@ -29,7 +29,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
         return [banners[banners.length - 1], ...banners, banners[0]];
     }, [banners]);
 
-    const [currentIndex, setCurrentIndex] = useState(1); 
+    const [currentIndex, setCurrentIndex] = useState(1);
     const [disableTransition, setDisableTransition] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -93,7 +93,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
     const handleInteractionMove = (clientX: number) => {
         if (!isDraggingRef.current || startXRef.current === null) return;
         const diff = clientX - startXRef.current;
-        if (Math.abs(diff) > 50) { 
+        if (Math.abs(diff) > 50) {
             if (diff > 0) {
                 handlePrevious();
             } else {
@@ -121,7 +121,7 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
 
     return (
         <div
-            className="w-full mx-auto select-none pt-10"
+            className="w-full mx-auto select-none pt-10 "
             onMouseEnter={resetTimeout}
             onMouseLeave={handleInteractionEnd}
         >

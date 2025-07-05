@@ -137,10 +137,10 @@ const Header = () => {
 
     return (
         <>
-            <header className="h-[140px] px-[80px] text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#52357B] to-[#7952B3]">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="hidden md:flex flex-col py-2 py-5">
-                        <div className="flex justify-between items-center text-xs mb-2">
+            <header className="text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#52357B] to-[#7952B3] h-27">
+                <div className="container mx-auto w-[1200px] px-[120px]">
+                    <div className="hidden md:flex flex-col py-2 py-2">
+                        <div className="flex justify-between items-center text-xs mb-3">
                             <a onClick={() => router.push('/')} className="hover:underline">Download aplikasinya di Playstore</a>
                             <div className="flex items-center gap-4 font-medium">
                                 {isLoggedIn ? (
@@ -160,7 +160,7 @@ const Header = () => {
                         </div>
 
                         <div className="flex items-center gap-8">
-                            <h1 className="text-4xl font-bold cursor-pointer shrink-0" onClick={() => window.location.href = '/'}>Zukses</h1>
+                            <h1 className="text-4xl font-bold cursor-pointer shrink-0 mt-[-20px]" onClick={() => window.location.href = '/'}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className="flex items-center gap-3">
                                     <div className="relative flex-grow">
@@ -168,9 +168,9 @@ const Header = () => {
                                             onFocus={() => { setIsSearchFocused(true); setSearchResults(null); setDropdownMode('history'); }}
                                             onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setSearchResults(null); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }}
                                             onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                                            className="w-full pl-4 pr-12 py-2.5 text-gray-900 bg-white border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                            className="w-full pl-4 pr-12 py-1 text-gray-900  bg-white border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
                                         />
-                                        <div className="absolute inset-y-0 h-10 right-0 flex items-center mt-[2px] mr-[2px]"><button onClick={handleSearch} className="h-full px-3 bg-gradient-to-b from-[#52357B] to-[#7952B3] rounded-sm hover:bg-indigo-800 flex items-center justify-center" title="Cari"><SearchIcon className="w-5 h-5 text-white" /></button></div>
+                                        <div className="absolute inset-y-0 h-7 right-0 flex items-center mt-[2px] mr-[2px]"><button onClick={handleSearch} className="h-full px-3 bg-gradient-to-b from-[#52357B] to-[#7952B3] rounded-sm hover:bg-indigo-800 flex items-center justify-center" title="Cari"><SearchIcon className="w-5 h-5 text-white" /></button></div>
                                     </div>
                                     <button onClick={() => setProvinceModalOpen(true)} className="p-2 hover:bg-indigo-800 rounded-md" title="Filter Provinsi"><FilterIcon className="w-6 h-6 text-white" /></button>
 

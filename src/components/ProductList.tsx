@@ -17,7 +17,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
         : products.filter(p => p.category === selectedCategory);
 
     return (
-        <div className="container mx-auto p-4 md:px-10">
+        <div className="container mx-auto p-0">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Produk untuk Anda</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {filteredProducts?.map(product => (

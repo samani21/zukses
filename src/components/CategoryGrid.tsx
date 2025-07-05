@@ -1,16 +1,5 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 
-const ChevronRightIcon = () => (
-    <svg className="w-5 h-5 text-gray-400 hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-    </svg>
-);
-
-const ChevronLeftIcon = () => (
-    <svg className="w-5 h-5 text-gray-400 hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
-    </svg>
-);
 interface Category {
     name: string;
     icon: string;
@@ -23,40 +12,11 @@ interface CategoryGridProps {
 
 function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(false);
-
-    const updateScrollButtons = () => {
-        const container = scrollContainerRef.current;
-        if (container) {
-            setCanScrollLeft(container.scrollLeft > 0);
-            setCanScrollRight(container.scrollLeft + container.offsetWidth < container.scrollWidth - 1);
-        }
-    };
-
-    useEffect(() => {
-        const container = scrollContainerRef.current;
-        if (!container) return;
-
-        updateScrollButtons();
-
-        const handleScroll = () => updateScrollButtons();
-        const handleResize = () => updateScrollButtons(); 
-        container.addEventListener('scroll', handleScroll);
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            container.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', handleResize);
-        };
-    }, [categories]);
-
-    const scrollByAmount = 300;
 
     return (
-        <div className="container mx-auto md:p-4">
-            <div className="bg-white rounded-lg shadow p-4 relative">
-                {canScrollLeft && (
+        <div className="container mx-auto md:p-0">
+            <div className="py-5 relative">
+                {/* {canScrollLeft && (
                     <button
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: -scrollByAmount, behavior: 'smooth' });
@@ -65,7 +25,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     >
                         <ChevronLeftIcon />
                     </button>
-                )}
+                )} */}
 
                 <div
                     ref={scrollContainerRef}
@@ -76,7 +36,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                             <button
                                 onClick={() => onCategorySelect(category.name)}
                                 key={category.name}
-                                className="flex flex-col items-center justify-start w-24 text-center group border-2 border-[#7952B3] rounded-[10px]"
+                                className="flex flex-col items-center justify-start w-[92px] text-center group border-2 border-[#7952B3] rounded-[10px]"
                             >
                                 <div className="w-16 h-16 flex items-center justify-center mb-2 group-hover:border-blue-500 transition-colors">
                                     <img
@@ -94,7 +54,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     </div>
                 </div>
 
-                {canScrollRight && (
+                {/* {canScrollRight && (
                     <button
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: scrollByAmount, behavior: 'smooth' });
@@ -103,7 +63,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     >
                         <ChevronRightIcon />
                     </button>
-                )}
+                )} */}
             </div>
         </div>
     );

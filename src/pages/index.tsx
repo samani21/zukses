@@ -42,26 +42,15 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
   ];
   const categoryData = [
-    { name: "Elektronik", icon: "/icon/Elektronik.png" },
-    { name: "Komputer & Aksesoris", icon: "/icon/komputer.png" },
-    { name: "Handphone & Aksesoris", icon: "/icon/Handphone.png" },
-    { name: "Pakaian Pria", icon: "/icon/pakaian_pria.png" },
-    { name: "Sepatu Pria", icon: "/icon/shoes.png" },
-    { name: "Tas Pria", icon: "/icon/tas_pria.png" },
-    { name: "Aksesoris Fashion", icon: "/icon/" },
+    { name: "Pc & Laptop", icon: "/icon/komputer.png" },
+    { name: "Handphone", icon: "/icon/Handphone.png" },
     { name: "Jam Tangan", icon: "/icon/jam_tangan.png" },
-    { name: "Kesehatan", icon: "/icon/health.png" },
-    { name: "Hobi & Koleksi", icon: "/icon/" },
-    { name: "Makanan & Minuman", icon: "/icon/Makanan.png" },
-    { name: "Perawatan & Kecantikan", icon: "/icon/" },
+    { name: "Pakaian Pria", icon: "/icon/pakaian_pria.png" },
+    { name: "Sepatu", icon: "/icon/shoes.png" },
     { name: "Perlengkapan Rumah", icon: "/icon/rumah.png" },
-    { name: "Pakaian Wanita", icon: "/icon/" },
-    { name: "Fashion Muslim", icon: "/icon/moslem.png" },
-    { name: "Fashion Bayi & Anak", icon: "/icon/fashion_bayi.png" },
-    { name: "Ibu & Bayi", icon: "/icon/ibudanbayi.png" },
-    { name: "Sepatu Wanita", icon: "/icon/shoes2.png" },
     { name: "Tas Wanita", icon: "/icon/tas_wanita.png" },
-    { name: "Otomotif", icon: "/icon/otomotif.png" }
+    { name: "Elektronik", icon: "/icon/Elektronik.png" },
+    { name: "Mainan Anak", icon: "/icon/otomotif.png" },
   ];
 
 
@@ -85,26 +74,33 @@ const Home: React.FC<HomeLayoutProps> = () => {
   }, []);
   return (
     <MainLayout>
-      <div className='lg:px-10'>
-        <main className="md:px-20 mx-auto">
+      <div className='lg:px-0'>
+        <main className="md:mx-auto w-[1200px] px-[120px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
         <div className='md:hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>
-        <main className='md:px-15'>
+        <main className='md:mx-auto  w-[1200px] px-[120px]'>
           <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
         </main>
-        <main className="container mx-auto pb-24 md:px-10">
+        <main className="container mx-auto pb-24 md: w-[1200px] px-[120px]">
           {
             products &&
             <ProductList products={products} selectedCategory={selectedCategory} />
           }
         </main>
       </div>
-      <main className="container mx-auto">
-        <SiteFooter />
-      </main>
+      <div className='border-t border-gray-200'>
+        <main className="container mx-auto w-[1200px] px-[120px]">
+          <SiteFooter />
+        </main>
+        <div className="border-t border-gray-200 py-4 mt-8">
+          <p className="text-center text-xs text-dark-500 font-bold">
+            @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
+          </p>
+        </div>
+      </div>
       {
         loading && <Loading />
       }

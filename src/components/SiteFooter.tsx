@@ -51,8 +51,8 @@ const SiteFooter: FC = () => {
     ];
 
     return (
-        <footer className="bg-white border-t border-gray-200 mt-8 px-[80px]">
-            <div className="container mx-auto py-12 px-4 sm:px-6 lg:px-8 relative">
+        <footer className="bg-white mt-8">
+            <div className="container mx-auto py-6 px-0 sm:px-6 lg:px-0 relative">
                 <div className="flex flex-col md:flex-row justify-between gap-8">
                     <div>
                         <h3 className="font-bold text-base text-gray-800 mb-4">Kategori</h3>
@@ -102,13 +102,6 @@ const SiteFooter: FC = () => {
                     <ChatIcon />
                     <span className="font-medium text-sm text-gray-800">Chat</span>
                 </button>
-            </div>
-
-            {/* Copyright */}
-            <div className="border-t border-gray-200 py-4 mt-8">
-                <p className="text-center text-xs text-dark-500 font-bold">
-                    @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
-                </p>
             </div>
         </footer>
     );
