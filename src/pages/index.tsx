@@ -42,15 +42,15 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
   ];
   const categoryData = [
-    { name: "Pc & Laptop", icon: "/icon/komputer.png" },
-    { name: "Handphone", icon: "/icon/Handphone.png" },
-    { name: "Jam Tangan", icon: "/icon/jam_tangan.png" },
-    { name: "Pakaian Pria", icon: "/icon/pakaian_pria.png" },
-    { name: "Sepatu", icon: "/icon/shoes.png" },
-    { name: "Perlengkapan Rumah", icon: "/icon/rumah.png" },
+    { name: "Pc & Laptop", icon: "/icon/categories/laptop_utama.png" },
+    { name: "Handphone", icon: "/icon/categories/mobile.png" },
+    { name: "Jam Tangan", icon: "/icon/categories/smartwatch_7176529.png" },
+    { name: "Pakaian Pria", icon: "/icon/categories/pakaian2.png" },
+    { name: "Sepatu", icon: "/icon/categories/sepatu1.png" },
+    { name: "Perlengkapan Rumah", icon: "/icon/categories/perabot.png" },
     { name: "Tas Wanita", icon: "/icon/tas_wanita.png" },
-    { name: "Elektronik", icon: "/icon/Elektronik.png" },
-    { name: "Mainan Anak", icon: "/icon/otomotif.png" },
+    { name: "Elektronik", icon: "/icon/categories/electronic.png" },
+    { name: "Mainan Anak", icon: "/icon/categories/mainan_anak.png" },
   ];
 
 
@@ -75,16 +75,16 @@ const Home: React.FC<HomeLayoutProps> = () => {
   return (
     <MainLayout>
       <div className='lg:px-0'>
-        <main className="md:mx-auto w-[1200px] px-[120px]">
+        <main className="md:mx-auto w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
         <div className='md:hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>
-        <main className='md:mx-auto  w-[1200px] px-[120px]'>
+        <main className='md:mx-auto  w-[1200px] px-[0px]'>
           <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
         </main>
-        <main className="container mx-auto pb-24 md: w-[1200px] px-[120px]">
+        <main className="container mx-auto pb-24 md: w-[1200px] px-[0px]">
           {
             products &&
             <ProductList products={products} selectedCategory={selectedCategory} />
@@ -92,7 +92,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
         </main>
       </div>
       <div className='border-t border-gray-200'>
-        <main className="container mx-auto w-[1200px] px-[120px]">
+        <main className="container mx-auto w-[1200px] px-[0px]">
           <SiteFooter />
         </main>
         <div className="border-t border-gray-200 py-4 mt-8">

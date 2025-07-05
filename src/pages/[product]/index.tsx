@@ -34,7 +34,7 @@ const ProductPage = () => {
                 <div className='hidden md:block'>
                     <Header />
                 </div>
-                <div className="container mx-auto p-2 sm:p-4 md:px-30 w-[1200px] px-[120px]">
+                <div className="container mx-auto p-2 sm:p-4 md:px-0 w-[1200px] px-[0px]">
                     <nav className="hidden md:block text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
                         <ol className="list-none p-0 inline-flex space-x-2">
                             <li className="flex items-center"><a href="#" className="text-blue-600 hover:underline" onClick={() => window.location.href = '/'}>Zuksess</a></li>
