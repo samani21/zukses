@@ -1,12 +1,13 @@
+import MyOrdersPage from 'components/userProfile/MyOrdersPage'
 import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
 
-const MyOrderPage = () => {
+const MyOrder = () => {
     return (
         <UserProfile>
-            MyOrderPage
+            <MyOrdersPage />
         </UserProfile>
     )
 }
 
-export default MyOrderPage
+export default MyOrder

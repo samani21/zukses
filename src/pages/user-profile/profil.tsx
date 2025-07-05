@@ -5,7 +5,9 @@ import React from 'react'
 const ProfilPage = () => {
     return (
         <UserProfile>
-            <ProfileForm />
+            <div className='p-5'>
+                <ProfileForm />
+            </div>
         </UserProfile>
     )
 }

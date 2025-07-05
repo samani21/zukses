@@ -1,12 +1,13 @@
+import AddressPage from 'components/userProfile/AddressPage'
 import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
 
-const AddressPage = () => {
+const Address = () => {
     return (
         <UserProfile>
-            AddressPage
+            <AddressPage />
         </UserProfile>
     )
 }
 
-export default AddressPage
+export default Address

@@ -30,8 +30,8 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                     </div>
                     <main className="flex-grow p-6 bg-white rounded-tl-lg rounded-bl-lg">
                         <div className="border border-gray-300 rounded-lg">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 p-5 border-b border-gray-300">{title}</h2>
-                            <div className="p-5">
+                            <h2 className="text-xl font-bold text-[#52357B] mb-6 p-5 border-b border-gray-300">{title}</h2>
+                            <div>
                                 {children}
                             </div>
                         </div>
