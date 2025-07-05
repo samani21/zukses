@@ -48,7 +48,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { name: "Pakaian Pria", icon: "/icon/categories/pakaian2.png" },
     { name: "Sepatu", icon: "/icon/categories/sepatu1.png" },
     { name: "Perlengkapan Rumah", icon: "/icon/categories/perabot.png" },
-    { name: "Tas Wanita", icon: "/icon/tas_wanita.png" },
+    { name: "Tas Wanita", icon: "/icon/categories/bag_9442444.png" },
     { name: "Elektronik", icon: "/icon/categories/electronic.png" },
     { name: "Mainan Anak", icon: "/icon/categories/mainan_anak.png" },
   ];
