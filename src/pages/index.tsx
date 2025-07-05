@@ -51,6 +51,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { name: "Tas Wanita", icon: "/icon/categories/bag_9442444.png" },
     { name: "Elektronik", icon: "/icon/categories/electronic.png" },
     { name: "Mainan Anak", icon: "/icon/categories/mainan_anak.png" },
+    { name: "Kosong", icon: "https://placehold.co/64x64/eee/ccc?text=K" },
   ];
 
 
