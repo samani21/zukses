@@ -1,12 +1,12 @@
 import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
 
-const IndexPage = () => {
+const MyOrderPage = () => {
     return (
         <UserProfile>
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Dashboard</h2>
+            MyOrderPage
         </UserProfile>
     )
 }
 
-export default IndexPage
+export default MyOrderPage

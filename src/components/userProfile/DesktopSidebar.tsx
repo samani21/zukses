@@ -12,15 +12,16 @@ interface User {
     role?: string
 }
 
-const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, setActivePage: (page: string) => void }) => {
+const DesktopSidebar = () => {
     const router = useRouter();
+    console.log(router.pathname)
     const [user, setUser] = useState<User | null>(null);
     const navItems = [
-        { name: 'Profil', icon: <img src='/icon/user-1.png' className="w-5 h-5" /> },
-        { name: 'Alamat', icon: <img src='/icon/alamat-1.png' className="w-5 h-5" /> },
-        { name: 'Rekening Bank', icon: <img src='/icon/bank-1.png' className="w-5 h-5" /> },
-        { name: 'Pesanan Saya', icon: <img src='/icon/pesanan_saya-1.png' className="w-5 h-5" /> },
-        { name: 'PIN Toko', icon: <img src='/icon/pin-1.png' className="w-5 h-5" /> },
+        { name: 'Dashboard', icon: <img src='/icon/user-1.png' className="w-5 h-5" />, url: '/user-profile' },
+        { name: 'Profil', icon: <img src='/icon/user-1.png' className="w-5 h-5" />, url: '/user-profile/profil' },
+        { name: 'Alamat', icon: <img src='/icon/alamat-1.png' className="w-5 h-5" />, url: '/user-profile/address' },
+        { name: 'Rekening Bank', icon: <img src='/icon/bank-1.png' className="w-5 h-5" />, url: '/user-profile/bank' },
+        { name: 'Pesanan Saya', icon: <img src='/icon/pesanan_saya-1.png' className="w-5 h-5" />, url: '/user-profile/my-order' },
     ];
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
@@ -36,12 +37,12 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
         }
     }, [])
     return (
-        <aside className="w-64 mr-[10px] p-4 hidden md:flex flex-col rounded-tr-lg rounded-br-lg bg-white">
+        <aside className="w-64 mr-[10px] p-4 hidden md:flex flex-col rounded-lg bg-white border border-gray-300">
             <div className="flex items-center gap-3 p-3 border-b mb-4">
                 <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-10 h-10 rounded-full" />
                 <div>
                     <h4 className="font-bold text-sm">{user?.name ?? "Nama Anda"}</h4>
-                    <button onClick={() => setActivePage('Profil')} className="text-xs text-gray-500 hover:text-blue-600">Edit Profil</button>
+                    <button onClick={() => router.push('/user-profile/profil')} className="text-xs text-gray-500 hover:text-blue-600">Edit Profil</button>
                 </div>
             </div>
             <nav className="flex-grow">
@@ -49,8 +50,8 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
                     {navItems.map(item => (
                         <li key={item.name}>
                             <button
-                                onClick={() => setActivePage(item.name)}
-                                className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${activePage === item.name
+                                onClick={() => router.push(item?.url)}
+                                className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
                                     ? 'bg-blue-100 text-blue-600 font-semibold'
                                     : 'text-gray-600 hover:bg-gray-100'
                                     }`}
@@ -60,14 +61,6 @@ const DesktopSidebar = ({ activePage, setActivePage }: { activePage: string, set
                             </button>
                         </li>
                     ))}
-                    <li onClick={() => router.push('/my-store')}>
-                        <button
-                            className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100`}
-                        >
-                            <img src='/icon/toko_saya-1.png' className="w-5 h-5" />
-                            <span>Toko Saya</span>
-                        </button>
-                    </li>
                 </ul>
             </nav>
             <div className="mt-4 pt-4 border-t border-gray-300">

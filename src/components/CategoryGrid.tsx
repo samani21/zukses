@@ -16,17 +16,6 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
     return (
         <div className="container mx-auto md:p-0">
             <div className="py-5 relative">
-                {/* {canScrollLeft && (
-                    <button
-                        onClick={() => {
-                            scrollContainerRef.current?.scrollBy({ left: -scrollByAmount, behavior: 'smooth' });
-                        }}
-                        className="absolute top-1/3 left-0 transform -translate-y-1/2 bg-white rounded-full p-1 shadow-md border hover:bg-gray-100 hidden md:flex items-center justify-center z-10"
-                    >
-                        <ChevronLeftIcon />
-                    </button>
-                )} */}
-
                 <div
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto scroll-smooth scrollbar-hide"
@@ -57,16 +46,6 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     </div>
                 </div>
 
-                {/* {canScrollRight && (
-                    <button
-                        onClick={() => {
-                            scrollContainerRef.current?.scrollBy({ left: scrollByAmount, behavior: 'smooth' });
-                        }}
-                        className="absolute top-1/3 right-0 transform -translate-y-1/2 bg-white rounded-full p-1 shadow-md border hover:bg-gray-100 hidden md:flex items-center justify-center"
-                    >
-                        <ChevronRightIcon />
-                    </button>
-                )} */}
             </div>
         </div>
     );

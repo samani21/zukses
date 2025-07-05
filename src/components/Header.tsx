@@ -145,9 +145,9 @@ const Header = () => {
                             <div className="flex items-center gap-4 font-medium">
                                 {isLoggedIn ? (
                                     <div className="flex items-center gap-4">
-                                        <a onClick={() => router.push('/my-store')} className="hover:underline">Toko Saya</a>
+                                        <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer">Toko Saya</a>
                                         <div className="h-3 w-px bg-indigo-400"></div>
-                                        <a onClick={() => router.push('/user-profile')} className="hover:underline font-semibold">{userName}</a>
+                                        <a onClick={() => router.push('/user-profile')} className="hover:underline font-semibold cursor-pointer">{userName}</a>
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2">

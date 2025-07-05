@@ -1,12 +1,13 @@
+import ProfileForm from 'components/userProfile/ProfileForm'
 import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
 
-const IndexPage = () => {
+const ProfilPage = () => {
     return (
         <UserProfile>
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Dashboard</h2>
+            <ProfileForm />
         </UserProfile>
     )
 }
 
-export default IndexPage
+export default ProfilPage
