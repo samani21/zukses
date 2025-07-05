@@ -1,5 +1,6 @@
 'use client'
 import Header from "components/Header";
+import SiteFooter from "components/SiteFooter";
 import DesktopSidebar from "components/userProfile/DesktopSidebar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -28,7 +29,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                         <h3 className="font-bold mb-2">Akun saya</h3>
                         <DesktopSidebar />
                     </div>
-                    <main className="flex-grow p-6 bg-white rounded-tl-lg rounded-bl-lg">
+                    <main className="flex-grow p-6 bg-white rounded-tl-lg rounded-bl-lg mt-[6px]">
                         <div className="border border-gray-300 rounded-lg">
                             <h2 className="text-xl font-bold text-[#52357B] mb-6 p-5 border-b border-gray-300">{title}</h2>
                             <div>
@@ -36,6 +37,16 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                             </div>
                         </div>
                     </main>
+                </div>
+            </div>
+            <div className='border-t border-gray-200'>
+                <main className="container mx-auto w-[1200px] px-[0px]">
+                    <SiteFooter />
+                </main>
+                <div className="border-t border-gray-200 py-4 mt-8">
+                    <p className="text-center text-xs text-dark-500 font-bold">
+                        @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
+                    </p>
                 </div>
             </div>
         </div>

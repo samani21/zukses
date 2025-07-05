@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { LogoutIcon } from './Icon';
+import { CardIcon, CartIcon, HomeIcon, PinIcon, ProfilIcon } from './Icon';
 import { useRouter } from 'next/router';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import { JSX } from '@emotion/react/jsx-runtime';
 interface User {
     name?: string
     email?: string
@@ -11,18 +12,44 @@ interface User {
     image?: string
     role?: string
 }
+interface NavItem {
+    name: string;
+    icon: JSX.Element;
+    url: string;
+}
 
+export const navItems: NavItem[] = [
+    {
+        name: 'Dashboard',
+        icon: <HomeIcon className="w-5 h-5" />,   // ← tag ditutup
+        url: '/user-profile',
+    },
+    {
+        name: 'Profil',
+        icon: <ProfilIcon className="w-5 h-5" />,
+        url: '/user-profile/profil',
+    },
+    {
+        name: 'Alamat',
+        icon: <PinIcon className="w-5 h-5" />,
+        url: '/user-profile/address',
+    },
+    {
+        name: 'Rekening Bank',
+        icon: <CardIcon className="w-5 h-5" />,
+        url: '/user-profile/bank',
+    },
+    {
+        name: 'Pesanan Saya',
+        icon: <CartIcon className="w-5 h-5" />,
+        url: '/user-profile/my-order',
+    },
+];
 const DesktopSidebar = () => {
     const router = useRouter();
     console.log(router.pathname)
     const [user, setUser] = useState<User | null>(null);
-    const navItems = [
-        { name: 'Dashboard', icon: <img src='/icon/user-1.png' className="w-5 h-5" />, url: '/user-profile' },
-        { name: 'Profil', icon: <img src='/icon/user-1.png' className="w-5 h-5" />, url: '/user-profile/profil' },
-        { name: 'Alamat', icon: <img src='/icon/alamat-1.png' className="w-5 h-5" />, url: '/user-profile/address' },
-        { name: 'Rekening Bank', icon: <img src='/icon/bank-1.png' className="w-5 h-5" />, url: '/user-profile/bank' },
-        { name: 'Pesanan Saya', icon: <img src='/icon/pesanan_saya-1.png' className="w-5 h-5" />, url: '/user-profile/my-order' },
-    ];
+
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -38,11 +65,10 @@ const DesktopSidebar = () => {
     }, [])
     return (
         <aside className="w-64 mr-[10px] p-4 hidden md:flex flex-col rounded-lg bg-white border border-gray-300">
-            <div className="flex items-center gap-3 p-3 border-b mb-4">
-                <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-10 h-10 rounded-full" />
+            <div className="flex items-center justify-center gap-3 p-3 ">
                 <div>
-                    <h4 className="font-bold text-sm">{user?.name ?? "Nama Anda"}</h4>
-                    <button onClick={() => router.push('/user-profile/profil')} className="text-xs text-gray-500 hover:text-blue-600">Edit Profil</button>
+                    <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-20 h-20 rounded-full" />
+                    <h4 className="font-bold text-lg mt-3 text-center">{user?.name ?? "Nama Anda"}</h4>
                 </div>
             </div>
             <nav className="flex-grow">
@@ -52,8 +78,8 @@ const DesktopSidebar = () => {
                             <button
                                 onClick={() => router.push(item?.url)}
                                 className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
-                                    ? 'bg-blue-100 text-blue-600 font-semibold'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                    ? 'text-red-600 font-bold'
+                                    : 'text-dark-600 font-bold hover:bg-gray-100'
                                     }`}
                             >
                                 {item.icon}
@@ -63,11 +89,16 @@ const DesktopSidebar = () => {
                     ))}
                 </ul>
             </nav>
-            <div className="mt-4 pt-4 border-t border-gray-300">
-                <button className="w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 text-red-600" onClick={handleLogout}>
+            <div className="mt-4 pt-4 px-3">
+                {/* <button className="w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 text-red-600" onClick={handleLogout}>
                     <LogoutIcon className="w-5 h-5" />
                     <span>Logout</span>
-                </button>
+                </button> */}
+                <div className='flex justify-center itmes-center'>
+                    <button className="w-full border border-gray-300 p-2 rounded-sm" onClick={handleLogout}>
+                        <span className='font-bold'>Logout</span>
+                    </button>
+                </div>
             </div>
         </aside>
     );

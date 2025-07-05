@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import DatePicker from './DatePicker';
 import ImageCropperModal from './ImageCropperModal';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Loading from 'components/Loading';
@@ -43,7 +42,7 @@ interface UserProfileData {
     name?: string;
     name_store?: string;
     gender?: string;
-    date_birth?: string;
+    date_birth?: string; // Change to string for YYYY-MM-DD
     id?: number;
     image?: string;
 }
@@ -57,9 +56,7 @@ const ProfileForm = () => {
     const [form, setForm] = useState({
         name: '',
         gender: '',
-        tanggal: '',
-        bulan: '',
-        tahun: '',
+        date_birth: '', // Single field for YYYY-MM-DD
     });
 
     const [errors, setErrors] = useState<ErrorMap>({});
@@ -97,9 +94,7 @@ const ProfileForm = () => {
             setForm({
                 name: data.name ?? '',
                 gender: data.gender ?? '',
-                tanggal: data.date_birth?.split('-')[2] ?? '',
-                bulan: data.date_birth?.split('-')[1] ?? '',
-                tahun: data.date_birth?.split('-')[0] ?? '',
+                date_birth: data.date_birth ?? '', // Set directly to date_birth
             });
             setProfileImage(data?.image ?? '');
         } else {
@@ -132,12 +127,12 @@ const ProfileForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const newErrors: ErrorMap = {};
-        const { name, gender, tanggal, bulan, tahun } = form;
+        const { name, gender, date_birth } = form; // Use date_birth
 
         if (!name) newErrors.name = 'Nama harus diisi.';
         if (!gender) newErrors.gender = 'Jenis kelamin harus dipilih.';
-        if (!tanggal || !bulan || !tahun)
-            newErrors.birthdate = 'Tanggal lahir lengkap harus dipilih.';
+        if (!date_birth)
+            newErrors.date_birth = 'Tanggal lahir harus dipilih.'; // Update error key
         if (!croppedImageFile && !user?.image)
             newErrors.image = 'Gambar harus dipilih.';
 
@@ -149,7 +144,7 @@ const ProfileForm = () => {
                 const formData = new FormData();
                 formData.append('name', name);
                 formData.append('gender', gender);
-                formData.append('date_birth', `${tahun}-${bulan}-${tanggal}`);
+                formData.append('date_birth', date_birth); // Send date_birth directly
                 if (croppedImageFile) formData.append('image', croppedImageFile);
 
                 const res = await Post<Response>(
@@ -234,7 +229,7 @@ const ProfileForm = () => {
             <form className="space-y-6" onSubmit={handleSubmit}>
                 {/* Section Foto Profil */}
                 <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 pt-1 w-32 text-right"> {/* Added text-right here */}
+                    <div className="flex-shrink-0 pt-1 w-32 text-right">
                         <label className="block text-sm font-medium text-gray-700">Pilih Foto</label>
                     </div>
                     <div className="flex-grow flex items-center gap-4">
@@ -276,7 +271,7 @@ const ProfileForm = () => {
 
                 {/* Nama User */}
                 <div className="flex items-center gap-4">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right"> {/* Added text-right here */}
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Nama User
                     </label>
                     <div className="flex-grow">
@@ -294,7 +289,7 @@ const ProfileForm = () => {
 
                 {/* Email (Read-only, with Ubah button) */}
                 <div className="flex items-center gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right"> {/* Added text-right here */}
+                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Email
                     </label>
                     <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
@@ -313,7 +308,7 @@ const ProfileForm = () => {
 
                 {/* Nomor Telepon (Read-only, with Ubah button) */}
                 <div className="flex items-center gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right"> {/* Added text-right here */}
+                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Nomor Telepon
                     </label>
                     <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
@@ -332,7 +327,7 @@ const ProfileForm = () => {
 
                 {/* Jenis Kelamin */}
                 <div className="flex items-start gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right"> {/* Added text-right here */}
+                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Jenis Kelamin
                     </label>
                     <div className="flex gap-6 flex-grow pt-2">
@@ -359,22 +354,24 @@ const ProfileForm = () => {
                             Perempuan
                         </label>
                     </div>
-                    {/* Error message for gender, consider placing it inside the flex-grow div for better alignment */}
                     {errors.gender && <p className="text-red-500 text-xs mt-1 absolute ml-32">{errors.gender}</p>}
                 </div>
 
-                {/* Tanggal Lahir */}
+                {/* Tanggal Lahir (Updated to single date input) */}
                 <div className="flex items-start gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right"> {/* Added text-right here */}
+                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Tanggal Lahir
                     </label>
                     <div className="flex-grow">
-                        <DatePicker
-                            value={{ day: form.tanggal, month: form.bulan, year: form.tahun }}
-                            onChange={handleInputChange}
+                        <input
+                            type="date"
+                            id="date_birth"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            value={form.date_birth}
+                            onChange={(e) => handleInputChange('date_birth', e.target.value)}
                         />
-                        {errors.birthdate && (
-                            <p className="text-red-500 text-xs mt-1">{errors.birthdate}</p>
+                        {errors.date_birth && (
+                            <p className="text-red-500 text-xs mt-1">{errors.date_birth}</p>
                         )}
                     </div>
                 </div>
