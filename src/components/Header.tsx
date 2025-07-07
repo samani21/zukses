@@ -179,7 +179,7 @@ const Header = () => {
                                                 <img src='icon/Shopping bag.svg' width={32} />
                                             </button>
                                             <button className="p-2 hover:bg-indigo-800 rounded-md" title="Toko Saya">
-                                                <img src='icon/User.svg' width={32} />
+                                                <img src='/icon/user.svg' width={32} />
                                             </button>
                                         </div>
                                     )}
@@ -197,11 +197,11 @@ const Header = () => {
                                 <SearchIcon className="w-6 h-6 text-white" />
                             </button>
                             <button className="p-2 hover:bg-indigo-800 rounded-full">
-                                <img src='icon/Shopping bag.svg' width={32} />
+                                <img src='/icon/Shopping bag.svg' width={32} />
                             </button>
                             {isLoggedIn ? (
                                 <button onClick={() => window.location.href = '/user-profile'} className="p-2 hover:bg-indigo-800 rounded-full">
-                                    <img src='icon/User.svg' width={32} />
+                                    <img src='/icon/user.svg' width={32} />
                                 </button>
                             ) : (
                                 <a onClick={() => router.push('/auth/login')} className="bg-indigo-700 px-4 py-1.5 rounded-md text-sm font-semibold">Masuk</a>)}
