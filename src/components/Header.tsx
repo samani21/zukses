@@ -128,7 +128,7 @@ const Header = () => {
 
     return (
         <>
-            <header className="text-white shadow-lg sticky top-0 z-40 h-[100px] bg-[#7952B3]">
+            <header className="text-white shadow-lg sticky top-0 z-40 h-[120px] bg-[#7952B3]">
                 <div className="">
                     <div className="hidden md:flex flex-col">
                         <div className="items-center text-xs mb-3 bg-[#563D7C] py-1">
@@ -155,7 +155,7 @@ const Header = () => {
                         <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] flex justify-between">
                             <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
-                                <div className='flex items-center justify-between gap-10'>
+                                <div className='flex items-center justify-between gap-4'>
                                     <div className="flex items-center gap-3 w-full">
                                         <div className="relative flex-grow">
                                             <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
@@ -171,23 +171,28 @@ const Header = () => {
                                             </div>
                                         </div>
                                         <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md" title="Filter Provinsi">
-                                            <img src='/icon/Filter.svg' />
+                                            <img src='/icon/Filter.svg' width={25} />
                                         </button>
 
                                     </div>
                                     {isLoggedIn && (
-                                        <div className='flex items-center justify-right'>
+                                        <div className='flex items-center justify-right mr-[-20px]'>
                                             <button className="p-2 rounded-md" title="Keranjang Belanja">
-                                                <img src='icon/Shopping bag.svg' width={32} />
+                                                <img src='icon/Shopping bag.svg' width={25} />
                                             </button>
                                             <button className="p-2 rounded-md" title="Toko Saya">
-                                                <img src='/icon/user.svg' width={32} />
+                                                <img src='/icon/user.svg' width={25} />
                                             </button>
                                         </div>
                                     )}
                                 </div>
-                                {/* <div className="mt-1 text-[13px] text-white ">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div> */}
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
+                            </div>
+                        </div>
+                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[5px]'>
+                            <div className="mt-1 text-[13px] text-white ">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div>
+                            <div className="mt-1 text-[13px] text-white mr-[125px] ">
+                                Laptop Kemeja lengan panjang Baju Koko
                             </div>
                         </div>
                     </div>
@@ -199,11 +204,11 @@ const Header = () => {
                                 <SearchIcon className="w-6 h-6 text-white" />
                             </button>
                             <button className="p-2 rounded-full">
-                                <img src='/icon/Shopping bag.svg' width={32} />
+                                <img src='/icon/Shopping bag.svg' width={25} />
                             </button>
                             {isLoggedIn ? (
                                 <button onClick={() => window.location.href = '/user-profile'} className="p-2 rounded-full">
-                                    <img src='/icon/user.svg' width={32} />
+                                    <img src='/icon/user.svg' width={25} />
                                 </button>
                             ) : (
                                 <a onClick={() => router.push('/auth/login')} className="bg-indigo-700 px-4 py-1.5 rounded-md text-sm font-semibold">Masuk</a>)}
