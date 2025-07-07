@@ -18,12 +18,12 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
 
     return (
         <div className="container mx-auto p-0">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Produk untuk Anda</h2>
+            <h2 className="text-[16px] text-dark mb-4">Rekomendasi untuk Anda</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {filteredProducts?.map(product => (
                     <a
                         key={product.id}
-                        className="bg-white overflow-hidden group"
+                        className="bg-white overflow-hidden group w-[188px]"
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
@@ -38,23 +38,37 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         }}
                     >
 
-                        <img src={product.image} alt={product.name} className="w-full group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
-                        <div className="p-4 pl-0">
-                            <h3 className="text-md text-dark-700 truncate">{product.name}</h3>
-                            <p className="text-lg font-bold mt-1">{formatRupiah(product.price)}</p>
-                            {product.is_cod_enabled ? <div className="mt-1">
-                                <span className="text-md font-semibold text-white px-1 py-0.5 bg-[#52357B] rounded-tr-[10px] rounded-bl-[10px]">
-                                    COD
-                                </span>
-                            </div> : ''}
-                            <div className="flex items-center text-xs text-gray-500">
-                                <StarIcon className="w-5 h-5 text-yellow-400" />
-                                <span className='text-[14px] mt-1 font-bold'>{product.rating || 5}</span> <span className='ml-2 text-[14px] mt-1 font-bold'>{product.sold || " 1000"}+ terjual</span>
+                        <img src={product.image} alt={product.name} className="w-full h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
+                        <div className="py-4">
+                            <h3 className="text-[14px] w-full text-dark line-clamp-2 h-10.5">
+                                {product.name}
+                            </h3>
+                            <p className="text-[16px] font-bold mt-1">{formatRupiah(product.price)}</p>
+                            <div className='flex justify-left items-center gap-2'>
+                                {product.is_cod_enabled ? <div className="mt-1 w-[50px] h-[24px] bg-[#BB2C31] flex justify-center items-center">
+                                    <p className="text-[12px] font-bold text-white">
+                                        COD
+                                    </p>
+                                </div> : ''}
+                                <div className="mt-1 w-[50px] h-[24px] bg-[#E36100] flex justify-center items-center">
+                                    <p className="text-[12px] font-bold text-white">
+                                        -31%
+                                    </p>
+                                </div>
                             </div>
-                            <p className="text-sm text-[#7952B3] mt-1">Kota Makassar</p>
+                            <div className="flex items-center text-xs text-gray-500 mt-2">
+                                <StarIcon className="w-5 h-5 text-yellow-400" />
+                                <span className='text-[14px] mt-[-1px] font-bold text-[#555555]'>{product.rating || 4.9}</span> <span className='ml-2 text-[14px] mt-[-1px] font-bold'>{product.sold || " 1000"}+ terjual</span>
+                            </div>
+                            <p className="text-sm text-[#333333] ">Kota Makassar</p>
                         </div>
                     </a>
                 ))}
+            </div>
+            <div className='mt-2 flex justify-center items-center'>
+                <div className='bg-[#E13C3A] text-white w-[383px] h-[50px] flex justify-center items-center rounded-[10px]'>
+                    <p className='text-[14px] font-semibold'>Muat lebih Banyak</p>
+                </div>
             </div>
         </div>
     );
