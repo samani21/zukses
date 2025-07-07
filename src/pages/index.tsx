@@ -42,16 +42,18 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
   ];
   const categoryData = [
-    { name: "Pc & Laptop", icon: "/icon/categories/laptop_utama.png" },
-    { name: "Handphone", icon: "/icon/categories/mobile.png" },
-    { name: "Jam Tangan", icon: "/icon/categories/smartwatch_7176529.png" },
-    { name: "Pakaian Pria", icon: "/icon/categories/pakaian2.png" },
-    { name: "Sepatu", icon: "/icon/categories/sepatu1.png" },
-    { name: "Perlengkapan Rumah", icon: "/icon/categories/perabot.png" },
-    { name: "Tas Wanita", icon: "/icon/categories/bag_9442444.png" },
-    { name: "Elektronik", icon: "/icon/categories/electronic.png" },
-    { name: "Mainan Anak", icon: "/icon/categories/mainan_anak.png" },
-    { name: "Kosong", icon: "https://placehold.co/64x64/eee/ccc?text=K" },
+    { name: "Pc & Laptop", icon: "/icon/categories/laptop_utama 2.svg" },
+    { name: "Handphone", icon: "/icon/categories/mobile 2.svg" },
+    { name: "Jam Tangan", icon: "/icon/categories/watch_690411 1.svg" },
+    { name: "Pakaian Pria", icon: "/icon/categories/pakaian2 2.svg" },
+    { name: "Sepatu", icon: "/icon/categories/sepatu1 1.svg" },
+    { name: "Perlengkapan Rumah", icon: "/icon/categories/machine_14852593 1.svg" },
+    { name: "Elektronik", icon: "/icon/categories/electronic 2.svg" },
+    { name: "Mainan Anak", icon: "/icon/categories/mainan_anak 3.svg" },
+    { name: "Tas Wanita", icon: "/icon/categories/bag_9442444 1.svg" },
+    { name: "Makanan & Minuman", icon: "/icon/categories/fast-food_2819194 1.svg" },
+    { name: "Motor", icon: "/icon/categories/motorcycle_1804617 1.svg" },
+    { name: "Buku", icon: "/icon/categories/book 1.svg" },
   ];
 
 
