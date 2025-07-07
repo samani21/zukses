@@ -128,30 +128,32 @@ const Header = () => {
 
     return (
         <>
-            <header className="text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#E84C2A] to-[#FF7A00] h-[125px]">
-                <div className="container mx-auto w-[1200px] px-[0px]">
-                    <div className="hidden md:flex flex-col py-2 py-2">
-                        <div className="flex justify-between items-center text-xs mb-3">
-                            <a onClick={() => router.push('/')} className="text-[13px] hover:underline">Download aplikasinya di Playstore</a>
-                            <div className="flex items-center gap-4 font-medium">
-                                {isLoggedIn ? (
-                                    <div className="flex items-center gap-4">
-                                        <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
-                                        <div className="h-7 w-px bg-white"></div>
-                                        <a onClick={() => router.push('/user-profile')} className="text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        <a onClick={() => router.push('/auth/register')} className="hover:underline">Daftar</a>
-                                        <div className="h-3 w-px bg-indigo-400"></div>
-                                        <a onClick={() => router.push('/auth/login')} className="hover:underline">Masuk</a>
-                                    </div>
-                                )}
+            <header className="text-white shadow-lg sticky top-0 z-40 h-[100px] bg-[#7952B3]">
+                <div className="">
+                    <div className="hidden md:flex flex-col">
+                        <div className="items-center text-xs mb-3 bg-[#563D7C] py-1">
+                            <div className="container mx-auto w-[1200px] px-[0px] flex justify-between">
+                                <a onClick={() => router.push('/')} className="text-[13px] hover:underline">Download aplikasinya di Playstore</a>
+                                <div className="flex items-center gap-4 font-medium">
+                                    {isLoggedIn ? (
+                                        <div className="flex items-center gap-4">
+                                            <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
+                                            {/* <div className="h-7 w-px bg-white"></div> */}
+                                            <a onClick={() => router.push('/user-profile')} className="text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <a onClick={() => router.push('/auth/register')} className="hover:underline">Daftar</a>
+                                            <div className="h-3 w-px bg-indigo-400"></div>
+                                            <a onClick={() => router.push('/auth/login')} className="hover:underline">Masuk</a>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8">
-                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[-30px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
+                        <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] flex justify-between">
+                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-10'>
                                     <div className="flex items-center gap-3 w-full">
@@ -163,7 +165,7 @@ const Header = () => {
                                                 className="w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[13px]"
                                             />
                                             <div className="absolute inset-y-0  right-0 flex items-center p-[2px]">
-                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#E84C2A] flex items-center justify-center" title="Cari">
+                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#563D7C] flex items-center justify-center" title="Cari">
                                                     <SearchIcon className="w-5 h-5 text-white" />
                                                 </button>
                                             </div>
@@ -184,7 +186,7 @@ const Header = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="mt-1 text-[13px] text-white ">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div>
+                                {/* <div className="mt-1 text-[13px] text-white ">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div> */}
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
                         </div>
@@ -208,7 +210,7 @@ const Header = () => {
                         </div>
                     </div>
                 </div>
-            </header>
+            </header >
 
             <ProvinceModal isOpen={isProvinceModalOpen} onClose={() => setProvinceModalOpen(false)} provinces={provinces} selectedProvinces={selectedProvinces} onApply={setSelectedProvinces} />
             {isMobileSearchOpen && <MobileSearch onClose={() => setIsMobileSearchOpen(false)} suggestions={searchSuggestions} searchHistory={searchHistory} onSearchPerformed={updateHistoryState} />}
