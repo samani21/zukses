@@ -49,12 +49,12 @@ const Home: React.FC<HomeLayoutProps> = () => {
   }, []);
 
   const sampleBanners: Banner[] = [
+    { id: 6, src: '/image/3 3.svg', alt: 'Banner 6' },
+    { id: 4, src: '/image/3 1.svg', alt: 'Banner 4' },
+    { id: 5, src: '/image/3 2.svg', alt: 'Banner 5' },
     { id: 1, src: '/image/banner1.webp', alt: 'Banner 1' },
     { id: 2, src: '/image/banner2.jpg', alt: 'Banner 2' },
     { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
-    { id: 4, src: '/image/3 1.svg', alt: 'Banner 4' },
-    { id: 5, src: '/image/3 2.svg', alt: 'Banner 5' },
-    { id: 6, src: '/image/3 3.svg', alt: 'Banner 6' },
   ];
 
   const samplePayment: Payments[] = [

@@ -153,9 +153,9 @@ const Header = () => {
                         </div>
 
                         <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] flex justify-between">
-                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
+                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[0px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
-                                <div className='flex items-center justify-between gap-4'>
+                                <div className='flex items-center justify-between gap-4 mt-2'>
                                     <div className="flex items-center gap-3 w-full">
                                         <div className="relative flex-grow">
                                             <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
@@ -190,8 +190,22 @@ const Header = () => {
                             </div>
                         </div>
                         <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[5px]'>
-                            <div className="mt-1 text-[13px] text-white ">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div>
-                            <div className="mt-1 text-[13px] text-white mr-[125px] ">
+                            <div className="mt-1 text-[13px] text-white">
+                                Pencarian di
+                                <a
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setProvinceModalOpen(true);
+                                    }}
+                                    className="text-white hover:underline cursor-pointer"
+                                >
+                                    {selectedProvinces.length > 0
+                                        ? " " + selectedProvinces.slice(0, 3).join(', ')
+                                        : ' semua provinsi'}
+                                </a>
+                            </div>
+
+                            <div className="mt-1 text-[13px] text-white mr-[125px] cursor-pointer">
                                 Laptop Kemeja lengan panjang Baju Koko
                             </div>
                         </div>

@@ -1,119 +1,131 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    useCallback,
+    useMemo,
+    FC,
+} from 'react';
 const ChevronRightIcon = () => (
-    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg
+        className="w-6 h-6 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+    >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
     </svg>
 );
-
 const ChevronLeftIcon = () => (
-    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg
+        className="w-6 h-6 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+    >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
     </svg>
 );
 
-interface Banner {
-    id: number;
-    src: string;
-    alt: string;
-}
+interface Banner { id: number; src: string; alt: string; }
+interface SlidingBannerProps { banners: Banner[]; autoPlayInterval?: number; }
 
-interface SlidingBannerProps {
-    banners: Banner[];
-    autoPlayInterval?: number;
-}
+const useMediaQuery = (query: string) => {
+    const [matches, setMatches] = useState<boolean>(() =>
+        typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
+    );
 
-function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps) {
-    const extendedBanners = React.useMemo(() => {
+    useEffect(() => {
+        const m = window.matchMedia(query);
+        const listener = () => setMatches(m.matches);
+        listener();
+        m.addEventListener('change', listener);
+        return () => m.removeEventListener('change', listener);
+    }, [query]);
+
+    return matches;
+};
+
+const SlidingBanner: FC<SlidingBannerProps> = ({
+    banners,
+    autoPlayInterval = 5000,
+}) => {
+    const isMobile = useMediaQuery('(max-width: 767px)');
+    const visibleCount = isMobile ? 1 : 3;
+    const slideWidthPct = 100 / visibleCount;
+
+    const extendedBanners = useMemo(() => {
         if (banners.length === 0) return [];
-        return [banners[banners.length - 1], ...banners, banners[0]];
-    }, [banners]);
+        const head = banners.slice(0, visibleCount);
+        const tail = banners.slice(-visibleCount);
+        return [...tail, ...banners, ...head];
+    }, [banners, visibleCount]);
 
-    const [currentIndex, setCurrentIndex] = useState(1);
+    const [currentIndex, setCurrentIndex] = useState(visibleCount);
     const [disableTransition, setDisableTransition] = useState(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const containerRef = useRef<HTMLDivElement | null>(null);
-
     const startXRef = useRef<number | null>(null);
-    const isDraggingRef = useRef<boolean>(false);
+    const isDraggingRef = useRef(false);
 
-    // --- Navigasi ---
-    const handleNext = useCallback(() => {
-        if (disableTransition) return;
-        setCurrentIndex(prev => prev + 1);
-    }, [disableTransition]);
+    const next = useCallback(() => !disableTransition && setCurrentIndex(i => i + 1), [disableTransition]);
+    const prev = useCallback(() => !disableTransition && setCurrentIndex(i => i - 1), [disableTransition]);
+    const goTo = (i: number) => setCurrentIndex(i + visibleCount); // titik navigasi
 
-    const handlePrevious = useCallback(() => {
-        if (disableTransition) return;
-        setCurrentIndex(prev => prev - 1);
-    }, [disableTransition]);
-
-    const handleDotClick = (index: number) => {
-        setCurrentIndex(index + 1);
-    };
-
-    const resetTimeout = useCallback(() => {
+    const resetTimeout = (): void => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
-    }, []);
+    };
 
     useEffect(() => {
-        if (autoPlayInterval > 0 && banners.length > 1) {
+        if (autoPlayInterval > 0 && banners.length > visibleCount) {
             resetTimeout();
-            timeoutRef.current = setTimeout(() => {
-                handleNext();
-            }, autoPlayInterval);
+            timeoutRef.current = setTimeout(next, autoPlayInterval);
         }
         return resetTimeout;
-    }, [currentIndex, autoPlayInterval, banners.length, handleNext, resetTimeout]);
+    }, [currentIndex, autoPlayInterval, banners.length, next, visibleCount]);
 
-    const handleTransitionEnd = () => {
-        if (currentIndex <= 0) {
+    const onTransitionEnd = () => {
+        if (currentIndex < visibleCount) {
             setDisableTransition(true);
-            setCurrentIndex(banners.length);
-        } else if (currentIndex >= extendedBanners.length - 1) {
+            setCurrentIndex(banners.length + currentIndex);
+        } else if (currentIndex >= banners.length + visibleCount) {
             setDisableTransition(true);
-            setCurrentIndex(1);
+            setCurrentIndex(visibleCount);
         }
     };
-
     useEffect(() => {
         if (disableTransition) {
-            const timer = setTimeout(() => setDisableTransition(false), 50);
-            return () => clearTimeout(timer);
+            const t = setTimeout(() => setDisableTransition(false), 50);
+            return () => clearTimeout(t);
         }
     }, [disableTransition]);
-    const handleInteractionStart = (clientX: number) => {
+
+    const start = (x: number) => {
         resetTimeout();
         isDraggingRef.current = true;
-        startXRef.current = clientX;
+        startXRef.current = x;
     };
-
-    const handleInteractionMove = (clientX: number) => {
+    const move = (x: number) => {
         if (!isDraggingRef.current || startXRef.current === null) return;
-        const diff = clientX - startXRef.current;
+
+        const diff = x - startXRef.current;
         if (Math.abs(diff) > 50) {
             if (diff > 0) {
-                handlePrevious();
+                prev();      // geser ke kiri
             } else {
-                handleNext();
+                next();      // geser ke kanan
             }
             isDraggingRef.current = false;
         }
     };
-
-    const handleInteractionEnd = () => {
+    const end = () => {
         isDraggingRef.current = false;
         startXRef.current = null;
-        if (autoPlayInterval > 0) {
-            resetTimeout();
-            timeoutRef.current = setTimeout(() => handleNext(), autoPlayInterval);
-        }
     };
 
     const transformStyle = {
-        transform: `translateX(calc(-${currentIndex} * (70% + 1rem) + 15% - 0.5rem))`,
+        transform: `translateX(calc(-${currentIndex} * (${slideWidthPct}% + 1rem)))`,
         transition: disableTransition ? 'none' : 'transform 0.5s ease-in-out',
     };
 
@@ -121,82 +133,79 @@ function SlidingBanner({ banners, autoPlayInterval = 5000 }: SlidingBannerProps)
 
     return (
         <div
-            className="w-full mx-auto select-none pt-10 "
+            className="w-full select-none pt-5"
             onMouseEnter={resetTimeout}
-            onMouseLeave={handleInteractionEnd}
+            onMouseLeave={end}
         >
             <div
-                ref={containerRef}
-                className="relative group overflow-hidden rounded-xl"
-                onTouchStart={(e) => handleInteractionStart(e.touches[0].clientX)}
-                onTouchMove={(e) => handleInteractionMove(e.touches[0].clientX)}
-                onTouchEnd={handleInteractionEnd}
-                onMouseDown={(e) => handleInteractionStart(e.clientX)}
-                onMouseMove={(e) => handleInteractionMove(e.clientX)}
-                onMouseUp={handleInteractionEnd}
-                onMouseLeave={() => { if (isDraggingRef.current) handleInteractionEnd() }}
+                className="relative group overflow-hidden "
+                onTouchStart={e => start(e.touches[0].clientX)}
+                onTouchMove={e => move(e.touches[0].clientX)}
+                onTouchEnd={end}
+                onMouseDown={e => start(e.clientX)}
+                onMouseMove={e => move(e.clientX)}
+                onMouseUp={end}
+                onMouseLeave={() => { if (isDraggingRef.current) end(); }}
             >
                 <div
-                    className="flex items-center gap-4" // `gap-4` memberi jarak antar slide
+                    className="flex items-center gap-4"     /* gap‑4 = 1rem */
                     style={transformStyle}
-                    onTransitionEnd={handleTransitionEnd}
+                    onTransitionEnd={onTransitionEnd}
                 >
-                    {extendedBanners.map((banner, index) => (
+                    {extendedBanners.map((b, i) => (
                         <div
-                            key={index}
+                            key={`${b.id}-${i}`}
                             className="flex-shrink-0"
-                            style={{ width: '70%' }} // Lebar setiap slide
+                            style={{ width: `${slideWidthPct}%` }}
                         >
                             <img
-                                src={banner.src}
-                                alt={banner.alt}
-                                className={`w-full h-40 md:h-60 object-cover rounded-xl transition-opacity duration-500 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-60'
-                                    }`}
-                                draggable="false"
+                                src={b.src}
+                                alt={b.alt}
+                                className={`w-full h-40 md:h-56 object-cover shadow
+                  transition-opacity duration-500 ease-in-out
+                  ${i === currentIndex ? 'opacity-100' : 'opacity-100'}`}
+                                draggable={false}
                             />
                         </div>
                     ))}
                 </div>
 
-                {/* Tombol Panah Kiri */}
                 <button
-                    onClick={handlePrevious}
-                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:outline-none z-10"
-                    aria-label="Previous slide"
+                    onClick={prev}
+                    className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2
+            bg-black/40 hover:bg-black/60 p-2 rounded-full opacity-0
+            group-hover:opacity-100 transition focus:outline-none z-10"
+                    aria-label="Sebelumnya"
                 >
                     <ChevronLeftIcon />
                 </button>
-
-                {/* Tombol Panah Kanan */}
                 <button
-                    onClick={handleNext}
-                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/30 hover:bg-black/50 p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:outline-none z-10"
-                    aria-label="Next slide"
+                    onClick={next}
+                    className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2
+            bg-black/40 hover:bg-black/60 p-2 rounded-full opacity-0
+            group-hover:opacity-100 transition focus:outline-none z-10"
+                    aria-label="Berikutnya"
                 >
                     <ChevronRightIcon />
                 </button>
 
-                {/* Tombol Navigasi Titik */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center space-x-2 z-10">
-                    <div className="bg-black/40 px-2 py-1 rounded-full flex items-center space-x-2">
-                        {banners.map((_, index) => {
-                            const activeDotIndex = (currentIndex - 1 + banners.length) % banners.length;
-                            return (
-                                <button
-                                    key={index}
-                                    onClick={() => handleDotClick(index)}
-                                    className={`h-2 rounded-full transition-all duration-300 ${activeDotIndex === index ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'
-                                        }`}
-                                    aria-label={`Go to slide ${index + 1}`}
-                                />
-                            );
-                        })}
-                    </div>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                    {banners.map((_, i) => {
+                        const active = (currentIndex - visibleCount + banners.length) % banners.length === i;
+                        return (
+                            <button
+                                key={i}
+                                onClick={() => goTo(i)}
+                                className={`h-2 rounded-full transition-all duration-300
+                  ${active ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/75'}`}
+                                aria-label={`Ke slide ${i + 1}`}
+                            />
+                        );
+                    })}
                 </div>
             </div>
         </div>
     );
-}
+};
 
-// --- Komponen Aplikasi untuk Contoh Penggunaan ---
 export default SlidingBanner;
