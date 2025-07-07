@@ -17,24 +17,47 @@ function ProvinceModal({
     selectedProvinces,
     onApply,
 }: ProvinceModalProps) {
-    const MAX_SELECTED = 3;                // <— batas pilihan
+    const MAX_SELECTED = 3;
 
     const [isMounted, setIsMounted] = useState(false);
     const [tempSelected, setTempSelected] =
         useState<string[]>(selectedProvinces);
 
+    // Mount detection
     useEffect(() => {
         setIsMounted(true);
+    }, []);
+
+    // Lock scroll when modal is open
+    useEffect(() => {
+        if (!isMounted) return;
+
+        if (isOpen) {
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
+            document.body.style.overflow = 'hidden';
+
+            return () => {
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                document.body.style.overflow = '';
+                window.scrollTo(0, scrollY);
+            };
+        }
+    }, [isOpen, isMounted]);
+
+    // Reset selection when modal opened
+    useEffect(() => {
         if (isOpen) setTempSelected(selectedProvinces);
     }, [isOpen, selectedProvinces]);
 
     const handleCheckboxChange = (province: string) => {
         setTempSelected(prev => {
-            // jika sudah ada -> hapus
             if (prev.includes(province)) return prev.filter(p => p !== province);
-            // jika kurang dari 3 -> tambahkan
             if (prev.length < MAX_SELECTED) return [...prev, province];
-            // jika sudah 3 -> abaikan
             return prev;
         });
     };
@@ -86,7 +109,7 @@ function ProvinceModal({
                                         checked={checked}
                                         onChange={() => handleCheckboxChange(province)}
                                         disabled={disableOthers}
-                                        className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+                                        className="h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] flex-shrink-0"
                                     />
                                     <span className="text-gray-700">{province}</span>
                                 </label>
@@ -110,14 +133,14 @@ function ProvinceModal({
                     </button>
                     <button
                         onClick={handleApply}
-                        className="px-6 py-2 w-[146px] bg-[#E13C3A] text-white rounded-lg hover: transition-colors"
+                        className="px-6 py-2 w-[146px] bg-[#563D7C] text-white rounded-lg hover: transition-colors"
                     >
                         Terapkan
                     </button>
                 </div>
             </div>
         </div>,
-        document.body,
+        document.body
     );
 }
 

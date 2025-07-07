@@ -42,25 +42,18 @@ const SiteFooter: FC = () => {
     <footer className="bg-white pt-12 pb-16 text-gray-800">
       <div className="container mx-auto px-4">
 
-        <section className="max-w-5xl mb-10">
-          <h3 className="font-semibold text-lg mb-2">
+        <section className="mb-10">
+          <h3 className="font-semibold text-[15px] mb-2">
             Nikmati Mudahnya Jual Beli di Zukses
           </h3>
-          <p className="text-sm leading-relaxed mb-6">
-            Zukses adalah platform mobile asli Indonesia yang menghadirkan
-            pengalaman jual beli online yang mudah, aman, dan menyenangkan
-            langsung dari ponsel Anda. Nikmati berbagai penawaran menarik,
-            serta kemudahan dalam mendaftarkan produk jualan dan berbelanja
-            kapan pun dan di mana pun. Bergabunglah bersama jutaan pengguna
-            lainnya dan rasakan transaksi yang praktis dan terpercaya dengan
-            Zukses. Transaksi aman, peluang tanpa batas. Mulai sekarang bersama
-            Zukses!
+          <p className="text-[14px] leading-relaxed mb-6">
+            Zukses adalah platform mobile asli Indonesia yang menghadirkan pengalaman jual beli online yang mudah, aman, dan menyenangkan langsung dari ponsel Anda. Nikmati berbagai penawaran menarik, serta kemudahan dalam mendaftarkan produk jualan dan berbelanja kapan pun dan di mana pun. Bergabunglah bersama jutaan pengguna lainnya dan rasakan transaksi yang praktis dan terpercaya dengan Zukses. Transaksi aman, peluang tanpa batas. Mulai sekarang bersama Zukses!
           </p>
 
-          <h3 className="font-semibold text-lg mb-2">
+          <h3 className="font-semibold text-[15px] mb-2">
             Temukan segala kebutuhanmu dengan harga terbaik hanya di Zukses.
           </h3>
-          <p className="text-sm leading-relaxed">
+          <p className="text-[14px] leading-relaxed">
             Zukses adalah pusat perbelanjaan online yang menghadirkan pengalaman
             belanja modern, di mana kamu bisa mengikuti penjual favorit dan
             mendapatkan update produk terbaru secara langsung. Nikmati kemudahan
@@ -74,9 +67,7 @@ const SiteFooter: FC = () => {
           </p>
         </section>
 
-        {/* ---------- BAGIAN BAWAH (GRID) ---------- */}
         <div className="grid md:grid-cols-12 gap-10">
-          {/* KOLON KATEGORI */}
           <div className="md:col-span-7">
             <h4 className="font-semibold text-base mb-4">Kategori</h4>
             <div className="grid grid-cols-3 gap-x-8">
