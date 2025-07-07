@@ -128,7 +128,7 @@ const Header = () => {
 
     return (
         <>
-            <header className="text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#BB2C31] via-[#E13C3A] to-[#FB4A3A] h-[125px]">
+            <header className="text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#E84C2A] to-[#FF7A00] h-[125px]">
                 <div className="container mx-auto w-[1200px] px-[0px]">
                     <div className="hidden md:flex flex-col py-2 py-2">
                         <div className="flex justify-between items-center text-xs mb-3">
@@ -163,7 +163,7 @@ const Header = () => {
                                                 className="w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[13px]"
                                             />
                                             <div className="absolute inset-y-0  right-0 flex items-center p-[2px]">
-                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#E13C3A] hover:bg-indigo-800 flex items-center justify-center" title="Cari">
+                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#E84C2A] hover:bg-indigo-800 flex items-center justify-center" title="Cari">
                                                     <SearchIcon className="w-5 h-5 text-white" />
                                                 </button>
                                             </div>
