@@ -26,12 +26,12 @@ export default function UserProfile({ children }: { children: React.ReactNode })
             <div className="min-h-screen font-sans p-10">
                 <div className="container mx-auto p-0 md:p-0 md:px-0 flex rounded-lg min-h-[70vh] w-[1200px]">
                     <div>
-                        <h3 className="font-bold mb-2">Akun saya</h3>
+                        <h3 className="font-bold w-55 border-r border-l border-t border-gray-300 text-center py-4 rounded-tl-lg rounded-tr-lg">Akun saya</h3>
                         <DesktopSidebar />
                     </div>
-                    <main className="flex-grow p-6 bg-white rounded-tl-lg rounded-bl-lg mt-[6px]">
-                        <div className="border border-gray-300 rounded-lg">
-                            <h2 className="text-xl font-bold text-[#52357B] mb-6 p-5 border-b border-gray-300">{title}</h2>
+                    <main className="flex-grow bg-white rounded-tl-lg rounded-bl-lg mt-[6px]">
+                        <div className="">
+                            <h2 className="text-xl font-bold text-[#333333] mb-6 ">{title}</h2>
                             <div>
                                 {children}
                             </div>
