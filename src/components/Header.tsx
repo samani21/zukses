@@ -10,15 +10,6 @@ const SearchIcon = ({ className }: { className?: string }) => (
 const HistoryIcon = ({ className }: { className?: string }) => (
     <svg className={className || "w-5 h-5 text-gray-400"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
 );
-const CartIcon = ({ className }: { className?: string }) => (
-    <svg className={className || "w-6 h-6"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-);
-const FilterIcon = ({ className }: { className?: string }) => (
-    <svg className={className || "w-6 h-6"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 016 17v-2.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
-);
-const UserIcon = ({ className }: { className?: string }) => (
-    <svg className={className || "w-6 h-6"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-);
 const ChevronLeftIcon = ({ className }: { className?: string }) => (
     <svg className={className || "w-6 h-6"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
 );
@@ -137,17 +128,17 @@ const Header = () => {
 
     return (
         <>
-            <header className="text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#52357B] to-[#7952B3] h-27">
+            <header className="text-white shadow-lg sticky top-0 z-40 bg-gradient-to-b from-[#BB2C31] via-[#E13C3A] to-[#FB4A3A] h-[125px]">
                 <div className="container mx-auto w-[1200px] px-[0px]">
                     <div className="hidden md:flex flex-col py-2 py-2">
                         <div className="flex justify-between items-center text-xs mb-3">
-                            <a onClick={() => router.push('/')} className="hover:underline">Download aplikasinya di Playstore</a>
+                            <a onClick={() => router.push('/')} className="text-[13px] hover:underline">Download aplikasinya di Playstore</a>
                             <div className="flex items-center gap-4 font-medium">
                                 {isLoggedIn ? (
                                     <div className="flex items-center gap-4">
-                                        <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer">Toko Saya</a>
-                                        <div className="h-3 w-px bg-indigo-400"></div>
-                                        <a onClick={() => router.push('/user-profile')} className="hover:underline font-semibold cursor-pointer">{userName}</a>
+                                        <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
+                                        <div className="h-7 w-px bg-white"></div>
+                                        <a onClick={() => router.push('/user-profile')} className="text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2">
@@ -160,32 +151,40 @@ const Header = () => {
                         </div>
 
                         <div className="flex items-center gap-8">
-                            <h1 className="text-4xl font-bold cursor-pointer shrink-0 mt-[-20px]" onClick={() => window.location.href = '/'}>Zukses</h1>
+                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[-30px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
-                                <div className="flex items-center gap-3">
-                                    <div className="relative flex-grow">
-                                        <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
-                                            onFocus={() => { setIsSearchFocused(true); setSearchResults(null); setDropdownMode('history'); }}
-                                            onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setSearchResults(null); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }}
-                                            onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                                            className="w-full pl-4 pr-12 py-2.5 text-gray-900 bg-white border-0 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                                        />
-                                        <div className="absolute inset-y-0 h-10 right-0 flex items-center mt-[2px] mr-[2px]"><button onClick={handleSearch} className="h-full px-3 bg-gradient-to-b from-[#52357B] to-[#7952B3] rounded-sm hover:bg-indigo-800 flex items-center justify-center" title="Cari"><SearchIcon className="w-5 h-5 text-white" /></button></div>
-                                    </div>
-                                    <button onClick={() => setProvinceModalOpen(true)} className="p-2 hover:bg-indigo-800 rounded-md" title="Filter Provinsi"><FilterIcon className="w-6 h-6 text-white" /></button>
+                                <div className='flex items-center justify-between gap-10'>
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="relative flex-grow">
+                                            <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
+                                                onFocus={() => { setIsSearchFocused(true); setSearchResults(null); setDropdownMode('history'); }}
+                                                onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setSearchResults(null); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
+                                                className="w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[13px]"
+                                            />
+                                            <div className="absolute inset-y-0  right-0 flex items-center p-[2px]">
+                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#E13C3A] hover:bg-indigo-800 flex items-center justify-center" title="Cari">
+                                                    <SearchIcon className="w-5 h-5 text-white" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => setProvinceModalOpen(true)} className="p-2 hover:bg-indigo-800 rounded-md" title="Filter Provinsi">
+                                            <img src='/icon/Filter.svg' />
+                                        </button>
 
+                                    </div>
                                     {isLoggedIn && (
-                                        <>
+                                        <div className='flex items-center justify-right'>
                                             <button className="p-2 hover:bg-indigo-800 rounded-md" title="Keranjang Belanja">
-                                                <CartIcon className="w-6 h-6 text-white" />
+                                                <img src='icon/Shopping bag.svg' width={32} />
                                             </button>
                                             <button className="p-2 hover:bg-indigo-800 rounded-md" title="Toko Saya">
-                                                <UserIcon className="w-6 h-6 text-white" />
+                                                <img src='icon/User.svg' width={32} />
                                             </button>
-                                        </>
+                                        </div>
                                     )}
                                 </div>
-                                <div className="mt-1.5 text-xs text-indigo-200">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="font-semibold text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div>
+                                <div className="mt-1 text-[13px] text-white ">Cari di <a onClick={(e) => { e.preventDefault(); setProvinceModalOpen(true); }} className="text-white hover:underline">{selectedProvinces.length > 0 ? selectedProvinces.join(', ') : 'semua Provinsi'}</a></div>
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
                         </div>
@@ -194,9 +193,18 @@ const Header = () => {
                     <div className="md:hidden flex items-center justify-between py-3">
                         <h1 className="text-2xl font-bold" onClick={() => window.location.href = '/'}>Zukses</h1>
                         <div className="flex items-center gap-2">
-                            <button onClick={() => setIsMobileSearchOpen(true)} className="p-2 hover:bg-indigo-800 rounded-full"><SearchIcon className="w-6 h-6 text-white" /></button>
-                            <button className="p-2 hover:bg-indigo-800 rounded-full"><CartIcon className="w-6 h-6 text-white" /></button>
-                            {isLoggedIn ? (<button onClick={() => window.location.href = '/user-profile'} className="p-2 hover:bg-indigo-800 rounded-full"><UserIcon className="w-6 h-6 text-white" /></button>) : (<a onClick={() => router.push('/auth/login')} className="bg-indigo-700 px-4 py-1.5 rounded-md text-sm font-semibold">Masuk</a>)}
+                            <button onClick={() => setIsMobileSearchOpen(true)} className="p-2 hover:bg-indigo-800 rounded-full">
+                                <SearchIcon className="w-6 h-6 text-white" />
+                            </button>
+                            <button className="p-2 hover:bg-indigo-800 rounded-full">
+                                <img src='icon/Shopping bag.svg' width={32} />
+                            </button>
+                            {isLoggedIn ? (
+                                <button onClick={() => window.location.href = '/user-profile'} className="p-2 hover:bg-indigo-800 rounded-full">
+                                    <img src='icon/User.svg' width={32} />
+                                </button>
+                            ) : (
+                                <a onClick={() => router.push('/auth/login')} className="bg-indigo-700 px-4 py-1.5 rounded-md text-sm font-semibold">Masuk</a>)}
                         </div>
                     </div>
                 </div>
