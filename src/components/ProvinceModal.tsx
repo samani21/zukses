@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -40,11 +41,12 @@ function ProvinceModal({ isOpen, onClose, provinces, selectedProvinces, onApply 
 
     return createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" onClick={onClose} style={{ background: "#00000022" }}>
-            <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl m-4" onClick={(e) => e.stopPropagation()}>
-                <div className="p-4 ">
-                    <h2 id="modal-title" className="text-xl font-bold text-center text-gray-800">Pilih Provinsi Lokasi Pencarian</h2>
+            <div className="relative w-[640px] h-[615px] bg-white  shadow-2xl m-4" onClick={(e) => e.stopPropagation()}>
+                <div className="p-4 bg-[#5459AC] flex justify-between h-[60px]">
+                    <h2 id="modal-title" className="text-[16px] font-semibold text-center text-white">Pilih Provinsi Lokasi Pencarian</h2>
+                    <X className='text-white cursor-pointer' onClick={onClose} />
                 </div>
-                <div className="p-6 max-h-80 overflow-y-auto">
+                <div className="p-6 max-h-119 overflow-y-auto">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-6">
                         {provinces.map(province => (
                             <label key={province} className="flex items-center space-x-3 cursor-pointer">
@@ -60,11 +62,11 @@ function ProvinceModal({ isOpen, onClose, provinces, selectedProvinces, onApply 
                         ))}
                     </div>
                 </div>
-                <div className="flex justify-end p-4  gap-4">
-                    <button onClick={onClose} className="px-6 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition-colors">
+                <div className="flex justify-center p-4 py-5 gap-4 border-t border-[#CCCCCC]">
+                    <button onClick={onClose} className="px-6 w-[146px] py-2 bg-white text-dark border border-[#AAAAAA] rounded-[10px] hover:bg-yellow-600 transition-colors">
                         Keluar
                     </button>
-                    <button onClick={handleApply} className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                    <button onClick={handleApply} className="px-6 py-2 w-[146px] bg-[#E13C3A] text-white rounded-lg hover: transition-colors">
                         Terapkan
                     </button>
                 </div>

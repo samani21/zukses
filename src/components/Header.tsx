@@ -163,22 +163,22 @@ const Header = () => {
                                                 className="w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[13px]"
                                             />
                                             <div className="absolute inset-y-0  right-0 flex items-center p-[2px]">
-                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#E84C2A] hover:bg-indigo-800 flex items-center justify-center" title="Cari">
+                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#E84C2A] flex items-center justify-center" title="Cari">
                                                     <SearchIcon className="w-5 h-5 text-white" />
                                                 </button>
                                             </div>
                                         </div>
-                                        <button onClick={() => setProvinceModalOpen(true)} className="p-2 hover:bg-indigo-800 rounded-md" title="Filter Provinsi">
+                                        <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md" title="Filter Provinsi">
                                             <img src='/icon/Filter.svg' />
                                         </button>
 
                                     </div>
                                     {isLoggedIn && (
                                         <div className='flex items-center justify-right'>
-                                            <button className="p-2 hover:bg-indigo-800 rounded-md" title="Keranjang Belanja">
+                                            <button className="p-2 rounded-md" title="Keranjang Belanja">
                                                 <img src='icon/Shopping bag.svg' width={32} />
                                             </button>
-                                            <button className="p-2 hover:bg-indigo-800 rounded-md" title="Toko Saya">
+                                            <button className="p-2 rounded-md" title="Toko Saya">
                                                 <img src='/icon/user.svg' width={32} />
                                             </button>
                                         </div>
@@ -193,14 +193,14 @@ const Header = () => {
                     <div className="md:hidden flex items-center justify-between py-3">
                         <h1 className="text-2xl font-bold" onClick={() => window.location.href = '/'}>Zukses</h1>
                         <div className="flex items-center gap-2">
-                            <button onClick={() => setIsMobileSearchOpen(true)} className="p-2 hover:bg-indigo-800 rounded-full">
+                            <button onClick={() => setIsMobileSearchOpen(true)} className="p-2 rounded-full">
                                 <SearchIcon className="w-6 h-6 text-white" />
                             </button>
-                            <button className="p-2 hover:bg-indigo-800 rounded-full">
+                            <button className="p-2 rounded-full">
                                 <img src='/icon/Shopping bag.svg' width={32} />
                             </button>
                             {isLoggedIn ? (
-                                <button onClick={() => window.location.href = '/user-profile'} className="p-2 hover:bg-indigo-800 rounded-full">
+                                <button onClick={() => window.location.href = '/user-profile'} className="p-2 rounded-full">
                                     <img src='/icon/user.svg' width={32} />
                                 </button>
                             ) : (
