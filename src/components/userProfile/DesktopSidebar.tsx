@@ -92,8 +92,8 @@ const DesktopSidebar = () => {
                             <button
                                 onClick={() => router.push(item?.url)}
                                 className={`w-[209px] h-[32px] mb-1 flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
-                                    ? 'text-white font-bold bg-[#7952B3]'
-                                    : 'text-[#444444]'
+                                    ? 'text-white  text-[14px] font-bold bg-[#7952B3]'
+                                    : 'text-[#444444] text-[14px]'
                                     }`}
                                 style={
                                     router.pathname === item.url

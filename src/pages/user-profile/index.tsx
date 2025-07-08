@@ -55,7 +55,7 @@ const IndexPage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
                 {menuItems.map((item, index) => (
                     <Link href={item.link} key={index} className="block w-full">
-                        <div className="bg-white rounded-[10px] p-4 flex items-start space-x-4 cursor-pointer border border-gray-300 h-[120px]">
+                        <div className="bg-white rounded-[10px] p-4 flex items-start space-x-4 cursor-pointer border border-gray-300 ">
                             <div className="flex-shrink-0 flex items-center justify-center rounded-full">
                                 <img
                                     src={item.iconSrc}
@@ -64,8 +64,8 @@ const IndexPage: React.FC = () => {
                                 />
                             </div>
                             <div className="flex-grow">
-                                <h2 className="text-[16px] font-semibold text-dark">{item.title}</h2>
-                                <p className="text-[14px] mt-1">{item.description}</p>
+                                <h2 className="text-[16px] text-[#333333] font-semibold text-dark">{item.title}</h2>
+                                <p className="text-[14px] mt-1 text-[#555555]">{item.description}</p>
                             </div>
                         </div>
                     </Link>

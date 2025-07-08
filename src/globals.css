@@ -30,7 +30,7 @@ body {
     -ms-user-select: text;
     user-select: text;
     margin: 0px;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.03em;
 }
 
 @media (hover: none) and (pointer: coarse) {
