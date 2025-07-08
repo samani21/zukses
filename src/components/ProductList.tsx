@@ -43,9 +43,13 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
 
                         <img src={product.image} alt={product.name} className="w-full h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-2 ">
-                            <h3 className="text-[14px] w-full text-dark line-clamp-2 h-10.5">
+                            <h3
+                                className="text-[14px] w-full text-dark line-clamp-2"
+                                style={{ lineHeight: '17px', letterSpacing: '-0.04em' }}
+                            >
                                 {product.name}
                             </h3>
+
                             <p className="text-[16px] font-bold mt-1">{formatRupiah(product.price)}</p>
                             <div className='flex justify-left items-center gap-2'>
                                 {product.is_cod_enabled ? <div className="mt-1 w-[50px] h-[24px] bg-[#BB2C31] flex justify-center items-center">
