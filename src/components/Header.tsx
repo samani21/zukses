@@ -131,7 +131,7 @@ const Header = () => {
             <header className="text-white shadow-lg sticky top-0 z-40 h-[120px] bg-[#7952B3]">
                 <div className="">
                     <div className="hidden md:flex flex-col">
-                        <div className="items-center text-xs mb-3 bg-[#563D7C] py-1">
+                        <div className="items-center text-xs mb-3 bg-[#563D7C] py-[5px] h-[30px]">
                             <div className="container mx-auto w-[1200px] px-[0px] flex justify-between">
                                 <a onClick={() => router.push('/')} className="text-[13px] font-[600] hover:underline">Download aplikasinya di Playstore</a>
                                 <div className="flex items-center gap-4 font-medium">

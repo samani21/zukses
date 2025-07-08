@@ -44,19 +44,19 @@ export default function UserProfile({ children }: { children: React.ReactNode })
             <div className='hidden md:block'>
                 <Header />
             </div>
-            <div className="min-h-screen font-sans py-10 ">
+            <div className="min-h-screen font-sans py-[35px] ">
                 <div className="container mx-auto p-0 md:p-0 md:px-0 flex rounded-lg h-[99vh] w-[1200px]">
                     <div className="h-[625px] ">
-                        <p className="font-bold w-[243px] border-r border-l border-t border-gray-300 text-center py-4 rounded-tl-lg rounded-tr-lg bg-[#7952B3] text-white text-[20px]"
+                        <p className="font-semibold w-[243px] border-r border-l border-t border-gray-300 text-center py-4 rounded-tl-lg rounded-tr-lg bg-[#7952B3] text-white text-[20px]"
                             style={{ boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)' }}>Akun saya</p>
                         <DesktopSidebar />
                     </div>
                     <main
-                        className="flex-grow bg-white rounded-[5px] mt-[0px] ml-[-10px]"
+                        className="flex-grow bg-white rounded-[5px] mt-[0px] ml-[-10px] h-[600px]"
                         style={{ boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)' }}
                     >
 
-                        <div className="p-10">
+                        <div className="p-8">
                             <div>
                                 {children}
                             </div>
