@@ -136,10 +136,10 @@ const Header = () => {
                                 <a onClick={() => router.push('/')} className="text-[13px] font-[600] hover:underline">Download aplikasinya di Playstore</a>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
-                                        <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-6">
                                             <a onClick={() => router.push('/my-store')} className="font-[700] hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
                                             {/* <div className="h-7 w-px bg-white"></div> */}
-                                            <a onClick={() => router.push('/user-profile')} className="font-[700] text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
+                                            <a onClick={() => router.push('/user-profile')} className="font-[700] text-[13px]  hover:underline font-semibold cursor-pointer text-right">{userName}</a>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ const Header = () => {
                         <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] mt-[-5px] flex justify-between">
                             <h1 className="text-[35px] font-[500] cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
-                                <div className='flex items-center justify-between gap-4 mt-2'>
+                                <div className='flex items-center justify-between gap-9 mt-2'>
                                     <div className="flex items-center gap-3 w-full">
                                         <div className="relative flex-grow">
                                             <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
