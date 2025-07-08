@@ -32,7 +32,7 @@ const SearchSuggestions = ({ suggestions, searchTerm, onSuggestionClick }: { sug
     const filteredSuggestions = searchTerm ? suggestions.filter(s => s.text.toLowerCase().includes(searchTerm.toLowerCase())) : suggestions;
     if (filteredSuggestions.length === 0) { return null; }
     return (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10 w-[86%]">
             <ul>
                 {filteredSuggestions.map((suggestion, index) => (
                     <li key={index} onClick={() => onSuggestionClick(suggestion)} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">

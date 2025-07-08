@@ -52,7 +52,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                         <DesktopSidebar />
                     </div>
                     <main
-                        className="flex-grow bg-white rounded-[5px] mt-[0px] ml-[-20px] h-[600px]"
+                        className="flex-grow bg-white rounded-[5px] mt-[0px] ml-[-10px] h-[600px]"
                         style={{ boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)' }}
                     >
 
