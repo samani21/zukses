@@ -68,7 +68,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                     </a>
                 ))}
             </div>
-            <div className='mt-2 flex justify-center items-center'>
+            <div className='mt-10 flex justify-center items-center'>
                 <div className='bg-[#563D7C] text-white w-[383px] h-[50px] flex justify-center items-center rounded-[10px] cursor-pointer'>
                     <p className='text-[14px] font-semibold'>Muat lebih Banyak</p>
                 </div>
