@@ -40,7 +40,7 @@ const SiteFooter: FC = () => {
 
   return (
     <footer className="bg-white pt-12 pb-16 text-gray-800">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
 
         <section className="mb-10">
           <h3 className="font-semibold text-[15px] mb-2">

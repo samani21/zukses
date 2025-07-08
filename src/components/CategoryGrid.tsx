@@ -25,7 +25,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                             <button
                                 onClick={() => onCategorySelect(category.name)}
                                 key={category.name}
-                                className="bg-white flex flex-col items-center justify-start w-[90px] h-[90px] text-center group border-1 border-[#CCCCCC]"
+                                className="bg-white flex flex-col items-center justify-start w-[90px] h-[90px] text-center group border-1 border-[#fff]"
                             >
                                 <div className="p-2 flex items-center justify-center mb-2 group-hover:border-blue-500 transition-colors">
                                     <img

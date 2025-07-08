@@ -4,8 +4,6 @@ import Header from "components/Header";
 import Payment from "components/Payment";
 import SiteFooter from "components/SiteFooter";
 import DesktopSidebar from "components/userProfile/DesktopSidebar";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 interface Payments {
     id: number;
     src: string;
@@ -18,18 +16,6 @@ interface Deliverys {
 }
 
 export default function UserProfile({ children }: { children: React.ReactNode }) {
-    const [title, setTitle] = useState<string>('Dashboard');
-    const router = useRouter();
-    console.log('router?.pathname', router?.pathname)
-    useEffect(() => {
-        if (router?.pathname === '/user-profile') {
-            setTitle('Dashboard')
-        } else if (router?.pathname === '/user-profile/profil') {
-            setTitle('Profil Saya')
-        } else if (router?.pathname === '/user-profile/address') {
-            setTitle('Alamat Saya')
-        }
-    }, [router]);
     const samplePayment: Payments[] = [
         { id: 1, src: '/icon/payment/bri 1.svg', alt: 'BRI' },
         { id: 2, src: '/icon/payment/bni 1.svg', alt: 'BNI' },
@@ -66,7 +52,6 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                     </div>
                     <main className="flex-grow bg-white rounded-tl-lg rounded-bl-lg mt-[0px] ml-[-10px]">
                         <div className="p-10">
-                            <h2 className="text-xl font-bold text-[#333333] mb-6 ">{title}</h2>
                             <div>
                                 {children}
                             </div>
