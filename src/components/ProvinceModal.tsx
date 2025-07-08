@@ -80,10 +80,10 @@ function ProvinceModal({
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="p-4 bg-[#5459AC] flex justify-between h-[60px]">
+                <div className="p-4 bg-[#227D53] flex justify-between h-[60px]">
                     <h2
                         id="modal-title"
-                        className="text-[16px] font-semibold text-center text-white"
+                        className="text-[20px] font-semibold text-center text-white"
                     >
                         Pilih Provinsi Lokasi Pencarian
                     </h2>
@@ -124,19 +124,24 @@ function ProvinceModal({
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-center p-4 py-5 gap-4 border-t border-[#CCCCCC]">
-                    <button
-                        onClick={onClose}
-                        className="px-6 w-[146px] py-2 bg-white text-dark border border-[#AAAAAA] rounded-[10px] hover:bg-yellow-600 transition-colors"
-                    >
-                        Keluar
-                    </button>
-                    <button
-                        onClick={handleApply}
-                        className="px-6 py-2 w-[146px] bg-[#563D7C] text-white rounded-lg hover: transition-colors"
-                    >
-                        Terapkan
-                    </button>
+                <div className="flex justify-between items-center p-4 py-5 gap-4  bg-[#EEEEEE]">
+                    <div className='text-[14px]'>
+                        Maksimal 3 Lokasi Pencarian
+                    </div>
+                    <div className='flex justify-right gap-3'>
+                        <button
+                            onClick={onClose}
+                            className="px-2 w-[100px] py-2 bg-white text-dark border border-[#AAAAAA] rounded-[10px] hover:bg-yellow-600 transition-colors"
+                        >
+                            Keluar
+                        </button>
+                        <button
+                            onClick={handleApply}
+                            className="px-2 py-2 w-[100px] bg-[#563D7C] text-white rounded-lg hover: transition-colors"
+                        >
+                            Terapkan
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>,

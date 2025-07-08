@@ -133,13 +133,13 @@ const Header = () => {
                     <div className="hidden md:flex flex-col">
                         <div className="items-center text-xs mb-3 bg-[#563D7C] py-1">
                             <div className="container mx-auto w-[1200px] px-[0px] flex justify-between">
-                                <a onClick={() => router.push('/')} className="text-[13px] hover:underline">Download aplikasinya di Playstore</a>
+                                <a onClick={() => router.push('/')} className="text-[13px] font-[600] hover:underline">Download aplikasinya di Playstore</a>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-4">
-                                            <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
+                                            <a onClick={() => router.push('/my-store')} className="font-[700] hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
                                             {/* <div className="h-7 w-px bg-white"></div> */}
-                                            <a onClick={() => router.push('/user-profile')} className="text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
+                                            <a onClick={() => router.push('/user-profile')} className="font-[700] text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ const Header = () => {
                         </div>
 
                         <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] flex justify-between">
-                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[0px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
+                            <h1 className="text-[35px] font-[500] cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-4 mt-2'>
                                     <div className="flex items-center gap-3 w-full">
@@ -190,7 +190,7 @@ const Header = () => {
                             </div>
                         </div>
                         <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[5px]'>
-                            <div className="mt-1 text-[13px] text-white">
+                            <div className="mt-1 text-white text-[14px] font-[100] ">
                                 Pencarian di
                                 <a
                                     onClick={(e) => {
