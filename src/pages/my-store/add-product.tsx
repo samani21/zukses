@@ -18,7 +18,6 @@ import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
 import { Response } from 'services/api/types';
 
-// +++ IMPORTS BARU UNTUK CROP +++
 import ReactCrop, { centerCrop, makeAspectCrop, Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
