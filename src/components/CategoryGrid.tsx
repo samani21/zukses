@@ -15,7 +15,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
 
     return (
         <div className="container mx-auto md:p-0">
-            <div className="py-5 relative">
+            <div className="py-5 pb-0 relative">
                 <div
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto scroll-smooth scrollbar-hide"
