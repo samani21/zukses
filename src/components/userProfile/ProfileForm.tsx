@@ -205,7 +205,7 @@ const ProfileForm = () => {
     };
 
     return (
-        <div className="w-full max-w-2xl mx-auto">
+        <div className="w-full mx-auto">
             {imageToCrop && (
                 <ImageCropperModal
                     imageSrc={imageToCrop}
@@ -255,11 +255,11 @@ const ProfileForm = () => {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="bg-[#0c5da5] text-white rounded-md py-2 px-4 text-sm font-medium hover:bg-blue-700 transition"
+                                className="bg-[#563D7C] w-[154px] text-white rounded-md py-2 px-4 text-sm font-medium transition"
                             >
                                 Pilih Foto
                             </button>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-[14px] text-dark mt-1 w-[335px]">
                                 Besar file: maksimum 10 MB. Ekstensi file yang diperbolehkan: .JPG, .JPEG, .PNG
                             </p>
                             {errors.image && (
@@ -285,6 +285,9 @@ const ProfileForm = () => {
                         />
                         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     </div>
+                    <div className='w-[82px] ml-4'>
+
+                    </div>
                 </div>
 
                 {/* Email (Read-only, with Ubah button) */}
@@ -296,14 +299,14 @@ const ProfileForm = () => {
                         <span className="flex-grow text-gray-800">
                             {isValidEmail(user?.email) ? user.email : 'Belum diatur'}
                         </span>
-                        <button
-                            type="button"
-                            onClick={() => handleOpenModal('email')}
-                            className="text-blue-600 hover:underline text-sm font-medium ml-4"
-                        >
-                            Ubah
-                        </button>
                     </div>
+                    <button
+                        type="button"
+                        onClick={() => handleOpenModal('email')}
+                        className="text-dark hover:underline text-sm font-medium ml-4 w-[82px] border border-[#CCCCCC] rounded-[5px] h-[30px]"
+                    >
+                        Ubah
+                    </button>
                 </div>
 
                 {/* Nomor Telepon (Read-only, with Ubah button) */}
@@ -315,14 +318,14 @@ const ProfileForm = () => {
                         <span className="flex-grow text-gray-800">
                             {user?.whatsapp ? user.whatsapp : 'Belum diatur'}
                         </span>
-                        <button
-                            type="button"
-                            onClick={() => handleOpenModal('hp')}
-                            className="text-blue-600 hover:underline text-sm font-medium ml-4"
-                        >
-                            Ubah
-                        </button>
                     </div>
+                    <button
+                        type="button"
+                        onClick={() => handleOpenModal('hp')}
+                        className="text-dark hover:underline text-sm font-medium ml-4 w-[82px] border border-[#CCCCCC] rounded-[5px] h-[30px]"
+                    >
+                        Ubah
+                    </button>
                 </div>
 
                 {/* Jenis Kelamin */}
@@ -337,9 +340,9 @@ const ProfileForm = () => {
                                 name="gender"
                                 value="Laki-laki"
                                 checked={form.gender === 'Laki-laki'}
-                                className="text-blue-600 focus:ring-blue-500"
+                                className="accent-red-600"
                                 onChange={() => handleInputChange('gender', 'Laki-laki')}
-                            />{' '}
+                            />
                             Laki-laki
                         </label>
                         <label className="flex items-center gap-2">
@@ -348,12 +351,13 @@ const ProfileForm = () => {
                                 name="gender"
                                 value="Perempuan"
                                 checked={form.gender === 'Perempuan'}
-                                className="text-blue-600 focus:ring-blue-500"
+                                className="accent-red-600"
                                 onChange={() => handleInputChange('gender', 'Perempuan')}
-                            />{' '}
+                            />
                             Perempuan
                         </label>
                     </div>
+
                     {errors.gender && <p className="text-red-500 text-xs mt-1 absolute ml-32">{errors.gender}</p>}
                 </div>
 
@@ -374,22 +378,28 @@ const ProfileForm = () => {
                             <p className="text-red-500 text-xs mt-1">{errors.date_birth}</p>
                         )}
                     </div>
+                    <div className='w-[82px] ml-4'>
+
+                    </div>
                 </div>
 
                 {/* Tombol Aksi */}
                 <div className="flex justify-end gap-3 pt-4">
                     <button
                         type="button"
-                        className="bg-[#ffb823] text-gray-700 rounded-md px-6 py-2 hover:bg-gray-300 transition font-semibold"
+                        className="bg-white text-[#333333] rounded-md px-6 py-2 border border-[#aaaaaa] font-semibold text-[14px]"
                     >
                         Batal
                     </button>
                     <button
                         type="submit"
-                        className="bg-[#427056] text-white rounded-md px-6 py-2 hover:bg-green-700 transition font-semibold"
+                        className="bg-[#563D7C] text-white rounded-md px-6 py-2  font-semibold text-[14px]"
                     >
                         Simpan
                     </button>
+                    <div className='w-[82px] ml-4'>
+
+                    </div>
                 </div>
             </form>
             {loading && <Loading />}
