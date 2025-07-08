@@ -42,6 +42,16 @@ export const navItems: NavItem[] = [
         // icon: <CartIcon className="w-5 h-5" />,
         url: '/user-profile/my-order',
     },
+    {
+        name: 'Menunggu Pembayaran',
+        // icon: <CartIcon className="w-5 h-5" />,
+        url: '/user-profile/payment',
+    },
+    {
+        name: 'Keranjang Belanja',
+        // icon: <CartIcon className="w-5 h-5" />,
+        url: '/user-profile/cart',
+    },
 ];
 const DesktopSidebar = () => {
     const router = useRouter();
@@ -62,7 +72,11 @@ const DesktopSidebar = () => {
         }
     }, [])
     return (
-        <aside className="w-[230px] mr-[40px] h-[563px]  hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300">
+        <aside
+            className="w-[243px] mr-[40px] h-[625px] hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300"
+            style={{ boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)' }}
+        >
+
             <div className="flex items-center justify-center gap-3 p-3">
                 <div>
                     <div className='flex justify-center items-center'>
@@ -71,18 +85,22 @@ const DesktopSidebar = () => {
                     <h4 className="text-[16px] font-semibold mt-1 text-center">{user?.name ?? "Nama Anda"}</h4>
                 </div>
             </div>
-            <nav className="flex-grow p-2">
+            <nav className="flex-grow p-4 mt-7">
                 <ul>
                     {navItems.map(item => (
                         <li key={item.name}>
                             <button
                                 onClick={() => router.push(item?.url)}
-                                className={`w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
-                                    ? 'text-white font-bold bg-[#7952B3] shadow-lg'
-                                    : 'text-dark-600 hover:bg-gray-100'
+                                className={`w-[209px] h-[32px] mb-1 flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
+                                    ? 'text-white font-bold bg-[#7952B3]'
+                                    : 'text-[#444444]'
                                     }`}
+                                style={
+                                    router.pathname === item.url
+                                        ? { boxShadow: '0 0 10px rgba(0, 0, 0, 0.39)' }
+                                        : undefined
+                                }
                             >
-                                {/* {item.icon} */}
                                 <span>{item.name}</span>
                             </button>
                         </li>
