@@ -67,6 +67,7 @@ export type Product = {
     soldCount: number;
     originalPrice: number;
     discountedPrice: number;
+    is_cod_enabled: number;
     sold: number;
     vouchers: string[];
     thumbnails: Thumbnail[];

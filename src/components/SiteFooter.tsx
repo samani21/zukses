@@ -1,92 +1,122 @@
-import React from 'react'
+import React, { FC } from "react";
 
-function SiteFooter() {
-    return (
-        <footer className="bg-white border-t border-gray-200 mt-8 hidden md:block">
-            <div className="container mx-auto py-8">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 px-30">
-                    {/* Logo & Desc */}
-                    <div className="md:col-span-1">
-                        <img src="/logo/logo.png" alt="Zukses Logo" className="h-8 mb-4" />
-                        <p className="text-sm text-gray-500">Toko online dengan sensasi belanja ala mall.</p>
-                    </div>
+const SiteFooter: FC = () => {
+  /* --- Daftar kategori persis seperti di desain (3 kolom) --- */
+  const col1 = [
+    "Pakaian Wanita",
+    "Pakaian Pria",
+    "Elektronik",
+    "Perawatan & Kecantikan",
+    "Handphone & Aksesoris",
+    "Fashion Muslim",
+    "Perlengkapan Rumah",
+    "Sepatu Pria",
+    "Sepatu Wanita",
+  ];
 
-                    {/* Links */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 col-span-1 md:col-span-3 gap-8">
-                        <div>
-                            <h3 className="font-bold text-gray-800 mb-4">Bantuan</h3>
-                            <ul className="space-y-3 text-sm text-gray-600">
-                                <li><a href="#" className="hover:text-blue-600">Telepon</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Email</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Bantuan</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Layanan Pengaduan</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-gray-800 mb-4">Info Zukses</h3>
-                            <ul className="space-y-3 text-sm text-gray-600">
-                                <li><a href="#" className="hover:text-blue-600">Tentang Zukses</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Siaran Pers</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Kabar Terbaru</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Karir</a></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-gray-800 mb-4">Kerja Sama</h3>
-                            <ul className="space-y-3 text-sm text-gray-600">
-                                <li><a href="#" className="hover:text-blue-600">Affiliate Program</a></li>
-                                <li><a href="#" className="hover:text-blue-600">Jual di Zukses</a></li>
-                                <li><a href="#" className="hover:text-blue-600">B2B Program</a></li>
-                            </ul>
-                        </div>
-                    </div>
+  const col2 = [
+    "Alat Tulis",
+    "Buku & Majalah",
+    "Komputer & Aksesoris",
+    "Mobil",
+    "Sepeda Motor",
+    "Tas Wanita",
+    "Tas Pria",
+    "Jam Tangan",
+  ];
 
-                    {/* Download & Social */}
-                    <div>
-                        <h3 className="font-bold text-gray-800 mb-4">Download Aplikasi</h3>
-                        <div className="space-y-3">
-                            <a href="#"><img src="/icon/Google_Play_Store_badge_EN.svg.webp" alt="Google Play" className="h-10 mb-4" width={120} /></a>
-                            <a href="#"><img src="/icon/apple_apps_store.png" alt="App Store" className="h-10" width={120} /></a>
-                        </div>
-                        <h3 className="font-bold text-gray-800 mt-6 mb-4">Ikuti Kami</h3>
-                        <div className="flex space-x-4">
-                            <img src="/icon/fb.svg" alt="FB" className="h-6" />
-                            <img src="/icon/ig.svg" alt="IG" className="h-6" />
-                            <img src="/icon/twitter.svg" alt="X" className="h-6" />
-                            <img src="/icon/yt.svg" alt="YT" className="h-6" />
-                        </div>
-                    </div>
-                </div>
-                <div className="border-t border-gray-200 mt-8 pt-6 px-30">
-                    <h3 className="font-bold text-gray-800 mb-4">Metode Pembayaran</h3>
-                    <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        <img src="/icon/alfamart-2.webp" alt="Alfamart" />
-                        <img src="/icon/bni.webp" alt="BNI" />
-                        <img src="/icon/bri.webp" alt="BRI" />
-                        <img src="/icon/dana.webp" alt="DANA" />
-                        <img src="/icon/gopay.webp" alt="GOPAY" />
-                        <img src="/icon/home-credit.webp" alt="HOMECREDIt" />
-                    </div>
-                </div>
-                <div className="border-t border-gray-200 mt-8 pt-6 px-30">
-                    <h3 className="font-bold text-gray-800 mb-4">Jasa Pengiriman</h3>
-                    <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-4">
-                        <img src="/icon/JNE.webp" alt="JNE" />
-                        <img src="/icon/ID_express.webp" alt="IDEXPRESS" />
-                        <img src="/icon/ID_express.webp" alt="JNT" />
-                        <img src="/icon/JNT.webp" alt="JNT" />
-                        <img src="/icon/Ninjavan.webp" alt="NINJA" />
-                        <img src="/icon/Gosend.webp" alt="GoSend" />
-                        <img src="/icon/Grab_Exp.webp" alt="GrabEXP" />
-                    </div>
-                </div>
+  const col3 = [
+    "Ibu & Bayi",
+    "Fashion Bayi & Anak",
+    "Olahraga & Outdoor",
+    "Makanan & Minuman",
+    "Audio",
+    "Koper & Tas Travel",
+    "Aksesoris Fashion",
+    "Hewan Peliharaan",
+    "Kamera & Drone",
+    "Kesehatan",
+  ];
+
+  return (
+    <footer className="bg-white pt-12 pb-16 text-gray-800">
+      <div className="container mx-auto px-4">
+
+        <section className="mb-10">
+          <h3 className="font-semibold text-[15px] mb-2">
+            Nikmati Mudahnya Jual Beli di Zukses
+          </h3>
+          <p className="text-[14px] leading-relaxed mb-6">
+            Zukses adalah platform mobile asli Indonesia yang menghadirkan pengalaman jual beli online yang mudah, aman, dan menyenangkan langsung dari ponsel Anda. Nikmati berbagai penawaran menarik, serta kemudahan dalam mendaftarkan produk jualan dan berbelanja kapan pun dan di mana pun. Bergabunglah bersama jutaan pengguna lainnya dan rasakan transaksi yang praktis dan terpercaya dengan Zukses. Transaksi aman, peluang tanpa batas. Mulai sekarang bersama Zukses!
+          </p>
+
+          <h3 className="font-semibold text-[15px] mb-2">
+            Temukan segala kebutuhanmu dengan harga terbaik hanya di Zukses.
+          </h3>
+          <p className="text-[14px] leading-relaxed">
+            Zukses adalah pusat perbelanjaan online yang menghadirkan pengalaman
+            belanja modern, di mana kamu bisa mengikuti penjual favorit dan
+            mendapatkan update produk terbaru secara langsung. Nikmati kemudahan
+            berbagi produk melalui media sosial hanya dengan satu klik—baik
+            untuk promosi barang jualanmu maupun membagikan temuan menarik
+            kepada teman. <br />
+            Berbelanja di Zukses lebih aman dan nyaman. <br />
+            Cek rating dan ulasan toko secara transparan untuk menemukan penjual
+            terpercaya. Kami berkomitmen untuk selalu menjaga keamanan setiap
+            transaksi demi kenyamanan seluruh pengguna.
+          </p>
+        </section>
+
+        <div className="grid md:grid-cols-12 gap-10">
+          <div className="md:col-span-7">
+            <h4 className="font-semibold text-base mb-4">Kategori</h4>
+            <div className="grid grid-cols-3 gap-x-8">
+              {[col1, col2, col3].map((list, idx) => (
+                <ul key={idx} className="space-y-1 text-sm">
+                  {list.map((item) => (
+                    <li key={item} className="whitespace-nowrap">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ))}
             </div>
-            <div className="bg-gray-200 py-4">
-                <p className="text-center text-xs text-gray-600">© 2025 Zukses. All rights reserved.</p>
+          </div>
+
+          {/* KOLON KANAN */}
+          <div className="md:col-span-5 space-y-6">
+            <h2 className="text-3xl font-semibold">Zukses</h2>
+
+            <div>
+              <p className="text-sm font-semibold mb-2">
+                Download Aplikasi Zukses di&nbsp;:
+              </p>
+              <div className="flex items-center space-x-4">
+                <img
+                  src="/icon/Google_Play_Store_badge_EN.svg.webp"
+                  alt="Google Play"
+                  className="h-12"
+                />
+                <img
+                  src="/icon/apple_apps_store.png"
+                  alt="App Store"
+                  className="h-12"
+                />
+              </div>
             </div>
-        </footer>
-    );
-}
 
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">Punya Pertanyaan? :</p>
+              <p className="text-sm font-semibold leading-relaxed">
+                Hubungi Layanan Pelanggan Kami <br />
+                085&nbsp;394&nbsp;333&nbsp;301
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
 
-export default SiteFooter
+export default SiteFooter;

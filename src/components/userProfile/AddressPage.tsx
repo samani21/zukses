@@ -171,19 +171,18 @@ const AddressPage = () => {
 
     return (
         <div className="w-full">
-            <div className="flex justify-end mb-6">
-                <button className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex items-center gap-2" onClick={() => {
+            <div className="flex justify-end px-3">
+                <button className="bg-[#52357B] text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex items-center gap-2" onClick={() => {
                     setOpenModalAddAdress(true)
                     setIsAdd(true);
                 }}>
-                    <span className="text-xl">+</span> Tambah Alamat Baru
+                    Tambah Alamat
                 </button>
             </div>
             <div>
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Alamat</h3>
-                <div className="space-y-4">
+                <div className="space-y-4 mt-5">
                     {addresses.map(address => (
-                        <div key={address.id} className="border-t pt-4 flex flex-col md:flex-row gap-4">
+                        <div key={address.id} className="border-t border-gray-300 pt-4 flex flex-col md:flex-row gap-4 px-5">
                             <div className="flex-grow space-y-1 text-sm text-gray-700">
                                 <div className="flex items-baseline">
                                     <span className="font-semibold text-gray-800">{address.name_receiver}</span>
@@ -191,21 +190,23 @@ const AddressPage = () => {
                                     <span>{address.number_receiver}</span>
                                 </div>
                                 <p>{address.full_address},{address?.detail_address}</p>
-                                <p>{`${address?.provinces},${address?.cities}, ${address?.subdistricts}, ${address?.postal_codes}`}</p>
+                                <p>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
                                 <div className="flex gap-2 mt-1">
-                                    {address.is_primary ? <span className="text-red-500 border border-red-500 text-xs px-2 py-0.5 rounded-sm">Utama</span> : ''}
-                                    {/* <span className="text-gray-500 border border-gray-300 text-xs px-2 py-0.5 rounded-sm">{address?.label}</span> */}
+                                    {address.is_primary ? <span className="text-red-500 font-bold text-sm py-0.5 rounded-sm">Alamat Utama</span> : ''}
                                 </div>
                             </div>
                             <div className="flex-shrink-0 flex flex-col items-end gap-2">
                                 <div className="flex gap-4">
-                                    <button className="text-blue-600 text-sm hover:underline" onClick={() => {
+                                    <button className="text-dark-600 font-bold text-sm hover:underline" onClick={() => {
                                         setDataAddress(address)
                                         setOpenModalAddAdress(true)
                                     }}>Ubah</button>
-                                    {!address.is_primary && <button className="text-blue-600 text-sm hover:underline hidden md:block" onClick={() => setOpenDelete(address?.id || 0)}>Hapus</button>}
+                                    {!address.is_primary && <button className="text-red-600 font-bold text-sm hover:underline hidden md:block" onClick={() => setOpenDelete(address?.id || 0)}>Hapus</button>}
                                 </div>
-                                <button className="border border-gray-300 rounded px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition" onClick={() => handlePrimary(address?.id)}>Atur sebagai utama</button>
+                                {
+                                    !address.is_primary &&
+                                    <button className="border border-[#7952B3] rounded px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition" onClick={() => handlePrimary(address?.id)}>Atur sebagai utama</button>
+                                }
                             </div>
                         </div>
                     ))}

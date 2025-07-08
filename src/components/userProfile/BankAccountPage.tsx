@@ -108,19 +108,19 @@ const BankAccountPage = () => {
     };
     return (
         <div className="w-full">
-            <div className="md:flex justify-between items-center mb-6">
+            <div className="md:flex justify-between items-center mb-6 p-3">
                 <div>
                     <h3 className="text-lg font-bold text-gray-800">Kamu bisa simpan maks. 3 rekening bank</h3>
                     <p className="text-sm text-gray-500">Saldo Zukses kamu bisa ditarik ke rekening ini.</p>
                 </div>
-                <button className="bg-blue-600 text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex-shrink-0 mt-4 md:mt-0" onClick={() => setIsModalOpen(true)}>
+                <button className="bg-[#52357B] text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex-shrink-0 mt-4 md:mt-0" onClick={() => setIsModalOpen(true)}>
                     Tambah Rekening Lain
                 </button>
             </div>
-            <div>
+            <div className='py-4 mt-[-10px]'>
                 {
                     bankAccount?.map((ab, i) => (
-                        <div className="border-t pt-4 flex flex-col md:flex-row gap-4 items-start" key={i}>
+                        <div className="border-t border-gray-300 px-4 pt-4 flex flex-col md:flex-row gap-4 items-start" key={i}>
                             <img src={ab?.icon} alt={ab?.name_bank} className="" width={100} />
                             <div className="flex-grow">
                                 <p className="text-sm text-gray-800 font-semibold">{ab?.name_bank}</p>

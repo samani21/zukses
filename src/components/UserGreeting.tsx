@@ -14,6 +14,7 @@ function UserGreeting({ isLoggedIn, userName = "Irvan" }: UserGreetingProps) {
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('shopProfile');
         window.location.href = '/';
     };
     return (

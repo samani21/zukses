@@ -29,6 +29,7 @@ const Header = ({ setIsSidebarOpen }: { setIsSidebarOpen: (isOpen: boolean) => v
     const handleLogout = useCallback(() => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('shopProfile');
         router.push('/');
     }, [router]);
     return (

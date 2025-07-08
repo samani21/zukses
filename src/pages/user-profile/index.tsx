@@ -1,29 +1,78 @@
-import Header from 'components/Header'
-import MobileNavBar from 'components/MobileNavBar'
-import SettingsLayout from 'components/userProfile/SettingsLayout'
-import React, { useState } from 'react'
+'use client';
+import React from 'react';
+import Link from 'next/link';
+import UserProfile from 'pages/layouts/UserProfile';
+const IndexPage: React.FC = () => {
 
-const IndexPage = () => {
-    const [hideNavber, setHideNavbar] = useState<boolean>(false);
+    const menuItems = [
+        {
+            title: 'Profil Saya',
+            description: 'Edit Nama Anda, Email dan Nomor Telepon',
+            iconSrc: '/icon/account 1.svg',
+            altText: 'Profil Saya Icon',
+            link: '/user-profile/profil',
+        },
+        {
+            title: 'Alamat',
+            description: 'Edit Alamat Pengiriman dan Nama Penerima',
+            iconSrc: '/icon/alamat 1.svg',
+            altText: 'Alamat Icon',
+            link: '/user-profile//address',
+        },
+        {
+            title: 'Menunggu Pembayaran',
+            description: 'Transaksi yang menunggu Pembayaran Anda',
+            iconSrc: '/icon/alamat 2.svg',
+            altText: 'Pesanan Saya Icon',
+            link: '/user-profile/my-order',
+        },
+        {
+            title: 'Pesanan Saya',
+            description: 'Anda dapat melihat dan memantau Pesanan Anda',
+            iconSrc: '/icon/pesanan 1.svg',
+            altText: 'Rekening Bank Icon',
+            link: '/user-profile/my-order',
+        },
+        {
+            title: 'Rekening Bank',
+            description: 'Lihat atau ubah nomor rekening untuk menerima pembayaran',
+            iconSrc: '/icon/credit-card 1.svg',
+            altText: 'Pesanan Saya Icon',
+            link: '/user-profile//my-order',
+        },
+        {
+            title: 'Keranjang Belanja',
+            description: 'Semua produk pilihanmu ada di sini. Cek kembali sebelum checkout!',
+            iconSrc: '/icon/credit-card 2.svg',
+            altText: 'Rekening Bank Icon',
+            link: '/user-profile/bank',
+        },
+    ];
 
     return (
-        <div>
-            <div className='hidden md:block'>
-                <Header />
+        <UserProfile>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
+                {menuItems.map((item, index) => (
+                    <Link href={item.link} key={index} className="block w-full">
+                        <div className="bg-white rounded-[10px] p-4 flex items-start space-x-4 cursor-pointer border border-gray-300 h-[120px]">
+                            <div className="flex-shrink-0 w-16 flex items-center justify-center rounded-full">
+                                <img
+                                    src={item.iconSrc}
+                                    alt={item.altText}
+                                    width={48}
+                                    height={48}
+                                />
+                            </div>
+                            <div className="flex-grow">
+                                <h2 className="text-[16px] text-dark">{item.title}</h2>
+                                <p className="text-[15px]">{item.description}</p>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
             </div>
-            <div className="bg-gray-100 min-h-screen font-sans">
-                <div className="container mx-auto p-0 md:p-4 md:px-20">
-                    <SettingsLayout setHideNavbar={setHideNavbar} />
-                </div>
-            </div>
-            {
-                !hideNavber &&
-                <div className='md:hidden'>
-                    <MobileNavBar />
-                </div>
-            }
-        </div>
-    )
-}
+        </UserProfile>
+    );
+};
 
-export default IndexPage
+export default IndexPage;

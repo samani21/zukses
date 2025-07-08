@@ -1,227 +1,240 @@
-"use client"; // Diperlukan karena menggunakan hook useState
+"use client"; // Diperlukan karena menggunakan hook dan state
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 import ProvinceModal from './ProvinceModal';
-import MobileSearch from './MobileSearch';
-import SearchSuggestions from './SearchSuggestions';
+import { useRouter } from 'next/router';
 
-const PhoneIcon = () => (
-    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-    </svg>
+const SearchIcon = ({ className }: { className?: string }) => (
+    <svg className={className || "w-5 h-5 text-gray-500"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+);
+const HistoryIcon = ({ className }: { className?: string }) => (
+    <svg className={className || "w-5 h-5 text-gray-400"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+);
+const ChevronLeftIcon = ({ className }: { className?: string }) => (
+    <svg className={className || "w-6 h-6"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
 );
 
-const SearchIcon = () => (
-    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
-);
+interface Suggestion { type: 'suggestion' | 'store' | 'protection' | 'history'; text: string; location?: string; icon?: string; }
+const saveSearchTerm = (term: string): string[] => {
+    if (!term.trim() || typeof window === 'undefined') return [];
+    try {
+        const HISTORY_KEY = 'searchHistory'; const MAX_HISTORY = 10;
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const updatedHistory = [term, ...history.filter((item: string) => item !== term)];
+        const limitedHistory = updatedHistory.slice(0, MAX_HISTORY);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(limitedHistory));
+        return limitedHistory;
+    } catch (error) { console.error("Gagal menyimpan riwayat pencarian:", error); return []; }
+};
 
-const CartIcon = () => (
-    <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-    </svg>
-);
+// --- Komponen-komponen lainnya (Tidak ada perubahan) ---
+const SearchSuggestions = ({ suggestions, searchTerm, onSuggestionClick }: { suggestions: Suggestion[], searchTerm: string, onSuggestionClick: (suggestion: Suggestion) => void }) => {
+    const filteredSuggestions = searchTerm ? suggestions.filter(s => s.text.toLowerCase().includes(searchTerm.toLowerCase())) : suggestions;
+    if (filteredSuggestions.length === 0) { return null; }
+    return (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+            <ul>
+                {filteredSuggestions.map((suggestion, index) => (
+                    <li key={index} onClick={() => onSuggestionClick(suggestion)} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                        {suggestion.type === 'history' && <HistoryIcon className="w-5 h-5 mr-3 text-gray-400" />}
+                        {suggestion.type === 'store' && suggestion.icon && <img src={suggestion.icon} alt={suggestion.text} className="w-6 h-6 mr-3 rounded-full" />}
+                        {suggestion.type !== 'history' && suggestion.type !== 'store' && <SearchIcon className="w-5 h-5 mr-3 text-gray-400" />}
+                        <div className="text-gray-800">{suggestion.text}{suggestion.location && <span className="text-sm text-gray-500 ml-2">{suggestion.location}</span>}</div>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+};
+const MobileSearch = ({ onClose, suggestions, searchHistory, onSearchPerformed }: { onClose: () => void, suggestions: Suggestion[], searchHistory: Suggestion[], onSearchPerformed: (newHistory: string[]) => void }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [searchResults, setSearchResults] = useState<Suggestion[] | null>(null);
+    const [showSuggestions, setShowSuggestions] = useState(true);
+    const handleSearch = () => { if (!searchTerm.trim()) return; const newHistory = saveSearchTerm(searchTerm); onSearchPerformed(newHistory); const results = suggestions.filter(s => s.text.toLowerCase().includes(searchTerm.toLowerCase())); setSearchResults(results); setShowSuggestions(false); };
+    const handleSuggestionClick = (suggestion: Suggestion) => { const newHistory = saveSearchTerm(suggestion.text); onSearchPerformed(newHistory); setSearchTerm(suggestion.text); setSearchResults([suggestion]); setShowSuggestions(false); };
+    const suggestionsToShow = searchTerm.trim() === '' ? searchHistory : (searchResults === null ? suggestions : searchResults);
+    return (
+        <div className="fixed inset-0 bg-white z-50">
+            <div className="flex items-center p-2 border-b">
+                <button onClick={onClose} className="p-2 text-gray-600"><ChevronLeftIcon /></button>
+                <div className="relative flex-grow">
+                    <input type="text" placeholder="Cari di Zukses..." value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value); setSearchResults(null); setShowSuggestions(true); }} onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }} className="w-full h-10 pl-4 pr-10 text-gray-900 focus:outline-none" autoFocus />
+                    <button onClick={handleSearch} className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"><SearchIcon /></button>
+                </div>
+            </div>
+            <div className="p-4 relative">
+                <div className="relative"><div className="absolute w-full -mt-4">{showSuggestions && <SearchSuggestions suggestions={suggestionsToShow} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}</div></div>
+            </div>
+        </div>
+    );
+};
 
-const FilterIcon = () => (
-    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-4-2A1 1 0 016 17v-2.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
-);
-
-const ChevronRightIcon = () => (
-    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-);
-
-interface Suggestion {
-    type: 'suggestion' | 'store' | 'protection';
-    text: string;
-    location?: string;
-    icon?: string;
-}
 
 const Header = () => {
+    const router = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [isProvinceModalOpen, setProvinceModalOpen] = useState(false);
     const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-
-    const topLinks = ["Tentang Zukses", "Mulai Berjualan", "Promo", "Zukses Care"];
-    const provinces = [
-        "Aceh", "Bali", "Banten", "Bengkulu", "DI Yogyakarta", "DKI Jakarta",
-        "Gorontalo", "Jambi", "Jawa Barat", "Jawa Tengah", "Jawa Timur",
-        "Kalimantan Barat", "Kalimantan Selatan", "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara",
-        "Kepulauan Bangka Belitung", "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara",
-        "Nusa Tenggara Barat", "Nusa Tenggara Timur", "Papua", "Papua Barat", "Riau",
-        "Sulawesi Barat", "Sulawesi Selatan", "Sulawesi Tengah", "Sulawesi Tenggara", "Sulawesi Utara",
-        "Sumatera Barat", "Sumatera Selatan", "Sumatera Utara"
-    ];
-
-    const searchSuggestions: Suggestion[] = [
-        { type: 'protection', text: 'Proteksi Gadget' },
-        { type: 'suggestion', text: 'laptop second' },
-        { type: 'store', text: 'Laptop Murah ID', location: 'Jakarta', icon: 'https://placehold.co/24x24/7C3AED/FFFFFF?text=L' },
-        { type: 'suggestion', text: 'laptop rtx' },
-        { type: 'store', text: 'LAPTOP GADGET ID', location: 'Jakarta', icon: 'https://placehold.co/24x24/F59E0B/FFFFFF?text=G' },
-        { type: 'suggestion', text: 'laptop gaming' },
-        { type: 'suggestion', text: 'laptop rtx 3050' },
-    ];
-
-    const headerRef = useRef<HTMLDivElement>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    // Klik di luar untuk menutup dropdown
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
-                setIsSearchFocused(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [headerRef]);
+
+    const [userName, setUserName] = useState('');
+    const [searchResults, setSearchResults] = useState<Suggestion[] | null>(null);
+    const [searchHistory, setSearchHistory] = useState<Suggestion[]>([]);
+    const [dropdownMode, setDropdownMode] = useState<'history' | 'suggestions'>('history');
+    const searchContainerRef = useRef<HTMLDivElement>(null);
+    console.log('searchResults', searchResults);
+    const provinces = ["Aceh", "Bali", "Banten", "Bengkulu", "DI Yogyakarta", "DKI Jakarta", "Gorontalo", "Jambi", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Kalimantan Barat", "Kalimantan Selatan", "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara", "Kepulauan Bangka Belitung", "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara", "Nusa Tenggara Barat", "Nusa Tenggara Timur", "Papua", "Papua Barat", "Riau", "Sulawesi Barat", "Sulawesi Selatan", "Sulawesi Tengah", "Sulawesi Tenggara", "Sulawesi Utara", "Sumatera Barat", "Sumatera Selatan", "Sumatera Utara"];
+    const searchSuggestions: Suggestion[] = [{ type: 'protection', text: 'Proteksi Gadget' }, { type: 'suggestion', text: 'laptop second' }, { type: 'store', text: 'Laptop Murah ID', location: 'Jakarta', icon: 'https://placehold.co/24x24/7C3AED/FFFFFF?text=L' }, { type: 'suggestion', text: 'laptop rtx' },];
+
     useEffect(() => {
         const token = localStorage.getItem('token');
-        const user = localStorage.getItem('user');
-        setIsLoggedIn(!!token && !!user);
+        const userString = localStorage.getItem('user');
+
+        if (token && userString) {
+            setIsLoggedIn(true);
+            const userData = JSON.parse(userString);
+            setUserName(userData.name || 'Pengguna');
+        }
+
+        try {
+            const storedHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+            const historySuggestions = storedHistory.map((term: string) => ({ type: 'history', text: term } as const));
+            setSearchHistory(historySuggestions);
+        } catch (error) { console.error("Gagal memuat riwayat pencarian:", error); }
     }, []);
 
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) { if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) { setIsSearchFocused(false); } }
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [searchContainerRef]);
+
+    const updateHistoryState = (newHistory: string[]) => {
+        const historySuggestions: Suggestion[] = newHistory.map(term => ({
+            type: 'history' as const,
+            text: term,
+        }));
+        setSearchHistory(historySuggestions);
+    };
+    const handleSearch = () => {
+        const newHistory = saveSearchTerm(searchTerm); updateHistoryState(newHistory); if (!searchTerm.trim()) { setSearchResults(searchSuggestions); } else { const results = searchSuggestions.filter(s => s.text.toLowerCase().includes(searchTerm.toLowerCase())); setSearchResults(results); } setIsSearchFocused(false);
+    };
+    const handleSuggestionClick = (suggestion: Suggestion) => {
+        const newHistory = saveSearchTerm(suggestion.text); updateHistoryState(newHistory); setSearchTerm(suggestion.text); setSearchResults([suggestion]); setIsSearchFocused(false);
+    };
+    const suggestionsForDropdown = dropdownMode === 'history' ? searchHistory : searchSuggestions;
 
     return (
         <>
-            <header ref={headerRef} className="bg-white shadow-sm sticky top-0 z-40">
-                <div className="bg-gray-100 text-xs text-gray-600 py-1 hidden md:block md:px-10">
-                    <div className="container mx-auto px-4 flex justify-between items-center">
-                        <a href="#" className="flex items-center hover:text-blue-600">
-                            <PhoneIcon />
-                            Gratis Ongkir + Banyak Promo belanja di aplikasi
-                            <ChevronRightIcon />
-                        </a>
-                        <nav className="flex items-center gap-6">
-                            {topLinks.map(link => (
-                                <a key={link} href="#" className="hover:text-blue-600">{link}</a>
-                            ))}
-                        </nav>
-                    </div>
-                </div>
-                <div className="container mx-auto px-4 py-3 md:px-10">
-                    <div className="hidden md:block">
-                        <div className="flex flex-row items-center gap-4">
-                            <a onClick={() => window.location.href = '/'} className="text-4xl font-bold text-blue-600 shrink-0">
-                                <img src='/logo/logo.png' width={100} />
-                            </a>
-                            <button
-                                onClick={() => setProvinceModalOpen(true)}
-                                className="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold hover:bg-gray-50"
-                            >
-                                <FilterIcon />
-                                Filter
-                            </button>
-                            <div className="relative w-full">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <SearchIcon />
+            <header className="text-white shadow-lg sticky top-0 z-40 h-[120px] bg-[#7952B3]">
+                <div className="">
+                    <div className="hidden md:flex flex-col">
+                        <div className="items-center text-xs mb-3 bg-[#563D7C] py-1">
+                            <div className="container mx-auto w-[1200px] px-[0px] flex justify-between">
+                                <a onClick={() => router.push('/')} className="text-[13px] hover:underline">Download aplikasinya di Playstore</a>
+                                <div className="flex items-center gap-4 font-medium">
+                                    {isLoggedIn ? (
+                                        <div className="flex items-center gap-4">
+                                            <a onClick={() => router.push('/my-store')} className="hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
+                                            {/* <div className="h-7 w-px bg-white"></div> */}
+                                            <a onClick={() => router.push('/user-profile')} className="text-[13px]  hover:underline font-semibold cursor-pointer">{userName}</a>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <a onClick={() => router.push('/auth/register')} className="hover:underline">Daftar</a>
+                                            <div className="h-3 w-px bg-indigo-400"></div>
+                                            <a onClick={() => router.push('/auth/login')} className="hover:underline">Masuk</a>
+                                        </div>
+                                    )}
                                 </div>
-                                <input
-                                    type="text"
-                                    placeholder="Cari di zukses"
-                                    value={searchTerm}
-                                    onFocus={() => setIsSearchFocused(true)}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                                {isSearchFocused && <SearchSuggestions suggestions={searchSuggestions} searchTerm={searchTerm} />}
                             </div>
-                            <div className="flex items-center gap-4 shrink-0">
-                                <button className="p-2 hover:bg-gray-100 rounded-full">
-                                    <CartIcon />
-                                </button>
-                                <div className="h-6 w-px bg-gray-200"></div>
-                                {
-                                    isLoggedIn ?
-                                        <>
-                                            <div style={{ background: "#666666", borderRadius: "50%", padding: "5px", cursor: "pointer" }} onClick={() => window.location.href = '/user-profile'}>
-                                                <img src='/icon/user.svg' />
+                        </div>
+
+                        <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] flex justify-between">
+                            <h1 className="text-[30px] font-bold cursor-pointer shrink-0 mt-[0px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
+                            <div ref={searchContainerRef} className="flex-grow relative">
+                                <div className='flex items-center justify-between gap-4 mt-2'>
+                                    <div className="flex items-center gap-3 w-full">
+                                        <div className="relative flex-grow">
+                                            <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
+                                                onFocus={() => { setIsSearchFocused(true); setSearchResults(null); setDropdownMode('history'); }}
+                                                onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setSearchResults(null); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
+                                                className="w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[13px]"
+                                            />
+                                            <div className="absolute inset-y-0  right-0 flex items-center p-[2px]">
+                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#563D7C] flex items-center justify-center" title="Cari">
+                                                    <SearchIcon className="w-5 h-5 text-white" />
+                                                </button>
                                             </div>
-                                        </> :
-                                        <>
-                                            <button className="px-6 py-2 border border-gray-300 rounded-lg font-bold text-blue-600 hover:bg-gray-50 text-sm" onClick={() => window.location.href = '/auth/login'}>
-                                                Masuk
+                                        </div>
+                                        <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md" title="Filter Provinsi">
+                                            <img src='/icon/Filter.svg' width={25} />
+                                        </button>
+
+                                    </div>
+                                    {isLoggedIn && (
+                                        <div className='flex items-center justify-right mr-[-20px]'>
+                                            <button className="p-2 rounded-md" title="Keranjang Belanja">
+                                                <img src='icon/Shopping bag.svg' width={25} />
                                             </button>
-                                            <button className="px-6 py-2 bg-blue-600 border border-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 text-sm" onClick={() => window.location.href = '/auth/register'}>
-                                                Daftar
-                                            </button></>
-                                }
-                            </div>
-                        </div>
-                        <div className="mt-2 flex items-center gap-x-4 gap-y-1 flex-wrap">
-                            <span className="text-sm text-gray-500">Pencarian di:</span>
-                            {selectedProvinces.length > 0 ? (
-                                selectedProvinces.map(province => (
-                                    <a key={province} href="#" className="text-sm font-bold text-gray-800 hover:text-blue-600">
-                                        {province}
-                                    </a>
-                                ))
-                            ) : (
-                                <span className="text-sm font-bold text-gray-800">Semua Provinsi</span>
-                            )}
-                        </div>
-                    </div>
-                    {/* PERBAIKAN: Input di mobile sekarang membuka overlay pencarian */}
-                    <div className="md:hidden flex items-center gap-2">
-                        <div className="relative flex-grow">
-                            <div className="relative flex-grow" onClick={() => setIsMobileSearchOpen(true)}>
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <SearchIcon />
+                                            <button className="p-2 rounded-md" title="Toko Saya">
+                                                <img src='/icon/user.svg' width={25} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
-                                <input
-                                    type="text"
-                                    placeholder="Cari di Zukses"
-                                    readOnly
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-50"
-                                />
+                                {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
-                            <button
-                                className="absolute inset-y-0 right-0 px-4 text-black font-semibold rounded-r-lg text-sm"
-                                onClick={() => console.log('Cari:', searchTerm)}
-                            >
-                                Cari
-                            </button>
                         </div>
-                        <button
-                            onClick={() => setProvinceModalOpen(true)}
-                            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center"
-                        >
-                            <FilterIcon />
-                            Filter
-                        </button>
-                        <button className="p-2 hover:bg-gray-100 rounded-lg ">
-                            <CartIcon />
-                        </button>
-                    </div>
-                    <div className="mt-2 flex items-center gap-x-4 gap-y-1 flex-wrap md:hidden">
-                        <span className="text-sm text-gray-500">Pencarian di:</span>
-                        {selectedProvinces.length > 0 ? (
-                            selectedProvinces.map(province => (
-                                <a key={province} href="#" className="text-sm font-bold text-gray-800 hover:text-blue-600">
-                                    {province}
+                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[5px]'>
+                            <div className="mt-1 text-[13px] text-white">
+                                Pencarian di
+                                <a
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setProvinceModalOpen(true);
+                                    }}
+                                    className="text-white hover:underline cursor-pointer"
+                                >
+                                    {selectedProvinces.length > 0
+                                        ? " " + selectedProvinces.slice(0, 3).join(', ')
+                                        : ' semua provinsi'}
                                 </a>
-                            ))
-                        ) : (
-                            <span className="text-sm font-bold text-gray-800">Semua Provinsi</span>
-                        )}
+                            </div>
+
+                            <div className="mt-1 text-[13px] text-white mr-[125px] cursor-pointer">
+                                Laptop Kemeja lengan panjang Baju Koko
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="md:hidden flex items-center justify-between py-3">
+                        <h1 className="text-2xl font-bold" onClick={() => window.location.href = '/'}>Zukses</h1>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setIsMobileSearchOpen(true)} className="p-2 rounded-full">
+                                <SearchIcon className="w-6 h-6 text-white" />
+                            </button>
+                            <button className="p-2 rounded-full">
+                                <img src='/icon/Shopping bag.svg' width={25} />
+                            </button>
+                            {isLoggedIn ? (
+                                <button onClick={() => window.location.href = '/user-profile'} className="p-2 rounded-full">
+                                    <img src='/icon/user.svg' width={25} />
+                                </button>
+                            ) : (
+                                <a onClick={() => router.push('/auth/login')} className="bg-indigo-700 px-4 py-1.5 rounded-md text-sm font-semibold">Masuk</a>)}
+                        </div>
                     </div>
                 </div>
-            </header>
-            <ProvinceModal
-                isOpen={isProvinceModalOpen}
-                onClose={() => setProvinceModalOpen(false)}
-                provinces={provinces}
-                selectedProvinces={selectedProvinces}
-                onApply={setSelectedProvinces}
-            />
-            {isMobileSearchOpen && <MobileSearch onClose={() => setIsMobileSearchOpen(false)} suggestions={searchSuggestions} />}
+            </header >
+
+            <ProvinceModal isOpen={isProvinceModalOpen} onClose={() => setProvinceModalOpen(false)} provinces={provinces} selectedProvinces={selectedProvinces} onApply={setSelectedProvinces} />
+            {isMobileSearchOpen && <MobileSearch onClose={() => setIsMobileSearchOpen(false)} suggestions={searchSuggestions} searchHistory={searchHistory} onSearchPerformed={updateHistoryState} />}
         </>
     );
 }
 
-export default Header
+export default Header;
