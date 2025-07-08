@@ -44,8 +44,8 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         <img src={product.image} alt={product.name} className="w-full h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-2 ">
                             <h3
-                                className="text-[14px] w-full text-dark line-clamp-2 h-8"
-                                style={{ lineHeight: '17px', letterSpacing: '-0.04em' }}
+                                className="text-[14px] w-full text-dark line-clamp-2 h-8.5"
+                                style={{ lineHeight: '17px' }}
                             >
                                 {product.name}
                             </h3>
