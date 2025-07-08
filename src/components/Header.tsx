@@ -205,7 +205,7 @@ const Header = () => {
                                 </a>
                             </div>
 
-                            <div className="mt-1 text-[13px] text-white mr-[125px] cursor-pointer">
+                            <div className="mt-1 text-[13px] text-white mr-[125px] cursor-pointer font-light">
                                 Laptop Kemeja lengan panjang Baju Koko
                             </div>
                         </div>
