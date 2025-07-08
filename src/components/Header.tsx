@@ -189,7 +189,7 @@ const Header = () => {
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
                         </div>
-                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[4px]'>
+                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[3px]'>
                             <div className="mt-1 text-white text-[14px] font-light">
                                 Pencarian di
                                 <a
