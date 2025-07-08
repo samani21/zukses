@@ -137,9 +137,9 @@ const Header = () => {
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
-                                            <a onClick={() => router.push('/my-store')} className="font-[700] hover:underline cursor-pointer text-[13px] ">Toko Saya</a>
+                                            <a onClick={() => router.push('/my-store')} className="font-[500] hover:underline cursor-pointer text-[14px] ">Toko Saya</a>
                                             {/* <div className="h-7 w-px bg-white"></div> */}
-                                            <a onClick={() => router.push('/user-profile')} className="font-[700] text-[13px]  hover:underline font-semibold cursor-pointer text-right">{userName}</a>
+                                            <a onClick={() => router.push('/user-profile')} className="font-[500] text-[14px]  hover:underline cursor-pointer text-right">{userName}</a>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
@@ -189,7 +189,7 @@ const Header = () => {
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
                         </div>
-                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[3px]'>
+                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[4px]'>
                             <div className="mt-1 text-white text-[14px] font-light">
                                 Pencarian di
                                 <a
@@ -205,8 +205,8 @@ const Header = () => {
                                 </a>
                             </div>
 
-                            <div className="mt-1 text-[13px] text-white mr-[145px] cursor-pointer font-light">
-                                Laptop Kemeja lengan panjang Baju Koko
+                            <div className="mt-1 text-[14px] text-white mr-[145px] cursor-pointer font-light">
+                                <span className='mr-2'> Laptop</span> <span className='mr-2'>Kemeja lengan panjang</span> <span>Baju Koko</span>
                             </div>
                         </div>
                     </div>
