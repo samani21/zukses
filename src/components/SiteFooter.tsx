@@ -85,7 +85,7 @@ const SiteFooter: FC = () => {
 
           {/* KOLON KANAN */}
           <div className="md:col-span-5 space-y-6">
-            <h2 className="text-3xl font-semibold">Zukses</h2>
+            <h2 className="text-[30px] ">Zukses</h2>
 
             <div>
               <p className="text-sm font-semibold mb-2">

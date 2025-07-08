@@ -1,9 +1,21 @@
 'use client'
+import Delivery from "components/Delivery";
 import Header from "components/Header";
+import Payment from "components/Payment";
 import SiteFooter from "components/SiteFooter";
 import DesktopSidebar from "components/userProfile/DesktopSidebar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+interface Payments {
+    id: number;
+    src: string;
+    alt: string;
+}
+interface Deliverys {
+    id: number;
+    src: string;
+    alt: string;
+}
 
 export default function UserProfile({ children }: { children: React.ReactNode }) {
     const [title, setTitle] = useState<string>('Dashboard');
@@ -17,20 +29,43 @@ export default function UserProfile({ children }: { children: React.ReactNode })
         } else if (router?.pathname === '/user-profile/address') {
             setTitle('Alamat Saya')
         }
-    }, [router])
+    }, [router]);
+    const samplePayment: Payments[] = [
+        { id: 1, src: '/icon/payment/bri 1.svg', alt: 'BRI' },
+        { id: 2, src: '/icon/payment/bni 1.svg', alt: 'BNI' },
+        { id: 3, src: '/icon/payment/bca 1.svg', alt: 'BCA' },
+        { id: 4, src: '/icon/payment/mandiri 1.svg', alt: 'Mandiri' },
+        { id: 5, src: '/icon/payment/linkaja 1.svg', alt: 'Link Aja' },
+        { id: 6, src: '/icon/payment/qris 1.svg', alt: 'Qris' },
+        { id: 7, src: '/icon/payment/bsi 1.svg', alt: 'BSI' },
+        { id: 8, src: '/icon/payment/permata 1.svg', alt: 'Permata Bank' },
+        { id: 9, src: '/icon/payment/dana 1.svg', alt: 'Dana' },
+        { id: 10, src: '/icon/payment/ovo 1.svg', alt: 'Ovo' },
+        { id: 11, src: '/icon/payment/shopeepay 1.svg', alt: 'Shopee Pay' },
+        { id: 12, src: '/icon/payment/maybank 1.svg', alt: 'My Bank' },
+        { id: 13, src: '/icon/payment/danamon 1.svg', alt: 'Danamon' },
+    ];
+    const sampleDeliverys: Deliverys[] = [
+        { id: 1, src: '/icon/delivery/sicepat 1.svg', alt: 'SICEPAT' },
+        { id: 2, src: '/icon/delivery/posaja 1.svg', alt: 'POSAJA' },
+        { id: 3, src: '/icon/delivery/jnt 1.svg', alt: 'JNT' },
+        { id: 4, src: '/icon/delivery/jne 1.svg', alt: 'JNE' },
+        { id: 5, src: '/icon/delivery/gosend 1.svg', alt: 'Gosend' },
+        { id: 6, src: '/icon/delivery/anteraja 1.svg', alt: 'Anteraja' },
+    ];
     return (
-        <div className="bg-white">
+        <div className="">
             <div className='hidden md:block'>
                 <Header />
             </div>
-            <div className="min-h-screen font-sans p-10">
+            <div className="min-h-screen font-sans py-10">
                 <div className="container mx-auto p-0 md:p-0 md:px-0 flex rounded-lg min-h-[70vh] w-[1200px]">
-                    <div>
-                        <h3 className="font-bold w-55 border-r border-l border-t border-gray-300 text-center py-4 rounded-tl-lg rounded-tr-lg">Akun saya</h3>
+                    <div className="h-[625px] ">
+                        <p className="font-bold w-[230px] border-r border-l border-t border-gray-300 text-center py-4 rounded-tl-lg rounded-tr-lg bg-[#7952B3] text-white text-[20px]">Akun saya</p>
                         <DesktopSidebar />
                     </div>
-                    <main className="flex-grow bg-white rounded-tl-lg rounded-bl-lg mt-[6px]">
-                        <div className="">
+                    <main className="flex-grow bg-white rounded-tl-lg rounded-bl-lg mt-[0px] ml-[-10px]">
+                        <div className="p-10">
                             <h2 className="text-xl font-bold text-[#333333] mb-6 ">{title}</h2>
                             <div>
                                 {children}
@@ -39,12 +74,22 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                     </main>
                 </div>
             </div>
-            <div className='border-t border-gray-200'>
+            <div className='border-t border-[#BBBBBB] bg-white'>
+                <div className='border-b border-[#BBBBBB] py-10'>
+                    <div className='container mx-auto flex justify-between itmes-center w-[1200px] px-[0px] '>
+                        <div>
+                            <Payment samplePayment={samplePayment} />
+                        </div>
+                        <div>
+                            <Delivery sampleDeliverys={sampleDeliverys} />
+                        </div>
+                    </div>
+                </div>
                 <main className="container mx-auto w-[1200px] px-[0px]">
                     <SiteFooter />
                 </main>
-                <div className="border-t border-gray-200 py-4 mt-8">
-                    <p className="text-center text-xs text-dark-500 font-bold">
+                <div className="border-t border-[#BBBBBB] py-4 mt-8">
+                    <p className="text-center text-[15px] text-dark-500 font-semibold">
                         @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
                     </p>
                 </div>
