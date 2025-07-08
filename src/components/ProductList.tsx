@@ -23,7 +23,10 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 {filteredProducts?.map(product => (
                     <a
                         key={product.id}
-                        className="bg-white overflow-hidden group w-[188px]"
+                        className="bg-white overflow-hidden group w-[186px]"
+                        style={{
+                            boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)'
+                        }}
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
@@ -39,28 +42,28 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                     >
 
                         <img src={product.image} alt={product.name} className="w-full h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
-                        <div className="py-4">
+                        <div className="p-2 ">
                             <h3 className="text-[14px] w-full text-dark line-clamp-2 h-10.5">
                                 {product.name}
                             </h3>
                             <p className="text-[16px] font-bold mt-1">{formatRupiah(product.price)}</p>
                             <div className='flex justify-left items-center gap-2'>
                                 {product.is_cod_enabled ? <div className="mt-1 w-[50px] h-[24px] bg-[#BB2C31] flex justify-center items-center">
-                                    <p className="text-[12px] font-bold text-white">
+                                    <p className="text-[12px] text-white">
                                         COD
                                     </p>
                                 </div> : ''}
                                 <div className="mt-1 w-[50px] h-[24px] bg-[#E36100] flex justify-center items-center">
-                                    <p className="text-[12px] font-bold text-white">
+                                    <p className="text-[12px] text-white">
                                         -31%
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-center text-xs text-gray-500 mt-2">
                                 <StarIcon className="w-5 h-5 text-yellow-400" />
-                                <span className='text-[14px] mt-[-1px] font-bold text-[#555555]'>{product.rating || 4.9}</span> <span className='ml-2 text-[14px] mt-[-1px] font-bold'>{product.sold || " 1000"}+ terjual</span>
+                                <span className='text-[12px] mt-[-1px] text-[#333333]'>{product.rating || 4.9}</span> <span className='ml-2 text-[12px] mt-[-1px] text-[#555555]'>{product.sold || " 1000"}+ terjual</span>
                             </div>
-                            <p className="text-sm text-[#333333] ">Kota Makassar</p>
+                            <p className="text-[12px] text-[#333333] ">Kota Makassar</p>
                         </div>
                     </a>
                 ))}
@@ -70,7 +73,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                     <p className='text-[14px] font-semibold'>Muat lebih Banyak</p>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 

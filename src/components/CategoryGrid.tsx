@@ -25,19 +25,19 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                             <button
                                 onClick={() => onCategorySelect(category.name)}
                                 key={category.name}
-                                className="flex flex-col items-center justify-start w-[90px] h-[90px] text-center group border-1 border-[#CCCCCC]"
+                                className="bg-white flex flex-col items-center justify-start w-[90px] h-[90px] text-center group border-1 border-[#CCCCCC]"
                             >
                                 <div className="p-2 flex items-center justify-center mb-2 group-hover:border-blue-500 transition-colors">
                                     <img
                                         src={category.icon}
                                         alt={category.name}
-                                        className="w-11"
+                                        className="w-[40px]"
                                         onError={(e) => {
                                             (e.target as HTMLImageElement).src = 'https://placehold.co/64x64/eee/ccc?text=?';
                                         }}
                                     />
                                 </div>
-                                <span className="text-[12px] w-[85px] text-[#555555]  mt-[-10px] leading-none">
+                                <span className="text-[12px] w-[85px] text-[#555555]  mt-[-6px] leading-none">
                                     {category.name}
                                 </span>
 
