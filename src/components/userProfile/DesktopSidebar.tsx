@@ -73,25 +73,25 @@ const DesktopSidebar = () => {
     }, [])
     return (
         <aside
-            className="w-[243px] mr-[40px] h-[625px] hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300"
+            className="w-[243px] mr-[40px] h-[540px] hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300"
             style={{ boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)' }}
         >
 
             <div className="flex items-center justify-center gap-3 p-3">
-                <div>
+                <div className='mt-3'>
                     <div className='flex justify-center items-center'>
                         <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-[49px] h-[49px] rounded-full" />
                     </div>
-                    <h4 className="text-[16px] font-semibold mt-1 text-center">{user?.name ?? "Nama Anda"}</h4>
+                    <h4 className="text-[16px] text-[#444444] font-[500] mt-1 text-center">{user?.name ?? "Nama Anda"}</h4>
                 </div>
             </div>
-            <nav className="flex-grow p-4 mt-7">
+            <nav className="flex-grow p-4 mt-[-5px]">
                 <ul>
                     {navItems.map(item => (
                         <li key={item.name}>
                             <button
                                 onClick={() => router.push(item?.url)}
-                                className={`w-[209px] h-[32px] mb-1 flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
+                                className={`w-[209px] h-[32px] leading-[121%] flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
                                     ? 'text-white  text-[14px] font-bold bg-[#7952B3]'
                                     : 'text-[#444444] text-[14px]'
                                     }`}
