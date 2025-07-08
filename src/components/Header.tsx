@@ -189,7 +189,7 @@ const Header = () => {
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
                         </div>
-                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[5px]'>
+                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between mt-[3px]'>
                             <div className="mt-1 text-white text-[14px] font-light">
                                 Pencarian di
                                 <a
@@ -205,7 +205,7 @@ const Header = () => {
                                 </a>
                             </div>
 
-                            <div className="mt-1 text-[13px] text-white mr-[125px] cursor-pointer font-light">
+                            <div className="mt-1 text-[13px] text-white mr-[145px] cursor-pointer font-light">
                                 Laptop Kemeja lengan panjang Baju Koko
                             </div>
                         </div>
