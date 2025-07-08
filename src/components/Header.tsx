@@ -152,7 +152,7 @@ const Header = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] mt-[-5px] flex justify-between">
+                        <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] mt-[-3px] flex justify-between">
                             <h1 className="text-[35px] font-[500] cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-9 mt-2'>
