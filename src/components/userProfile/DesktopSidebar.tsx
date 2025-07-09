@@ -73,28 +73,28 @@ const DesktopSidebar = () => {
     }, [])
     return (
         <aside
-            className="w-[243px] mr-[40px] hidden md:flex flex-col rounded-[5px] bg-white border border-[#DDDDDD]"
+            className="w-[243px] mr-[40px] hidden md:flex flex-col rounded-[5px] bg-white border border-[#eeeeee]"
             style={{ boxShadow: '1px 1px 30px rgba(0, 0, 0, 0.1)' }}
 
         >
-            <p className='font-bold text-[16px] text-[#333333] text-center py-5 border-b border-[#DDDDDD]' style={{ letterSpacing: "-4%", lineHeight: '121%' }}>Akun saya</p>
-            <div className="flex items-center justify-center gap-3 p-3 border-b border-[#DDDDDD]">
+            <p className='font-bold text-[16px] text-[#333333] text-center py-5 border-b border-[#eeeeee]' style={{ letterSpacing: "-1px", lineHeight: '121%' }}>Akun Saya</p>
+            <div className="flex items-center justify-center gap-3 p-3 border-b border-[#eeeeee]">
                 <div className='mt-2 mb-2'>
                     <div className='flex justify-center items-center'>
-                        <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-[49px] h-[49px] rounded-full" />
+                        <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-[55px] h-[55px] rounded-full" />
                     </div>
-                    <h4 className="text-[16px] text-[#444444] font-[500] mt-1 text-center">{user?.name ?? "Nama Anda"}</h4>
+                    <h4 className="text-[16px] text-[#444444] font-[500] mt-[6px] text-center">{user?.name ?? "Nama Anda"}</h4>
                 </div>
             </div>
-            <nav className="flex-grow p-4 mt-[-5px]">
+            <nav className="flex-grow p-4">
                 <ul>
                     {navItems.map(item => (
                         <li key={item.name}>
                             <button
                                 onClick={() => router.push(item?.url)}
-                                className={`w-[209px] h-[32px] leading-[121%] flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
-                                    ? 'text-white  text-[14px] font-[500] bg-[#7952B3]'
-                                    : 'text-[#444444] text-[14px]'
+                                className={`w-[209px] h-[32px] leading-[121%] flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors  text-[14px] font-[500] ${router.pathname === item.url
+                                    ? 'text-white  bg-[#7952B3]'
+                                    : 'text-[#444444]'
                                     }`}
                                 style={
                                     router.pathname === item.url
@@ -109,7 +109,7 @@ const DesktopSidebar = () => {
                     ))}
                 </ul>
             </nav>
-            <div className="mt-10 px-4 py-6">
+            <div className="mt-10 px-4 py-5 mb-[5px]">
                 {/* <button className="w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 text-red-600" onClick={handleLogout}>
                     <LogoutIcon className="w-5 h-5" />
                     <span>Logout</span>

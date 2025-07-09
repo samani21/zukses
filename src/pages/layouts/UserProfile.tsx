@@ -53,7 +53,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                         className="ml-[-10px] container mx-auto"
                     >
 
-                        <div className="p-6">
+                        <div className="p-6 pt-4">
                             <div>
                                 {children}
                             </div>
