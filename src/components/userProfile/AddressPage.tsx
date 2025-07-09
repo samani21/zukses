@@ -171,7 +171,8 @@ const AddressPage = () => {
 
     return (
         <div className="w-full">
-            <div className="flex justify-end px-3">
+            <div className="flex justify-between px-3">
+                <h2 className="text-[20px] font-bold text-[#444444] mb-6 ">Alamat Saya</h2>
                 <button className="bg-[#52357B] text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex items-center gap-2" onClick={() => {
                     setOpenModalAddAdress(true)
                     setIsAdd(true);
