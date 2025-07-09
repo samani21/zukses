@@ -52,7 +52,7 @@ const IndexPage: React.FC = () => {
     return (
         <UserProfile>
             <h2 className="text-[20px] font-bold text-[#444444] mb-6 ">Dashboard</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full p-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full py-3">
                 {menuItems.map((item, index) => (
                     <Link href={item.link} key={index} className="block w-full">
                         <div className="bg-white rounded-[10px] p-4 flex items-start space-x-4 cursor-pointer border border-gray-300 ">

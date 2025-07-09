@@ -209,10 +209,10 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                         setOpenMaps={setOpenMaps}
                     /> :
                         <div className="bg-white h-full md:h-50% md:rounded-lg shadow-xl w-full max-w-2xl">
-                            <div className="hidden md:flex justify-between items-center p-4">
-                                <h2 className="text-lg font-semibold">Alamat Baru</h2>
+                            <div className="hidden md:flex text-white justify-between items-center p-4 bg-[#227D53]">
+                                <h2 className="text-[20px] font-semibold">Alamat Baru</h2>
                                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-                                    <XMarkIcon className="w-6 h-6" />
+                                    <XMarkIcon className="w-6 h-6 text-white" />
                                 </button>
                             </div>
                             <div className=" md:hidden flex justify-left items-center p-4">
@@ -222,7 +222,6 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 <h2 className="text-lg font-semibold ml-4">Alamat Baru</h2>
                             </div>
                             <div className="p-6 space-y-4 max-h-[80vh] md:max-h-[70vh] overflow-y-auto">
-                                <InputFlex>
                                     <WrapperInput>
                                         <TextField
                                             fullWidth
@@ -247,8 +246,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                             autoComplete="off"
                                         />
                                     </WrapperInput>
-                                </InputFlex>
-                                <WrapperInput>
+                                <WrapperInput className='mt-9'>
                                     <AutocompleteAddress
                                         setFullAddress={(val) => handleChange('fullAddress', val)}
                                         setProv={(val) => handleChange('prov', val)}
