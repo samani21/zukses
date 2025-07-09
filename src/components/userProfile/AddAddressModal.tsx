@@ -217,7 +217,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                         setOpenMaps={setOpenMaps}
                     /> :
                         <div className="bg-white h-full md:h-50% md:rounded-lg shadow-xl w-full max-w-2xl">
-                            <div className="hidden md:flex text-white justify-between items-center p-4 bg-[#227D53]">
+                            <div className="hidden md:flex text-white justify-between items-center p-3 bg-[#227D53] px-7">
                                 <h2 className="text-[20px] font-semibold">Alamat Baru</h2>
                                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                                     <XMarkIcon className="w-6 h-6 text-white" />
@@ -481,7 +481,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 </SwitchContainer>
                             </LabelContainer> */}
                             </div>
-                            <div className="p-4 bg-[#EEEEEE] h-[70px] rounded-b-lg flex justify-between md:justify-end gap-3 mt-11">
+                            <div className="p-4 bg-[#EEEEEE] h-[70px] rounded-b-lg flex justify-between md:justify-end gap-3 mt-[56px]">
                                 <button onClick={handleClose} className="hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
                                 {
                                     editData &&
