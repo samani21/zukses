@@ -133,7 +133,7 @@ const Header = () => {
                     <div className="hidden md:flex flex-col">
                         <div className="items-center text-xs mb-3 bg-[#563D7C] py-[5px] h-[30px]">
                             <div className="container mx-auto w-[1200px] px-[0px] flex justify-between">
-                                <a onClick={() => router.push('/')} className="text-[13px] font-[600] hover:underline">Download aplikasinya di Playstore</a>
+                                <a onClick={() => router.push('/')} className="text-[14px] font-[500] hover:underline" style={{letterSpacing:"-3%"}}>Download aplikasinya di Playstore</a>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
