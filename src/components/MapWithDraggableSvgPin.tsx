@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { GoogleMap, Marker, OverlayView } from "@react-google-maps/api";
-import { ButtonContainer, ButtonHold, ButtonOk } from "./Profile/AddressComponent";
-
 const containerStyle = {
     width: "100%",
     height: "350px",
@@ -165,7 +163,7 @@ const MapWithDraggableSvgPin = ({
                     )}
                 </GoogleMap>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden md:block p-4 pt-0">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={tempMarkerPos}
@@ -249,10 +247,13 @@ const MapWithDraggableSvgPin = ({
                 </GoogleMap>
             </div>
 
-            <ButtonContainer style={{ padding: "20px", marginTop: "0px" }}>
-                <ButtonHold onClick={() => setOpenMaps(false)}>Nanti Saja</ButtonHold>
-                <ButtonOk onClick={handleConfirmLocation}>Konfirmasi</ButtonOk>
-            </ButtonContainer>
+            <div className="p-4 bg-[#EEEEEE] h-[70px] flex justify-between md:justify-end gap-3 mt-[-17px]">
+                <button onClick={() => setOpenMaps(false)} className="hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
+
+                <button onClick={handleConfirmLocation} className="rounded-[10px] bg-[#563D7C] text-white font-semibold text-[14px] w-[100px]">
+                    Konfirmasi
+                </button>
+            </div>
         </div>
     );
 };

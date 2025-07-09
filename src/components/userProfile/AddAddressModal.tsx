@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { InformationCircleIcon, XMarkIcon } from './Icon';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
-import { AddLocation, LabelContainer, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
+import { AddLocation, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
 import { Checkbox, IconButton, Switch, TextField } from '@mui/material';
-import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
 import { GoogleMapsProvider } from 'components/GoogleMapsProvider';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AutocompleteAddress from 'components/AutocompleteAddress/AutocompleteAddress';
+import { getLatLngFromNominatim } from './getLatLngFromNominatim';
 type FormData = {
     name: string;
     phone: string;
@@ -92,8 +92,6 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
     const [openMaps, setOpenMaps] = useState(false);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isEdit, setIsEdit] = useState(false);
-    const [openAutoCompletAddress, setOpenAutoCompleteAddress] = useState<boolean>(false);
-
     const resetForm = () => {
         setFormData({
             name: '',
@@ -186,16 +184,26 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
         setOpenModalAddAdress(false);
         resetForm();
     };
-    const handleSelectAddress = async () => {
-        setOpenAutoCompleteAddress(false)
-        setOpenMaps(true)
-    }
     useEffect(() => {
         document.body.style.overflow = 'hidden';
         return () => {
             document.body.style.overflow = 'auto';
         };
     }, []);
+
+    const [latLng, setLatLng] = useState<{ lat: number; lng: number } | null>(null);
+
+    useEffect(() => {
+        if (formData?.fullAddress?.split(',')[2]?.trim() ?? '') {
+            getLatLngFromNominatim(formData?.fullAddress?.split(',')[2]?.trim() ?? '').then(setLatLng);
+        }
+    }, [formData?.fullAddress?.split(',')[2]?.trim()]);
+    useEffect(() => {
+        if (latLng) {
+            handleChange('lat', latLng?.lat)
+            handleChange('long', latLng?.lng)
+        }
+    }, [latLng])
     return (
         <GoogleMapsProvider>
             <div className="fixed inset-0 bg-black/50 z-50 md:flex items-center justify-center md:p-4">
@@ -272,7 +280,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                                     )}
                                 </WrapperInput>
-                                <WrapperInput>
+                                {/* <WrapperInput>
                                     <div className='hidden md:block'>
                                         <AddressAutocompleteStreet
                                             subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
@@ -330,8 +338,35 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                             </div>
                                         }
                                     </div>
+                                </WrapperInput> */}
+                                <WrapperInput>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Ketik atau klik disini"
+                                        value={formData.fullAddressStreet}
+                                        onChange={(e) => handleChange('fullAddressStreet', e.target.value)}
+                                        error={!!errors.fullAddressStreet}
+                                        helperText={errors.fullAddressStreet}
+                                        autoComplete="off"
+                                    />
                                 </WrapperInput>
                                 <WrapperInput>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Detil lainnya (Cth : Blok / Unit No., Patokan"
+                                        value={formData.detailAddress}
+                                        onChange={(e) => handleChange('detailAddress', e.target.value)}
+                                        error={!!errors.name}
+                                        helperText={errors.name}
+                                        autoComplete="off"
+                                    />
+                                    {errors.detailAddress && (
+                                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
+                                    )}
+                                </WrapperInput>
+                                {/* <WrapperInput>
                                     <input
                                         id="detailAddress"
                                         type="text"
@@ -344,7 +379,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                     {errors.detailAddress && (
                                         <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
                                     )}
-                                </WrapperInput>
+                                </WrapperInput> */}
                                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
                                     <div className="flex">
                                         <div className="flex-shrink-0">
@@ -387,16 +422,15 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                             {errors.tag && (
                                 <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.tag}</div>
                             )} */}
-                                <LabelContainer>
-                                    Atur Sebagai Alamat Utama
+                                <div className='flex items-center'>
                                     <SwitchContainer>
                                         <Checkbox
                                             checked={formData.isPrivate}
                                             onChange={(e) => handleChange('isPrivate', e.target.checked)}
                                             sx={{
-                                                color: 'var(--primary-color)',
+                                                color: '#52357B',
                                                 '&.Mui-checked': {
-                                                    color: 'var(--primary-color)',
+                                                    color: '#52357B',
                                                 },
                                             }}
                                         />
@@ -407,15 +441,16 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                             onChange={(e) => handleChange('isPrivate', e.target.checked)}
                                             sx={{
                                                 '& .MuiSwitch-switchBase.Mui-checked': {
-                                                    color: 'var(--primary-color)',
+                                                    color: '#52357B',
                                                     '& + .MuiSwitch-track': {
-                                                        backgroundColor: 'var(--primary-color)',
+                                                        backgroundColor: '#52357B',
                                                     },
                                                 },
                                             }}
                                         />
                                     </SwitchContainer>
-                                </LabelContainer>
+                                    <p className='text-[16px] font-semibold text-[#333333]'>Tetapkan sebagai alamat utama</p>
+                                </div>
                                 {/* <LabelContainer>
                                 Atur Sebagai Alamat Toko
                                 <SwitchContainer>
@@ -446,8 +481,8 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 </SwitchContainer>
                             </LabelContainer> */}
                             </div>
-                            <div className="p-4 bg-gray-50 rounded-b-lg flex justify-between md:justify-end gap-3">
-                                <button onClick={handleClose} className="hidden md:block px-6 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-100 transition">Nanti Saja</button>
+                            <div className="p-4 bg-[#EEEEEE] h-[70px] rounded-b-lg flex justify-between md:justify-end gap-3 mt-11">
+                                <button onClick={handleClose} className="hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
                                 {
                                     editData &&
                                     <button onClick={() => {
@@ -455,8 +490,8 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         setOpenModalAddAdress(false)
                                     }} className="md:hidden px-6 py-2 rounded-lg border border-gray-300 text-white hover:bg-gray-100 w-full transition bg-red-600">Hapus</button>
                                 }
-                                <button onClick={handleSubmit} className="px-8 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition w-full md:w-1/5">
-                                    OK
+                                <button onClick={handleSubmit} className="rounded-[10px] bg-[#563D7C] text-white font-semibold text-[14px] w-[100px]">
+                                    Konfirmasi
                                 </button>
                             </div>
                         </div>
