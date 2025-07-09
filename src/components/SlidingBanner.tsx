@@ -6,26 +6,26 @@ import React, {
     useMemo,
     FC,
 } from 'react';
-// const ChevronRightIcon = () => (
-//     <svg
-//         className="w-6 h-6 text-white"
-//         fill="none"
-//         stroke="currentColor"
-//         viewBox="0 0 24 24"
-//     >
-//         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-//     </svg>
-// );
-// const ChevronLeftIcon = () => (
-//     <svg
-//         className="w-6 h-6 text-white"
-//         fill="none"
-//         stroke="currentColor"
-//         viewBox="0 0 24 24"
-//     >
-//         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-//     </svg>
-// );
+const ChevronRightIcon = () => (
+    <svg
+        className="w-6 h-6 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+    >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+    </svg>
+);
+const ChevronLeftIcon = () => (
+    <svg
+        className="w-6 h-6 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+    >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+    </svg>
+);
 
 interface Banner { id: number; src: string; alt: string; }
 interface SlidingBannerProps { banners: Banner[]; autoPlayInterval?: number; }
@@ -69,7 +69,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
 
     const next = useCallback(() => !disableTransition && setCurrentIndex(i => i + 1), [disableTransition]);
     const prev = useCallback(() => !disableTransition && setCurrentIndex(i => i - 1), [disableTransition]);
-    // const goTo = (i: number) => setCurrentIndex(i + visibleCount); // titik navigasi
+    const goTo = (i: number) => setCurrentIndex(i + visibleCount); // titik navigasi
 
     const resetTimeout = (): void => {
         if (timeoutRef.current) {
@@ -148,7 +148,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                 onMouseLeave={() => { if (isDraggingRef.current) end(); }}
             >
                 <div
-                    className="flex items-center gap-2.5"     /* gap‑4 = 1rem */
+                    className="flex items-center gap-3"     /* gap‑4 = 1rem */
                     style={transformStyle}
                     onTransitionEnd={onTransitionEnd}
                 >
@@ -170,7 +170,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                     ))}
                 </div>
 
-                {/* <button
+                <button
                     onClick={prev}
                     className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2
             bg-black/40 hover:bg-black/60 p-2 rounded-full opacity-0
@@ -178,8 +178,8 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                     aria-label="Sebelumnya"
                 >
                     <ChevronLeftIcon />
-                </button> */}
-                {/* <button
+                </button>
+                <button
                     onClick={next}
                     className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2
             bg-black/40 hover:bg-black/60 p-2 rounded-full opacity-0
@@ -187,7 +187,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                     aria-label="Berikutnya"
                 >
                     <ChevronRightIcon />
-                </button> */}
+                </button>
 
                 {/* <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
                     {banners.map((_, i) => {

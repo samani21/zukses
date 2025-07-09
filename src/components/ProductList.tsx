@@ -23,10 +23,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 {filteredProducts?.map(product => (
                     <a
                         key={product.id}
-                        className="bg-white overflow-hidden group w-[186px]"
-                        style={{
-                            boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)'
-                        }}
+                        className="bg-white overflow-hidden group w-[186px] border border-[#DDDDDD]"
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
@@ -41,23 +38,23 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         }}
                     >
 
-                        <img src={product.image} alt={product.name} className="w-full h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
+                        <img src={product.image} alt={product.name} className="w-[188px] h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-2 ">
-                            <h3
-                                className="text-[14px] w-full text-dark line-clamp-2 h-8.5"
+                            <p
+                                className="text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#333333]"
                                 style={{ lineHeight: '17px' }}
                             >
                                 {product.name}
-                            </h3>
+                            </p>
 
-                            <p className="text-[16px] font-bold mt-1">{formatRupiah(product.price)}</p>
+                            <p className="text-[16px] font-bold mt-1 text-[#333333]">{formatRupiah(product.price)}</p>
                             <div className='flex justify-left items-center gap-2'>
-                                {product.is_cod_enabled ? <div className="mt-1 w-[50px] h-[24px] bg-[#BB2C31] flex justify-center items-center">
-                                    <p className="text-[12px] text-white">
+                                {product.is_cod_enabled ? <div className="mt-1 w-[50px] h-[24px] bg-[#FBC207] flex justify-center items-center rounded-[10px]">
+                                    <p className="text-[12px] text-dark">
                                         COD
                                     </p>
                                 </div> : ''}
-                                <div className="mt-1 w-[50px] h-[24px] bg-[#E36100] flex justify-center items-center">
+                                <div className="mt-1 w-[50px] h-[24px] bg-[#E36100] flex justify-center items-center rounded-[10px]">
                                     <p className="text-[12px] text-white">
                                         -31%
                                     </p>
@@ -73,8 +70,8 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 ))}
             </div>
             <div className='mt-10 flex justify-center items-center'>
-                <div className='bg-[#563D7C] text-white w-[383px] h-[50px] flex justify-center items-center rounded-[10px] cursor-pointer'>
-                    <p className='text-[14px] font-semibold'>Muat lebih Banyak</p>
+                <div className='bg-[#F6E9F0] border border-[#563D7C]  w-[383px] h-[50px] flex justify-center items-center rounded-[10px] cursor-pointer'>
+                    <p className='text-[14px] text-dark font-semibold'>Muat lebih Banyak</p>
                 </div>
             </div>
         </div >

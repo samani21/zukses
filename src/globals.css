@@ -22,7 +22,7 @@
 }
 
 body {
-  background: #E8E6F0;
+  background: var(--background);
   color: var(--foreground);
   font-family: "Inter", sans-serif;
   -webkit-user-select: text;
