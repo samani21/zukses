@@ -69,7 +69,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
 
     const next = useCallback(() => !disableTransition && setCurrentIndex(i => i + 1), [disableTransition]);
     const prev = useCallback(() => !disableTransition && setCurrentIndex(i => i - 1), [disableTransition]);
-    const goTo = (i: number) => setCurrentIndex(i + visibleCount); // titik navigasi
+    // const goTo = (i: number) => setCurrentIndex(i + visibleCount); // titik navigasi
 
     const resetTimeout = (): void => {
         if (timeoutRef.current) {
