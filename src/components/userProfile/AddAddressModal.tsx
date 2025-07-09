@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { InformationCircleIcon, XMarkIcon } from './Icon';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
-import { AddLocation, InputFlex, LabelContainer, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
+import { AddLocation, LabelContainer, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
 import { Checkbox, IconButton, Switch, TextField } from '@mui/material';
 import AddressAutocompleteStreet from 'components/AddressAutocompleteStreet';
@@ -222,30 +222,30 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 <h2 className="text-lg font-semibold ml-4">Alamat Baru</h2>
                             </div>
                             <div className="p-6 space-y-4 max-h-[80vh] md:max-h-[70vh] overflow-y-auto">
-                                    <WrapperInput>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            label="Nama Lengkap"
-                                            value={formData.name}
-                                            onChange={(e) => handleChange('name', e.target.value)}
-                                            error={!!errors.name}
-                                            helperText={errors.name}
-                                            autoComplete="off"
-                                        />
-                                    </WrapperInput>
-                                    <WrapperInput>
-                                        <TextField
-                                            fullWidth
-                                            variant="outlined"
-                                            label="Nomor Telepon"
-                                            value={formData.phone}
-                                            onChange={(e) => handleChange('phone', e.target.value)}
-                                            error={!!errors.phone}
-                                            helperText={errors.phone}
-                                            autoComplete="off"
-                                        />
-                                    </WrapperInput>
+                                <WrapperInput>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Nama Lengkap"
+                                        value={formData.name}
+                                        onChange={(e) => handleChange('name', e.target.value)}
+                                        error={!!errors.name}
+                                        helperText={errors.name}
+                                        autoComplete="off"
+                                    />
+                                </WrapperInput>
+                                <WrapperInput>
+                                    <TextField
+                                        fullWidth
+                                        variant="outlined"
+                                        label="Nomor Telepon"
+                                        value={formData.phone}
+                                        onChange={(e) => handleChange('phone', e.target.value)}
+                                        error={!!errors.phone}
+                                        helperText={errors.phone}
+                                        autoComplete="off"
+                                    />
+                                </WrapperInput>
                                 <WrapperInput className='mt-9'>
                                     <AutocompleteAddress
                                         setFullAddress={(val) => handleChange('fullAddress', val)}
