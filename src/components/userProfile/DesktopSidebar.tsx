@@ -23,7 +23,7 @@ export const navItems: NavItem[] = [
         url: '/user-profile',
     },
     {
-        name: 'Profil',
+        name: 'Profil Saya',
         // icon: <ProfilIcon className="w-5 h-5" />,
         url: '/user-profile/profil',
     },
@@ -73,10 +73,11 @@ const DesktopSidebar = () => {
     }, [])
     return (
         <aside
-            className="w-[243px] mr-[40px] h-[540px] hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300"
-            style={{ boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.15)' }}
-        >
+            className="w-[243px] mr-[40px] hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300 border-t-0"
+            style={{ boxShadow: '1px 1px 30px rgba(0, 0, 0, 0.1)' }}
 
+        >
+            <p className='font-bold text-[16px] text-[#333333] text-center pb-5 pt-7' style={{ letterSpacing: "-4%", lineHeight: '121%' }}>Akun saya</p>
             <div className="flex items-center justify-center gap-3 p-3">
                 <div className='mt-3'>
                     <div className='flex justify-center items-center'>
@@ -92,12 +93,12 @@ const DesktopSidebar = () => {
                             <button
                                 onClick={() => router.push(item?.url)}
                                 className={`w-[209px] h-[32px] leading-[121%] flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors ${router.pathname === item.url
-                                    ? 'text-white  text-[14px] font-bold bg-[#7952B3]'
+                                    ? 'text-white  text-[14px] font-[500] bg-[#7952B3]'
                                     : 'text-[#444444] text-[14px]'
                                     }`}
                                 style={
                                     router.pathname === item.url
-                                        ? { boxShadow: '0 0 10px rgba(0, 0, 0, 0.39)' }
+                                        ? { boxShadow: '0 2 10px rgba(0, 0, 0, 0.39)' }
                                         : undefined
                                 }
                             >
@@ -107,7 +108,7 @@ const DesktopSidebar = () => {
                     ))}
                 </ul>
             </nav>
-            <div className="mt-4 px-4 py-6">
+            <div className="mt-10 px-4 py-6">
                 {/* <button className="w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 text-red-600" onClick={handleLogout}>
                     <LogoutIcon className="w-5 h-5" />
                     <span>Logout</span>

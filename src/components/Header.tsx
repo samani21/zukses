@@ -128,7 +128,7 @@ const Header = () => {
 
     return (
         <>
-            <header className="text-white shadow-lg sticky top-0 z-40 h-[120px] bg-[#7952B3]">
+            <header className="text-white sticky top-0 z-40 h-[120px] bg-[#7952B3]">
                 <div className="">
                     <div className="hidden md:flex flex-col">
                         <div className="items-center text-xs mb-3 bg-[#563D7C] py-[5px] h-[30px]">
