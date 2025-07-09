@@ -173,7 +173,7 @@ const AddressPage = () => {
         <div className="w-full">
             <div className="flex justify-between px-3">
                 <h2 className="text-[20px] font-bold text-[#444444] mb-6 ">Alamat Saya</h2>
-                <button className="bg-[#52357B] text-white rounded-md px-4 py-2 hover:bg-blue-700 transition font-semibold flex items-center gap-2" onClick={() => {
+                <button className="bg-[#563D7C] text-white font-semibold text-[14px] rounded-[5px] px-4 py-2 w-[150px] h-[40px]" onClick={() => {
                     setOpenModalAddAdress(true)
                     setIsAdd(true);
                 }}>
@@ -183,30 +183,29 @@ const AddressPage = () => {
             <div>
                 <div className="space-y-4 mt-5">
                     {addresses.map(address => (
-                        <div key={address.id} className="border-t border-gray-300 pt-4 flex flex-col md:flex-row gap-4 px-5">
-                            <div className="flex-grow space-y-1 text-sm text-gray-700">
+                        <div key={address.id} className="border-t border-[#CCCCCCCC] pt-4 flex flex-col md:flex-row gap-4 px-5">
+                            <div className="flex-grow space-y-1 text-[#333333]">
                                 <div className="flex items-baseline">
-                                    <span className="font-semibold text-gray-800">{address.name_receiver}</span>
-                                    <div className="w-px h-4 bg-gray-300 mx-3"></div>
-                                    <span>{address.number_receiver}</span>
+                                    <span className="font-bold text-[16px] mr-1">{address.name_receiver}</span>
+                                    <span className='text-[16px]'> | {address.number_receiver}</span>
                                 </div>
-                                <p>{address.full_address},{address?.detail_address}</p>
-                                <p>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
+                                <p className='mt-2 text-[14px]'>{address.full_address},{address?.detail_address}</p>
+                                <p className='mt-[-5px] text-[14px]'>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
                                 <div className="flex gap-2 mt-1">
-                                    {address.is_primary ? <span className="text-red-500 font-bold text-sm py-0.5 rounded-sm">Alamat Utama</span> : ''}
+                                    {address.is_primary ? <span className="text-[#E67514] font-bold text-[14px] py-0.5 rounded-sm">Alamat Utama</span> : ''}
                                 </div>
                             </div>
                             <div className="flex-shrink-0 flex flex-col items-end gap-2">
                                 <div className="flex gap-4">
-                                    <button className="text-dark-600 font-bold text-sm hover:underline" onClick={() => {
+                                    <button className="text-[#333333] font-semibold text-[14px] hover:underline" onClick={() => {
                                         setDataAddress(address)
                                         setOpenModalAddAdress(true)
                                     }}>Ubah</button>
-                                    {!address.is_primary && <button className="text-red-600 font-bold text-sm hover:underline hidden md:block" onClick={() => setOpenDelete(address?.id || 0)}>Hapus</button>}
+                                    {!address.is_primary && <button className="text-[#E67514] font-semibold text-[14px] hover:underline hidden md:block" onClick={() => setOpenDelete(address?.id || 0)}>Hapus</button>}
                                 </div>
                                 {
                                     !address.is_primary &&
-                                    <button className="border border-[#7952B3] rounded px-4 py-1.5 text-sm text-gray-700 hover:bg-gray-100 transition" onClick={() => handlePrimary(address?.id)}>Atur sebagai utama</button>
+                                    <button className="border border-[#CCCCCC] rounded-[5px] px-4 py-1.5 text-[14px] font-semibold text-[#333333]" onClick={() => handlePrimary(address?.id)}>Atur sebagai utama</button>
                                 }
                             </div>
                         </div>

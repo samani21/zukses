@@ -45,7 +45,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                 <Header />
             </div>
             <div className="min-h-screen font-sans py-[33px] ">
-                <div className="container mx-auto p-0 md:p-0 md:px-0 flex rounded-lg h-[99vh] w-[1200px]">
+                <div className="container mx-auto p-0 md:p-0 md:px-0 flex rounded-lg  w-[1200px]">
                     <div className="h-[625px] ">
                         <DesktopSidebar />
                     </div>

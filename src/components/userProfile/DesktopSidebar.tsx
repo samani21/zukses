@@ -73,11 +73,11 @@ const DesktopSidebar = () => {
     }, [])
     return (
         <aside
-            className="w-[243px] mr-[40px] hidden md:flex flex-col rounded-br-lg rounded-bl-lg bg-white border border-gray-300 border-t-0"
+            className="w-[243px] mr-[40px] hidden md:flex flex-col rounded-[5px] bg-white border border-[#DDDDDD]"
             style={{ boxShadow: '1px 1px 30px rgba(0, 0, 0, 0.1)' }}
 
         >
-            <p className='font-bold text-[16px] text-[#333333] text-center pb-5 pt-7 border-b border-[#DDDDDD]' style={{ letterSpacing: "-4%", lineHeight: '121%' }}>Akun saya</p>
+            <p className='font-bold text-[16px] text-[#333333] text-center py-5 border-b border-[#DDDDDD]' style={{ letterSpacing: "-4%", lineHeight: '121%' }}>Akun saya</p>
             <div className="flex items-center justify-center gap-3 p-3 border-b border-[#DDDDDD]">
                 <div className='mt-2 mb-2'>
                     <div className='flex justify-center items-center'>
@@ -98,9 +98,10 @@ const DesktopSidebar = () => {
                                     }`}
                                 style={
                                     router.pathname === item.url
-                                        ? { boxShadow: '0 2 10px rgba(0, 0, 0, 0.39)' }
+                                        ? { boxShadow: '0 2px 10px rgba(0, 0, 0, 0.39)', zIndex: 10 }
                                         : undefined
                                 }
+
                             >
                                 <span>{item.name}</span>
                             </button>

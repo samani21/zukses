@@ -230,10 +230,10 @@ const ProfileForm = () => {
                 {/* Section Foto Profil */}
                 <div className="flex items-start gap-4">
                     <div className="flex-shrink-0 pt-1 w-32 text-right">
-                        <label className="block text-sm font-medium text-gray-700">Pilih Foto</label>
+                        <label className="block text-[15px] font-medium text-gray-700">Pilih Foto</label>
                     </div>
-                    <div className="flex-grow flex items-center gap-4">
-                        <div className="w-24 h-24 rounded-lg border border-gray-300 flex items-center justify-center overflow-hidden">
+                    <div className="flex-grow flex items-start gap-4">
+                        <div className="w-[138px] h-[138px] rounded-lg border border-[#CCCCCC] flex items-center justify-center overflow-hidden">
                             {profileImage ? (
                                 <img
                                     src={profileImage}
@@ -241,7 +241,7 @@ const ProfileForm = () => {
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="text-gray-400 text-sm">No Image</div>
+                                <div className="text-gray-400 text-[15px]"></div>
                             )}
                         </div>
                         <div>
@@ -255,11 +255,11 @@ const ProfileForm = () => {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="bg-[#563D7C] h-[40px] w-[154px] text-white  py-2 px-4 text-sm font-medium transition"
+                                className="bg-[#563D7C] h-[40px] w-[154px] text-white  py-2 px-4 text-[14px] font-medium transition"
                             >
                                 Pilih Foto
                             </button>
-                            <p className="text-[14px] text-dark mt-1 w-[335px]">
+                            <p className="text-[14px] text-[#333333] mt-1 w-[335px]">
                                 Besar file: maksimum 10 MB. Ekstensi file yang diperbolehkan: .JPG, .JPEG, .PNG
                             </p>
                             {errors.image && (
@@ -270,16 +270,16 @@ const ProfileForm = () => {
                 </div>
 
                 {/* Nama User */}
-                <div className="flex items-center gap-4">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
+                <div className="flex items-center gap-4 mt-[-10px]">
+                    <label htmlFor="name" className="block text-[15px] font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Nama User
                     </label>
-                    <div className="flex-grow">
+                    <div className="flex-grow w-[589px]">
                         <input
                             type="text"
                             id="name"
                             placeholder="Masukkan Nama Lengkap"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full h-[40px] border border-[#CCCCCC] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                             value={form.name}
                             onChange={(e) => handleInputChange('name', e.target.value)}
                         />
@@ -288,18 +288,18 @@ const ProfileForm = () => {
                 </div>
 
                 {/* Email (Read-only, with Ubah button) */}
-                <div className="flex items-center gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
+                <div className="flex items-center gap-4 mt-[-10px]">
+                    <label className="block text-[15px] font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Email
                     </label>
-                    <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2">
+                    <div className="w-[589px] flex-grow flex items-center border border-[#CCCCCC] rounded-md px-3 py-2 h-[40px]">
                         <span className="flex-grow text-gray-800">
                             {isValidEmail(user?.email) ? user.email : 'Belum diatur'}
                         </span>
                         <button
                             type="button"
                             onClick={() => handleOpenModal('email')}
-                            className="text-dark text-right hover:underline text-sm font-medium ml-4 w-[82px] h-[30px]"
+                            className="text-[#333333] text-right hover:underline text-[14px] font-medium ml-4 w-[82px] h-[30px]"
                         >
                             Ubah
                         </button>
@@ -307,18 +307,18 @@ const ProfileForm = () => {
                 </div>
 
                 {/* Nomor Telepon (Read-only, with Ubah button) */}
-                <div className="flex items-center gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
+                <div className="flex items-center gap-4 mt-[-10px]">
+                    <label className="block text-[15px] font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Nomor Telepon
                     </label>
-                    <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2">
+                    <div className="w-[589px] flex-grow flex items-center border border-[#CCCCCC] rounded-md px-3 py-2 h-[40px]">
                         <span className="flex-grow text-gray-800">
                             {user?.whatsapp ? user.whatsapp : 'Belum diatur'}
                         </span>
                         <button
                             type="button"
                             onClick={() => handleOpenModal('hp')}
-                            className="text-dark text-right hover:underline text-sm font-medium ml-4 w-[82px]  h-[30px]"
+                            className="text-[#333333] text-right hover:underline text-[14px] font-medium ml-4 w-[82px]  h-[30px]"
                         >
                             Ubah
                         </button>
@@ -326,11 +326,11 @@ const ProfileForm = () => {
                 </div>
 
                 {/* Jenis Kelamin */}
-                <div className="flex items-start gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
+                <div className="flex items-start gap-4 mt-[-11px]">
+                    <label className="block text-[15px] font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Jenis Kelamin
                     </label>
-                    <div className="flex gap-6 flex-grow pt-2">
+                    <div className="flex gap-6 flex-grow pt-2 mt-[-11px]">
                         <label className="flex items-center gap-2">
                             <input
                                 type="radio"
@@ -359,15 +359,15 @@ const ProfileForm = () => {
                 </div>
 
                 {/* Tanggal Lahir (Updated to single date input) */}
-                <div className="flex items-start gap-4">
-                    <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
+                <div className="flex items-start gap-4 mt-[-9px]">
+                    <label className="block text-[15px] font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Tanggal Lahir
                     </label>
-                    <div className="flex-grow">
+                    <div className="flex-grow mt-[-9px] w-[589px]">
                         <input
                             type="date"
                             id="date_birth"
-                            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="w-full border h-[40px] border-[#CCCCCC] rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
                             value={form.date_birth}
                             onChange={(e) => handleInputChange('date_birth', e.target.value)}
                         />
