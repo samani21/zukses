@@ -428,7 +428,7 @@ export const ButtonShowMaps = styled.button`
 
 export const ModalMapsContainer = styled.div`
     background: #fff;
-    height: 550px;
+    height: 580px;
     width: 80%;
     @media (max-width: 1000px) {
         width: 80%;
