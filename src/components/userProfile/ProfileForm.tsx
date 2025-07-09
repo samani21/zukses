@@ -255,7 +255,7 @@ const ProfileForm = () => {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="bg-[#563D7C] w-[154px] text-white rounded-md py-2 px-4 text-sm font-medium transition"
+                                className="bg-[#563D7C] h-[40px] w-[154px] text-white  py-2 px-4 text-sm font-medium transition"
                             >
                                 Pilih Foto
                             </button>
@@ -285,9 +285,6 @@ const ProfileForm = () => {
                         />
                         {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     </div>
-                    <div className='w-[82px] ml-4'>
-
-                    </div>
                 </div>
 
                 {/* Email (Read-only, with Ubah button) */}
@@ -295,18 +292,18 @@ const ProfileForm = () => {
                     <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Email
                     </label>
-                    <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
+                    <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2">
                         <span className="flex-grow text-gray-800">
                             {isValidEmail(user?.email) ? user.email : 'Belum diatur'}
                         </span>
+                        <button
+                            type="button"
+                            onClick={() => handleOpenModal('email')}
+                            className="text-dark text-right hover:underline text-sm font-medium ml-4 w-[82px] h-[30px]"
+                        >
+                            Ubah
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => handleOpenModal('email')}
-                        className="text-dark hover:underline text-sm font-medium ml-4 w-[82px] border border-[#CCCCCC] rounded-[5px] h-[30px]"
-                    >
-                        Ubah
-                    </button>
                 </div>
 
                 {/* Nomor Telepon (Read-only, with Ubah button) */}
@@ -314,18 +311,18 @@ const ProfileForm = () => {
                     <label className="block text-sm font-medium text-gray-700 w-32 flex-shrink-0 text-right">
                         Nomor Telepon
                     </label>
-                    <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2 bg-gray-50">
+                    <div className="flex-grow flex items-center border border-gray-300 rounded-md px-3 py-2">
                         <span className="flex-grow text-gray-800">
                             {user?.whatsapp ? user.whatsapp : 'Belum diatur'}
                         </span>
+                        <button
+                            type="button"
+                            onClick={() => handleOpenModal('hp')}
+                            className="text-dark text-right hover:underline text-sm font-medium ml-4 w-[82px]  h-[30px]"
+                        >
+                            Ubah
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => handleOpenModal('hp')}
-                        className="text-dark hover:underline text-sm font-medium ml-4 w-[82px] border border-[#CCCCCC] rounded-[5px] h-[30px]"
-                    >
-                        Ubah
-                    </button>
                 </div>
 
                 {/* Jenis Kelamin */}
@@ -378,28 +375,22 @@ const ProfileForm = () => {
                             <p className="text-red-500 text-xs mt-1">{errors.date_birth}</p>
                         )}
                     </div>
-                    <div className='w-[82px] ml-4'>
-
-                    </div>
                 </div>
 
                 {/* Tombol Aksi */}
                 <div className="flex justify-end gap-3 pt-4">
                     <button
                         type="button"
-                        className="bg-white text-[#333333] rounded-md px-6 py-2 border border-[#aaaaaa] font-semibold text-[14px]"
+                        className="text-[#563D7C] bg-[#F6E9F0] w-[137px] px-6 py-2 border border-[#563D7C] font-semibold text-[14px]"
                     >
                         Batal
                     </button>
                     <button
                         type="submit"
-                        className="bg-[#563D7C] text-white rounded-md px-6 py-2  font-semibold text-[14px]"
+                        className="bg-[#563D7C] text-white w-[137px] px-6 py-2  font-semibold text-[14px]"
                     >
                         Simpan
                     </button>
-                    <div className='w-[82px] ml-4'>
-
-                    </div>
                 </div>
             </form>
             {loading && <Loading />}

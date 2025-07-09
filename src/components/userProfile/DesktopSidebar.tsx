@@ -77,9 +77,9 @@ const DesktopSidebar = () => {
             style={{ boxShadow: '1px 1px 30px rgba(0, 0, 0, 0.1)' }}
 
         >
-            <p className='font-bold text-[16px] text-[#333333] text-center pb-5 pt-7' style={{ letterSpacing: "-4%", lineHeight: '121%' }}>Akun saya</p>
-            <div className="flex items-center justify-center gap-3 p-3">
-                <div className='mt-3'>
+            <p className='font-bold text-[16px] text-[#333333] text-center pb-5 pt-7 border-b border-[#DDDDDD]' style={{ letterSpacing: "-4%", lineHeight: '121%' }}>Akun saya</p>
+            <div className="flex items-center justify-center gap-3 p-3 border-b border-[#DDDDDD]">
+                <div className='mt-2 mb-2'>
                     <div className='flex justify-center items-center'>
                         <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-[49px] h-[49px] rounded-full" />
                     </div>

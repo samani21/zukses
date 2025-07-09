@@ -50,7 +50,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                         <DesktopSidebar />
                     </div>
                     <main
-                        className=" ml-[-10px] "
+                        className="ml-[-10px] container mx-auto"
                     >
 
                         <div className="p-6">

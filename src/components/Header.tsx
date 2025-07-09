@@ -178,7 +178,7 @@ const Header = () => {
                                     {isLoggedIn && (
                                         <div className='flex items-center justify-right mr-[-20px]'>
                                             <button className="p-2 rounded-md" title="Keranjang Belanja">
-                                                <img src='icon/Shopping bag.svg' width={25} />
+                                                <img src='/icon/Shopping bag.svg' width={25} />
                                             </button>
                                             <button className="p-2 rounded-md" title="Toko Saya">
                                                 <img src='/icon/user.svg' width={25} />
