@@ -17,7 +17,7 @@ interface Deliverys {
     alt: string;
 }
 
-export default function UserProfile({ children }: { children: React.ReactNode }) {
+export default function MyStoreLayout({ children }: { children: React.ReactNode }) {
     const samplePayment: Payments[] = [
         { id: 1, src: '/icon/payment/bri 1.svg', alt: 'BRI' },
         { id: 2, src: '/icon/payment/bni 1.svg', alt: 'BNI' },
@@ -70,7 +70,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                         }
                     >
                         <div className={
-                            ` pt-4 ${!hiddenSideBar && 'p-6'}`
+                            ` pt-4 pl-6`
                         }>
                             <div>
                                 {children}
