@@ -1,6 +1,5 @@
 import MapWithDraggableSvgPin from 'components/MapWithDraggableSvgPin'
 import { HeaderMaps, InfoMap, ModalMapsContainer } from 'components/Profile/AddressComponent'
-import { InformationCircleIcon } from 'components/userProfile/Icon'
 import { X } from 'lucide-react'
 import React from 'react'
 
