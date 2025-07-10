@@ -1,6 +1,5 @@
 import MapWithDraggableSvgPin from 'components/MapWithDraggableSvgPin'
 import { HeaderMaps, InfoMap, ModalMapsContainer } from 'components/Profile/AddressComponent'
-import { InformationCircleIcon } from 'components/userProfile/Icon'
 import { X } from 'lucide-react'
 import React from 'react'
 
@@ -19,11 +18,11 @@ const ModalMaps = ({ fullAddressStreet, lat, long, setLat, setLong, setOpenMaps 
             <HeaderMaps className="bg-[#227D53] h-[60px]" style={{ justifyContent: "space-between" }}>
                 <InfoMap>
                     <div className='text-white text-20 font-semibold'>Ubah Lokasi</div>
-                    <div className='subtitle hidden md:block'>{fullAddressStreet}</div>
+                    {/* <div className='subtitle hidden md:block'>{fullAddressStreet}</div> */}
                 </InfoMap>
                 <X className='h-5 w-5 text-white cursor-pointer' onClick={() => setOpenMaps(false)} />
             </HeaderMaps>
-            <div className='p-4'>
+            {/* <div className='p-4'>
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 ">
                     <div className="flex">
                         <div className="flex-shrink-0">
@@ -36,7 +35,7 @@ const ModalMaps = ({ fullAddressStreet, lat, long, setLat, setLong, setOpenMaps 
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <MapWithDraggableSvgPin lat={lat} long={long} setLat={setLat} setLong={setLong} setOpenMaps={setOpenMaps} fullAddressStreet={fullAddressStreet} />
         </ModalMapsContainer>
     )
