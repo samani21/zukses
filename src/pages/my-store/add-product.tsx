@@ -209,8 +209,10 @@ const AddProductPage: NextPage = () => {
 
   //variasi
   const [variations, setVariations] = useState<Variation[]>([
-    { name: '', options: ['', ''] },
+    { name: '', options: [''] },
   ]);
+
+  console.log('variations', variations)
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
   const [globalPrice, setGlobalPrice] = useState('');
   const [globalStock, setGlobalStock] = useState('');
@@ -253,8 +255,14 @@ const AddProductPage: NextPage = () => {
 
   const handleAddVariation = () => {
     if (variations.length < 2) {
-      setVariations([...variations, { name: '', options: ['', ''] }]);
+      setVariations([...variations, { name: '', options: [''] }]);
     }
+  };
+
+  const handleRemoveVariation = (index: number) => {
+    const updatedVariations = [...variations];
+    updatedVariations.splice(index, 1);
+    setVariations(updatedVariations);
   };
 
   const handleVariationNameChange = (index: number, value: string) => {
@@ -304,13 +312,18 @@ const AddProductPage: NextPage = () => {
 
   const buildCombinationTable = () => {
     const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
-    const var2 = variations[1]?.options.filter(opt => opt.trim() !== '') || [''];
+    let var2 = variations[1]?.options.filter(opt => opt.trim() !== '');
+
+    if (!var2 || var2.length === 0) {
+      var2 = ['']; // fallback satu elemen kosong agar tetap render row
+    }
 
     return var1.map(color => ({
       color,
       sizes: var2
     }));
   };
+
 
   useEffect(() => {
     setVariantData([]);
@@ -775,22 +788,29 @@ const AddProductPage: NextPage = () => {
                 <FormSection title="Variasi Produk">
                   {variations.map((variation, varIndex) => (
                     <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                      <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                        <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={variation.name}
-                            onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                            placeholder="Ketik atau Pilih"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          />
-                          <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                            {variation.name.length}/20
-                          </span>
+                      <div className='flex'>
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 w-full">
+                          <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={variation.name}
+                              onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
+                              placeholder="Ketik atau Pilih"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            />
+                            <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                              {variation.name.length}/20
+                            </span>
+                          </div>
                         </div>
+                        {
+                          variations?.length > 1 &&
+                          <div onClick={() => handleRemoveVariation(varIndex)} className='mt-[-10px] mr-[-10px] pl-2 cursor-pointer'>
+                            <Trash2 className='w-4 h-4 text text-gray-500' />
+                          </div>
+                        }
                       </div>
-
                       <div className="grid grid-cols-[100px_1fr] items-start gap-4">
                         <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
@@ -872,21 +892,22 @@ const AddProductPage: NextPage = () => {
                 onMouseEnter={() => setActiveTipKey('variation')}
                 onMouseLeave={() => setActiveTipKey('default')}>
                 {
-                  buildCombinationTable().length > 0 &&
+                  variations[0]?.name &&
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                       <tr>
-                        {variations[0]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                        {
+                          variations[0]?.name &&
                           <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            {variations[0]?.name || 'Variasi 1'}
+                            {variations[0]?.name}
                           </th>
-                        )}
-
-                        {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                        }
+                        {
+                          variations[1]?.name &&
                           <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            {variations[1]?.name || 'Variasi 2'}
+                            {variations[1]?.name}
                           </th>
-                        )}
+                        }
 
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
                           Harga
@@ -959,9 +980,9 @@ const AddProductPage: NextPage = () => {
                                   </td>
                                 )}
 
-                              {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                              {variations[1]?.name && (
                                 <td className="px-4 py-4 text-[14px] text-[#333333] border border-[#AAAAAA]" align="center">
-                                  {size}
+                                  {size || '-'}
                                 </td>
                               )}
 
@@ -1100,7 +1121,7 @@ const AddProductPage: NextPage = () => {
                     </label>
                   </div>
                 </div>
-                {showDimensionTable && (
+                {variations[0]?.name && (
                   <div className="overflow-x-auto mt-4"
                     onMouseEnter={() => setActiveTipKey('weightDimension')}
                     onMouseLeave={() => setActiveTipKey('default')}>
@@ -1141,9 +1162,9 @@ const AddProductPage: NextPage = () => {
                                     <span className="font-medium text-gray-900 text-[14px]">{variation.color}</span>
                                   </td>
                                 )}
-                                {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                                {variations[1]?.name && (
                                   <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] align-middle border border-[#AAAAAA] text-center" width={100}>
-                                    {size}
+                                    {size || ''}
                                   </td>
                                 )}
 
