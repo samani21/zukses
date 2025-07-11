@@ -360,7 +360,7 @@ const CategorySelector: FC<{
                         </div>
                         <div className='flex justify-right items-center'>
                             <button onClick={() => setCategoryModalOpen(false)} className="px-6 py-2 mr-2 w-[125px] text-[#333333] font-bold bg-white border text-[14px]  border-[#52357B] rounded-[5px] hover:bg-gray-100">Batal</button>
-                            <button onClick={handleConfirmCategory} disabled={!selectedCategoryName} className="px-6 py-2 w-[125px] text-white bg-[#7952B3] rounded-[5px] text-[14px] font-bold disabled:bg-blue-400/80 disabled:cursor-not-allowed">Konfirmasi</button>
+                            <button onClick={handleConfirmCategory} disabled={!selectedCategoryName} className="px-6 py-2 w-[125px] text-white bg-[#7952B3] rounded-[5px] text-[14px] font-bold disabled:bg-[#7952B3] disabled:cursor-not-allowed">Konfirmasi</button>
                         </div>
                     </div>
                 </div>
