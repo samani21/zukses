@@ -2,7 +2,8 @@ import DateTimePicker from 'components/DateTimePicker';
 import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
 import CategorySelector from 'components/my-store/product/CategorySelector';
-import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle } from 'lucide-react';
+import { formatRupiahNoRP } from 'components/Rupiah';
+import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useRef, useState } from 'react';
@@ -149,6 +150,18 @@ interface Variation {
   options: string[];
 }
 
+interface VariantRowData {
+  price: string;
+  stock: string;
+  discount: string;
+  discountPercent: string;
+  image?: File;
+  weight?: string;
+  length?: string;
+  width?: string;
+  height?: string;
+}
+
 // Komponen Utama Halaman
 const AddProductPage: NextPage = () => {
   const [productName, setProductName] = useState('');
@@ -188,6 +201,28 @@ const AddProductPage: NextPage = () => {
     { name: '', options: ['', ''] },
   ]);
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
+  const [globalPrice, setGlobalPrice] = useState('');
+  const [globalStock, setGlobalStock] = useState('');
+  const [globalDiscount, setGlobalDiscount] = useState('');
+  const [globalDiscountPercent, setGlobalDiscountPercent] = useState('');
+  const [variantData, setVariantData] = useState<VariantRowData[]>([]); // [ [row0], [row1], ... ]
+  const [globalWeight, setGlobalWeight] = useState('');
+  const [globalLength, setGlobalLength] = useState('');
+  const [globalWidth, setGlobalWidth] = useState('');
+  const [globalHeight, setGlobalHeight] = useState('');
+
+  const applyGlobalToAll = () => {
+    const combinations = buildCombinationTable();
+    const updatedData = combinations.flatMap(variation =>
+      variation.sizes.map(() => ({
+        price: globalPrice,
+        stock: globalStock,
+        discount: globalDiscount,
+        discountPercent: globalDiscountPercent,
+      }))
+    );
+    setVariantData(updatedData);
+  };
 
   const handleDragStart = (index: number) => {
     setDragStartIndex(index);
@@ -256,8 +291,62 @@ const AddProductPage: NextPage = () => {
     setVariations(updated);
   };
 
+  const buildCombinationTable = () => {
+    const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
+    const var2 = variations[1]?.options.filter(opt => opt.trim() !== '') || [''];
 
+    return var1.map(color => ({
+      color,
+      sizes: var2
+    }));
+  };
+
+  useEffect(() => {
+    setVariantData([]);
+  }, [variations]);
+
+  const handleVariantImageUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result) {
+        setCropModalImage(reader.result as string);
+        setCropCallback(() => (croppedFile: File) => {
+          const updated = [...variantData];
+          updated[index] = {
+            ...updated[index],
+            image: croppedFile
+          };
+          setVariantData(updated);
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const applyDimensionToAll = () => {
+    const updated = buildCombinationTable().flatMap(variation =>
+      variation.sizes.map(() => ({
+        weight: globalWeight,
+        length: globalLength,
+        width: globalWidth,
+        height: globalHeight,
+        price: '',
+        stock: '',
+        discount: '',
+        discountPercent: '',
+      }))
+    );
+    setVariantData(updated);
+  };
+
+
+  //categorie
   const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
+
+  //image
   const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
 
@@ -654,8 +743,14 @@ const AddProductPage: NextPage = () => {
                   onMouseLeave={() => setActiveTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
                 </div>
-                <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
-                <div>
+                <div
+                  onMouseEnter={() => setActiveTipKey('brand')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
+                  <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
+                </div>
+                <div
+                  onMouseEnter={() => setActiveTipKey('brand')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
                   <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px]"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
                 </div>
@@ -663,79 +758,84 @@ const AddProductPage: NextPage = () => {
               </div>
 
               {/* Variasi Produk */}
-              <FormSection title="Variasi Produk">
-                {variations.map((variation, varIndex) => (
-                  <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={variation.name}
-                          onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                          placeholder="Ketik atau Pilih"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        />
-                        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                          {variation.name.length}/20
-                        </span>
+              <div
+                onMouseEnter={() => setActiveTipKey('variation')}
+                onMouseLeave={() => setActiveTipKey('default')} >
+                <FormSection title="Variasi Produk">
+                  {variations.map((variation, varIndex) => (
+                    <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
+                      <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                        <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={variation.name}
+                            onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
+                            placeholder="Ketik atau Pilih"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          />
+                          <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                            {variation.name.length}/20
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-[100px_1fr] items-start gap-4">
-                      <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                        {variation.options.map((option, optIndex) => (
-                          <div
-                            key={optIndex}
-                            draggable
-                            onDragStart={() => handleDragStart(optIndex)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={() => handleDrop(varIndex, optIndex)}
-                            className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={option}
-                              onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
-                              placeholder="Ketik atau Pilih"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                            />
-                            <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
-                              <Move className="w-4 h-4" />
-                            </div>
+                      <div className="grid grid-cols-[100px_1fr] items-start gap-4">
+                        <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                          {variation.options.map((option, optIndex) => (
                             <div
-                              className="p-2 text-gray-500 hover:text-red-600"
-                              onClick={() => handleDeleteOption(varIndex, optIndex)}
-                            >
-                              <Trash2 className="w-4 h-4" />
+                              key={optIndex}
+                              draggable
+                              onDragStart={() => handleDragStart(optIndex)}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={() => handleDrop(varIndex, optIndex)}
+                              className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={option}
+                                onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
+                                placeholder="Ketik atau Pilih"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                              />
+                              <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
+                                <Move className="w-4 h-4" />
+                              </div>
+                              <div
+                                className="p-2 text-gray-500 hover:text-red-600"
+                                onClick={() => handleDeleteOption(varIndex, optIndex)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {variations.length < 2 && (
-                  <button
-                    type="button"
-                    onClick={handleAddVariation}
-                    className="mt-4 bg-[#52357B] text-white px-4 py-2 rounded-[5px] text-[14px] font-semibold hover:bg-purple-800 transition duration-200"
-                  >
-                    Tambah Variasi 2
-                  </button>
-                )}
-              </FormSection>
+                  {variations.length < 2 && (
+                    <button
+                      type="button"
+                      onClick={handleAddVariation}
+                      className="mt-4 bg-[#52357B] text-white px-4 py-2 rounded-[5px] text-[14px] font-semibold hover:bg-purple-800 transition duration-200"
+                    >
+                      Tambah Variasi 2
+                    </button>
+                  )}
+                </FormSection>
+              </div>
 
               <div className="mb-6 mt-2">
-                <div className="flex items-center gap-4 items-end">
+                <div className="flex items-center gap-4 items-end" onMouseEnter={() => setActiveTipKey('priceStock')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <div className="col-span-12 sm:col-span-5">
                     <label className="block text-[14px] font-bold text-[#333333] mb-1.5">Harga Produk</label>
                     <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                       <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                      <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                      <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
                       <div className="flex items-center border-l border-gray-300">
-                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
                       </div>
                     </div>
                   </div>
@@ -743,85 +843,194 @@ const AddProductPage: NextPage = () => {
                     <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Harga Diskon</label>
                     <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
                       <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                      <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
+                      <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
                     </div>
                   </div>
                   <div className="col-span-12 sm:col-span-2 ml-[-20px]">
                     <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Persen Diskon</label>
-                    <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" />
+                    <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
                   </div>
+
                   <div className="col-span-12 sm:col-span-2">
-                    <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200">Terapkan kesemua</button>
+                    <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
                   </div>
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
-                    <tr>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Warna</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Ukuran</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Harga</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Stok</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Harga Diskon</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">Persen Diskon</th>
-                    </tr>
-                  </thead>
+              <div className="overflow-x-auto"
+                onMouseEnter={() => setActiveTipKey('variation')}
+                onMouseLeave={() => setActiveTipKey('default')}>
+                {
+                  buildCombinationTable().length > 0 &&
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
+                      <tr>
+                        {variations[0]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                            {variations[0]?.name || 'Variasi 1'}
+                          </th>
+                        )}
 
-                  {/* <tbody className="bg-white divide-y divide-gray-200 ">
-                    {variations.map((variation, vIndex) => (
-                      variation.sizes.map((size, sIndex) => (
-                        <tr key={`${vIndex}-${sIndex}`} className='border border-[#AAAAAA]'>
-                          {sIndex === 0 && (
-                            <td className="px-4 py-4 whitespace-nowrap row-span-3 align-top" rowSpan={variation.sizes.length}>
-                              <div className="grid justifi-center">
-                                <span className="text-center w-full text-[#333333] text-[14px]">{variation.color}</span>
-                                <div className='flex justify-center mt-2'>
-                                  <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
-                                    <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
-                                  </div>
+                        {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                            {variations[1]?.name || 'Variasi 2'}
+                          </th>
+                        )}
+
+                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                          Harga
+                        </th>
+                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                          Stok
+                        </th>
+                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                          Harga Diskon
+                        </th>
+                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">
+                          Persen Diskon
+                        </th>
+                      </tr>
+                    </thead>
+
+
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {buildCombinationTable().map((variation, vIndex) =>
+                        variation.sizes.map((size, sIndex) => {
+                          const index = vIndex * variation.sizes.length + sIndex;
+                          const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
+
+                          return (
+                            <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
+                              {sIndex === 0 &&
+                                variation.color !== '' && (
+                                  <td
+                                    className="px-4 py-4 whitespace-nowrap align-top"
+                                    rowSpan={variation.sizes.length}
+                                  >
+                                    <div className="grid justify-center">
+                                      <span className="text-center w-full text-[#333333] text-[14px]">
+                                        {variation.color}
+                                      </span>
+                                      <div className="flex justify-center mt-2">
+                                        {rowData.image ? (
+                                          <div>
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              className="hidden"
+                                              onChange={(e) => handleVariantImageUpload(index, e)}
+                                              id={`variant-img-${index}`}
+                                            />
+                                            <label htmlFor={`variant-img-${index}`} className=" mt-1 cursor-pointer">
+                                              <img
+                                                src={URL.createObjectURL(rowData.image)}
+                                                alt="Varian"
+                                                className="w-[60px] h-[60px] object-cover border rounded-[5px]"
+                                              />
+                                            </label>
+                                          </div>
+                                        ) : (
+                                          <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
+                                            <input
+                                              type="file"
+                                              accept="image/*"
+                                              className="hidden"
+                                              onChange={(e) => handleVariantImageUpload(index, e)}
+                                              id={`variant-img-${index}`}
+                                            />
+                                            <label htmlFor={`variant-img-${index}`} className="text-xs text-blue-600 mt-1 cursor-pointer">
+                                              <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
+                                            </label>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </td>
+                                )}
+
+                              {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                                <td className="px-4 py-4 text-[14px] text-[#333333] border border-[#AAAAAA]" align="center">
+                                  {size}
+                                </td>
+                              )}
+
+                              <td className="px-4 py-4 border border-[#AAAAAA]">
+                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                  <span className="text-[15px] text-[#555555] mr-2">Rp</span>
+                                  <input
+                                    type="text"
+                                    placeholder="Harga"
+                                    className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
+                                    value={formatRupiahNoRP(rowData.price)}
+                                    onChange={(e) => {
+                                      const newData = [...variantData];
+                                      newData[index] = { ...rowData, price: e.target.value };
+                                      setVariantData(newData);
+                                    }}
+                                  />
                                 </div>
-                              </div>
-                            </td>
-                          )}
-                          <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] border border-[#AAAAAA]" align='center'>{size}</td>
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA]">
-                            <div className='border border-[#AAAAAA] rounded-[5px] px-1'>
-                              <span className='text-[15px] text-[#555555] mr-2'>Rp</span>
-                              <input type="text" placeholder="Harga" className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA] text-center align-middle" width={100}>
-                            <input
-                              type="text"
-                              placeholder="Stock"
-                              className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0 "
-                            />
-                          </td>
+                              </td>
 
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA]">
-                            <div className='border border-[#AAAAAA] rounded-[5px] px-1'>
-                              <span className='text-[15px] text-[#555555] mr-2'>Rp</span>
-                              <input type="text" placeholder="Harga" className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA] text-center align-middle" width={155}>
-                            <input
-                              type="text"
-                              placeholder="Persen"
-                              className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center  focus:outline-none focus:ring-0"
-                            />
-                          </td>
-                        </tr>
-                      ))
-                    ))}
-                  </tbody> */}
-                </table>
+                              <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={100}>
+                                <input
+                                  type="text"
+                                  placeholder="Stock"
+                                  className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
+                                  value={rowData.stock}
+                                  onChange={(e) => {
+                                    const newData = [...variantData];
+                                    newData[index] = { ...rowData, stock: e.target.value };
+                                    setVariantData(newData);
+                                  }}
+                                />
+                              </td>
+
+                              <td className="px-4 py-4 border border-[#AAAAAA]">
+                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                  <span className="text-[15px] text-[#555555] mr-2">Rp</span>
+                                  <input
+                                    type="text"
+                                    placeholder="Harga"
+                                    className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
+                                    value={formatRupiahNoRP(rowData.discount)}
+                                    onChange={(e) => {
+                                      const newData = [...variantData];
+                                      newData[index] = { ...rowData, discount: e.target.value };
+                                      setVariantData(newData);
+                                    }}
+                                  />
+                                </div>
+                              </td>
+
+                              <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
+                                <input
+                                  type="text"
+                                  placeholder="Persen"
+                                  className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
+                                  value={rowData.discountPercent}
+                                  onChange={(e) => {
+                                    const newData = [...variantData];
+                                    newData[index] = { ...rowData, discountPercent: e.target.value };
+                                    setVariantData(newData);
+                                  }}
+                                />
+                              </td>
+                            </tr>
+                          )
+                        })
+                      )}
+                    </tbody>
+
+
+
+                  </table>
+                }
               </div>
               {/* Info Tambahan */}
               <div className="mb-6 mt-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  onMouseEnter={() => setActiveTipKey('purchaseLimit')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <div>
                     <label className="text-[#333333] font-bold text-[14px]">
                       <span className="text-red-500">*</span>  Min. Jumlah Pembelian
@@ -836,26 +1045,33 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
 
-                <div className='mt-[-15px]'>
+                <div className='mt-[-15px]'
+                  onMouseEnter={() => setActiveTipKey('weightDimension')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     Berat dan Dimensi Produk
                   </label>
                   <div className="flex items-center gap-3 mt-4">
                     <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                      <input type="text" placeholder="Berat" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" />
+                      <input type="text" placeholder="Berat" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
+                        onChange={(e) => setGlobalWeight(e.target.value)} />
                       <span className="text-[15px] text-[#555555]">Gr</span>
                     </div>
                     <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                      <input type="text" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none" />
+                      <input type="text" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                        value={globalWidth} onChange={(e) => setGlobalWidth(e.target.value)} />
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <input type="text" placeholder="Panjang" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none" />
+                      <input type="text" placeholder="Panjang" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                        value={globalLength} onChange={(e) => setGlobalLength(e.target.value)} />
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <input type="text" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none" />
+                      <input type="text" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
+                        value={globalHeight} onChange={(e) => setGlobalHeight(e.target.value)} />
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
                       <span className="text-[15px] text-[#555555]">Cm</span>
                     </div>
                     <div>
-                      <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto">
+                      <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
+                        onClick={applyDimensionToAll}>
                         Terapkan kesemua
                       </button>
                     </div>
@@ -874,59 +1090,127 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
                 {showDimensionTable && (
-                  <div className="overflow-x-auto mt-4">
+                  <div className="overflow-x-auto mt-4"
+                    onMouseEnter={() => setActiveTipKey('weightDimension')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
                     <table className="w-full">
                       <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                         <tr>
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Warna</th>
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Ukuran</th>
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Berat</th>
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Ukuran</th>
+                          {variations[0]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                            <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                              {variations[0]?.name || 'Variasi 1'}
+                            </th>
+                          )}
+
+                          {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                            <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                              {variations[1]?.name || 'Variasi 2'}
+                            </th>
+                          )}
+
+                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                            Berat
+                          </th>
+                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                            Ukuran
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {/* {variations.map((variation, vIndex) => (
-                          variation.sizes.map((size, sIndex) => (
-                            <tr key={`${vIndex}-${sIndex}`}>
-                              {sIndex === 0 && (
-                                <td className="px-4 py-4 align-middle border border-[#AAAAAA] align-top" rowSpan={variation.sizes.length}>
-                                  <span className="font-medium text-gray-900">{variation.color}</span>
+                        {buildCombinationTable().map((variation, vIndex) =>
+                          variation.sizes.map((size, sIndex) => {
+                            const rowData = variantData[sIndex] || {};
+                            return (
+                              <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
+                                {sIndex === 0 && variation.color !== '' && (
+                                  <td
+                                    className="px-4 py-4 align-middle border border-[#AAAAAA] align-top text-center"
+                                    rowSpan={variation.sizes.length}
+                                  >
+                                    <span className="font-medium text-gray-900 text-[14px]">{variation.color}</span>
+                                  </td>
+                                )}
+                                {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                                  <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] align-middle border border-[#AAAAAA] text-center" width={100}>
+                                    {size}
+                                  </td>
+                                )}
+
+                                {/* Berat */}
+                                <td className="px-4 py-4 border border-[#AAAAAA]" width={150}>
+                                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-3">
+                                    <input
+                                      type="text"
+                                      placeholder="Berat"
+                                      value={rowData.weight || ''}
+                                      onChange={(e) => {
+                                        const updated = [...variantData];
+                                        updated[sIndex] = { ...rowData, weight: e.target.value };
+                                        setVariantData(updated);
+                                      }}
+                                      className="w-full p-1.5 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
+                                    />
+                                    <span className="text-sm text-gray-500 ml-2">gr</span>
+                                  </div>
                                 </td>
-                              )}
-                              <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] align-middle border border-[#AAAAAA]" width={100}>{size}</td>
-                              <td className="px-4 py-4 border border-[#AAAAAA]" width={150}>
-                                <div className="flex  items-center border border-[#AAAAAA] rounded-[5px] px-3">
-                                  <input type="text" placeholder="Berat" className="w-full p-1.5  focus:outline-none focus:ring-0 focus:border-none" />
-                                  <span className="text-sm text-gray-500 ml-2">gr</span>
-                                </div>
-                              </td>
-                              <td className="px-4 py-4 border border-[#AAAAAA]">
-                                <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between'>
-                                  <input type="text" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" />
-                                  <p className="text-[15px] text-[#AAAAAA]">|</p>
-                                  <input
-                                    type="text"
-                                    placeholder="Panjang"
-                                    className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                  />
-                                  <p className="text-[15px] text-[#AAAAAA]">|</p>
-                                  <input type="text" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" />
-                                  <p className="text-[15px] text-[#AAAAAA]">|</p>
-                                  <p className="text-[15px] text-[#555555] text-right">Cm</p>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
-                        ))} */}
+
+                                {/* Dimensi */}
+                                <td className="px-4 py-4 border border-[#AAAAAA]">
+                                  <div className="border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between gap-2">
+                                    <input type="text" placeholder="Lebar" className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
+                                      value={rowData.width || ''}
+                                      onChange={(e) => {
+                                        const updated = [...variantData];
+                                        updated[sIndex] = { ...rowData, width: e.target.value };
+                                        setVariantData(updated);
+                                      }} />
+                                    <p className="text-[#AAAAAA]">|</p>
+                                    <input type="text" placeholder="Panjang" className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
+                                      value={rowData.length || ''}
+                                      onChange={(e) => {
+                                        const updated = [...variantData];
+                                        updated[sIndex] = { ...rowData, length: e.target.value };
+                                        setVariantData(updated);
+                                      }} />
+                                    <p className="text-[#AAAAAA]">|</p>
+                                    <input type="text" placeholder="Tinggi" className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
+                                      value={rowData.height || ''}
+                                      onChange={(e) => {
+                                        const updated = [...variantData];
+                                        updated[sIndex] = { ...rowData, height: e.target.value };
+                                        setVariantData(updated);
+                                      }} />
+                                    <p className="text-[#AAAAAA]">|</p>
+                                    <p className="text-[#555555]">Cm</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })
+                        )}
                       </tbody>
+
                     </table>
                   </div>
                 )}
-                <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
-                <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
-                <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
+                <div onMouseEnter={() => setActiveTipKey('dangerousGoods')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
 
-                <div>
+                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
+                </div>
+                <div onMouseEnter={() => setActiveTipKey('preorder')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
+
+                  <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
+                </div>
+                <div onMouseEnter={() => setActiveTipKey('condition')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
+
+                  <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
+                </div>
+
+                <div onMouseEnter={() => setActiveTipKey('sku')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     SKU Induk
                   </label>
@@ -937,17 +1221,21 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-10px]'>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    Pembayaran di Tempat (COD)
-                  </label>
-                  <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
-                    <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" />
-                    <div className='mt-[-5px]'>
-                      <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
-                      <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima. Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
+                  <div onMouseEnter={() => setActiveTipKey('cod')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
+                    <label className="text-[#333333] font-bold text-[14px]">
+                      Pembayaran di Tempat (COD)
+                    </label>
+                    <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
+                      <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" />
+                      <div className='mt-[-5px]'>
+                        <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
+                        <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima. Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="relative">
+                  <div className="relative" onMouseEnter={() => setActiveTipKey('schedule')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Jadwal Ditampilkan
                     </label>
