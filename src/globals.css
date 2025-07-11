@@ -33,160 +33,167 @@ body {
     letter-spacing: -0.03em;
 }
 
-   .flatpickr-calendar {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            width: auto !important;
-            display: flex;
-            flex-wrap: wrap;
-            padding: 10px;
-        }
-        
-        .picker-content-wrapper {
-            display: flex;
-            flex-basis: 100%;
-            align-items: stretch; /* Make columns equal height */
-        }
+.flatpickr-calendar {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    width: auto !important;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px;
+}
 
-        .flatpickr-rContainer {
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #e2e8f0;
-            padding-right: 10px;
-        }
+.picker-content-wrapper {
+    display: flex;
+    flex-basis: 100%;
+    align-items: stretch; /* Make columns equal height */
+}
 
-        /* Selected day style */
-        .flatpickr-day.selected {
-            background: #52357B !important;
-            border-color: #52357B !important;
-        }
+.flatpickr-rContainer {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e2e8f0;
+    padding-right: 10px;
+}
 
-        /* Today's date style */
-        .flatpickr-day.today {
-            border-color: #52357B;
-        }
-        .flatpickr-day.today:hover {
-            background: #fecaca;
-            color: #1e293b;
-        }
-        
-        /* --- CUSTOM TIME PICKER WHEEL --- */
-        .custom-time-picker {
-            display: flex;
-            align-items: stretch;
-            justify-content: center;
-            padding: 0 15px;
-            position: relative;
-            margin-top: -28px;
-        }
-        
-        .custom-time-picker::after {
-            content: ":";
-            font-weight: 700;
-            font-size: 20px;
-            color: #52357B;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-        }
+/* Selected day style */
+.flatpickr-day.selected {
+    background: #52357B !important;
+    border-color: #52357B !important;
+}
 
-        .time-wheel-column {
-            width: 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            text-align: center;
-            z-index: 1;
-        }
+/* Today's date style */
+.flatpickr-day.today {
+    border-color: #52357B;
+}
+.flatpickr-day.today:hover {
+    background: #fecaca;
+    color: #1e293b;
+}
 
-        .wheel-arrow {
-            cursor: pointer;
-            color: #9ca3af;
-            font-size: 14px;
-            user-select: none;
-            flex-shrink: 0;
-            padding: 4px 0;
-        }
-        .wheel-arrow:hover {
-            color: #1e293b;
-        }
+/* --- CUSTOM TIME PICKER WHEEL --- */
+.custom-time-picker {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0 15px;
+    position: relative;
+    margin-top: -28px;
+}
 
-        .wheel-values {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-grow: 1;
-            justify-content: center;
-        }
+.custom-time-picker::after {
+    content: ":";
+    font-weight: 700;
+    font-size: 20px;
+    color: #52357B;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
 
-        .wheel-values span {
-            padding: 2px 0;
-            font-size: 14px;
-            color: #6b7280;
-        }
+.time-wheel-column {
+    width: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    z-index: 1;
+}
 
-        .wheel-values span.selected {
-            color: #52357B;
-            font-weight: 700;
-            font-size: 18px;
-        }
+.wheel-arrow {
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 14px;
+    user-select: none;
+    flex-shrink: 0;
+    padding: 4px 0;
+}
+.wheel-arrow:hover {
+    color: #1e293b;
+}
 
-        /* --- CONFIRM BUTTON --- */
-        .confirm-button-wrapper {
-            flex-basis: 100%;
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #f1f5f9;
-            padding: 10px;
-        }
+.wheel-values {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: center;
+}
 
-        .custom-confirm-button {
-            background-color: #52357B;
-            color: white;
-            font-weight: 500;
-            border-radius: 6px;
-            padding: 8px 16px;
-            border: none;
-            cursor: pointer;
-        }
-        .custom-confirm-button:hover { background-color: #52357B; }
-        
-        /* --- HEADER ARROWS --- */
-        .flatpickr-weekday {
-            color: #475569;
-            font-weight: 600;
-        }
-        .flatpickr-months {
-            display: flex;
-            align-items: center;
-            justify-content: space-between; 
-            width: 70%;
-        }
-        .custom-month-title {
-            font-weight: 600;
-            color: #334155;
-        }
-        .arrow-group { /* New rule to group arrows */
-            display: flex;
-            align-items: center;
-        }
-        .custom-arrow {
-            cursor: pointer;
-            padding: 0 6px; /* Adjust spacing */
-            color: #6b7280;
-            font-family: monospace;
-            font-size: 16px;
-            line-height: 1;
-        }
-        .custom-arrow:hover {
-            color: #1e293b;
-        }
+.wheel-values span {
+    padding: 2px 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.wheel-values span.selected {
+    color: #52357B;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+/* --- CONFIRM BUTTON --- */
+.confirm-button-wrapper {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9;
+    padding: 10px;
+}
+
+.custom-confirm-button {
+    background-color: #52357B;
+    color: white;
+    font-weight: 500;
+    border-radius: 6px;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+}
+.custom-confirm-button:hover { background-color: #52357B; }
+
+/* --- HEADER ARROWS --- */
+.flatpickr-weekday {
+    color: #475569;
+    font-weight: 600;
+}
+.flatpickr-months {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    width: 70%;
+}
+.custom-month-title {
+    font-weight: 600;
+    color: #334155;
+}
+.arrow-group { /* New rule to group arrows */
+    display: flex;
+    align-items: center;
+}
+.custom-arrow {
+    cursor: pointer;
+    padding: 0 6px; /* Adjust spacing */
+    color: #6b7280;
+    font-family: monospace;
+    font-size: 16px;
+    line-height: 1;
+}
+.custom-arrow:hover {
+    color: #1e293b;
+}
+
+.flatpickr-day.flatpickr-disabled {
+  color: #b0b0b0 !important; /* warna abu lebih gelap */
+  cursor: not-allowed;
+  opacity: 1 !important;
+}
+
 
 @media (hover: none) and (pointer: coarse) {
   body {

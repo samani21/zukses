@@ -79,7 +79,7 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                     </main>
                 </div>
             </div>
-            <div className='border-t border-[#BBBBBB] bg-white'>
+            <div className='relative index-10 border-t border-[#BBBBBB] bg-white'>
                 <div className='border-b border-[#BBBBBB] py-10'>
                     <div className='container mx-auto flex justify-between itmes-center w-[1200px] px-[0px] '>
                         <div>

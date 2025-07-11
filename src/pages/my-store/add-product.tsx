@@ -3,7 +3,7 @@ import DateTimePicker from 'components/DateTimePicker';
 import { Camera, Video, Pencil, Trash2, ChevronRight, Image as ImageIcon, Move, CheckCircle } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 // Komponen untuk ikon dengan teks
 const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -57,26 +57,62 @@ const TextInput = ({ label, placeholder, maxLength, value, setValue, required = 
   </div>
 );
 
-// Komponen Textarea
-const TextAreaInput = ({ label, placeholder, maxLength, value, setValue, required = false }: { label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
-  <div>
-    <label className="text-[#333333] font-bold text-[14px]">
-      {required && <span className="text-red-500">*</span>} {label}
-    </label>
-    <div className="relative">
-      <textarea
-        className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] h-32"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        maxLength={maxLength}
-      />
-      <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-        {value.length}/{maxLength}
-      </span>
+const TextAreaInput = ({
+  label,
+  placeholder,
+  maxLength,
+  value,
+  setValue,
+  required = false,
+}: {
+  label: string,
+  placeholder: string,
+  maxLength: number,
+  value: string,
+  setValue: (val: string) => void,
+  required?: boolean
+}) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fungsi untuk menyesuaikan tinggi textarea
+  const autoResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto'; // Reset dulu
+      textarea.style.height = Math.min(textarea.scrollHeight, 720) + 'px'; // Maks 720px (30 baris)
+    }
+  };
+
+  useEffect(() => {
+    autoResize();
+  }, [value]);
+
+  return (
+    <div>
+      <label className="text-[#333333] font-bold text-[14px]">
+        {required && <span className="text-red-500">*</span>} {label}
+      </label>
+      <div className="relative">
+        <textarea
+          ref={textareaRef}
+          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] overflow-hidden"
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+          maxLength={maxLength}
+          rows={4} // default tinggi awal (misal 4 baris)
+          style={{ resize: 'none', maxHeight: '720px' }} // maksimal 30 baris, tidak bisa di-resize
+        />
+        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+          {value.length}/{maxLength}
+        </span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
 
 // Komponen untuk Radio Button
 const RadioGroup = ({ label, name, options, required = false }: { label: string, name: string, options: string[], required?: boolean }) => {
@@ -130,7 +166,7 @@ const AddProductPage: NextPage = () => {
   return (
     <MyStoreLayout>
       <div className="min-h-screen font-sans mt-[-10px]">
-        <main className="px-0">
+        <main className="px-0 pb-[120px]">
           <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
           <div className="flex items-center text-sm text-gray-500 mb-4">
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store'}>Dashboard</span>
@@ -140,9 +176,9 @@ const AddProductPage: NextPage = () => {
             <span className="font-bold text-[14px] text-[#333333] ">Tambah Produk</span>
           </div>
 
-          <div className="flex items-start gap-10">
+          <div className="flex items-start gap-10 relative">
             {/* Kolom Kiri */}
-            <aside className="lg:col-span-1 space-y-6">
+            <aside className="lg:col-span-1 space-y-6 sticky top-6 pr-2">
               <InfoCard title="Rekomendasi">
                 <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambah min. 3 Foto" />
                 <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambahkan Video" />
@@ -496,7 +532,7 @@ const AddProductPage: NextPage = () => {
 
               {/* Tombol Aksi */}
               <div className="bg-white flex justify-between items-center relative bottom-0 p-4" style={{
-                boxShadow: ' 1px 1px 10px rgba(0, 0, 0, 0.25)'
+                boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'
               }}>
                 <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline">Kembali</button>
                 <div className="flex items-center space-x-2">

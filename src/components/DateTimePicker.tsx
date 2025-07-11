@@ -7,12 +7,12 @@ import { CustomLocale } from 'flatpickr/dist/types/locale';
 
 const customIndonesianLocale: Partial<CustomLocale> = {
   weekdays: {
-    shorthand: ['M', 'S', 'S', 'R', 'K', 'J', 'S'] as [string, string, string, string, string, string, string],
-    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as [string, string, string, string, string, string, string],
+    shorthand: ['M', 'S', 'S', 'R', 'K', 'J', 'S'],
+    longhand: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
   },
   months: {
-    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'] as [string, string, string, string, string, string, string, string, string, string, string, string],
-    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as [string, string, string, string, string, string, string, string, string, string, string, string],
+    shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+    longhand: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
   },
   firstDayOfWeek: 1,
   ordinal: () => '',
@@ -20,7 +20,7 @@ const customIndonesianLocale: Partial<CustomLocale> = {
   weekAbbreviation: 'Mg',
   scrollTitle: 'Gulir untuk menambah',
   toggleTitle: 'Klik untuk membalik',
-  amPM: ['AM', 'PM'] as [string, string],
+  amPM: ['AM', 'PM'],
   yearAriaLabel: 'Tahun',
   time_24hr: true,
 };
@@ -36,6 +36,7 @@ export default function DateTimePicker() {
       enableTime: true,
       dateFormat: 'd F Y, H:i',
       defaultDate: new Date(),
+      minDate: 'today',
       onReady(selectedDates, dateStr, instance) {
         const calendarContainer = instance.calendarContainer;
         if (calendarContainer.querySelector('.picker-content-wrapper')) return;
@@ -47,12 +48,12 @@ export default function DateTimePicker() {
         const customTimePicker = document.createElement('div');
         customTimePicker.className = 'custom-time-picker';
         customTimePicker.innerHTML = `
-          <div class="time-wheel-column">
+          <div class="time-wheel-column" id="hour-wheel">
               <div class="wheel-arrow" data-action="hour-up">▲</div>
               <div class="wheel-values" id="hour-values"></div>
               <div class="wheel-arrow" data-action="hour-down">▼</div>
           </div>
-          <div class="time-wheel-column">
+          <div class="time-wheel-column" id="minute-wheel">
               <div class="wheel-arrow" data-action="minute-up">▲</div>
               <div class="wheel-values" id="minute-values"></div>
               <div class="wheel-arrow" data-action="minute-down">▼</div>
@@ -146,6 +147,64 @@ export default function DateTimePicker() {
           if (unit === 'minute') newDate.setMinutes(newDate.getMinutes() + amount);
           instance.setDate(newDate, true);
         });
+
+        // Scroll mouse (wheel)
+        const addScrollEvent = (id: string, unit: 'hour' | 'minute') => {
+          const wheel = calendarContainer.querySelector(id);
+          if (!wheel) return;
+          wheel.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const delta = (e as WheelEvent).deltaY;
+            const newDate = new Date(instance.selectedDates[0] || instance.now);
+            if (unit === 'hour') newDate.setHours(newDate.getHours() + (delta > 0 ? 1 : -1));
+            if (unit === 'minute') newDate.setMinutes(newDate.getMinutes() + (delta > 0 ? 1 : -1));
+            instance.setDate(newDate, true);
+          }, { passive: false });
+
+        };
+
+        // Drag mouse ke atas/bawah
+        const addDragEvent = (id: string, unit: 'hour' | 'minute') => {
+          const wheel = calendarContainer.querySelector(id) as HTMLElement;
+          if (!wheel) return;
+
+          let isDragging = false;
+          let startY = 0;
+          let lastChangeTime = 0;
+
+          wheel.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startY = e.clientY;
+            lastChangeTime = Date.now();
+            e.preventDefault();
+          });
+
+          document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const deltaY = e.clientY - startY;
+
+            if (Math.abs(deltaY) > 30 || Date.now() - lastChangeTime > 100) {
+              const newDate = new Date(instance.selectedDates[0] || instance.now);
+              const direction = deltaY > 0 ? 1 : -1;
+              if (unit === 'hour') newDate.setHours(newDate.getHours() + direction);
+              if (unit === 'minute') newDate.setMinutes(newDate.getMinutes() + direction);
+              instance.setDate(newDate, true);
+
+              startY = e.clientY;
+              lastChangeTime = Date.now();
+            }
+          });
+
+          document.addEventListener('mouseup', () => {
+            isDragging = false;
+          });
+        };
+
+        addScrollEvent('#hour-wheel', 'hour');
+        addScrollEvent('#minute-wheel', 'minute');
+        addDragEvent('#hour-wheel', 'hour');
+        addDragEvent('#minute-wheel', 'minute');
 
         instance.config.onChange?.push(updateUI);
         instance.config.onMonthChange?.push(updateUI);
