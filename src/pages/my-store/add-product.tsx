@@ -1,5 +1,6 @@
 // Anda perlu menginstal lucide-react: npm install lucide-react
 import DateTimePicker from 'components/DateTimePicker';
+import CropModal from 'components/my-store/addProduct/CropModal';
 import { Camera, Video, Pencil, Trash2, ChevronRight, Image as ImageIcon, Move, CheckCircle } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
@@ -162,8 +163,66 @@ const AddProductPage: NextPage = () => {
     { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
     { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
   ];
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
+  const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
+  const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
+  const promoInputRef = useRef<HTMLInputElement | null>(null);
+  const [cropModalImage, setCropModalImage] = useState<string | null>(null);
+  const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
+  const tipsChecklist = {
+    'Tambah min. 1 Foto': selectedImages.length >= 1,
+    'Tambah 1 Foto Promosi': promoImage !== null,
+    'Tambahkan Video': videoFile !== null,
+    'Nama 25+ karakter': productName.length >= 25,
+    'Deskripsi 100+ karakter': description.length >= 100,
+  };
+  const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
 
+    if (selectedImages.length >= 10) {
+      alert('Maksimal 10 gambar');
+      return;
+    }
 
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result) {
+        setCropModalImage(reader.result as string);
+        setCropCallback(() => (file: File) => {
+          setSelectedImages((prev) => [...prev, file]);
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleSelectPromoImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (reader.result) {
+        setCropModalImage(reader.result as string);
+        setCropCallback(() => (croppedFile: File) => {
+          setPromoImage(croppedFile);
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+
+    // Reset agar bisa upload ulang gambar dengan nama sama
+    e.target.value = '';
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("video/")) {
+      setVideoFile(file);
+    }
+  };
   return (
     <MyStoreLayout>
       <div className="min-h-screen font-sans mt-[-10px]">
@@ -181,12 +240,19 @@ const AddProductPage: NextPage = () => {
             {/* Kolom Kiri */}
             <aside className="lg:col-span-1 space-y-6 sticky top-6 pr-2">
               <InfoCard title="Rekomendasi">
-                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambah min. 1 Foto" />
-                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambah 1 Foto Promosi" />
-                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambahkan Video" />
-                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Nama 25+ karakter" />
-                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Deskripsi 100+ karakter" />
+                {Object.entries(tipsChecklist).map(([label, isDone]) => (
+                  <IconLabel
+                    key={label}
+                    icon={
+                      isDone
+                        ? <CheckCircle className="w-5 h-5 text-green-500" />
+                        : <CheckCircle className="w-5 h-5 text-gray-300" />
+                    }
+                    text={label}
+                  />
+                ))}
               </InfoCard>
+
 
               <InfoCard title="Tips Foto dan Video Produk">
                 <p className="text-sm text-gray-600">
@@ -218,11 +284,29 @@ const AddProductPage: NextPage = () => {
                       <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
                       <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
                     </ul>
-                    <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                      <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
-                      <span className="text-[12px] text-[#333333]">Tambahkan</span>
-                      <span className="text-[12px] text-[#333333]">0/10</span>
+                    {/* Preview Gambar */}
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {selectedImages.map((img, index) => (
+                        <img
+                          key={index}
+                          src={URL.createObjectURL(img)}
+                          alt={`preview-${index}`}
+                          className="w-[80px] h-[80px] object-cover border rounded"
+                        />
+                      ))}
+                      <label className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
+                        <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
+                        <span className="text-[12px] text-[#333333]">Tambah</span>
+                        <span className="text-[12px] text-[#333333]">{selectedImages.length}/10</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleSelectImage}
+                        />
+                      </label>
                     </div>
+
                   </div>
                 </div>
                 <div className='mt-4'>
@@ -234,11 +318,34 @@ const AddProductPage: NextPage = () => {
                       <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
                       <li className=''>Foto Produk Promosi untuk menampilkan dihasil pencarian SEO</li>
                     </ul>
-                    <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                      <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
-                      <span className="text-[12px] text-[#333333]">Tambahkan</span>
-                      <span className="text-[12px] text-[#333333]">0/1</span>
+                    <div
+                      className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50"
+                      onClick={() => promoInputRef.current?.click()}
+                    >
+                      {promoImage ? (
+                        // Jika sudah ada gambar, tampilkan preview
+                        <img
+                          src={URL.createObjectURL(promoImage)}
+                          alt="Promo Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        // Jika belum ada, tampilkan ikon kamera dan teks
+                        <>
+                          <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
+                          <span className="text-[12px] text-[#333333]">Tambahkan</span>
+                          <span className="text-[12px] text-[#333333]">0/1</span>
+                        </>
+                      )}
+                      <input
+                        ref={promoInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleSelectPromoImage}
+                        className="hidden"
+                      />
                     </div>
+
                   </div>
                 </div>
                 <hr className="my-6 border-[#CCCCCC]" />
@@ -248,10 +355,30 @@ const AddProductPage: NextPage = () => {
                   Video Produk
                 </label>
                 <div className="flex items-start space-x-6">
-                  <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                    <Video className="w-[29px] h-[29px] text-[#333333] mb-1" />
-                    <span className="text-[12px] text-[#333333]">Tambahkan Video</span>
-                  </div>
+                  {/* Hidden input */}
+                  <input
+                    type="file"
+                    id="video-upload"
+                    accept="video/*"
+                    onChange={handleVideoChange}
+                    className="hidden"
+                  />
+
+                  {/* Label to trigger file input */}
+                  <label htmlFor="video-upload">
+                    {videoFile ? (
+                      <video
+                        src={URL.createObjectURL(videoFile)}
+                        className="w-[160px] h-[160px] object-cover rounded-[5px]"
+                        controls
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
+                        <Video className="w-[29px] h-[29px] text-[#333333] mb-1" />
+                        <span className="text-[12px] text-[#333333]">Tambahkan Video</span>
+                      </div>
+                    )}
+                  </label>
                   <ul className="text-sm text-gray-500 list-disc list-inside">
                     <li>File video maks. harus 30Mb dengan resolusi tidak melebihi 1280 x 1280px.</li>
                     <li>Durasi: 10-60detik</li>
@@ -565,6 +692,17 @@ const AddProductPage: NextPage = () => {
           </div>
         </main>
       </div>
+      {cropModalImage && cropCallback && (
+        <CropModal
+          imageSrc={cropModalImage}
+          onClose={() => setCropModalImage(null)}
+          onCropComplete={(file) => {
+            cropCallback(file);
+            setCropModalImage(null);
+          }}
+        />
+      )}
+
     </MyStoreLayout>
   );
 };
