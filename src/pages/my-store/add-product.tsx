@@ -2,7 +2,8 @@ import DateTimePicker from 'components/DateTimePicker';
 import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
 import CategorySelector from 'components/my-store/product/CategorySelector';
-import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle } from 'lucide-react';
+import { formatRupiahNoRP } from 'components/Rupiah';
+import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useRef, useState } from 'react';
@@ -149,6 +150,13 @@ interface Variation {
   options: string[];
 }
 
+interface VariantRowData {
+  price: string;
+  stock: string;
+  discount: string;
+  discountPercent: string;
+}
+
 // Komponen Utama Halaman
 const AddProductPage: NextPage = () => {
   const [productName, setProductName] = useState('');
@@ -188,6 +196,25 @@ const AddProductPage: NextPage = () => {
     { name: '', options: ['', ''] },
   ]);
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
+  const [globalPrice, setGlobalPrice] = useState('');
+  const [globalStock, setGlobalStock] = useState('');
+  const [globalDiscount, setGlobalDiscount] = useState('');
+  const [globalDiscountPercent, setGlobalDiscountPercent] = useState('');
+  const [variantData, setVariantData] = useState<VariantRowData[]>([]); // [ [row0], [row1], ... ]
+
+
+  const applyGlobalToAll = () => {
+    const combinations = buildCombinationTable();
+    const updatedData = combinations.flatMap(variation =>
+      variation.sizes.map(() => ({
+        price: globalPrice,
+        stock: globalStock,
+        discount: globalDiscount,
+        discountPercent: globalDiscountPercent,
+      }))
+    );
+    setVariantData(updatedData);
+  };
 
   const handleDragStart = (index: number) => {
     setDragStartIndex(index);
@@ -256,8 +283,24 @@ const AddProductPage: NextPage = () => {
     setVariations(updated);
   };
 
+  const buildCombinationTable = () => {
+    const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
+    const var2 = variations[1]?.options.filter(opt => opt.trim() !== '') || [''];
 
+    return var1.map(color => ({
+      color,
+      sizes: var2
+    }));
+  };
+
+  useEffect(() => {
+    setVariantData([]);
+  }, [variations]);
+
+  //categorie
   const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
+
+  //image
   const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
 
@@ -733,9 +776,9 @@ const AddProductPage: NextPage = () => {
                     <label className="block text-[14px] font-bold text-[#333333] mb-1.5">Harga Produk</label>
                     <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                       <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                      <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                      <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
                       <div className="flex items-center border-l border-gray-300">
-                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
                       </div>
                     </div>
                   </div>
@@ -743,81 +786,158 @@ const AddProductPage: NextPage = () => {
                     <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Harga Diskon</label>
                     <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
                       <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                      <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
+                      <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
                     </div>
                   </div>
                   <div className="col-span-12 sm:col-span-2 ml-[-20px]">
                     <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Persen Diskon</label>
-                    <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" />
+                    <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
                   </div>
+
                   <div className="col-span-12 sm:col-span-2">
-                    <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200">Terapkan kesemua</button>
+                    <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
                   </div>
                 </div>
               </div>
 
               <div className="overflow-x-auto">
+                {
+                  buildCombinationTable().length > 0 &&
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                     <tr>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Warna</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Ukuran</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Harga</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Stok</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">Harga Diskon</th>
-                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">Persen Diskon</th>
+                      {variations[0]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                          {variations[0]?.name || 'Variasi 1'}
+                        </th>
+                      )}
+
+                      {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                          {variations[1]?.name || 'Variasi 2'}
+                        </th>
+                      )}
+
+                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                        Harga
+                      </th>
+                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                        Stok
+                      </th>
+                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
+                        Harga Diskon
+                      </th>
+                      <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">
+                        Persen Diskon
+                      </th>
                     </tr>
                   </thead>
 
-                  {/* <tbody className="bg-white divide-y divide-gray-200 ">
-                    {variations.map((variation, vIndex) => (
-                      variation.sizes.map((size, sIndex) => (
-                        <tr key={`${vIndex}-${sIndex}`} className='border border-[#AAAAAA]'>
-                          {sIndex === 0 && (
-                            <td className="px-4 py-4 whitespace-nowrap row-span-3 align-top" rowSpan={variation.sizes.length}>
-                              <div className="grid justifi-center">
-                                <span className="text-center w-full text-[#333333] text-[14px]">{variation.color}</span>
-                                <div className='flex justify-center mt-2'>
-                                  <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
-                                    <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
+
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {buildCombinationTable().map((variation, vIndex) =>
+                      variation.sizes.map((size, sIndex) => {
+                        const index = vIndex * variation.sizes.length + sIndex;
+                        const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
+
+                        return (
+                          <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
+                            {sIndex === 0 &&
+                              variation.color !== '' && (
+                                <td
+                                  className="px-4 py-4 whitespace-nowrap align-top"
+                                  rowSpan={variation.sizes.length}
+                                >
+                                  <div className="grid justify-center">
+                                    <span className="text-center w-full text-[#333333] text-[14px]">
+                                      {variation.color}
+                                    </span>
+                                    <div className="flex justify-center mt-2">
+                                      <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
+                                        <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
+                                </td>
+                              )}
+
+                            {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                              <td className="px-4 py-4 text-[14px] text-[#333333] border border-[#AAAAAA]" align="center">
+                                {size}
+                              </td>
+                            )}
+
+                            <td className="px-4 py-4 border border-[#AAAAAA]">
+                              <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                <span className="text-[15px] text-[#555555] mr-2">Rp</span>
+                                <input
+                                  type="text"
+                                  placeholder="Harga"
+                                  className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
+                                  value={formatRupiahNoRP(rowData.price)}
+                                  onChange={(e) => {
+                                    const newData = [...variantData];
+                                    newData[index] = { ...rowData, price: e.target.value };
+                                    setVariantData(newData);
+                                  }}
+                                />
                               </div>
                             </td>
-                          )}
-                          <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] border border-[#AAAAAA]" align='center'>{size}</td>
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA]">
-                            <div className='border border-[#AAAAAA] rounded-[5px] px-1'>
-                              <span className='text-[15px] text-[#555555] mr-2'>Rp</span>
-                              <input type="text" placeholder="Harga" className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA] text-center align-middle" width={100}>
-                            <input
-                              type="text"
-                              placeholder="Stock"
-                              className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0 "
-                            />
-                          </td>
 
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA]">
-                            <div className='border border-[#AAAAAA] rounded-[5px] px-1'>
-                              <span className='text-[15px] text-[#555555] mr-2'>Rp</span>
-                              <input type="text" placeholder="Harga" className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none" />
-                            </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap border border-[#AAAAAA] text-center align-middle" width={155}>
-                            <input
-                              type="text"
-                              placeholder="Persen"
-                              className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center  focus:outline-none focus:ring-0"
-                            />
-                          </td>
-                        </tr>
-                      ))
-                    ))}
-                  </tbody> */}
+                            <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={100}>
+                              <input
+                                type="text"
+                                placeholder="Stock"
+                                className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
+                                value={rowData.stock}
+                                onChange={(e) => {
+                                  const newData = [...variantData];
+                                  newData[index] = { ...rowData, stock: e.target.value };
+                                  setVariantData(newData);
+                                }}
+                              />
+                            </td>
+
+                            <td className="px-4 py-4 border border-[#AAAAAA]">
+                              <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                <span className="text-[15px] text-[#555555] mr-2">Rp</span>
+                                <input
+                                  type="text"
+                                  placeholder="Harga"
+                                  className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
+                                  value={formatRupiahNoRP(rowData.discount)}
+                                  onChange={(e) => {
+                                    const newData = [...variantData];
+                                    newData[index] = { ...rowData, discount: e.target.value };
+                                    setVariantData(newData);
+                                  }}
+                                />
+                              </div>
+                            </td>
+
+                            <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
+                              <input
+                                type="text"
+                                placeholder="Persen"
+                                className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
+                                value={rowData.discountPercent}
+                                onChange={(e) => {
+                                  const newData = [...variantData];
+                                  newData[index] = { ...rowData, discountPercent: e.target.value };
+                                  setVariantData(newData);
+                                }}
+                              />
+                            </td>
+                          </tr>
+                        )
+                      })
+                    )}
+                  </tbody>
+
+
+
                 </table>
+                }
               </div>
               {/* Info Tambahan */}
               <div className="mb-6 mt-6 space-y-6">
