@@ -162,14 +162,6 @@ const AddProductPage: NextPage = () => {
     { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
     { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
   ];
-  const [promoImage, setPromoImage] = useState<File | null>(null);
-
-  const handlePromoImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPromoImage(file);
-    }
-  };
 
 
   return (
