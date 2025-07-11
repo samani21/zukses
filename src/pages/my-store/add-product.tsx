@@ -743,8 +743,14 @@ const AddProductPage: NextPage = () => {
                   onMouseLeave={() => setActiveTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
                 </div>
-                <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
-                <div>
+                <div
+                  onMouseEnter={() => setActiveTipKey('brand')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
+                  <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
+                </div>
+                <div
+                  onMouseEnter={() => setActiveTipKey('brand')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
                   <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px]"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
                 </div>
@@ -752,72 +758,77 @@ const AddProductPage: NextPage = () => {
               </div>
 
               {/* Variasi Produk */}
-              <FormSection title="Variasi Produk">
-                {variations.map((variation, varIndex) => (
-                  <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                    <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                      <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          value={variation.name}
-                          onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                          placeholder="Ketik atau Pilih"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        />
-                        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                          {variation.name.length}/20
-                        </span>
+              <div
+                onMouseEnter={() => setActiveTipKey('variation')}
+                onMouseLeave={() => setActiveTipKey('default')} >
+                <FormSection title="Variasi Produk">
+                  {variations.map((variation, varIndex) => (
+                    <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
+                      <div className="grid grid-cols-[100px_1fr] items-center gap-4">
+                        <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={variation.name}
+                            onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
+                            placeholder="Ketik atau Pilih"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                          />
+                          <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                            {variation.name.length}/20
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-[100px_1fr] items-start gap-4">
-                      <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                        {variation.options.map((option, optIndex) => (
-                          <div
-                            key={optIndex}
-                            draggable
-                            onDragStart={() => handleDragStart(optIndex)}
-                            onDragOver={(e) => e.preventDefault()}
-                            onDrop={() => handleDrop(varIndex, optIndex)}
-                            className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={option}
-                              onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
-                              placeholder="Ketik atau Pilih"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                            />
-                            <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
-                              <Move className="w-4 h-4" />
-                            </div>
+                      <div className="grid grid-cols-[100px_1fr] items-start gap-4">
+                        <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                          {variation.options.map((option, optIndex) => (
                             <div
-                              className="p-2 text-gray-500 hover:text-red-600"
-                              onClick={() => handleDeleteOption(varIndex, optIndex)}
-                            >
-                              <Trash2 className="w-4 h-4" />
+                              key={optIndex}
+                              draggable
+                              onDragStart={() => handleDragStart(optIndex)}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={() => handleDrop(varIndex, optIndex)}
+                              className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={option}
+                                onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
+                                placeholder="Ketik atau Pilih"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                              />
+                              <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
+                                <Move className="w-4 h-4" />
+                              </div>
+                              <div
+                                className="p-2 text-gray-500 hover:text-red-600"
+                                onClick={() => handleDeleteOption(varIndex, optIndex)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {variations.length < 2 && (
-                  <button
-                    type="button"
-                    onClick={handleAddVariation}
-                    className="mt-4 bg-[#52357B] text-white px-4 py-2 rounded-[5px] text-[14px] font-semibold hover:bg-purple-800 transition duration-200"
-                  >
-                    Tambah Variasi 2
-                  </button>
-                )}
-              </FormSection>
+                  {variations.length < 2 && (
+                    <button
+                      type="button"
+                      onClick={handleAddVariation}
+                      className="mt-4 bg-[#52357B] text-white px-4 py-2 rounded-[5px] text-[14px] font-semibold hover:bg-purple-800 transition duration-200"
+                    >
+                      Tambah Variasi 2
+                    </button>
+                  )}
+                </FormSection>
+              </div>
 
               <div className="mb-6 mt-2">
-                <div className="flex items-center gap-4 items-end">
+                <div className="flex items-center gap-4 items-end" onMouseEnter={() => setActiveTipKey('priceStock')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <div className="col-span-12 sm:col-span-5">
                     <label className="block text-[14px] font-bold text-[#333333] mb-1.5">Harga Produk</label>
                     <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
@@ -846,7 +857,9 @@ const AddProductPage: NextPage = () => {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto"
+                onMouseEnter={() => setActiveTipKey('variation')}
+                onMouseLeave={() => setActiveTipKey('default')}>
                 {
                   buildCombinationTable().length > 0 &&
                   <table className="min-w-full divide-y divide-gray-200">
@@ -1015,7 +1028,9 @@ const AddProductPage: NextPage = () => {
               </div>
               {/* Info Tambahan */}
               <div className="mb-6 mt-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  onMouseEnter={() => setActiveTipKey('purchaseLimit')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <div>
                     <label className="text-[#333333] font-bold text-[14px]">
                       <span className="text-red-500">*</span>  Min. Jumlah Pembelian
@@ -1030,7 +1045,9 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
 
-                <div className='mt-[-15px]'>
+                <div className='mt-[-15px]'
+                  onMouseEnter={() => setActiveTipKey('weightDimension')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     Berat dan Dimensi Produk
                   </label>
@@ -1073,7 +1090,9 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
                 {showDimensionTable && (
-                  <div className="overflow-x-auto mt-4">
+                  <div className="overflow-x-auto mt-4"
+                    onMouseEnter={() => setActiveTipKey('weightDimension')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
                     <table className="w-full">
                       <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                         <tr>
@@ -1174,11 +1193,24 @@ const AddProductPage: NextPage = () => {
                     </table>
                   </div>
                 )}
-                <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
-                <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
-                <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
+                <div onMouseEnter={() => setActiveTipKey('dangerousGoods')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
 
-                <div>
+                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
+                </div>
+                <div onMouseEnter={() => setActiveTipKey('preorder')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
+
+                  <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
+                </div>
+                <div onMouseEnter={() => setActiveTipKey('condition')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
+
+                  <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
+                </div>
+
+                <div onMouseEnter={() => setActiveTipKey('sku')}
+                  onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     SKU Induk
                   </label>
@@ -1189,17 +1221,21 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-10px]'>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    Pembayaran di Tempat (COD)
-                  </label>
-                  <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
-                    <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" />
-                    <div className='mt-[-5px]'>
-                      <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
-                      <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima. Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
+                  <div onMouseEnter={() => setActiveTipKey('cod')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
+                    <label className="text-[#333333] font-bold text-[14px]">
+                      Pembayaran di Tempat (COD)
+                    </label>
+                    <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
+                      <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" />
+                      <div className='mt-[-5px]'>
+                        <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
+                        <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima. Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
+                      </div>
                     </div>
                   </div>
-                  <div className="relative">
+                  <div className="relative" onMouseEnter={() => setActiveTipKey('schedule')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Jadwal Ditampilkan
                     </label>
