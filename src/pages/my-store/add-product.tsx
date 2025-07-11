@@ -162,6 +162,15 @@ const AddProductPage: NextPage = () => {
     { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
     { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
   ];
+  const [promoImage, setPromoImage] = useState<File | null>(null);
+
+  const handlePromoImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPromoImage(file);
+    }
+  };
+
 
   return (
     <MyStoreLayout>
@@ -180,7 +189,8 @@ const AddProductPage: NextPage = () => {
             {/* Kolom Kiri */}
             <aside className="lg:col-span-1 space-y-6 sticky top-6 pr-2">
               <InfoCard title="Rekomendasi">
-                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambah min. 3 Foto" />
+                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambah min. 1 Foto" />
+                <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambah 1 Foto Promosi" />
                 <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Tambahkan Video" />
                 <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Nama 25+ karakter" />
                 <IconLabel icon={<CheckCircle className="w-5 h-5 text-[#000000]" />} text="Deskripsi 100+ karakter" />
@@ -207,18 +217,36 @@ const AddProductPage: NextPage = () => {
               <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Produk</h1>
 
               <div className="rounded-lg mb-6">
-                <label className="text-[#333333] font-bold text-[14px]">
-                  <span className="text-red-500">*</span> Foto Produk
-                </label>
-                <div className="">
-                  <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
-                    <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                    <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
-                  </ul>
-                  <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                    <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
-                    <span className="text-[12px] text-[#333333]">Tambahkan</span>
-                    <span className="text-[12px] text-[#333333]">0/10</span>
+                <div>
+                  <label className="text-[#333333] font-bold text-[14px]">
+                    <span className="text-red-500">*</span> Foto Produk
+                  </label>
+                  <div className="">
+                    <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
+                      <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
+                      <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
+                    </ul>
+                    <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
+                      <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
+                      <span className="text-[12px] text-[#333333]">Tambahkan</span>
+                      <span className="text-[12px] text-[#333333]">0/10</span>
+                    </div>
+                  </div>
+                </div>
+                <div className='mt-4'>
+                  <label className="text-[#333333] font-bold text-[14px]">
+                    <span className="text-red-500">*</span> Foto Produk Promosi
+                  </label>
+                  <div className="">
+                    <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
+                      <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
+                      <li className=''>Foto Produk Promosi untuk menampilkan dihasil pencarian SEO</li>
+                    </ul>
+                    <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
+                      <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
+                      <span className="text-[12px] text-[#333333]">Tambahkan</span>
+                      <span className="text-[12px] text-[#333333]">0/1</span>
+                    </div>
                   </div>
                 </div>
                 <hr className="my-6 border-[#CCCCCC]" />
@@ -531,7 +559,7 @@ const AddProductPage: NextPage = () => {
               </div>
 
               {/* Tombol Aksi */}
-              <div className="bg-white flex justify-between items-center relative bottom-0 p-4" style={{
+              <div className="bg-white flex justify-between items-center sticky bottom-0 p-4" style={{
                 boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'
               }}>
                 <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline">Kembali</button>
