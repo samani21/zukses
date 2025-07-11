@@ -1,10 +1,15 @@
 // Anda perlu menginstal lucide-react: npm install lucide-react
 import DateTimePicker from 'components/DateTimePicker';
+import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
+import CategorySelector from 'components/my-store/product/CategorySelector';
 import { Camera, Video, Pencil, Trash2, ChevronRight, Image as ImageIcon, Move, CheckCircle } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useRef, useState } from 'react';
+import Get from 'services/api/Get';
+import { Category } from 'services/api/product';
+import { Response } from 'services/api/types';
 // Komponen untuk ikon dengan teks
 const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
   <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -166,6 +171,7 @@ const AddProductPage: NextPage = () => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
+  const [category, setCategory] = useState('');
   const promoInputRef = useRef<HTMLInputElement | null>(null);
   const [cropModalImage, setCropModalImage] = useState<string | null>(null);
   const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
@@ -176,6 +182,13 @@ const AddProductPage: NextPage = () => {
     'Nama 25+ karakter': productName.length >= 25,
     'Deskripsi 100+ karakter': description.length >= 100,
   };
+  const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
+  const [tempCategory, setTempCategory] = useState(category);
+  const [idCategorie, setIdCategorie] = useState<number | undefined>();
+  const [apiCategories, setApiCategories] = useState<Category[]>([]);
+  const [categoryApiError, setCategoryApiError] = useState<string | null>(null);
+  const [categoryLoading, setCategoryLoading] = useState(true);
+  const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
   const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
 
@@ -223,6 +236,31 @@ const AddProductPage: NextPage = () => {
       setVideoFile(file);
     }
   };
+
+  useEffect(() => {
+    // const dataString = localStorage.getItem('shopProfile');
+    // if (dataString) {
+    //   const parsedData = JSON.parse(dataString);
+    //   setShopProfile(parsedData)
+    // }
+    const fetchCategories = async () => {
+      setCategoryLoading(true);
+      try {
+        const res = await Get<Response>('zukses', `category/show`);
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+          setApiCategories(res.data as Category[]);
+        } else {
+          setCategoryApiError("Gagal mengambil data kategori.");
+        }
+      } catch (error) {
+        setCategoryApiError("Gagal memuat kategori.");
+        console.error(error);
+      } finally {
+        setCategoryLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
   return (
     <MyStoreLayout>
       <div className="min-h-screen font-sans mt-[-10px]">
@@ -397,9 +435,9 @@ const AddProductPage: NextPage = () => {
                   <label className="text-[#333333] font-bold text-[14px]">
                     <span className="text-red-500">*</span> Kategori
                   </label>
-                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px]">
+                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px]" onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }}>
                     <div className="w-full px-3 py-2 text-[#555555] text-[14px]">
-                      Pilih Kategori Produk
+                      {category || "Pilih Kategori Produk"}
                     </div>
                     <button className="ml-2 p-2 text-gray-600 hover:bg-gray-100 rounded-md">
                       <Pencil className="w-5 h-5" />
@@ -702,6 +740,9 @@ const AddProductPage: NextPage = () => {
           }}
         />
       )}
+      <Modal isOpen={isCategoryModalOpen} onClose={() => setCategoryModalOpen(false)}>
+        <CategorySelector onSelectCategory={setTempCategory} initialCategory={category} categories={apiCategories} isLoading={categoryLoading} error={categoryApiError} setIdCategorie={setIdCategorie} setCategoryModalOpen={setCategoryModalOpen} handleConfirmCategory={handleConfirmCategory} />
+      </Modal>
 
     </MyStoreLayout>
   );
