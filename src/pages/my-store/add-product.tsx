@@ -70,13 +70,28 @@ const TextAreaInput = ({
   setValue,
   required = false,
 }: {
-  label: string;
-  placeholder: string;
-  maxLength: number;
-  value: string;
-  setValue: (val: string) => void;
-  required?: boolean;
+  label: string,
+  placeholder: string,
+  maxLength: number,
+  value: string,
+  setValue: (val: string) => void,
+  required?: boolean
 }) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fungsi untuk menyesuaikan tinggi textarea
+  const autoResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto'; // Reset dulu
+      textarea.style.height = Math.min(textarea.scrollHeight, 480) + 'px'; // Maks 480px (30 baris)
+    }
+  };
+
+  useEffect(() => {
+    autoResize();
+  }, [value]);
+
   return (
     <div>
       <label className="text-[#333333] font-bold text-[14px]">
@@ -84,19 +99,16 @@ const TextAreaInput = ({
       </label>
       <div className="relative">
         <textarea
-          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] leading-[24px]"
+          ref={textareaRef}
+          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] overflow-hidden"
           placeholder={placeholder}
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
           }}
           maxLength={maxLength}
-          rows={4}
-          style={{
-            resize: 'none',
-            maxHeight: '480px', // 20 baris x 24px
-            overflowY: 'auto',   // aktifkan scroll
-          }}
+          rows={4} // default tinggi awal (misal 4 baris)
+          style={{ resize: 'none', maxHeight: '480px', overflowY: 'auto', }} // maksimal 30 baris, tidak bisa di-resize
         />
         <span className="absolute bottom-2 right-3 text-xs text-gray-400">
           {value.length}/{maxLength}
@@ -105,7 +117,6 @@ const TextAreaInput = ({
     </div>
   );
 };
-
 
 
 // Komponen untuk Radio Button
