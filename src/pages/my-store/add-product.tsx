@@ -290,7 +290,7 @@ const AddProductPage: NextPage = () => {
                 <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
                 <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
                 <div>
-                  <label className="block text-[#333333] font-bold text-[14px] mb-1.5"><span className="text-red-500">*</span> Negara Asal</label>
+                  <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
                   <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px]"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
                 </div>
 
