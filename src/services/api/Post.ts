@@ -46,6 +46,7 @@ const Post = <T = unknown>(
                 if (err?.response?.data?.message === 'token expired') {
                     localStorage.removeItem('token');
                     localStorage.removeItem('user');
+                    window.location.href = '/auth/login'
                 }
                 reject(err);
             });
