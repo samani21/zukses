@@ -128,18 +128,18 @@ const Header = () => {
 
     return (
         <>
-            <header className="text-white sticky top-0 z-40 h-[120px] bg-white border border-[#EEEEEE]">
+            <header className="text-white sticky top-0 z-40 h-[120px] bg-[#7952B3]">
                 <div className="">
                     <div className="hidden md:flex flex-col">
-                        <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[30px]">
+                        <div className="items-center text-xs mb-3 bg-[#563D7C] py-[5px] h-[30px]">
                             <div className="container mx-auto w-[1200px] px-[0px] flex justify-between">
-                                <a onClick={() => router.push('/')} className="text-[14px] font-[500] text-[#333333] hover:underline" style={{ letterSpacing: "-2%" }}>Download aplikasinya di Playstore</a>
+                                <a onClick={() => router.push('/')} className="text-[14px] font-[500] hover:underline" style={{letterSpacing:"-3%"}}>Download aplikasinya di Playstore</a>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
-                                            <a onClick={() => router.push('/my-store')} className="font-[400] hover:underline cursor-pointer text-[14px] text-[#333333] ">Toko Saya</a>
+                                            <a onClick={() => router.push('/my-store')} className="font-[400] hover:underline cursor-pointer text-[14px] ">Toko Saya</a>
                                             {/* <div className="h-7 w-px bg-white"></div> */}
-                                            <a onClick={() => router.push('/user-profile')} className="font-[400] text-[14px] text-[#333333]  hover:underline cursor-pointer text-right">{userName}</a>
+                                            <a onClick={() => router.push('/user-profile')} className="font-[400] text-[14px]  hover:underline cursor-pointer text-right">{userName}</a>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
@@ -153,51 +153,51 @@ const Header = () => {
                         </div>
 
                         <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] mt-[-3px] flex justify-between">
-                            <h1 className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>Zukses</h1>
+                            <h1 className="text-[35px] font-[500] cursor-pointer shrink-0 mt-[-10px] w-[102px] h-[36px] mr-7" onClick={() => window.location.href = '/'}>zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-9 mt-2'>
                                     <div className="flex items-center gap-3 w-full">
-                                        <div className="relative flex-grow border border-[0.5px] border-[#555555] rounded-[5px]">
-                                            <input type="text" placeholder="Cari di Zukses" value={searchTerm}
+                                        <div className="relative flex-grow">
+                                            <input type="text" placeholder="Cari barang yang Anda inginkan" value={searchTerm}
                                                 onFocus={() => { setIsSearchFocused(true); setSearchResults(null); setDropdownMode('history'); }}
                                                 onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setSearchResults(null); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }}
                                                 onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }}
-                                                className="rounded-[5px] w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[16px] placeholder:text-[#777777]"
+                                                className="w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[13px]"
                                             />
                                             <div className="absolute inset-y-0  right-0 flex items-center p-[2px]">
-                                                <button onClick={handleSearch} className="h-[36px]  w-[57.9px] bg-[#01BDA4] flex items-center justify-center rounded-[5px]" title="Cari">
-                                                    <SearchIcon className="w-[24px] h-[24px] text-white" />
+                                                <button onClick={handleSearch} className="h-full h-[36.5px]  w-[58.7px] bg-[#563D7C] flex items-center justify-center" title="Cari">
+                                                    <SearchIcon className="w-5 h-5 text-white" />
                                                 </button>
                                             </div>
                                         </div>
-                                        <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md pr-0" title="Filter Provinsi">
-                                            <img src='/icon/filter-dark.svg' width={25} />
+                                        <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md" title="Filter Provinsi">
+                                            <img src='/icon/Filter.svg' width={25} />
                                         </button>
 
-                                        {isLoggedIn && (
-                                            <div className='flex items-center gap-3'>
-                                                <button className="p-2 rounded-md" title="Keranjang Belanja">
-                                                    <img src='/icon/shopping-cart.svg' width={25} />
-                                                </button>
-                                                <button className="p-2 rounded-md bg-[#FEB602] text-[13px] font-semibold text-[#111111]" title="Toko Saya">
-                                                    Akun Saya
-                                                </button>
-                                            </div>
-                                        )}
                                     </div>
+                                    {isLoggedIn && (
+                                        <div className='flex items-center justify-right mr-[-20px]'>
+                                            <button className="p-2 rounded-md" title="Keranjang Belanja">
+                                                <img src='/icon/Shopping bag.svg' width={25} />
+                                            </button>
+                                            <button className="p-2 rounded-md" title="Toko Saya">
+                                                <img src='/icon/user.svg' width={25} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                                 {isSearchFocused && <SearchSuggestions suggestions={suggestionsForDropdown} searchTerm={searchTerm} onSuggestionClick={handleSuggestionClick} />}
                             </div>
                         </div>
-                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between'>
-                            <div className="mt-1 text-[#333333] text-[14px] font-ligh t">
+                        <div className='container mx-auto w-[1200px] px-[0px] flex justify-between '>
+                            <div className="mt-1 text-white text-[14px] font-light">
                                 Pencarian di
                                 <a
                                     onClick={(e) => {
                                         e.preventDefault();
                                         setProvinceModalOpen(true);
                                     }}
-                                    className="text-[#333333] hover:underline cursor-pointer"
+                                    className="text-white hover:underline cursor-pointer"
                                 >
                                     {selectedProvinces.length > 0
                                         ? " " + selectedProvinces.slice(0, 3).join(', ')
@@ -205,7 +205,7 @@ const Header = () => {
                                 </a>
                             </div>
 
-                            <div className="mt-1 text-[14px] text-[#333333] mr-[190px] cursor-pointer font-light">
+                            <div className="mt-1 text-[14px] text-white mr-[145px] cursor-pointer font-light">
                                 <span className='mr-2'> Laptop</span> <span className='mr-2'>Kemeja lengan panjang</span> <span>Baju Koko</span>
                             </div>
                         </div>

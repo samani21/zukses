@@ -42,6 +42,7 @@ const Get = async <T = unknown>(url: URLType, path: string, token?: string): Pro
 
         if (message === 'token expired') {
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
         }
 
         console.warn('GET failed:', axiosError.response?.status, axiosError.message);

@@ -42,6 +42,7 @@ const Delete = <T = unknown>(
             .catch((err) => {
                 if (err?.response?.data?.message === 'token expired') {
                     localStorage.removeItem('token');
+                    localStorage.removeItem('user');
                 }
                 reject(err);
             });

@@ -21,9 +21,10 @@ const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
 const InfoCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="bg-white rounded-[10px] shadow-sm border border-[#DDDDDD] w-[236px]">
     {
-      title === 'Rekomendasi' ?
-        <h3 className="font-bold text-white text-[16px] rounded-tr-[10px] rounded-tl-[10px]  p-4 bg-[#52357B]">{title}</h3> :
-        <h3 className="font-bold text-[#333333] text-[14px] rounded-tr-[10px] rounded-tl-[10px] p-4 pb-0">{title}</h3>
+      title === "Rekomendasi" &&
+      <div className='h-[38px] flex items-center '>
+        <h3 className="font-bold text-white text-[16px] rounded-tr-[10px] rounded-tl-[10px] py-2  px-4 bg-[#00AA5B] w-full h-full">{title}</h3>
+      </div>
     }
     <div className="space-y-2 p-4 text-[#333333] text-[14px]">
       {children}
@@ -35,7 +36,7 @@ const InfoCard = ({ title, children }: { title: string; children: React.ReactNod
 const FormSection = ({ title, children, tip }: { title: string; children: React.ReactNode; tip?: string }) => (
   <div className="">
     <h2 className="text-[14px] font-bold text-[#333333] mb-4">{title}</h2>
-    {tip && <p className="text-sm text-gray-500 mb-6">{tip}</p>}
+    {tip && <p className="text-[14px] text-gray-500 mb-6">{tip}</p>}
     {children}
   </div>
 );
@@ -583,7 +584,7 @@ const AddProductPage: NextPage = () => {
       <div className="min-h-screen font-sans mt-[-10px]">
         <main className="px-0 pb-[120px]">
           <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
-          <div className="flex items-center text-sm text-gray-500 mb-4">
+          <div className="flex items-center  text-gray-500 mb-4">
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store'}>Dashboard</span>
             <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" />
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store/product'}>Produk Saya</span>
@@ -600,8 +601,8 @@ const AddProductPage: NextPage = () => {
                     key={label}
                     icon={
                       isDone
-                        ? <CheckCircle className="w-5 h-5 text-green-500" />
-                        : <CheckCircle className="w-5 h-5 text-gray-300" />
+                        ? <CheckCircle className="w-4 h-4 text-green-500" />
+                        : <CheckCircle className="w-4 h-5 text-[#000000]" />
                     }
                     text={label}
                   />
@@ -615,14 +616,14 @@ const AddProductPage: NextPage = () => {
             </aside>
 
             {/* Kolom Kanan - Form Utama */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 mt-2">
               <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Produk</h1>
 
               <div className="rounded-lg mb-6">
                 <div
                   onMouseEnter={() => setActiveTipKey('photo')}
                   onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
+                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk
                   </label>
                   <div className="">
@@ -631,7 +632,7 @@ const AddProductPage: NextPage = () => {
                       <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
                     </ul>
                     {/* Preview Gambar */}
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-2 ">
                       {selectedImages.map((img, index) => (
                         <img
                           key={index}
@@ -658,7 +659,7 @@ const AddProductPage: NextPage = () => {
                 <div className='mt-4'
                   onMouseEnter={() => setActiveTipKey('promoPhoto')}
                   onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
+                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk Promosi
                   </label>
                   <div className="">
@@ -729,7 +730,7 @@ const AddProductPage: NextPage = () => {
                         </div>
                       )}
                     </label>
-                    <ul className="text-sm text-gray-500 list-disc list-inside">
+                    <ul className="text-[12px] text-gray-500 list-disc list-inside">
                       <li>File video maks. harus 30Mb dengan resolusi tidak melebihi 1280 x 1280px.</li>
                       <li>Durasi: 10-60detik</li>
                       <li>Format: MP4</li>
@@ -1182,7 +1183,7 @@ const AddProductPage: NextPage = () => {
                                       }}
                                       className="w-full p-1.5 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                                     />
-                                    <span className="text-sm text-gray-500 ml-2">gr</span>
+                                    <span className="text-[14px] text-gray-500 ml-2">gr</span>
                                   </div>
                                 </td>
 
