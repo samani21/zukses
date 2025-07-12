@@ -283,13 +283,13 @@ const CategorySelector: FC<{
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 font-sans">
             <div className="bg-white rounded-sm shadow-lg w-[955px] h-[543px] flex flex-col">
                 <div className='bg-white w-full h-[480px] flex flex-col'>
-                    <div className="flex items-center text-[#555555] text-[20px] font-[500] justify-between p-4 px-5">
+                    <div className="flex items-center text-[#555555] text-[20px] font-[500] justify-between p-4 pb-0 px-5">
                         <h2 className="text-[20px]">Pilih Kategori</h2>
                         <button onClick={() => setCategoryModalOpen(false)} className="text-[#E9E9E9] hover:text-gray-600">
                             <XIcon size={24} className='text-[#555555]' />
                         </button>
                     </div>
-                    <div className="py-4 w-full px-8">
+                    <div className="py-4 w-full px-8 pt-3">
                         <div className="relative bg-white rounded-[5px] flex items-center p-2 gap-2 border border-[#E9E9E9] h-[40px]">
                             <input
                                 type="text"
