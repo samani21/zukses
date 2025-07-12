@@ -21,9 +21,10 @@ const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
 const InfoCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="bg-white rounded-[10px] shadow-sm border border-[#DDDDDD] w-[236px]">
     {
-      title === 'Rekomendasi' ?
-        <h3 className="font-bold text-white text-[16px] rounded-tr-[10px] rounded-tl-[10px]  p-4 bg-[#52357B]">{title}</h3> :
-        <h3 className="font-bold text-[#333333] text-[14px] rounded-tr-[10px] rounded-tl-[10px] p-4 pb-0">{title}</h3>
+      title === "Rekomendasi" &&
+      <div className='h-[38px] flex items-center '>
+        <h3 className="font-bold text-white text-[16px] rounded-tr-[10px] rounded-tl-[10px] py-2  px-4 bg-[#00AA5B] w-full h-full">{title}</h3>
+      </div>
     }
     <div className="space-y-2 p-4 text-[#333333] text-[14px]">
       {children}
@@ -35,7 +36,7 @@ const InfoCard = ({ title, children }: { title: string; children: React.ReactNod
 const FormSection = ({ title, children, tip }: { title: string; children: React.ReactNode; tip?: string }) => (
   <div className="">
     <h2 className="text-[14px] font-bold text-[#333333] mb-4">{title}</h2>
-    {tip && <p className="text-sm text-gray-500 mb-6">{tip}</p>}
+    {tip && <p className="text-[14px] text-gray-500 mb-6">{tip}</p>}
     {children}
   </div>
 );
@@ -70,13 +71,28 @@ const TextAreaInput = ({
   setValue,
   required = false,
 }: {
-  label: string;
-  placeholder: string;
-  maxLength: number;
-  value: string;
-  setValue: (val: string) => void;
-  required?: boolean;
+  label: string,
+  placeholder: string,
+  maxLength: number,
+  value: string,
+  setValue: (val: string) => void,
+  required?: boolean
 }) => {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fungsi untuk menyesuaikan tinggi textarea
+  const autoResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto'; // Reset dulu
+      textarea.style.height = Math.min(textarea.scrollHeight, 480) + 'px'; // Maks 480px (30 baris)
+    }
+  };
+
+  useEffect(() => {
+    autoResize();
+  }, [value]);
+
   return (
     <div>
       <label className="text-[#333333] font-bold text-[14px]">
@@ -84,19 +100,16 @@ const TextAreaInput = ({
       </label>
       <div className="relative">
         <textarea
-          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] leading-[24px]"
+          ref={textareaRef}
+          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] overflow-hidden"
           placeholder={placeholder}
           value={value}
           onChange={(e) => {
             setValue(e.target.value);
           }}
           maxLength={maxLength}
-          rows={4}
-          style={{
-            resize: 'none',
-            maxHeight: '480px', // 20 baris x 24px
-            overflowY: 'auto',   // aktifkan scroll
-          }}
+          rows={4} // default tinggi awal (misal 4 baris)
+          style={{ resize: 'none', maxHeight: '480px', overflowY: 'auto', }} // maksimal 30 baris, tidak bisa di-resize
         />
         <span className="absolute bottom-2 right-3 text-xs text-gray-400">
           {value.length}/{maxLength}
@@ -105,7 +118,6 @@ const TextAreaInput = ({
     </div>
   );
 };
-
 
 
 // Komponen untuk Radio Button
@@ -198,8 +210,10 @@ const AddProductPage: NextPage = () => {
 
   //variasi
   const [variations, setVariations] = useState<Variation[]>([
-    { name: '', options: ['', ''] },
+    { name: '', options: [''] },
   ]);
+
+  console.log('variations', variations)
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
   const [globalPrice, setGlobalPrice] = useState('');
   const [globalStock, setGlobalStock] = useState('');
@@ -242,8 +256,14 @@ const AddProductPage: NextPage = () => {
 
   const handleAddVariation = () => {
     if (variations.length < 2) {
-      setVariations([...variations, { name: '', options: ['', ''] }]);
+      setVariations([...variations, { name: '', options: [''] }]);
     }
+  };
+
+  const handleRemoveVariation = (index: number) => {
+    const updatedVariations = [...variations];
+    updatedVariations.splice(index, 1);
+    setVariations(updatedVariations);
   };
 
   const handleVariationNameChange = (index: number, value: string) => {
@@ -293,13 +313,18 @@ const AddProductPage: NextPage = () => {
 
   const buildCombinationTable = () => {
     const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
-    const var2 = variations[1]?.options.filter(opt => opt.trim() !== '') || [''];
+    let var2 = variations[1]?.options.filter(opt => opt.trim() !== '');
+
+    if (!var2 || var2.length === 0) {
+      var2 = ['']; // fallback satu elemen kosong agar tetap render row
+    }
 
     return var1.map(color => ({
       color,
       sizes: var2
     }));
   };
+
 
   useEffect(() => {
     setVariantData([]);
@@ -559,7 +584,7 @@ const AddProductPage: NextPage = () => {
       <div className="min-h-screen font-sans mt-[-10px]">
         <main className="px-0 pb-[120px]">
           <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
-          <div className="flex items-center text-sm text-gray-500 mb-4">
+          <div className="flex items-center  text-gray-500 mb-4">
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store'}>Dashboard</span>
             <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" />
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store/product'}>Produk Saya</span>
@@ -576,8 +601,8 @@ const AddProductPage: NextPage = () => {
                     key={label}
                     icon={
                       isDone
-                        ? <CheckCircle className="w-5 h-5 text-green-500" />
-                        : <CheckCircle className="w-5 h-5 text-gray-300" />
+                        ? <CheckCircle className="w-4 h-4 text-green-500" />
+                        : <CheckCircle className="w-4 h-5 text-[#000000]" />
                     }
                     text={label}
                   />
@@ -591,14 +616,14 @@ const AddProductPage: NextPage = () => {
             </aside>
 
             {/* Kolom Kanan - Form Utama */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 mt-2">
               <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Produk</h1>
 
               <div className="rounded-lg mb-6">
                 <div
                   onMouseEnter={() => setActiveTipKey('photo')}
                   onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
+                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk
                   </label>
                   <div className="">
@@ -607,7 +632,7 @@ const AddProductPage: NextPage = () => {
                       <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
                     </ul>
                     {/* Preview Gambar */}
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-2 ">
                       {selectedImages.map((img, index) => (
                         <img
                           key={index}
@@ -634,7 +659,7 @@ const AddProductPage: NextPage = () => {
                 <div className='mt-4'
                   onMouseEnter={() => setActiveTipKey('promoPhoto')}
                   onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
+                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk Promosi
                   </label>
                   <div className="">
@@ -705,7 +730,7 @@ const AddProductPage: NextPage = () => {
                         </div>
                       )}
                     </label>
-                    <ul className="text-sm text-gray-500 list-disc list-inside">
+                    <ul className="text-[12px] text-gray-500 list-disc list-inside">
                       <li>File video maks. harus 30Mb dengan resolusi tidak melebihi 1280 x 1280px.</li>
                       <li>Durasi: 10-60detik</li>
                       <li>Format: MP4</li>
@@ -764,22 +789,29 @@ const AddProductPage: NextPage = () => {
                 <FormSection title="Variasi Produk">
                   {variations.map((variation, varIndex) => (
                     <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                      <div className="grid grid-cols-[100px_1fr] items-center gap-4">
-                        <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            value={variation.name}
-                            onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                            placeholder="Ketik atau Pilih"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                          />
-                          <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                            {variation.name.length}/20
-                          </span>
+                      <div className='flex'>
+                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 w-full">
+                          <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={variation.name}
+                              onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
+                              placeholder="Ketik atau Pilih"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            />
+                            <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                              {variation.name.length}/20
+                            </span>
+                          </div>
                         </div>
+                        {
+                          variations?.length > 1 &&
+                          <div onClick={() => handleRemoveVariation(varIndex)} className='mt-[-10px] mr-[-10px] pl-2 cursor-pointer'>
+                            <Trash2 className='w-4 h-4 text text-gray-500' />
+                          </div>
+                        }
                       </div>
-
                       <div className="grid grid-cols-[100px_1fr] items-start gap-4">
                         <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
@@ -861,21 +893,22 @@ const AddProductPage: NextPage = () => {
                 onMouseEnter={() => setActiveTipKey('variation')}
                 onMouseLeave={() => setActiveTipKey('default')}>
                 {
-                  buildCombinationTable().length > 0 &&
+                  variations[0]?.name &&
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                       <tr>
-                        {variations[0]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                        {
+                          variations[0]?.name &&
                           <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            {variations[0]?.name || 'Variasi 1'}
+                            {variations[0]?.name}
                           </th>
-                        )}
-
-                        {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                        }
+                        {
+                          variations[1]?.name &&
                           <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            {variations[1]?.name || 'Variasi 2'}
+                            {variations[1]?.name}
                           </th>
-                        )}
+                        }
 
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
                           Harga
@@ -948,9 +981,9 @@ const AddProductPage: NextPage = () => {
                                   </td>
                                 )}
 
-                              {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                              {variations[1]?.name && (
                                 <td className="px-4 py-4 text-[14px] text-[#333333] border border-[#AAAAAA]" align="center">
-                                  {size}
+                                  {size || '-'}
                                 </td>
                               )}
 
@@ -1089,7 +1122,7 @@ const AddProductPage: NextPage = () => {
                     </label>
                   </div>
                 </div>
-                {showDimensionTable && (
+                {variations[0]?.name && (
                   <div className="overflow-x-auto mt-4"
                     onMouseEnter={() => setActiveTipKey('weightDimension')}
                     onMouseLeave={() => setActiveTipKey('default')}>
@@ -1130,9 +1163,9 @@ const AddProductPage: NextPage = () => {
                                     <span className="font-medium text-gray-900 text-[14px]">{variation.color}</span>
                                   </td>
                                 )}
-                                {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                                {variations[1]?.name && (
                                   <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] align-middle border border-[#AAAAAA] text-center" width={100}>
-                                    {size}
+                                    {size || ''}
                                   </td>
                                 )}
 
@@ -1150,7 +1183,7 @@ const AddProductPage: NextPage = () => {
                                       }}
                                       className="w-full p-1.5 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                                     />
-                                    <span className="text-sm text-gray-500 ml-2">gr</span>
+                                    <span className="text-[14px] text-gray-500 ml-2">gr</span>
                                   </div>
                                 </td>
 
