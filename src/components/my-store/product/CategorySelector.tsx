@@ -268,7 +268,7 @@ const CategorySelector: FC<{
                                 <li key={cat.id}>
                                     <button onClick={() => handleSelect(cat, selectionPath.length)} className="flex items-center justify-between w-full p-4 text-left border-b border-gray-300">
                                         <span>{cat.name}</span>
-                                        {cat.children && cat.children.length > 0 && <ChevronRightIcon size={20} className="text-gray-400" />}
+                                        {cat.children && cat.children.length > 0 && <ChevronRightIcon size={20} className="text-[#E9E9E9]" />}
                                     </button>
                                 </li>
                             ))}
@@ -281,25 +281,22 @@ const CategorySelector: FC<{
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 font-sans">
-            <div className="bg-[#EEEEEE] rounded-sm shadow-lg w-[955px] h-[600px] flex flex-col">
-                <div className="flex items-center bg-[#782CBF] text-[#FFFFFF] text-[20px] font-bold justify-between p-4 px-5 border-b border-gray-400">
-                    <h2 className="text-xl">Pilih Kategori</h2>
-                    <button onClick={() => setCategoryModalOpen(false)} className="text-gray-400 hover:text-gray-600">
-                        <XIcon size={24} className='text-white' />
-                    </button>
-                </div>
-                {/* Header */}
-
-                {/* Search Bar */}
-                <div className='bg-[#EEEEEE] rounded-sm shadow-lg w-full h-[470px] flex flex-col px-8'>
-                    <div className="py-4 w-1/3">
-                        <div className="relative bg-white rounded-[5px] flex items-center p-2 gap-2 border border-[#AAAAAA]">
+            <div className="bg-white rounded-sm shadow-lg w-[955px] h-[543px] flex flex-col">
+                <div className='bg-white w-full h-[480px] flex flex-col'>
+                    <div className="flex items-center text-[#555555] text-[20px] font-[500] justify-between p-4 px-5">
+                        <h2 className="text-[20px]">Pilih Kategori</h2>
+                        <button onClick={() => setCategoryModalOpen(false)} className="text-[#E9E9E9] hover:text-gray-600">
+                            <XIcon size={24} className='text-[#555555]' />
+                        </button>
+                    </div>
+                    <div className="py-4 w-full px-8">
+                        <div className="relative bg-white rounded-[5px] flex items-center p-2 gap-2 border border-[#E9E9E9] h-[40px]">
                             <input
                                 type="text"
                                 placeholder="Masukkan min. 1 karakter"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full  focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full text-dark focus:outline-none text-[14px] placeholder:text-[#888888] "
                             />
                             <div className="">
                                 <SearchIcon size={20} className="text-[#888888]" />
@@ -307,7 +304,7 @@ const CategorySelector: FC<{
                         </div>
                     </div>
 
-                    <div className="flex-grow min-h-0 overflow-y-auto border border-[#AAAAAA] mb-4 bg-white">
+                    <div className="flex-grow min-h-0 overflow-y-auto  mb-4 bg-white px-8">
                         {searchTerm.trim() !== '' ? (
                             <div>
                                 {isSearching ? (
@@ -316,7 +313,7 @@ const CategorySelector: FC<{
                                     <ul>
                                         {searchResults.map((result) => (
                                             <li key={result.id}>
-                                                <button onClick={() => handleSelectSearchResult(result)} className="w-full p-4 text-left border-b border-gray-400 hover:bg-gray-100">
+                                                <button onClick={() => handleSelectSearchResult(result)} className="w-full p-4 text-left border-b border-[#E9E9E9] hover:bg-gray-100">
                                                     <span className="font-semibold text-gray-800">{result.name}</span>
                                                     <p className="text-sm text-gray-500">{result.pathString}</p>
                                                 </button>
@@ -329,9 +326,9 @@ const CategorySelector: FC<{
                             </div>
                         ) : (
                             // TAMPILAN KOLOM KATEGORI (Default)
-                            <div ref={columnsContainerRef} className="flex flex-row h-full overflow-x-auto bg-gray-50/50">
+                            <div ref={columnsContainerRef} className="flex flex-row h-full overflow-x-auto bg-gray-50/50 border border-[#E9E9E9]">
                                 {columns.map((column, colIndex) => (
-                                    <div key={colIndex} className="w-1/4 h-full bg-white border-r border-gray-400 overflow-y-auto flex-shrink-0">
+                                    <div key={colIndex} className="w-1/4 h-full bg-white border-r border-[#E9E9E9] overflow-y-auto flex-shrink-0">
                                         <ul>
                                             {column.map((cat) => (
                                                 <li key={cat.id}>
@@ -353,14 +350,14 @@ const CategorySelector: FC<{
                     </div>
 
                 </div>
-                <div className="p-4 px-5 mt-auto bg-gray-50 border-t border-gray-400">
+                <div className="px-5 pb-5 mt-auto bg-white">
                     <div className="flex items-center justify-between">
                         <div className="pr-4 text-sm truncate">
-                            <span className="text-[16px] text-[#000000]">Dipilih: {selectedCategoryName || 'Pilih kategori untuk melanjutkan'}</span>
+                            <span className="text-[14px] text-[#555555] font-bold">Dipilih: {selectedCategoryName || 'Pilih kategori untuk melanjutkan'}</span>
                         </div>
                         <div className='flex justify-right items-center'>
                             <button onClick={() => setCategoryModalOpen(false)} className="px-6 py-2 mr-2 w-[125px] text-[#333333] font-bold bg-white border text-[14px]  border-[#52357B] rounded-[5px] hover:bg-gray-100">Batal</button>
-                            <button onClick={handleConfirmCategory} disabled={!selectedCategoryName} className="px-6 py-2 w-[125px] text-white bg-[#7952B3] rounded-[5px] text-[14px] font-bold disabled:bg-[#7952B3] disabled:cursor-not-allowed">Konfirmasi</button>
+                            <button onClick={handleConfirmCategory} disabled={!selectedCategoryName} className="px-6 py-2 w-[125px] text-white bg-[#F77000] rounded-[5px] text-[14px] font-bold disabled:bg-[#F77000] disabled:cursor-not-allowed">Konfirmasi</button>
                         </div>
                     </div>
                 </div>
