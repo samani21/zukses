@@ -202,6 +202,16 @@ const AddProductPage: NextPage = () => {
   const [categoryLoading, setCategoryLoading] = useState(true);
 
   //variasi
+  const variationSuggestions = ['Warna', 'Ukuran', 'Model', 'Bahan'];
+  const [showSuggestionIndex, setShowSuggestionIndex] = useState<number | null>(null);
+  const optionSuggestions: { [key: string]: string[] } = {
+    Warna: ['Merah', 'Kuning', 'Biru', 'Hijau', 'Hitam', 'Putih'],
+    Ukuran: ['S', 'M', 'L', 'XL', 'XXL'],
+    Model: ['Lengan Panjang', 'Lengan Pendek'],
+    Bahan: ['Katun', 'Poliester', 'Linen'],
+  };
+  const [showOptionSuggestIndex, setShowOptionSuggestIndex] = useState<string | null>(null);
+
   const [variations, setVariations] = useState<Variation[]>([
     { name: '', options: [''] },
   ]);
@@ -813,13 +823,39 @@ const AddProductPage: NextPage = () => {
                             <div className="grid grid-cols-[100px_1fr] items-center gap-4 w-1/2">
                               <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
                               <div className="relative">
-                                <input
-                                  type="text"
-                                  value={variation.name}
-                                  onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                                  placeholder="Ketik atau Pilih"
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                />
+                                <div className="relative">
+                                  <div className="relative w-full">
+                                    <input
+                                      type="text"
+                                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                      placeholder="Ketik atau pilih"
+                                      value={variation.name}
+                                      onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
+                                      onFocus={() => setShowSuggestionIndex(varIndex)}
+                                      onBlur={() => setTimeout(() => setShowSuggestionIndex(null), 200)} // biar gak hilang pas klik
+                                    />
+                                    {showSuggestionIndex === varIndex &&
+                                      variationSuggestions.some(s => s.toLowerCase().includes(variation.name.toLowerCase())) && (
+                                        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
+                                          <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
+                                          {variationSuggestions
+                                            .filter(s => s.toLowerCase().includes(variation.name.toLowerCase()))
+                                            .map((suggestion) => (
+                                              <div
+                                                key={suggestion}
+                                                className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                                onPointerDown={() => handleVariationNameChange(varIndex, suggestion)}
+                                              >
+                                                {suggestion}
+                                              </div>
+                                            ))}
+                                        </div>
+                                      )}
+
+                                  </div>
+
+                                </div>
+
                                 <span className="absolute bottom-2 right-3 text-xs text-gray-400">
                                   {variation.name.length}/20
                                 </span>
@@ -843,13 +879,39 @@ const AddProductPage: NextPage = () => {
                                   onDragOver={(e) => e.preventDefault()}
                                   onDrop={() => handleDrop(varIndex, optIndex)}
                                   className="flex items-center gap-2">
-                                  <input
-                                    type="text"
-                                    value={option}
-                                    onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
-                                    placeholder="Ketik atau Pilih"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                  />
+                                  <div className="relative w-full">
+                                    <div className="relative w-full">
+                                      <input
+                                        type="text"
+                                        value={option}
+                                        onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
+                                        placeholder="Ketik atau Pilih"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                        onFocus={() => setShowOptionSuggestIndex(`${varIndex}-${optIndex}`)}
+                                        onBlur={() => setTimeout(() => setShowOptionSuggestIndex(null), 200)} // biar bisa diklik suggestion-nya
+                                      />
+                                      {showOptionSuggestIndex === `${varIndex}-${optIndex}` &&
+                                        (optionSuggestions[variations[varIndex].name] || [])
+                                          .some(s => s.toLowerCase().includes(option.toLowerCase())) && (
+                                          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
+                                            <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
+                                            {optionSuggestions[variations[varIndex].name]
+                                              .filter(s => s.toLowerCase().includes(option.toLowerCase()))
+                                              .map((suggestion) => (
+                                                <div
+                                                  key={suggestion}
+                                                  className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                                  onPointerDown={() => handleOptionChange(varIndex, optIndex, suggestion)}
+                                                >
+                                                  {suggestion}
+                                                </div>
+                                              ))}
+                                          </div>
+                                        )}
+                                    </div>
+
+                                  </div>
+
                                   <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
                                     <Move className="w-4 h-4" />
                                   </div>
