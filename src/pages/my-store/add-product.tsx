@@ -3,7 +3,7 @@ import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
-import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon } from 'lucide-react';
+import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useRef, useState } from 'react';
@@ -32,14 +32,6 @@ const InfoCard = ({ title, children }: { title: string; children: React.ReactNod
   </div >
 );
 
-// Komponen untuk setiap bagian di form utama
-const FormSection = ({ title, children, tip }: { title: string; children: React.ReactNode; tip?: string }) => (
-  <div className="">
-    <h2 className="text-[14px] font-bold text-[#333333] mb-4">{title}</h2>
-    {tip && <p className="text-[14px] text-gray-500 mb-6">{tip}</p>}
-    {children}
-  </div>
-);
 
 // Komponen input dengan label dan character counter
 const TextInput = ({ label, placeholder, maxLength, value, setValue, required = false }: { label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
@@ -47,7 +39,7 @@ const TextInput = ({ label, placeholder, maxLength, value, setValue, required = 
     <label className="text-[#333333] font-bold text-[14px]">
       {required && <span className="text-red-500">*</span>} {label}
     </label>
-    <div className="relative">
+    <div className="relative mt-1">
       <input
         type="text"
         className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px]"
@@ -98,7 +90,7 @@ const TextAreaInput = ({
       <label className="text-[#333333] font-bold text-[14px]">
         {required && <span className="text-red-500">*</span>} {label}
       </label>
-      <div className="relative">
+      <div className="relative mt-1">
         <textarea
           ref={textareaRef}
           className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] overflow-hidden"
@@ -180,6 +172,7 @@ const AddProductPage: NextPage = () => {
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('');
   const [showDimensionTable, setShowDimensionTable] = useState(false);
+  const [isVariant, setIsVariant] = useState<boolean>(false);
   // const variations = [
   //   { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
@@ -626,7 +619,7 @@ const AddProductPage: NextPage = () => {
                   <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk
                   </label>
-                  <div className="">
+                  <div className="mt-1">
                     <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
                       <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
                       <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
@@ -642,7 +635,7 @@ const AddProductPage: NextPage = () => {
                         />
                       ))}
                       <label className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                        <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
+                        <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
                         <span className="text-[12px] text-[#333333]">Tambah</span>
                         <span className="text-[12px] text-[#333333]">{selectedImages.length}/10</span>
                         <input
@@ -662,7 +655,7 @@ const AddProductPage: NextPage = () => {
                   <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk Promosi
                   </label>
-                  <div className="">
+                  <div className="mt-1">
                     <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
                       <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
                       <li className=''>Foto Produk Promosi untuk menampilkan dihasil pencarian SEO</li>
@@ -681,7 +674,7 @@ const AddProductPage: NextPage = () => {
                       ) : (
                         // Jika belum ada, tampilkan ikon kamera dan teks
                         <>
-                          <Camera className="w-[29px] h-[29px] mb-1 text-[#333333]" />
+                          <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
                           <span className="text-[12px] text-[#333333]">Tambahkan</span>
                           <span className="text-[12px] text-[#333333]">0/1</span>
                         </>
@@ -705,7 +698,7 @@ const AddProductPage: NextPage = () => {
                   <label className="text-[#333333] font-bold text-[14px]">
                     Video Produk
                   </label>
-                  <div className="flex items-start space-x-6">
+                  <div className="flex items-start space-x-6 mt-1">
                     {/* Hidden input */}
                     <input
                       type="file"
@@ -725,7 +718,7 @@ const AddProductPage: NextPage = () => {
                         />
                       ) : (
                         <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                          <Video className="w-[29px] h-[29px] text-[#333333] mb-1" />
+                          <Video className="w-[29px] h-[29px] text-[#7952B3] mb-1" />
                           <span className="text-[12px] text-[#333333]">Tambahkan Video</span>
                         </div>
                       )}
@@ -754,7 +747,7 @@ const AddProductPage: NextPage = () => {
                   <label className="text-[#333333] font-bold text-[14px]">
                     <span className="text-red-500">*</span> Kategori
                   </label>
-                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px]" onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }}>
+                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px] mt-1" onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }}>
                     <div className="w-full px-3 py-2 text-[#555555] text-[14px]">
                       {category || "Pilih Kategori Produk"}
                     </div>
@@ -777,7 +770,7 @@ const AddProductPage: NextPage = () => {
                   onMouseEnter={() => setActiveTipKey('brand')}
                   onMouseLeave={() => setActiveTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
-                  <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px]"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
+                  <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] mt-1"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
                 </div>
 
               </div>
@@ -786,108 +779,168 @@ const AddProductPage: NextPage = () => {
               <div
                 onMouseEnter={() => setActiveTipKey('variation')}
                 onMouseLeave={() => setActiveTipKey('default')} >
-                <FormSection title="Variasi Produk">
-                  {variations.map((variation, varIndex) => (
-                    <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                      <div className='flex'>
-                        <div className="grid grid-cols-[100px_1fr] items-center gap-4 w-full">
-                          <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={variation.name}
-                              onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                              placeholder="Ketik atau Pilih"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                            />
-                            <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                              {variation.name.length}/20
-                            </span>
-                          </div>
-                        </div>
-                        {
-                          variations?.length > 1 &&
-                          <div onClick={() => handleRemoveVariation(varIndex)} className='mt-[-10px] mr-[-10px] pl-2 cursor-pointer'>
-                            <Trash2 className='w-4 h-4 text text-gray-500' />
-                          </div>
-                        }
-                      </div>
-                      <div className="grid grid-cols-[100px_1fr] items-start gap-4">
-                        <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                          {variation.options.map((option, optIndex) => (
-                            <div
-                              key={optIndex}
-                              draggable
-                              onDragStart={() => handleDragStart(optIndex)}
-                              onDragOver={(e) => e.preventDefault()}
-                              onDrop={() => handleDrop(varIndex, optIndex)}
-                              className="flex items-center gap-2">
-                              <input
-                                type="text"
-                                value={option}
-                                onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
-                                placeholder="Ketik atau Pilih"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                              />
-                              <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
-                                <Move className="w-4 h-4" />
-                              </div>
-                              <div
-                                className="p-2 text-gray-500 hover:text-red-600"
-                                onClick={() => handleDeleteOption(varIndex, optIndex)}
-                              >
-                                <Trash2 className="w-4 h-4" />
+                <div className="">
+                  <div className='flex items-center justify-left gap-3'>
+                    <div className='w-[12px] h-[12px] bg-[#52357B] rounded-lg' />
+                    <h2 className="text-[14px] font-bold text-[#333333]">Variasi Produk</h2>
+                  </div>
+                  <div className='flex jusity-left items-center gap-4 mt-3'>
+                    {
+                      isVariant ?
+                        <button className='border border-[#52357B] rounded-[5px] w-[175px] h-[35px] flex items-center px-2 justify-center' onClick={() => setIsVariant(false)}>
+                          <Plus className='text-[#52357B] h-[22px] w-[22px]' />
+                          <span className='text-[#52357B] text-[14px] font-semibold'>Tanpa Variasi</span>
+                        </button> :
+                        <button className='border border-[#52357B] rounded-[5px] w-[175px] h-[35px] flex items-center px-2' onClick={() => setIsVariant(true)}>
+                          <Plus className='text-[#52357B] h-[22px] w-[22px]' />
+                          <span className='text-[#52357B] text-[14px] font-semibold'>Tambahkan Variasi</span>
+                        </button>
+                    }
+                    <div className='w-1/2 text-[14px]'>
+                      Tambahkan Variasi Produk jika produk memiliki beberapa pilihan, seperti <span className='text-[#52357B] font-bold'> warna, ukuran, kapasitas, dan lainnya.</span>
+                    </div>
+                  </div>
+                  {
+                    isVariant ? <div className='mt-4'>
+                      {variations.map((variation, varIndex) => (
+                        <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
+                          <div className='flex justify-between items-center gap-4'>
+                            <div className="grid grid-cols-[100px_1fr] items-center gap-4 w-1/2">
+                              <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
+                              <div className="relative">
+                                <input
+                                  type="text"
+                                  value={variation.name}
+                                  onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
+                                  placeholder="Ketik atau Pilih"
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                />
+                                <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+                                  {variation.name.length}/20
+                                </span>
                               </div>
                             </div>
-                          ))}
+                            {
+                              variations?.length > 1 &&
+                              <div onClick={() => handleRemoveVariation(varIndex)} className=' cursor-pointer'>
+                                <X className='w-[24px] h-[24px] text text-gray-500' />
+                              </div>
+                            }
+                          </div>
+                          <div className="grid grid-cols-[100px_1fr] items-start gap-4">
+                            <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+                              {variation.options.map((option, optIndex) => (
+                                <div
+                                  key={optIndex}
+                                  draggable
+                                  onDragStart={() => handleDragStart(optIndex)}
+                                  onDragOver={(e) => e.preventDefault()}
+                                  onDrop={() => handleDrop(varIndex, optIndex)}
+                                  className="flex items-center gap-2">
+                                  <input
+                                    type="text"
+                                    value={option}
+                                    onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
+                                    placeholder="Ketik atau Pilih"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                  />
+                                  <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
+                                    <Move className="w-4 h-4" />
+                                  </div>
+                                  <div
+                                    className="p-2 text-gray-500 hover:text-red-600"
+                                    onClick={() => handleDeleteOption(varIndex, optIndex)}
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {variations.length < 2 && (
+                        <div className='flex justif-left items-center gap-3'>
+                          <button
+                            type="button"
+                            onClick={handleAddVariation}
+                            className="bg-white  text-[#52357B] border border-[#52357B] px-4 py-2 rounded-[5px] text-[14px] font-semibold flex items-center justify-center gap-1"
+                          >
+                            <Plus className='h-[22px] w-[22px]' />
+                            Tambah Variasi 2
+                          </button>
+                          <div className='w-[508px] text-[14px] text-[#33333]'>
+                            Tambahkan Variasi 2 jika setiap produk memiliki variasi lanjutan berdasarkan Variasi 1, misalnya:<span className='font-bold text-[#52357B]'> Merah Besar, Merah Kecil, atau Merah Sedang.</span>
+                          </div>
+                        </div>
+                      )}</div> :
+                      <div className="flex items-center gap-4 items-end mt-4"
+                        onMouseEnter={() => setActiveTipKey('priceStock')}
+                        onMouseLeave={() => setActiveTipKey('default')}>
+                        <div className="col-span-12 sm:col-span-5">
+                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                            <span className="text-red-500">*</span> Harga Produk</label>
+                          <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                            <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                            <div className="flex items-center border-l border-gray-300">
+                              <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={0} />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-span-12 sm:col-span-3">
+                          <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">
+                            <span className="text-red-500">*</span> Harga Diskon</label>
+                          <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
+                            <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
+                          </div>
+                        </div>
+                        <div className="col-span-12 sm:col-span-2 ml-[-20px]">
+                          <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">
+                            <span className="text-red-500">*</span> Persen Diskon</label>
+                          <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" />
+                        </div>
+                      </div>
+                  }
+                </div>
+              </div>
+
+              {
+                isVariant &&
+                <div className="mb-6 mt-2">
+                  <div className="flex items-center gap-4 items-end" onMouseEnter={() => setActiveTipKey('priceStock')}
+                    onMouseLeave={() => setActiveTipKey('default')}>
+                    <div className="col-span-12 sm:col-span-5">
+                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">Harga Produk</label>
+                      <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                        <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                        <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
+                        <div className="flex items-center border-l border-gray-300">
+                          <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
                         </div>
                       </div>
                     </div>
-                  ))}
-
-                  {variations.length < 2 && (
-                    <button
-                      type="button"
-                      onClick={handleAddVariation}
-                      className="mt-4 bg-[#52357B] text-white px-4 py-2 rounded-[5px] text-[14px] font-semibold hover:bg-purple-800 transition duration-200"
-                    >
-                      Tambah Variasi 2
-                    </button>
-                  )}
-                </FormSection>
-              </div>
-
-              <div className="mb-6 mt-2">
-                <div className="flex items-center gap-4 items-end" onMouseEnter={() => setActiveTipKey('priceStock')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
-                  <div className="col-span-12 sm:col-span-5">
-                    <label className="block text-[14px] font-bold text-[#333333] mb-1.5">Harga Produk</label>
-                    <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
-                      <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                      <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
-                      <div className="flex items-center border-l border-gray-300">
-                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
+                    <div className="col-span-12 sm:col-span-3">
+                      <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Harga Diskon</label>
+                      <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
+                        <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
                       </div>
                     </div>
-                  </div>
-                  <div className="col-span-12 sm:col-span-3">
-                    <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Harga Diskon</label>
-                    <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
-                      <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                      <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
+                    <div className="col-span-12 sm:col-span-2 ml-[-20px]">
+                      <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Persen Diskon</label>
+                      <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
+                    </div>
+
+                    <div className="col-span-12 sm:col-span-2">
+                      <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
                     </div>
                   </div>
-                  <div className="col-span-12 sm:col-span-2 ml-[-20px]">
-                    <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Persen Diskon</label>
-                    <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
-                  </div>
-
-                  <div className="col-span-12 sm:col-span-2">
-                    <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
-                  </div>
                 </div>
-              </div>
+              }
 
               <div className="overflow-x-auto"
                 onMouseEnter={() => setActiveTipKey('variation')}
@@ -1059,6 +1112,7 @@ const AddProductPage: NextPage = () => {
                   </table>
                 }
               </div>
+
               {/* Info Tambahan */}
               <div className="mb-6 mt-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -1102,27 +1156,33 @@ const AddProductPage: NextPage = () => {
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
                       <span className="text-[15px] text-[#555555]">Cm</span>
                     </div>
-                    <div>
-                      <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
-                        onClick={applyDimensionToAll}>
-                        Terapkan kesemua
-                      </button>
-                    </div>
+                    {
+                      isVariant &&
+                      <div>
+                        <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
+                          onClick={applyDimensionToAll}>
+                          Terapkan kesemua
+                        </button>
+                      </div>
+                    }
                   </div>
-                  <div className="mt-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={showDimensionTable}
-                        onChange={() => setShowDimensionTable(!showDimensionTable)}
-                        className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]"
+                  {
+                    isVariant &&
+                    <div className="mt-2">
+                      <label className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          checked={showDimensionTable}
+                          onChange={() => setShowDimensionTable(!showDimensionTable)}
+                          className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]"
 
-                      />
-                      <span className="text-[14px] text-[#333333] font-bold">Berat & Dimensi berbeda untuk tiap variasi?</span>
-                    </label>
-                  </div>
+                        />
+                        <span className="text-[14px] text-[#333333] font-bold">Berat & Dimensi berbeda untuk tiap variasi?</span>
+                      </label>
+                    </div>
+                  }
                 </div>
-                {variations[0]?.name && (
+                {variations[0]?.name && showDimensionTable && (
                   <div className="overflow-x-auto mt-4"
                     onMouseEnter={() => setActiveTipKey('weightDimension')}
                     onMouseLeave={() => setActiveTipKey('default')}>
