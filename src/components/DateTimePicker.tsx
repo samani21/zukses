@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { CustomLocale } from 'flatpickr/dist/types/locale';
+import { Calendar } from 'lucide-react';
 
 const customIndonesianLocale: Partial<CustomLocale> = {
   weekdays: {
@@ -220,13 +221,14 @@ export default function DateTimePicker() {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full border border-[#AAAAAA] rounded-[5px] flex justify-between items-center px-2">
       <input
         ref={inputRef}
         type="text"
         id="datepicker-input"
-        className="w-full p-2 border border-[#AAAAAA] rounded-[5px] focus:ring-orange-500 focus:border-orange-500"
+        className="w-full p-2 focus:outline-none"
       />
+      <Calendar />
     </div>
   );
 }
