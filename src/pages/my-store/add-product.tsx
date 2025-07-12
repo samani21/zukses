@@ -882,67 +882,86 @@ const AddProductPage: NextPage = () => {
                           </div>
                         </div>
                       )}</div> :
-                      <div className="flex items-center gap-4 items-end mt-4"
+                      <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
                         onMouseEnter={() => setActiveTipKey('priceStock')}
                         onMouseLeave={() => setActiveTipKey('default')}>
                         <div className="col-span-12 sm:col-span-5">
                           <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span> Harga Produk</label>
-                          <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                            <span className="text-red-500">*</span>
+                            Harga Produk
+                          </label>
+                          <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
                             <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
-                            <div className="flex items-center border-l border-gray-300">
-                              <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={0} />
-                            </div>
+                          </div>
+                        </div>
+                        <div className="col-span-12 sm:col-span-5 ml-[-20px]">
+                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                            <span className="text-red-500">*</span>
+                            Stok
+                          </label>
+                          <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
+                            <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={0} />
                           </div>
                         </div>
                         <div className="col-span-12 sm:col-span-3">
-                          <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">
+                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                             <span className="text-red-500">*</span> Harga Diskon</label>
-                          <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
+                          <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
+                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
                           </div>
                         </div>
-                        <div className="col-span-12 sm:col-span-2 ml-[-20px]">
-                          <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">
+                        <div className="col-span-12 sm:col-span-2 w-1/4">
+                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                             <span className="text-red-500">*</span> Persen Diskon</label>
-                          <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" />
+                          <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" />
                         </div>
                       </div>
                   }
                 </div>
               </div>
-
               {
                 isVariant &&
                 <div className="mb-6 mt-2">
-                  <div className="flex items-center gap-4 items-end" onMouseEnter={() => setActiveTipKey('priceStock')}
+                  <div className="flex items-center gap-4 items-end " onMouseEnter={() => setActiveTipKey('priceStock')}
                     onMouseLeave={() => setActiveTipKey('default')}>
-                    <div className="col-span-12 sm:col-span-5">
-                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">Harga Produk</label>
-                      <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                    <div className="col-span-12 sm:col-span-5 ">
+                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+
+                        Harga Produk
+                      </label>
+                      <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
                         <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
                         <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
-                        <div className="flex items-center border-l border-gray-300">
-                          <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 rounded-r-md focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
-                        </div>
+                      </div>
+                    </div>
+                    <div className="col-span-12 sm:col-span-5 ml-[-20px] ">
+                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+
+                        Stok
+                      </label>
+                      <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
+                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock || 0} onChange={(e) => setGlobalStock(e.target.value)} />
                       </div>
                     </div>
                     <div className="col-span-12 sm:col-span-3">
-                      <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Harga Diskon</label>
-                      <div className="flex rounded-[5px] border border-[#AAAAAA] border-r-0 bg-white">
+                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                        Harga Diskon</label>
+                      <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                         <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-r-md focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
+                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
                       </div>
                     </div>
-                    <div className="col-span-12 sm:col-span-2 ml-[-20px]">
-                      <label className="block ext-[14px] font-bold text-[#333333] mb-1.5">Persen Diskon</label>
-                      <input type="text" placeholder="Persen" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-tr-[5px] focus:outline-none rounded-br-[5px] rounded-l-none placeholder:text-[#AAAAAA]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
-                    </div>
-
                     <div className="col-span-12 sm:col-span-2">
-                      <button className="w-[150px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
+                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
+                        Persen Diskon</label>
+                      <div className='flex items-center gap-3'>
+                        <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
+                        <div className="col-span-12 sm:col-span-2">
+                          <button className="w-[155px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -952,7 +971,7 @@ const AddProductPage: NextPage = () => {
                 onMouseEnter={() => setActiveTipKey('variation')}
                 onMouseLeave={() => setActiveTipKey('default')}>
                 {
-                  variations[0]?.name &&
+                  variations[0]?.name && isVariant &&
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                       <tr>
@@ -1120,7 +1139,7 @@ const AddProductPage: NextPage = () => {
               </div>
 
               {/* Info Tambahan */}
-              <div className="mb-6 mt-6 space-y-6">
+              <div className="mb-6 space-y-6 ">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   onMouseEnter={() => setActiveTipKey('purchaseLimit')}
                   onMouseLeave={() => setActiveTipKey('default')}>
@@ -1188,7 +1207,7 @@ const AddProductPage: NextPage = () => {
                     </div>
                   }
                 </div>
-                {variations[0]?.name && showDimensionTable && (
+                {variations[0]?.name && showDimensionTable && isVariant && (
                   <div className="overflow-x-auto mt-4"
                     onMouseEnter={() => setActiveTipKey('weightDimension')}
                     onMouseLeave={() => setActiveTipKey('default')}>
@@ -1340,6 +1359,9 @@ const AddProductPage: NextPage = () => {
                     </label>
                     <div className='mt-2'>
                       <DateTimePicker />
+                    </div>
+                    <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>
+                      Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan
                     </div>
                   </div>
                 </div>

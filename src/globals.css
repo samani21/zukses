@@ -43,7 +43,7 @@ body {
     -ms-user-select: text;
     user-select: text;
     margin: 0px;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
 }
 
 .flatpickr-calendar {
