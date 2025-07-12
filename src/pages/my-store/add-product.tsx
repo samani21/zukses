@@ -781,7 +781,13 @@ const AddProductPage: NextPage = () => {
                 onMouseLeave={() => setActiveTipKey('default')} >
                 <div className="">
                   <div className='flex items-center justify-left gap-3'>
-                    <div className='w-[12px] h-[12px] bg-[#52357B] rounded-lg' />
+                    <div className="relative w-[12px] h-[12px] ml-1">
+                      {/* Lingkaran luar - ping */}
+                      <span className="absolute inset-0 m-auto h-full w-full rounded-full bg-[#52357B] opacity-75 animate-ping-custom" />
+
+                      {/* Lingkaran dalam - tetap */}
+                      <span className="absolute inset-0 m-auto h-[12px] w-[12px] rounded-full bg-[#52357B]" />
+                    </div>
                     <h2 className="text-[14px] font-bold text-[#333333]">Variasi Produk</h2>
                   </div>
                   <div className='flex jusity-left items-center gap-4 mt-3'>

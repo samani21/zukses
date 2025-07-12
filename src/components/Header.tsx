@@ -179,7 +179,7 @@ const Header = () => {
                                                 <button className="p-2 rounded-md" title="Keranjang Belanja">
                                                     <img src='/icon/shopping-cart.svg' width={25} />
                                                 </button>
-                                                <button className="p-2 rounded-md bg-[#FEB602] text-[13px] font-semibold text-[#111111]" title="Toko Saya">
+                                                <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] font-semibold text-white" title="Toko Saya">
                                                     Akun Saya
                                                 </button>
                                             </div>

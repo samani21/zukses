@@ -21,6 +21,19 @@
   }
 }
 
+ @keyframes ping-custom {
+          0% {
+            transform: scale(1);
+            opacity: 0.75;
+          }
+          100% {
+            transform: scale(2.5);
+            opacity: 0;
+          }
+        }
+        .animate-ping-custom {
+          animation: ping-custom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+        } 
 body {
   background: var(--background);
   color: var(--foreground);
