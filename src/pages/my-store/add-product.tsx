@@ -217,7 +217,6 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
-
   const applyGlobalToAll = () => {
     const combinations = buildCombinationTable();
     const updatedData = combinations.flatMap(variation =>
@@ -958,9 +957,12 @@ const AddProductPage: NextPage = () => {
                         Persen Diskon</label>
                       <div className='flex items-center gap-3'>
                         <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
-                        <div className="col-span-12 sm:col-span-2">
-                          <button className="w-[155px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
-                        </div>
+                        {
+                          variations[0]?.options[0] != '' &&
+                          <div className="col-span-12 sm:col-span-2">
+                            <button className="w-[155px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
+                          </div>
+                        }
                       </div>
                     </div>
                   </div>
@@ -1182,7 +1184,7 @@ const AddProductPage: NextPage = () => {
                       <span className="text-[15px] text-[#555555]">Cm</span>
                     </div>
                     {
-                      isVariant &&
+                      isVariant && variations[0]?.options[0] != '' &&
                       <div>
                         <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
                           onClick={applyDimensionToAll}>
