@@ -143,9 +143,9 @@ const Header = () => {
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
-                                            <a onClick={() => router.push('/auth/register')} className="hover:underline">Daftar</a>
+                                            <a onClick={() => router.push('/auth/register')} className="hover:underline cursor-pointer text-[14px] text-[#333333]">Daftar</a>
                                             <div className="h-3 w-px bg-indigo-400"></div>
-                                            <a onClick={() => router.push('/auth/login')} className="hover:underline">Masuk</a>
+                                            <a onClick={() => router.push('/auth/login')} className="hover:underline cursor-pointer text-[14px] text-[#333333]">Masuk</a>
                                         </div>
                                     )}
                                 </div>
