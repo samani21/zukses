@@ -40,7 +40,7 @@ export const navItems: NavItem[] = [
     {
         name: 'Penjualan',
         // icon: <CartIcon className="w-5 h-5" />,
-        url: '/my-store/',
+        url: '/my-store/my-sale',
     },
     {
         name: 'Produk Saya',
