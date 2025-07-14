@@ -592,13 +592,10 @@ const AddProductPage: NextPage = () => {
     if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
     if (selectedImages.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
     if (!promoImage) newErrors.promo = 'Gambar promosi wajib diunggah';
-    if (!isVariant) {
-      if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
-      if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
-    }
-    if (!isVariant) {
-      if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Pengiriman wajib diisi';
-    }
+    if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
+    if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
+    if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Pengiriman wajib diisi';
+
     // videoFile tidak wajib
 
     setErrors(newErrors);
@@ -1176,7 +1173,6 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
               }
-
               <div className="overflow-x-auto"
                 onMouseEnter={() => setTipKey('variation')}
                 onMouseLeave={() => setTipKey('default')}>
