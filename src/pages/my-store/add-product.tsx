@@ -214,7 +214,6 @@ const AddProductPage: NextPage = () => {
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [tempCategory, setTempCategory] = useState(category);
   const [idCategorie, setIdCategorie] = useState<number | undefined>();
-  console.log('idCategorie', idCategorie)
   const [apiCategories, setApiCategories] = useState<Category[]>([]);
   const [categoryApiError, setCategoryApiError] = useState<string | null>(null);
   const [categoryLoading, setCategoryLoading] = useState(true);
@@ -533,26 +532,24 @@ const AddProductPage: NextPage = () => {
     reader.readAsDataURL(file);
   }, [selectedImages.length]);
 
-  const handleSelectPromoImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0]) return;
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (reader.result) {
-        setCropModalImage(reader.result as string);
-        setCropCallback(() => (croppedFile: File) => {
-          setPromoImage(croppedFile);
-        });
-      }
-    };
-    reader.readAsDataURL(file);
-  }, []);
+  // const handleSelectPromoImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (!e.target.files || !e.target.files[0]) return;
+  //   const file = e.target.files[0];
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     if (reader.result) {
+  //       setCropModalImage(reader.result as string);
+  //       setCropCallback(() => (croppedFile: File) => {
+  //         setPromoImage(croppedFile);
+  //       });
+  //     }
+  //   };
+  //   reader.readAsDataURL(file);
+  // }, []);
 
   const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith("video/")) {
-      setVideoFile(file);
-    }
+    setVideoFile(file ?? null);
   }, []);
 
   useEffect(() => {
@@ -700,6 +697,36 @@ const AddProductPage: NextPage = () => {
   };
 
 
+  // Hapus gambar utama
+  const handleRemoveMainImage = (index: number) => {
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Ganti gambar utama (dengan modal crop)
+  const handleReplaceMainImage = (index: number, file: File) => {
+    setCropModalImage(URL.createObjectURL(file)); // tampilkan gambar di modal crop
+
+    // Simpan callback yang akan dipanggil setelah crop selesai
+    setCropCallback(() => (croppedFile: File) => {
+      setSelectedImages((prev) =>
+        prev.map((img, i) => (i === index ? croppedFile : img))
+      );
+    });
+  };
+
+  // Ganti gambar promosi (dengan modal crop)
+  const handleReplacePromoImage = (file: File) => {
+    setCropModalImage(URL.createObjectURL(file));
+
+    setCropCallback(() => (croppedFile: File) => {
+      setPromoImage(croppedFile);
+    });
+  };
+
+  // Hapus gambar promosi
+  const handleRemovePromoImage = () => {
+    setPromoImage(null);
+  };
 
   return (
     <MyStoreLayout>
@@ -747,8 +774,12 @@ const AddProductPage: NextPage = () => {
                     selectedImages={selectedImages}
                     promoImage={promoImage}
                     onSelectMainImage={handleSelectImage}
-                    onSelectPromoImage={handleSelectPromoImage}
+                    onReplaceMainImage={handleReplaceMainImage}
+                    onRemoveMainImage={handleRemoveMainImage}
+                    onReplacePromoImage={handleReplacePromoImage} // bisa kirim ke modal crop juga
+                    onRemovePromoImage={handleRemovePromoImage}
                   />
+
                 </div>
                 <hr className="my-6 border-[#CCCCCC]" />
 
