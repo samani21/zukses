@@ -192,7 +192,8 @@ const AddProductPage: NextPage = () => {
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
   const [category, setCategory] = useState('');
-  const promoInputRef = useRef<HTMLInputElement | null>(null);
+  const discountOptions = Array.from({ length: 14 }, (_, i) => (i + 1) * 5);
+
   const [cropModalImage, setCropModalImage] = useState<string | null>(null);
   const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
   const tipsChecklist = {
@@ -238,6 +239,24 @@ const AddProductPage: NextPage = () => {
   //jadwal ditampilkan 
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
   const [scheduleError, setScheduleError] = useState('');
+
+
+  useEffect(() => {
+    // Membersihkan format rupiah dan memastikan nilai adalah angka
+    const price = parseFloat(String(globalPrice).replace(/[^0-9]/g, '')) || 0;
+    const percent = parseInt(globalDiscountPercent, 10) || 0;
+
+    if (price > 0 && percent > 0) {
+      const discountValue = price * (percent / 100);
+      const finalPrice = price - discountValue;
+
+      // Set harga diskon yang sudah dihitung
+      setGlobalDiscount(String(finalPrice));
+    } else {
+      // Jika tidak ada diskon, kosongkan field harga diskon
+      setGlobalDiscount('');
+    }
+  }, [globalPrice, globalDiscountPercent]);
 
   const validateScheduleDate = (date: Date | null) => {
     if (!date) {
@@ -919,17 +938,26 @@ const AddProductPage: NextPage = () => {
                     </div>
                     <div className="col-span-12 sm:col-span-3">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                        Harga Diskon</label>
+                        Harga Setelah Diskon</label>
                       <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                         <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
+                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} readOnly />
                       </div>
                     </div>
                     <div className="col-span-12 sm:col-span-2">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
                         Persen Diskon</label>
                       <div className='flex items-center gap-3'>
-                        <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
+                        <select
+                          value={globalDiscountPercent}
+                          onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                          className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none w-[120px] h-[42px]"
+                        >
+                          <option value="">Pilih Persen</option>
+                          {discountOptions.map(opt => (
+                            <option key={opt} value={opt}>{opt}%</option>
+                          ))}
+                        </select>
                         {
                           variations[0]?.options[0] != '' &&
                           <div className="col-span-12 sm:col-span-2">
@@ -970,7 +998,7 @@ const AddProductPage: NextPage = () => {
                           Stok
                         </th>
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                          Harga Diskon
+                          Harga Setelah Diskon
                         </th>
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">
                           Persen Diskon
@@ -1050,7 +1078,15 @@ const AddProductPage: NextPage = () => {
                                     value={formatRupiahNoRP(rowData.price)}
                                     onChange={(e) => {
                                       const newData = [...variantData];
-                                      newData[index] = { ...rowData, price: e.target.value };
+                                      const priceValue = parseFloat(String(e.target.value).replace(/[^0-9]/g, '')) || 0;
+                                      const percentValue = parseInt(newData[index]?.discountPercent, 10) || 0;
+                                      let newDiscountPrice = '';
+
+                                      if (priceValue > 0 && percentValue > 0) {
+                                        newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                      }
+
+                                      newData[index] = { ...rowData, price: e.target.value, discount: newDiscountPrice };
                                       setVariantData(newData);
                                     }}
                                   />
@@ -1079,27 +1115,34 @@ const AddProductPage: NextPage = () => {
                                     placeholder="Harga"
                                     className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
                                     value={formatRupiahNoRP(rowData.discount)}
-                                    onChange={(e) => {
-                                      const newData = [...variantData];
-                                      newData[index] = { ...rowData, discount: e.target.value };
-                                      setVariantData(newData);
-                                    }}
+                                    readOnly
                                   />
                                 </div>
                               </td>
 
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
-                                <input
-                                  type="text"
-                                  placeholder="Persen"
-                                  className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
-                                  value={rowData.discountPercent}
+                                <select
+                                  value={rowData.discountPercent || ''}
                                   onChange={(e) => {
                                     const newData = [...variantData];
-                                    newData[index] = { ...rowData, discountPercent: e.target.value };
+                                    const percentValue = parseInt(e.target.value, 10) || 0;
+                                    const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+                                    let newDiscountPrice = '';
+
+                                    if (priceValue > 0 && percentValue > 0) {
+                                      newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                    }
+
+                                    newData[index] = { ...rowData, discountPercent: e.target.value, discount: newDiscountPrice };
                                     setVariantData(newData);
                                   }}
-                                />
+                                  className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
+                                >
+                                  <option value="">Pilih Persen</option>
+                                  {discountOptions.map(opt => (
+                                    <option key={opt} value={opt}>{opt}%</option>
+                                  ))}
+                                </select>
                               </td>
                             </tr>
                           )
