@@ -1,13 +1,18 @@
 import DateTimePicker from 'components/DateTimePicker';
+import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
+import TipsCard from 'components/my-store/addProduct/TipsCard';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
+import Snackbar from 'components/Snackbar';
+import { useTipsStore } from 'components/stores/tipsStore';
 import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useEffect, useRef, useState } from 'react';
 import Get from 'services/api/Get';
+import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
 import { Response } from 'services/api/types';
 const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
@@ -177,8 +182,10 @@ const AddProductPage: NextPage = () => {
   //   { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
   // ];
-  const [activeTipKey, setActiveTipKey] = useState('default');
+  const setTipKey = useTipsStore((s) => s.setTipKey);
 
+  const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
@@ -225,7 +232,7 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
-
+  console.log('variantData', variantData)
   //jadwal ditampilkan 
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
   const [scheduleError, setScheduleError] = useState('');
@@ -249,16 +256,25 @@ const AddProductPage: NextPage = () => {
 
   const applyGlobalToAll = () => {
     const combinations = buildCombinationTable();
-    const updatedData = combinations.flatMap(variation =>
-      variation.sizes.map(() => ({
-        price: globalPrice,
-        stock: globalStock,
-        discount: globalDiscount,
-        discountPercent: globalDiscountPercent,
-      }))
+
+    const updatedData = combinations.flatMap((variation, vIndex) =>
+      variation.sizes.map((_, sIndex) => {
+        const index = vIndex * variation.sizes.length + sIndex;
+        const existing = variantData[index] || {};
+
+        return {
+          ...existing,
+          price: globalPrice,
+          stock: globalStock,
+          discount: globalDiscount,
+          discountPercent: globalDiscountPercent,
+        };
+      })
     );
+
     setVariantData(updatedData);
   };
+
 
   const handleDragStart = (index: number) => {
     setDragStartIndex(index);
@@ -361,7 +377,7 @@ const AddProductPage: NextPage = () => {
     setVariantData([]);
   }, [variations]);
 
-  const handleVariantImageUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVariantImageUpload = (clickedIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -370,32 +386,63 @@ const AddProductPage: NextPage = () => {
       if (reader.result) {
         setCropModalImage(reader.result as string);
         setCropCallback(() => (croppedFile: File) => {
+          const combinations = buildCombinationTable();
           const updated = [...variantData];
-          updated[index] = {
-            ...updated[index],
-            image: croppedFile
-          };
+
+          // Cari kombinasi warna yang sesuai dengan index yang diklik
+          let currentFlatIndex = 0;
+          let selectedColor = '';
+          for (const variation of combinations) {
+            for (const size of variation.sizes) {
+              if (currentFlatIndex === clickedIndex) {
+                selectedColor = variation.color;
+              }
+              currentFlatIndex++;
+            }
+          }
+
+          // Simpan image ke semua kombinasi yang punya warna sama
+          currentFlatIndex = 0;
+          for (const variation of combinations) {
+            for (const size of variation.sizes) {
+              if (variation.color === selectedColor) {
+                updated[currentFlatIndex] = {
+                  ...updated[currentFlatIndex],
+                  image: croppedFile,
+                };
+              }
+              currentFlatIndex++;
+            }
+          }
+
           setVariantData(updated);
         });
       }
     };
+
     reader.readAsDataURL(file);
   };
 
+
   const applyDimensionToAll = () => {
-    const updated = buildCombinationTable().flatMap(variation =>
-      variation.sizes.map(() => ({
-        weight: globalWeight,
-        length: globalLength,
-        width: globalWidth,
-        height: globalHeight,
-        price: '',
-        stock: '',
-        discount: '',
-        discountPercent: '',
-      }))
+    const combinations = buildCombinationTable();
+
+    const updatedData = combinations.flatMap((variation, vIndex) =>
+      variation.sizes.map((_, sIndex) => {
+        const index = vIndex * variation.sizes.length + sIndex;
+        const existing = variantData[index] || {};
+
+        return {
+          ...existing,
+          weight: globalWeight,
+          length: globalLength,
+          width: globalWidth,
+          height: globalHeight,
+        };
+      })
     );
-    setVariantData(updated);
+
+    setVariantData(updatedData);
   };
 
 
@@ -475,138 +522,55 @@ const AddProductPage: NextPage = () => {
     };
     fetchCategories();
   }, []);
-  // ... setelah deklarasi state
-  const tipsContent: { [key: string]: React.ReactNode } = {
-    default: (
-      <>
-        <p className="font-semibold text-gray-800">Selamat Datang di Halaman Tambah Produk!</p>
-        <p>Arahkan mouse Anda ke setiap kolom isian untuk mendapatkan tips & trik agar produk Anda semakin menarik bagi pembeli.</p>
-      </>
-    ),
-    photo: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Foto Produk Utama</h4>
-        <p>Gunakan foto resolusi tinggi dengan background polos (putih/abu-abu).</p>
-        <p>Tampilkan produk dari berbagai sisi: depan, belakang, samping, dan detail penting.</p>
-        <p>Pastikan pencahayaan cukup agar warna produk sesuai aslinya.</p>
-      </>
-    ),
-    promoPhoto: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Foto Promosi (SEO)</h4>
-        <p>Foto ini adalah &apos;wajah&apos; produk Anda di hasil pencarian. Gunakan foto paling menarik yang membuat orang ingin klik.</p>
-        <p>Pastikan produk terlihat jelas bahkan saat gambar ditampilkan dalam ukuran kecil.</p>
-      </>
-    ),
-    video: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Video Produk</h4>
-        <p>Durasi ideal: 15-30 detik untuk menjaga perhatian pembeli.</p>
-        <p>Tunjukkan cara penggunaan, keunggulan, atau detail produk yang tidak terlihat di foto.</p>
-        <p>Gunakan format video vertikal (seperti Reels/Shorts) agar lebih mobile-friendly.</p>
-      </>
-    ),
-    name: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Nama Produk</h4>
-        <p>Gunakan formula: <strong>Merek + Model/Tipe + Spesifikasi Utama + Ukuran/Warna</strong>.</p>
-        <p>Contoh: &qout;Sasirangan Khas Banjarmasin - Kemeja Pria Lengan Panjang Katun - Motif Naga, Hitam&qout;.</p>
-        <p>Nama yang jelas membantu produk mudah ditemukan.</p>
-      </>
-    ),
-    category: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Memilih Kategori</h4>
-        <p>Pilih kategori yang paling spesifik. Ini membantu pembeli yang serius untuk menemukan produk Anda.</p>
-        <p>Hindari kategori &apos;Lainnya&apos; jika tidak terpaksa. Kategori yang akurat meningkatkan visibilitas produk.</p>
-      </>
-    ),
-    description: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Deskripsi Produk</h4>
-        <p>Jelaskan fitur dan manfaat produk secara rinci. Apa masalah yang bisa diselesaikan oleh produk Anda?</p>
-        <p>Sertakan spesifikasi lengkap: bahan, dimensi, berat, dan apa saja yang didapat dalam paket.</p>
-        <p>Gunakan paragraf pendek dan poin-poin agar mudah dibaca.</p>
-      </>
-    ),
-    brand: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Merek Produk</h4>
-        <p>Isi dengan merek resmi jika ada. Jika produk Anda buatan sendiri (handmade), Anda bisa gunakan nama toko Anda.</p>
-        <p>Konsistensi dalam penamaan merek akan membangun kepercayaan pelanggan.</p>
-      </>
-    ),
-    variation: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Variasi Produk</h4>
-        <p>Gunakan nama variasi yang umum seperti &apos;Warna&apos; atau &apos;Ukuran&apos;.</p>
-        <p>Untuk Opsi, berikan nama yang jelas. Contoh: &apos;Merah Maroon&apos;, &apos;Biru Dongker&apos;, atau &apos;L&apos;, &apos;XL&apos;.</p>
-        <p>Jangan lupa upload foto untuk setiap variasi warna agar pembeli tidak ragu.</p>
-      </>
-    ),
-    priceStock: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Harga & Stok</h4>
-        <p>Lakukan riset harga kompetitor. Tetapkan harga yang bersaing namun tetap menguntungkan.</p>
-        <p>Pastikan jumlah stok yang diinput sesuai dengan stok fisik di gudang Anda untuk menghindari pembatalan pesanan.</p>
-      </>
-    ),
-    weightDimension: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Berat & Dimensi</h4>
-        <p>Masukkan berat produk <strong>setelah dikemas</strong> (termasuk bubble wrap/kardus).</p>
-        <p>Data yang akurat sangat penting untuk perhitungan ongkos kirim otomatis agar tidak ada selisih.</p>
-      </>
-    ),
-    purchaseLimit: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Min/Maks Pembelian</h4>
-        <p>Atur jumlah pembelian minimum jika Anda menargetkan penjualan grosir.</p>
-        <p>Atur jumlah maksimum untuk produk edisi terbatas atau saat promo besar untuk mencegah penimbunan.</p>
-      </>
-    ),
-    dangerousGoods: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Produk Berbahaya</h4>
-        <p>Pilih &apos;Ya&apos; jika produk mengandung baterai, magnet, cairan, atau aerosol.</p>
-        <p>Informasi ini penting bagi kurir untuk penanganan khusus agar paket Anda aman sampai tujuan.</p>
-      </>
-    ),
-    preorder: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Pre-Order</h4>
-        <p>Aktifkan fitur ini hanya jika Anda benar-benar butuh waktu lebih untuk membuat produk (misal: custom).</p>
-        <p>Tetapkan waktu pengerjaan yang realistis (lebih baik lebih cepat dari janji) agar reputasi toko terjaga.</p>
-      </>
-    ),
-    condition: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Kondisi Produk</h4>
-        <p>Jujurlah mengenai kondisi produk. &apos;Baru&apos; berarti belum pernah dipakai sama sekali.</p>
-        <p>Jika &apos;Bekas&apos;, jelaskan secara detail kekurangannya di deskripsi untuk membangun kepercayaan.</p>
-      </>
-    ),
-    sku: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips SKU Induk</h4>
-        <p>SKU (Stock Keeping Unit) adalah kode unik internal Anda untuk melacak produk.</p>
-        <p>Buat format yang mudah Anda pahami. Contoh: KMJ-FLNL-MRH-L (Kemeja-Flanel-Merah-L).</p>
-      </>
-    ),
-    cod: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Pembayaran di Tempat (COD)</h4>
-        <p>Mengaktifkan COD dapat menjangkau lebih banyak pembeli, terutama di Banjarmasin.</p>
-        <p>Namun, waspadai risiko paket retur (dikembalikan). Pastikan Anda siap menanggung ongkos kirim jika itu terjadi.</p>
-      </>
-    ),
-    schedule: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Jadwal Ditampilkan</h4>
-        <p>Jadwalkan produk untuk tayang pada jam ramai, seperti jam makan siang (12:00-13:00 WITA) atau malam hari (19:00-21:00 WITA).</p>
-        <p>Ini bisa meningkatkan visibilitas awal untuk produk baru Anda.</p>
-      </>
-    )
+
+  const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
+    setLoading(true)
+    const formData = new FormData();
+    formData.append('productName', productName);
+    formData.append('description', description);
+    formData.append('idCategorie', String(idCategorie));
+    formData.append('status', status);
+    formData.append('scheduledDate', scheduleDate?.toISOString() || '');
+
+    selectedImages.forEach((img) => formData.append('productPhotos[]', img));
+    if (promoImage) formData.append('promoImage', promoImage);
+    if (videoFile) formData.append('videoFile', videoFile);
+
+    formData.append('isVariationActive', isVariant ? '1' : '0');
+    if (isVariant) {
+      formData.append('variations', JSON.stringify(variations));
+      formData.append('productVariants', JSON.stringify(variantData));
+      variantData.forEach((v, index) => {
+        if (v.image) formData.append(`variant_images[${index}]`, v.image);
+      });
+    }
+
+    // jika tidak pakai variasi
+    if (!isVariant) {
+      formData.append('price', globalPrice);
+      formData.append('stock', globalStock);
+      formData.append('discount', globalDiscount);
+      formData.append('discountPercent', globalDiscountPercent);
+    }
+
+    formData.append('weight', globalWeight);
+    formData.append('length', globalLength);
+    formData.append('width', globalWidth);
+    formData.append('height', globalHeight);
+
+    try {
+      const res = await Post<Response>('zukses', `product`, formData);
+      if (res?.data?.status === 'success') {
+        setLoading(false)
+        setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+        window.location.href = '/my-store/product'
+        localStorage.removeItem('EditProduct');
+      }
+    } catch (error) {
+      setLoading(false)
+      console.error(error);
+      alert('Terjadi kesalahan saat menyimpan produk.');
+    }
   };
 
 
@@ -640,10 +604,8 @@ const AddProductPage: NextPage = () => {
                 ))}
               </InfoCard>
 
+              <TipsCard />
 
-              <InfoCard title="Tips Foto dan Video Produk">
-                {tipsContent[activeTipKey]}
-              </InfoCard>
             </aside>
 
             {/* Kolom Kanan - Form Utama */}
@@ -652,8 +614,8 @@ const AddProductPage: NextPage = () => {
 
               <div className="rounded-lg mb-6">
                 <div
-                  onMouseEnter={() => setActiveTipKey('photo')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('photo')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk
                   </label>
@@ -688,8 +650,8 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
                 <div className='mt-4'
-                  onMouseEnter={() => setActiveTipKey('promoPhoto')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('promoPhoto')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk Promosi
                   </label>
@@ -731,8 +693,8 @@ const AddProductPage: NextPage = () => {
                 <hr className="my-6 border-[#CCCCCC]" />
 
                 <div
-                  onMouseEnter={() => setActiveTipKey('video')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('video')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     Video Produk
                   </label>
@@ -772,16 +734,16 @@ const AddProductPage: NextPage = () => {
 
               <div className="mb-6 space-y-4">
                 <div
-                  onMouseEnter={() => setActiveTipKey('name')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('name')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Nama Produk" placeholder="Masukkan Nama Produk" maxLength={255} value={productName} setValue={setProductName} required />
                 </div>
                 <div className="mt-[-15px] rounded-md text-[12px] text-[#333333]">
                   <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('category')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('category')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     <span className="text-red-500">*</span> Kategori
                   </label>
@@ -795,18 +757,18 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('description')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('description')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('brand')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('brand')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('brand')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('brand')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
                   <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] mt-1"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
                 </div>
@@ -815,8 +777,8 @@ const AddProductPage: NextPage = () => {
 
               {/* Variasi Produk */}
               <div
-                onMouseEnter={() => setActiveTipKey('variation')}
-                onMouseLeave={() => setActiveTipKey('default')} >
+                onMouseEnter={() => setTipKey('variation')}
+                onMouseLeave={() => setTipKey('default')} >
                 <div className="">
                   <div className='flex items-center justify-left gap-3'>
                     <div className="relative w-[12px] h-[12px] ml-1">
@@ -979,8 +941,8 @@ const AddProductPage: NextPage = () => {
                         </div>
                       )}</div> :
                       <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
-                        onMouseEnter={() => setActiveTipKey('priceStock')}
-                        onMouseLeave={() => setActiveTipKey('default')}>
+                        onMouseEnter={() => setTipKey('priceStock')}
+                        onMouseLeave={() => setTipKey('default')}>
                         <div className="col-span-12 sm:col-span-5">
                           <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                             <span className="text-red-500">*</span>
@@ -1020,8 +982,8 @@ const AddProductPage: NextPage = () => {
               {
                 isVariant &&
                 <div className="mb-6 mt-2">
-                  <div className="flex items-center gap-4 items-end " onMouseEnter={() => setActiveTipKey('priceStock')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                  <div className="flex items-center gap-4 items-end " onMouseEnter={() => setTipKey('priceStock')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <div className="col-span-12 sm:col-span-5 ">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
 
@@ -1067,8 +1029,8 @@ const AddProductPage: NextPage = () => {
               }
 
               <div className="overflow-x-auto"
-                onMouseEnter={() => setActiveTipKey('variation')}
-                onMouseLeave={() => setActiveTipKey('default')}>
+                onMouseEnter={() => setTipKey('variation')}
+                onMouseLeave={() => setTipKey('default')}>
                 {
                   variations[0]?.name && isVariant &&
                   <table className="min-w-full divide-y divide-gray-200">
@@ -1240,8 +1202,8 @@ const AddProductPage: NextPage = () => {
               {/* Info Tambahan */}
               <div className="mb-6 space-y-6 ">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  onMouseEnter={() => setActiveTipKey('purchaseLimit')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('purchaseLimit')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <div>
                     <label className="text-[#333333] font-bold text-[14px]">
                       <span className="text-red-500">*</span>  Min. Jumlah Pembelian
@@ -1257,8 +1219,8 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-15px]'
-                  onMouseEnter={() => setActiveTipKey('weightDimension')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('weightDimension')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     Berat dan Dimensi Produk
                   </label>
@@ -1308,8 +1270,8 @@ const AddProductPage: NextPage = () => {
                 </div>
                 {variations[0]?.name && showDimensionTable && isVariant && (
                   <div className="overflow-x-auto mt-4"
-                    onMouseEnter={() => setActiveTipKey('weightDimension')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                    onMouseEnter={() => setTipKey('weightDimension')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <table className="w-full">
                       <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                         <tr>
@@ -1410,24 +1372,24 @@ const AddProductPage: NextPage = () => {
                     </table>
                   </div>
                 )}
-                <div onMouseEnter={() => setActiveTipKey('dangerousGoods')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('dangerousGoods')}
+                  onMouseLeave={() => setTipKey('default')}>
 
                   <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
                 </div>
-                <div onMouseEnter={() => setActiveTipKey('preorder')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('preorder')}
+                  onMouseLeave={() => setTipKey('default')}>
 
                   <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
                 </div>
-                <div onMouseEnter={() => setActiveTipKey('condition')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('condition')}
+                  onMouseLeave={() => setTipKey('default')}>
 
                   <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
                 </div>
 
-                <div onMouseEnter={() => setActiveTipKey('sku')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('sku')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     SKU Induk
                   </label>
@@ -1438,8 +1400,8 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-10px]'>
-                  <div onMouseEnter={() => setActiveTipKey('cod')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                  <div onMouseEnter={() => setTipKey('cod')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Pembayaran di Tempat (COD)
                     </label>
@@ -1451,8 +1413,8 @@ const AddProductPage: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="relative" onMouseEnter={() => setActiveTipKey('schedule')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                  <div className="relative" onMouseEnter={() => setTipKey('schedule')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Jadwal Ditampilkan
                     </label>
@@ -1480,8 +1442,8 @@ const AddProductPage: NextPage = () => {
               }}>
                 <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline">Kembali</button>
                 <div className="flex items-center space-x-2">
-                  <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:underline">Simpan & Arsipkan</button>
-                  <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200">Simpan & Tampilkan</button>
+                  <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:underline" onClick={() => handleSave('ARCHIVED')}>Simpan & Arsipkan</button>
+                  <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200" onClick={() => handleSave('PUBLISHED')}>Simpan & Tampilkan</button>
                 </div>
               </div>
 
@@ -1502,7 +1464,17 @@ const AddProductPage: NextPage = () => {
       <Modal isOpen={isCategoryModalOpen} onClose={() => setCategoryModalOpen(false)}>
         <CategorySelector onSelectCategory={setTempCategory} initialCategory={category} categories={apiCategories} isLoading={categoryLoading} error={categoryApiError} setIdCategorie={setIdCategorie} setCategoryModalOpen={setCategoryModalOpen} handleConfirmCategory={handleConfirmCategory} />
       </Modal>
-
+      {
+        snackbar.isOpen && (
+          <Snackbar
+            message={snackbar.message}
+            type={snackbar.type}
+            isOpen={snackbar.isOpen}
+            onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+          />
+        )
+      }
+      {loading && <Loading />}
     </MyStoreLayout>
   );
 };

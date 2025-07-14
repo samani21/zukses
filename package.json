@@ -30,7 +30,8 @@
     "reactjs-otp-input": "^2.0.10",
     "styled-components": "^6.1.18",
     "tailwind-scrollbar-hide": "^4.0.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
