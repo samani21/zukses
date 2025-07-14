@@ -899,16 +899,7 @@ const AddProductPage: NextPage = () => {
                               onChange={(e) => setGlobalStock(e.target.value)} />
                           </div>
                         </div>
-                        <div className="col-span-12 sm:col-span-3">
-                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span> Harga Diskon</label>
-                          <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
-                            <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
-                              readOnly />
-                          </div>
-                        </div>
-                        <div className="col-span-1">
+                        <div className="col-span-1 w-1/4">
                           <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                             Persen Diskon
                           </label>
@@ -917,11 +908,20 @@ const AddProductPage: NextPage = () => {
                             onChange={(e) => setGlobalDiscountPercent(e.target.value)}
                             className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
                           >
-                            <option value="">Pilih Persen</option>
+                            <option value="">Persen</option>
                             {discountOptions.map(opt => (
                               <option key={opt} value={opt}>{opt}%</option>
                             ))}
                           </select>
+                        </div>
+                        <div className="col-span-12 sm:col-span-3">
+                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                            <span className="text-red-500">*</span> Harga Diskon</label>
+                          <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                            <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
+                              readOnly />
+                          </div>
                         </div>
                       </div>
                   }
@@ -953,26 +953,26 @@ const AddProductPage: NextPage = () => {
                     </div>
                     <div className="col-span-12 sm:col-span-3">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                        Harga Setelah Diskon</label>
-                      <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
-                        <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} readOnly />
-                      </div>
+                        Persen Diskon</label>
+                      <select
+                        value={globalDiscountPercent}
+                        onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                        className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none w-[120px] h-[42px]"
+                      >
+                        <option value="">Pilih Persen</option>
+                        {discountOptions.map(opt => (
+                          <option key={opt} value={opt}>{opt}%</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="col-span-12 sm:col-span-2">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
-                        Persen Diskon</label>
+                        Harga Setelah Diskon</label>
                       <div className='flex items-center gap-3'>
-                        <select
-                          value={globalDiscountPercent}
-                          onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                          className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none w-[120px] h-[42px]"
-                        >
-                          <option value="">Pilih Persen</option>
-                          {discountOptions.map(opt => (
-                            <option key={opt} value={opt}>{opt}%</option>
-                          ))}
-                        </select>
+                        <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                          <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                          <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} readOnly />
+                        </div>
                         {
                           variations[0]?.options[0] != '' &&
                           <div className="col-span-12 sm:col-span-2">
