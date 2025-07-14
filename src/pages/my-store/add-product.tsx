@@ -9,7 +9,7 @@ import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
-import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
+import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -414,7 +414,7 @@ const AddProductPage: NextPage = () => {
           let currentFlatIndex = 0;
           let selectedColor = '';
           for (const variation of combinations) {
-            for (const size of variation.sizes) {
+            for (let i = 0; i < variation.sizes.length; i++) {
               if (currentFlatIndex === clickedIndex) {
                 selectedColor = variation.color;
               }
@@ -425,7 +425,7 @@ const AddProductPage: NextPage = () => {
           // Simpan image ke semua kombinasi yang punya warna sama
           currentFlatIndex = 0;
           for (const variation of combinations) {
-            for (const size of variation.sizes) {
+            for (let i = 0; i < variation.sizes.length; i++) {
               if (variation.color === selectedColor) {
                 updated[currentFlatIndex] = {
                   ...updated[currentFlatIndex],

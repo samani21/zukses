@@ -103,4 +103,6 @@ const ProductImageUploader = React.memo(({
     );
 });
 
+ProductImageUploader.displayName = 'ProductImageUploader';
+
 export default ProductImageUploader;

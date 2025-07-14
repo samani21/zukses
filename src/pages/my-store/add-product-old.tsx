@@ -5,7 +5,6 @@ import Header from 'components/my-store/addProduct/Header';
 import { Calendar, Camera, CheckCircle, ChevronLeft, ChevronRight, Edit2Icon, Eye, LayersIcon, MessageCircleIcon, Move, Plus, ShoppingBag, ShoppingCartIcon, Trash2, Video, X } from 'components/my-store/addProduct/Icon';
 import InfoLabel from 'components/my-store/addProduct/InfoLabel';
 import Loading from 'components/my-store/addProduct/Loading';
-import TipsCard from 'components/my-store/addProduct/TipsCard';
 import { ActiveDropdown, FileWithPreview, HighlightedSection, PackageDimensions, ProductVariant, Variation } from 'components/my-store/addProduct/Type';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiah, parseRupiah } from 'components/Rupiah';
@@ -115,7 +114,6 @@ const AddProductPage = () => {
     'Merek': '',
     'Negara Asal': '',
   });
-  const [focusedField, setFocusedField] = useState<string | null>(null);
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
   const [previewMediaIndex, setPreviewMediaIndex] = useState(0);
   const [isVariationActive, setIsVariationActive] = useState(false);
@@ -1560,7 +1558,6 @@ const AddProductPage = () => {
                     <li className="flex items-center gap-2"><CheckCircle className={Object.values(specifications).some(v => v) ? "text-green-500" : "text-gray-400"} /> Tambah info merek</li>
                   </ul>
                 </div>
-                <TipsCard activeField={focusedField} />
               </div>
             </div>
 
@@ -1583,16 +1580,15 @@ const AddProductPage = () => {
                 </div>
 
                 <div
-                  onMouseEnter={() => setFocusedField(activeFormTab)}
-                  onMouseLeave={() => setFocusedField(null)}
+
                 >
                   {renderSection("Informasi Produk", (
                     <>
-                      <div onMouseEnter={() => { setFocusedField('photo'); setIsPhotoSectionHovered(true); }} onMouseLeave={() => { setFocusedField(null); setIsPhotoSectionHovered(false); }}>
+                      <div >
                         <h4 className="font-semibold mb-2 text-gray-700">Foto Produk <span className="text-red-500">*</span></h4>
                         {renderProductPhotoInputs(false)}
                       </div>
-                      <div onMouseEnter={() => { setFocusedField('photo'); setIsPhotoSectionHovered(true); }} onMouseLeave={() => { setFocusedField(null); setIsPhotoSectionHovered(false); }}>
+                      <div>
                         <h4 className="font-semibold mb-2 text-gray-700">Video Produk <span className="text-red-500">*</span></h4>
                         <div className="flex items-start gap-4">
                           {productVideo ? (
@@ -1636,7 +1632,7 @@ const AddProductPage = () => {
                   ), sectionRefs['informasi-produk'])}
 
                   {idCategorie ? renderSection("Spesifikasi", (
-                    <div onMouseEnter={() => { setFocusedField('specs'); setHighlightedPreviewSection('specifications'); }} onMouseLeave={() => { setFocusedField(null); setHighlightedPreviewSection(null); }}>
+                    <div>
                       <p className="text-sm text-gray-500 mb-4">Lengkap: 5 / 5 Lengkapi atribut produkmu agar dapat lebih banyak dilihat oleh Pembeli. <a href="#" className="text-blue-600">Cara mengatur atribut.</a></p>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                         <div>
