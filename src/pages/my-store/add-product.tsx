@@ -2,7 +2,9 @@ import DateTimePicker from 'components/DateTimePicker';
 import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
+import ProductImageUploader from 'components/my-store/addProduct/ProductImageUploader';
 import TipsCard from 'components/my-store/addProduct/TipsCard';
+import VideoUploader from 'components/my-store/addProduct/VideoUploader';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
@@ -10,7 +12,7 @@ import { useTipsStore } from 'components/stores/tipsStore';
 import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
@@ -445,19 +447,30 @@ const AddProductPage: NextPage = () => {
     setVariantData(updatedData);
   };
 
+  const combinations = useMemo(() => {
+    const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
+    let var2 = variations[1]?.options.filter(opt => opt.trim() !== '');
+
+    if (!var2 || var2.length === 0) {
+      var2 = [''];
+    }
+
+    return var1.map(color => ({
+      color,
+      sizes: var2
+    }));
+  }, [variations]);
 
   //categorie
   const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
 
   //image
-  const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-
     if (selectedImages.length >= 10) {
       alert('Maksimal 10 gambar');
       return;
     }
-
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -469,12 +482,10 @@ const AddProductPage: NextPage = () => {
       }
     };
     reader.readAsDataURL(file);
-    e.target.value = "";
-  };
+  }, [selectedImages.length]);
 
-  const handleSelectPromoImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectPromoImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -486,17 +497,14 @@ const AddProductPage: NextPage = () => {
       }
     };
     reader.readAsDataURL(file);
+  }, []);
 
-    // Reset agar bisa upload ulang gambar dengan nama sama
-    e.target.value = '';
-  };
-
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("video/")) {
       setVideoFile(file);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // const dataString = localStorage.getItem('shopProfile');
@@ -616,119 +624,17 @@ const AddProductPage: NextPage = () => {
                 <div
                   onMouseEnter={() => setTipKey('photo')}
                   onMouseLeave={() => setTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
-                    <span className="text-red-500">*</span> Foto Produk
-                  </label>
-                  <div className="mt-1">
-                    <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
-                      <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                      <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
-                    </ul>
-                    {/* Preview Gambar */}
-                    <div className="flex flex-wrap gap-2 mt-2 ">
-                      {selectedImages.map((img, index) => (
-                        <img
-                          key={index}
-                          src={URL.createObjectURL(img)}
-                          alt={`preview-${index}`}
-                          className="w-[80px] h-[80px] object-cover border rounded"
-                        />
-                      ))}
-                      <label className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                        <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
-                        <span className="text-[12px] text-[#333333]">Tambah</span>
-                        <span className="text-[12px] text-[#333333]">{selectedImages.length}/10</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleSelectImage}
-                        />
-                      </label>
-                    </div>
-
-                  </div>
-                </div>
-                <div className='mt-4'
-                  onMouseEnter={() => setTipKey('promoPhoto')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
-                    <span className="text-red-500">*</span> Foto Produk Promosi
-                  </label>
-                  <div className="mt-1">
-                    <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
-                      <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                      <li className=''>Foto Produk Promosi untuk menampilkan dihasil pencarian SEO</li>
-                    </ul>
-                    <div
-                      className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50"
-                      onClick={() => promoInputRef.current?.click()}
-                    >
-                      {promoImage ? (
-                        // Jika sudah ada gambar, tampilkan preview
-                        <img
-                          src={URL.createObjectURL(promoImage)}
-                          alt="Promo Preview"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        // Jika belum ada, tampilkan ikon kamera dan teks
-                        <>
-                          <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
-                          <span className="text-[12px] text-[#333333]">Tambahkan</span>
-                          <span className="text-[12px] text-[#333333]">0/1</span>
-                        </>
-                      )}
-                      <input
-                        ref={promoInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleSelectPromoImage}
-                        className="hidden"
-                      />
-                    </div>
-
-                  </div>
+                  <ProductImageUploader
+                    selectedImages={selectedImages}
+                    promoImage={promoImage}
+                    onSelectMainImage={handleSelectImage}
+                    onSelectPromoImage={handleSelectPromoImage}
+                  />
                 </div>
                 <hr className="my-6 border-[#CCCCCC]" />
 
-                <div
-                  onMouseEnter={() => setTipKey('video')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    Video Produk
-                  </label>
-                  <div className="flex items-start space-x-6 mt-1">
-                    {/* Hidden input */}
-                    <input
-                      type="file"
-                      id="video-upload"
-                      accept="video/*"
-                      onChange={handleVideoChange}
-                      className="hidden"
-                    />
-
-                    {/* Label to trigger file input */}
-                    <label htmlFor="video-upload">
-                      {videoFile ? (
-                        <video
-                          src={URL.createObjectURL(videoFile)}
-                          className="w-[160px] h-[160px] object-cover rounded-[5px]"
-                          controls
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                          <Video className="w-[29px] h-[29px] text-[#7952B3] mb-1" />
-                          <span className="text-[12px] text-[#333333]">Tambahkan Video</span>
-                        </div>
-                      )}
-                    </label>
-                    <ul className="text-[12px] text-gray-500 list-disc list-inside">
-                      <li>File video maks. harus 30Mb dengan resolusi tidak melebihi 1280 x 1280px.</li>
-                      <li>Durasi: 10-60detik</li>
-                      <li>Format: MP4</li>
-                    </ul>
-                  </div>
+                <div onMouseEnter={() => setTipKey('video')} onMouseLeave={() => setTipKey('default')}>
+                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} />
                 </div>
               </div>
 
@@ -889,11 +795,17 @@ const AddProductPage: NextPage = () => {
                                       />
                                       {showOptionSuggestIndex === `${varIndex}-${optIndex}` &&
                                         (optionSuggestions[variations[varIndex].name] || [])
-                                          .some(s => s.toLowerCase().includes(option.toLowerCase())) && (
+                                          .filter(suggestion =>
+                                            suggestion.toLowerCase().includes(option.toLowerCase()) && // 1. Filter berdasarkan ketikan (tetap ada)
+                                            !variation.options.includes(suggestion)                     // 2. HANYA tampilkan jika belum ada di daftar opsi yang dipilih
+                                          ).length > 0 && (
                                           <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
                                             <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
-                                            {optionSuggestions[variations[varIndex].name]
-                                              .filter(s => s.toLowerCase().includes(option.toLowerCase()))
+                                            {(optionSuggestions[variations[varIndex].name] || [])
+                                              .filter(suggestion =>
+                                                suggestion.toLowerCase().includes(option.toLowerCase()) &&
+                                                !variation.options.includes(suggestion)
+                                              )
                                               .map((suggestion) => (
                                                 <div
                                                   key={suggestion}
@@ -902,9 +814,11 @@ const AddProductPage: NextPage = () => {
                                                 >
                                                   {suggestion}
                                                 </div>
-                                              ))}
+                                              ))
+                                            }
                                           </div>
-                                        )}
+                                        )
+                                      }
                                     </div>
 
                                   </div>
@@ -1066,7 +980,7 @@ const AddProductPage: NextPage = () => {
 
 
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {buildCombinationTable().map((variation, vIndex) =>
+                      {combinations.map((variation, vIndex) =>
                         variation.sizes.map((size, sIndex) => {
                           const index = vIndex * variation.sizes.length + sIndex;
                           const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
@@ -1296,7 +1210,7 @@ const AddProductPage: NextPage = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {buildCombinationTable().map((variation, vIndex) =>
+                        {combinations.map((variation, vIndex) =>
                           variation.sizes.map((size, sIndex) => {
                             const rowData = variantData[sIndex] || {};
                             return (
