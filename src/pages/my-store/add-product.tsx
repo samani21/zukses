@@ -215,8 +215,6 @@ const AddProductPage: NextPage = () => {
   const [variations, setVariations] = useState<Variation[]>([
     { name: '', options: [''] },
   ]);
-
-  console.log('variations', variations)
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
   const [globalPrice, setGlobalPrice] = useState('');
   const [globalStock, setGlobalStock] = useState('');
@@ -227,6 +225,28 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
+
+  //jadwal ditampilkan 
+  const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
+  const [scheduleError, setScheduleError] = useState('');
+
+  const validateScheduleDate = (date: Date | null) => {
+    if (!date) {
+      setScheduleError('');
+      return;
+    }
+
+    const now = new Date();
+    const minTime = new Date(now.getTime() + 60 * 60 * 1000); // +1 jam
+    const maxTime = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // +90 hari
+
+    if (date < minTime || date > maxTime) {
+      setScheduleError('Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan');
+    } else {
+      setScheduleError('');
+    }
+  };
+
   const applyGlobalToAll = () => {
     const combinations = buildCombinationTable();
     const updatedData = combinations.flatMap(variation =>
@@ -270,9 +290,18 @@ const AddProductPage: NextPage = () => {
 
   const handleVariationNameChange = (index: number, value: string) => {
     const updated = [...variations];
+
+    // Cek nama variasi lain
+    const otherIndex = index === 0 ? 1 : 0;
+    const otherName = variations[otherIndex]?.name?.toLowerCase();
+
+    // Jangan ubah jika sama
+    if (value.toLowerCase() === otherName) return;
+
     updated[index].name = value;
     setVariations(updated);
   };
+
 
   const handleOptionChange = (varIndex: number, optIndex: number, value: string) => {
     const updated = [...variations];
@@ -839,7 +868,10 @@ const AddProductPage: NextPage = () => {
                                         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
                                           <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
                                           {variationSuggestions
-                                            .filter(s => s.toLowerCase().includes(variation.name.toLowerCase()))
+                                            .filter(s =>
+                                              s.toLowerCase().includes(variation.name.toLowerCase()) &&
+                                              s.toLowerCase() !== (variations[varIndex === 0 ? 1 : 0]?.name?.toLowerCase())
+                                            )
                                             .map((suggestion) => (
                                               <div
                                                 key={suggestion}
@@ -862,10 +894,13 @@ const AddProductPage: NextPage = () => {
                               </div>
                             </div>
                             {
-                              variations?.length > 1 &&
-                              <div onClick={() => handleRemoveVariation(varIndex)} className=' cursor-pointer'>
-                                <X className='w-[24px] h-[24px] text text-gray-500' />
-                              </div>
+                              variations?.length > 1 ?
+                                <div onClick={() => handleRemoveVariation(varIndex)} className=' cursor-pointer'>
+                                  <X className='w-[24px] h-[24px] text text-gray-500' />
+                                </div> :
+                                <div onClick={() => setIsVariant(false)} className=' cursor-pointer'>
+                                  <X className='w-[24px] h-[24px] text text-gray-500' />
+                                </div>
                             }
                           </div>
                           <div className="grid grid-cols-[100px_1fr] items-start gap-4">
@@ -1422,11 +1457,19 @@ const AddProductPage: NextPage = () => {
                       Jadwal Ditampilkan
                     </label>
                     <div className='mt-2'>
-                      <DateTimePicker />
+                      <DateTimePicker
+                        value={scheduleDate}
+                        onChange={(date) => {
+                          setScheduleDate(date);
+                          validateScheduleDate(date);
+                        }}
+                      />
                     </div>
-                    <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>
-                      Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan
-                    </div>
+                    {scheduleError && (
+                      <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>
+                        {scheduleError}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
