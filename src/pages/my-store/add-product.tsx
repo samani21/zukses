@@ -883,7 +883,9 @@ const AddProductPage: NextPage = () => {
                           </label>
                           <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                              value={formatRupiahNoRP(globalPrice)}
+                              onChange={(e) => setGlobalPrice(e.target.value)} />
                           </div>
                         </div>
                         <div className="col-span-12 sm:col-span-5 ml-[-20px]">
@@ -892,7 +894,9 @@ const AddProductPage: NextPage = () => {
                             Stok
                           </label>
                           <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                            <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={0} />
+                            <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                              value={globalStock || 0}
+                              onChange={(e) => setGlobalStock(e.target.value)} />
                           </div>
                         </div>
                         <div className="col-span-12 sm:col-span-3">
@@ -900,13 +904,24 @@ const AddProductPage: NextPage = () => {
                             <span className="text-red-500">*</span> Harga Diskon</label>
                           <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
+                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
+                              readOnly />
                           </div>
                         </div>
-                        <div className="col-span-12 sm:col-span-2 w-1/4">
+                        <div className="col-span-1">
                           <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span> Persen Diskon</label>
-                          <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" />
+                            Persen Diskon
+                          </label>
+                          <select
+                            value={globalDiscountPercent}
+                            onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                            className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                          >
+                            <option value="">Pilih Persen</option>
+                            {discountOptions.map(opt => (
+                              <option key={opt} value={opt}>{opt}%</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                   }
