@@ -7,6 +7,8 @@ interface ProductImageUploaderProps {
     onSelectMainImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onReplaceMainImage: (index: number, file: File) => void;
     onRemoveMainImage: (index: number) => void;
+    errorPromo?: string;
+    errorImages?: string;
     onReplacePromoImage: (file: File) => void;
     onRemovePromoImage: () => void;
 }
@@ -18,7 +20,9 @@ const ProductImageUploader = React.memo(({
     onReplaceMainImage,
     onRemoveMainImage,
     onReplacePromoImage,
-    onRemovePromoImage
+    onRemovePromoImage,
+    errorImages,
+    errorPromo
 }: ProductImageUploaderProps) => {
     const replaceInputRefs = useRef<Array<HTMLInputElement | null>>([]);
     const promoAddInputRef = useRef<HTMLInputElement | null>(null);
@@ -89,6 +93,9 @@ const ProductImageUploader = React.memo(({
                         </label>
                     )}
                 </div>
+                {errorImages && (
+                    <div className="text-red-500 text-sm mt-1">{errorImages}</div>
+                )}
             </div>
 
             {/* FOTO PROMOSI */}
@@ -165,6 +172,9 @@ const ProductImageUploader = React.memo(({
                         onClick={(e) => (e.currentTarget.value = '')}
                     />
                 </div>
+                {errorPromo && (
+                    <div className="text-red-500 text-sm mt-1">{errorPromo}</div>
+                )}
             </div>
         </div>
     );
