@@ -193,6 +193,7 @@ const AddProductPage: NextPage = () => {
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
   // ];
   const setTipKey = useTipsStore((s) => s.setTipKey);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
   const [loading, setLoading] = useState<boolean>(false);
@@ -256,6 +257,9 @@ const AddProductPage: NextPage = () => {
   //pembelian
   const [minOrder, setMinOrder] = useState<number>(1);
   const [maxOrder, setMaxOrder] = useState<number>(1000);
+
+  const [countryOrigin, setCountryOrigin] = useState('');
+
   useEffect(() => {
     if (scheduleDate) {
       const date = new Date(scheduleDate);
@@ -577,7 +581,32 @@ const AddProductPage: NextPage = () => {
     fetchCategories();
   }, []);
 
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!productName.trim()) newErrors.productName = 'Nama produk wajib diisi';
+    if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
+    if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
+    if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
+    if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
+    if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
+    if (selectedImages.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
+    if (!promoImage) newErrors.promo = 'Gambar promosi wajib diunggah';
+    if (!isVariant) {
+      if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
+      if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
+    }
+    if (!isVariant) {
+      if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Pengiriman wajib diisi';
+    }
+    // videoFile tidak wajib
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
+    if (!validateForm()) return;
     setLoading(true);
     const formData = new FormData();
 
@@ -778,9 +807,11 @@ const AddProductPage: NextPage = () => {
                     onRemoveMainImage={handleRemoveMainImage}
                     onReplacePromoImage={handleReplacePromoImage} // bisa kirim ke modal crop juga
                     onRemovePromoImage={handleRemovePromoImage}
+                    errorPromo={errors.promo}
+                    errorImages={errors.images}
                   />
-
                 </div>
+
                 <hr className="my-6 border-[#CCCCCC]" />
 
                 <div onMouseEnter={() => setTipKey('video')} onMouseLeave={() => setTipKey('default')}>
@@ -793,6 +824,10 @@ const AddProductPage: NextPage = () => {
                   onMouseEnter={() => setTipKey('name')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Nama Produk" placeholder="Masukkan Nama Produk" maxLength={255} value={productName} setValue={setProductName} required />
+                  {errors.productName && (
+                    <div className="text-red-500 text-sm mt-1">{errors.productName}</div>
+                  )}
+
                 </div>
                 <div className="mt-[-15px] rounded-md text-[12px] text-[#333333]">
                   <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
@@ -811,23 +846,39 @@ const AddProductPage: NextPage = () => {
                       <Pencil className="w-5 h-5" />
                     </button>
                   </div>
+                  {errors.category && (
+                    <div className="text-red-500 text-sm mt-1">{errors.category}</div>
+                  )}
                 </div>
                 <div
                   onMouseEnter={() => setTipKey('description')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
+                  {errors.description && (
+                    <div className="text-red-500 text-sm mt-1">{errors.description}</div>
+                  )}
                 </div>
                 <div
                   onMouseEnter={() => setTipKey('brand')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
+                  {errors.brand && (
+                    <div className="text-red-500 text-sm mt-1">{errors.brand}</div>
+                  )}
                 </div>
                 <div
                   onMouseEnter={() => setTipKey('brand')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
-                  <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] mt-1"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
+                  <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] mt-1" value={countryOrigin}
+                    onChange={(e) => setCountryOrigin(e.target.value)}>
+                    <option>Pilih Negara Asal</option>
+                    <option>Indonesia</option>
+                  </select>
                 </div>
+                {errors.countryOrigin && (
+                  <div className="text-red-500 text-sm mt-1">{errors.countryOrigin}</div>
+                )}
 
               </div>
 
@@ -1004,57 +1055,67 @@ const AddProductPage: NextPage = () => {
                           </div>
                         </div>
                       )}</div> :
-                      <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
-                        onMouseEnter={() => setTipKey('priceStock')}
-                        onMouseLeave={() => setTipKey('default')}>
-                        <div className="col-span-12 sm:col-span-5">
-                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span>
-                            Harga Produk
-                          </label>
-                          <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
-                            <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
-                              value={formatRupiahNoRP(globalPrice)}
-                              onChange={(e) => setGlobalPrice(e.target.value)} />
+                      <>
+                        <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
+                          onMouseEnter={() => setTipKey('priceStock')}
+                          onMouseLeave={() => setTipKey('default')}>
+                          <div className="col-span-12 sm:col-span-5">
+                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                              <span className="text-red-500">*</span>
+                              Harga Produk
+                            </label>
+                            <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
+                              <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                              <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                                value={formatRupiahNoRP(globalPrice)}
+                                onChange={(e) => setGlobalPrice(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="col-span-12 sm:col-span-5 ml-[-20px]">
+                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                              <span className="text-red-500">*</span>
+                              Stok
+                            </label>
+                            <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
+                              <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                                value={globalStock || 0}
+                                onChange={(e) => setGlobalStock(e.target.value)} />
+                            </div>
+                          </div>
+                          <div className="col-span-1 w-1/4">
+                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                              Persen Diskon
+                            </label>
+                            <select
+                              value={globalDiscountPercent}
+                              onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                              className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                            >
+                              <option value="">Persen</option>
+                              {discountOptions.map(opt => (
+                                <option key={opt} value={opt}>{opt}%</option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="col-span-12 sm:col-span-3">
+                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                              <span className="text-red-500">*</span> Harga Diskon</label>
+                            <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                              <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
+                              <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
+                                readOnly />
+                            </div>
                           </div>
                         </div>
-                        <div className="col-span-12 sm:col-span-5 ml-[-20px]">
-                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span>
-                            Stok
-                          </label>
-                          <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                            <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
-                              value={globalStock || 0}
-                              onChange={(e) => setGlobalStock(e.target.value)} />
-                          </div>
-                        </div>
-                        <div className="col-span-1 w-1/4">
-                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            Persen Diskon
-                          </label>
-                          <select
-                            value={globalDiscountPercent}
-                            onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                            className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
-                          >
-                            <option value="">Persen</option>
-                            {discountOptions.map(opt => (
-                              <option key={opt} value={opt}>{opt}%</option>
-                            ))}
-                          </select>
-                        </div>
-                        <div className="col-span-12 sm:col-span-3">
-                          <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span> Harga Diskon</label>
-                          <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
-                            <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
-                              readOnly />
-                          </div>
-                        </div>
-                      </div>
+                        {errors.globalPrice && errors.globalStock ? (
+                          <div className="text-red-500 text-sm mt-1">Harga dan Stok wajib diisi</div>
+                        ) : errors.globalPrice ? (
+                          <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
+                        ) : errors?.globalStock && (
+                          <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
+                        )}
+
+                      </>
                   }
                 </div>
               </div>
@@ -1370,6 +1431,9 @@ const AddProductPage: NextPage = () => {
                       </label>
                     </div>
                   }
+                  {errors.globalDelivry && (
+                    <div className="text-red-500 text-sm mt-1">{errors?.globalDelivry}</div>
+                  )}
                 </div>
                 {variations[0]?.name && showDimensionTable && isVariant && (
                   <div className="overflow-x-auto mt-4"
@@ -1537,6 +1601,9 @@ const AddProductPage: NextPage = () => {
                       </div>
                     )}
                   </div>
+                  {errors.schedule && (
+                    <div className="text-red-500 text-sm mt-1">{errors?.schedule}</div>
+                  )}
                 </div>
               </div>
 
