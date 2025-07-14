@@ -43,7 +43,7 @@ export default function DateTimePicker({
       enableTime: true,
       dateFormat: 'd F Y, H:i',
       ...(value ? { defaultDate: value } : {}),
-      minDate: 'today',
+      minDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
       onReady(selectedDates, dateStr, instance) {
         const calendarContainer = instance.calendarContainer;
         if (calendarContainer.querySelector('.picker-content-wrapper')) return;
