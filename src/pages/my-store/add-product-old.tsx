@@ -699,14 +699,14 @@ const AddProductPage = () => {
         const res = await Post<Response>('zukses', `product/${dataEdit?.id}`, formData);
         if (res?.data?.status === 'success') {
           setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
-          window.location.href = '/my-store/product'
+          // window.location.href = '/my-store/product'
           localStorage.removeItem('EditProduct');
         }
       } else {
         const res = await Post<Response>('zukses', `product`, formData);
         if (res?.data?.status === 'success') {
           setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-          window.location.href = '/my-store/product'
+          // window.location.href = '/my-store/product'
           localStorage.removeItem('EditProduct');
         }
       }
