@@ -26,7 +26,13 @@ const customIndonesianLocale: Partial<CustomLocale> = {
   time_24hr: true,
 };
 
-export default function DateTimePicker() {
+export default function DateTimePicker({
+  value,
+  onChange
+}: {
+  value: Date | null;
+  onChange: (date: Date) => void;
+}) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -36,7 +42,7 @@ export default function DateTimePicker() {
       locale: customIndonesianLocale,
       enableTime: true,
       dateFormat: 'd F Y, H:i',
-      defaultDate: new Date(),
+      ...(value ? { defaultDate: value } : {}),
       minDate: 'today',
       onReady(selectedDates, dateStr, instance) {
         const calendarContainer = instance.calendarContainer;
@@ -212,6 +218,11 @@ export default function DateTimePicker() {
         instance.config.onYearChange?.push(updateUI);
 
         updateUI();
+      },
+      onChange: function (selectedDates) {
+        if (selectedDates[0]) {
+          onChange(selectedDates[0]);
+        }
       },
     });
 

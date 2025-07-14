@@ -1,13 +1,20 @@
 import DateTimePicker from 'components/DateTimePicker';
+import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
 import CropModal from 'components/my-store/addProduct/CropModal';
+import ProductImageUploader from 'components/my-store/addProduct/ProductImageUploader';
+import TipsCard from 'components/my-store/addProduct/TipsCard';
+import VideoUploader from 'components/my-store/addProduct/VideoUploader';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
-import { Camera, Video, Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
+import Snackbar from 'components/Snackbar';
+import { useTipsStore } from 'components/stores/tipsStore';
+import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Get from 'services/api/Get';
+import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
 import { Response } from 'services/api/types';
 const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
@@ -177,13 +184,16 @@ const AddProductPage: NextPage = () => {
   //   { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
   // ];
-  const [activeTipKey, setActiveTipKey] = useState('default');
+  const setTipKey = useTipsStore((s) => s.setTipKey);
 
+  const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
   const [category, setCategory] = useState('');
-  const promoInputRef = useRef<HTMLInputElement | null>(null);
+  const discountOptions = Array.from({ length: 14 }, (_, i) => (i + 1) * 5);
+
   const [cropModalImage, setCropModalImage] = useState<string | null>(null);
   const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
   const tipsChecklist = {
@@ -215,8 +225,6 @@ const AddProductPage: NextPage = () => {
   const [variations, setVariations] = useState<Variation[]>([
     { name: '', options: [''] },
   ]);
-
-  console.log('variations', variations)
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
   const [globalPrice, setGlobalPrice] = useState('');
   const [globalStock, setGlobalStock] = useState('');
@@ -227,18 +235,67 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
+  console.log('variantData', variantData)
+  //jadwal ditampilkan 
+  const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
+  const [scheduleError, setScheduleError] = useState('');
+
+
+  useEffect(() => {
+    // Membersihkan format rupiah dan memastikan nilai adalah angka
+    const price = parseFloat(String(globalPrice).replace(/[^0-9]/g, '')) || 0;
+    const percent = parseInt(globalDiscountPercent, 10) || 0;
+
+    if (price > 0 && percent > 0) {
+      const discountValue = price * (percent / 100);
+      const finalPrice = price - discountValue;
+
+      // Set harga diskon yang sudah dihitung
+      setGlobalDiscount(String(finalPrice));
+    } else {
+      // Jika tidak ada diskon, kosongkan field harga diskon
+      setGlobalDiscount('');
+    }
+  }, [globalPrice, globalDiscountPercent]);
+
+  const validateScheduleDate = (date: Date | null) => {
+    if (!date) {
+      setScheduleError('');
+      return;
+    }
+
+    const now = new Date();
+    const minTime = new Date(now.getTime() + 60 * 60 * 1000); // +1 jam
+    const maxTime = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000); // +90 hari
+
+    if (date < minTime || date > maxTime) {
+      setScheduleError('Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan');
+    } else {
+      setScheduleError('');
+    }
+  };
+
   const applyGlobalToAll = () => {
     const combinations = buildCombinationTable();
-    const updatedData = combinations.flatMap(variation =>
-      variation.sizes.map(() => ({
-        price: globalPrice,
-        stock: globalStock,
-        discount: globalDiscount,
-        discountPercent: globalDiscountPercent,
-      }))
+
+    const updatedData = combinations.flatMap((variation, vIndex) =>
+      variation.sizes.map((_, sIndex) => {
+        const index = vIndex * variation.sizes.length + sIndex;
+        const existing = variantData[index] || {};
+
+        return {
+          ...existing,
+          price: globalPrice,
+          stock: globalStock,
+          discount: globalDiscount,
+          discountPercent: globalDiscountPercent,
+        };
+      })
     );
+
     setVariantData(updatedData);
   };
+
 
   const handleDragStart = (index: number) => {
     setDragStartIndex(index);
@@ -270,9 +327,18 @@ const AddProductPage: NextPage = () => {
 
   const handleVariationNameChange = (index: number, value: string) => {
     const updated = [...variations];
+
+    // Cek nama variasi lain
+    const otherIndex = index === 0 ? 1 : 0;
+    const otherName = variations[otherIndex]?.name?.toLowerCase();
+
+    // Jangan ubah jika sama
+    if (value.toLowerCase() === otherName) return;
+
     updated[index].name = value;
     setVariations(updated);
   };
+
 
   const handleOptionChange = (varIndex: number, optIndex: number, value: string) => {
     const updated = [...variations];
@@ -332,7 +398,7 @@ const AddProductPage: NextPage = () => {
     setVariantData([]);
   }, [variations]);
 
-  const handleVariantImageUpload = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVariantImageUpload = (clickedIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -341,47 +407,89 @@ const AddProductPage: NextPage = () => {
       if (reader.result) {
         setCropModalImage(reader.result as string);
         setCropCallback(() => (croppedFile: File) => {
+          const combinations = buildCombinationTable();
           const updated = [...variantData];
-          updated[index] = {
-            ...updated[index],
-            image: croppedFile
-          };
+
+          // Cari kombinasi warna yang sesuai dengan index yang diklik
+          let currentFlatIndex = 0;
+          let selectedColor = '';
+          for (const variation of combinations) {
+            for (let i = 0; i < variation.sizes.length; i++) {
+              if (currentFlatIndex === clickedIndex) {
+                selectedColor = variation.color;
+              }
+              currentFlatIndex++;
+            }
+          }
+
+          // Simpan image ke semua kombinasi yang punya warna sama
+          currentFlatIndex = 0;
+          for (const variation of combinations) {
+            for (let i = 0; i < variation.sizes.length; i++) {
+              if (variation.color === selectedColor) {
+                updated[currentFlatIndex] = {
+                  ...updated[currentFlatIndex],
+                  image: croppedFile,
+                };
+              }
+              currentFlatIndex++;
+            }
+          }
+
           setVariantData(updated);
         });
       }
     };
+
     reader.readAsDataURL(file);
   };
 
+
   const applyDimensionToAll = () => {
-    const updated = buildCombinationTable().flatMap(variation =>
-      variation.sizes.map(() => ({
-        weight: globalWeight,
-        length: globalLength,
-        width: globalWidth,
-        height: globalHeight,
-        price: '',
-        stock: '',
-        discount: '',
-        discountPercent: '',
-      }))
+    const combinations = buildCombinationTable();
+
+    const updatedData = combinations.flatMap((variation, vIndex) =>
+      variation.sizes.map((_, sIndex) => {
+        const index = vIndex * variation.sizes.length + sIndex;
+        const existing = variantData[index] || {};
+
+        return {
+          ...existing,
+          weight: globalWeight,
+          length: globalLength,
+          width: globalWidth,
+          height: globalHeight,
+        };
+      })
     );
-    setVariantData(updated);
+
+    setVariantData(updatedData);
   };
 
+  const combinations = useMemo(() => {
+    const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
+    let var2 = variations[1]?.options.filter(opt => opt.trim() !== '');
+
+    if (!var2 || var2.length === 0) {
+      var2 = [''];
+    }
+
+    return var1.map(color => ({
+      color,
+      sizes: var2
+    }));
+  }, [variations]);
 
   //categorie
   const handleConfirmCategory = () => { setCategory(tempCategory); setCategoryModalOpen(false); };
 
   //image
-  const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-
     if (selectedImages.length >= 10) {
       alert('Maksimal 10 gambar');
       return;
     }
-
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -393,12 +501,10 @@ const AddProductPage: NextPage = () => {
       }
     };
     reader.readAsDataURL(file);
-    e.target.value = "";
-  };
+  }, [selectedImages.length]);
 
-  const handleSelectPromoImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectPromoImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -410,17 +516,14 @@ const AddProductPage: NextPage = () => {
       }
     };
     reader.readAsDataURL(file);
+  }, []);
 
-    // Reset agar bisa upload ulang gambar dengan nama sama
-    e.target.value = '';
-  };
-
-  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type.startsWith("video/")) {
       setVideoFile(file);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // const dataString = localStorage.getItem('shopProfile');
@@ -446,138 +549,55 @@ const AddProductPage: NextPage = () => {
     };
     fetchCategories();
   }, []);
-  // ... setelah deklarasi state
-  const tipsContent: { [key: string]: React.ReactNode } = {
-    default: (
-      <>
-        <p className="font-semibold text-gray-800">Selamat Datang di Halaman Tambah Produk!</p>
-        <p>Arahkan mouse Anda ke setiap kolom isian untuk mendapatkan tips & trik agar produk Anda semakin menarik bagi pembeli.</p>
-      </>
-    ),
-    photo: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Foto Produk Utama</h4>
-        <p>Gunakan foto resolusi tinggi dengan background polos (putih/abu-abu).</p>
-        <p>Tampilkan produk dari berbagai sisi: depan, belakang, samping, dan detail penting.</p>
-        <p>Pastikan pencahayaan cukup agar warna produk sesuai aslinya.</p>
-      </>
-    ),
-    promoPhoto: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Foto Promosi (SEO)</h4>
-        <p>Foto ini adalah &apos;wajah&apos; produk Anda di hasil pencarian. Gunakan foto paling menarik yang membuat orang ingin klik.</p>
-        <p>Pastikan produk terlihat jelas bahkan saat gambar ditampilkan dalam ukuran kecil.</p>
-      </>
-    ),
-    video: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Video Produk</h4>
-        <p>Durasi ideal: 15-30 detik untuk menjaga perhatian pembeli.</p>
-        <p>Tunjukkan cara penggunaan, keunggulan, atau detail produk yang tidak terlihat di foto.</p>
-        <p>Gunakan format video vertikal (seperti Reels/Shorts) agar lebih mobile-friendly.</p>
-      </>
-    ),
-    name: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Nama Produk</h4>
-        <p>Gunakan formula: <strong>Merek + Model/Tipe + Spesifikasi Utama + Ukuran/Warna</strong>.</p>
-        <p>Contoh: &qout;Sasirangan Khas Banjarmasin - Kemeja Pria Lengan Panjang Katun - Motif Naga, Hitam&qout;.</p>
-        <p>Nama yang jelas membantu produk mudah ditemukan.</p>
-      </>
-    ),
-    category: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Memilih Kategori</h4>
-        <p>Pilih kategori yang paling spesifik. Ini membantu pembeli yang serius untuk menemukan produk Anda.</p>
-        <p>Hindari kategori &apos;Lainnya&apos; jika tidak terpaksa. Kategori yang akurat meningkatkan visibilitas produk.</p>
-      </>
-    ),
-    description: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Deskripsi Produk</h4>
-        <p>Jelaskan fitur dan manfaat produk secara rinci. Apa masalah yang bisa diselesaikan oleh produk Anda?</p>
-        <p>Sertakan spesifikasi lengkap: bahan, dimensi, berat, dan apa saja yang didapat dalam paket.</p>
-        <p>Gunakan paragraf pendek dan poin-poin agar mudah dibaca.</p>
-      </>
-    ),
-    brand: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Merek Produk</h4>
-        <p>Isi dengan merek resmi jika ada. Jika produk Anda buatan sendiri (handmade), Anda bisa gunakan nama toko Anda.</p>
-        <p>Konsistensi dalam penamaan merek akan membangun kepercayaan pelanggan.</p>
-      </>
-    ),
-    variation: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Variasi Produk</h4>
-        <p>Gunakan nama variasi yang umum seperti &apos;Warna&apos; atau &apos;Ukuran&apos;.</p>
-        <p>Untuk Opsi, berikan nama yang jelas. Contoh: &apos;Merah Maroon&apos;, &apos;Biru Dongker&apos;, atau &apos;L&apos;, &apos;XL&apos;.</p>
-        <p>Jangan lupa upload foto untuk setiap variasi warna agar pembeli tidak ragu.</p>
-      </>
-    ),
-    priceStock: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Harga & Stok</h4>
-        <p>Lakukan riset harga kompetitor. Tetapkan harga yang bersaing namun tetap menguntungkan.</p>
-        <p>Pastikan jumlah stok yang diinput sesuai dengan stok fisik di gudang Anda untuk menghindari pembatalan pesanan.</p>
-      </>
-    ),
-    weightDimension: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Berat & Dimensi</h4>
-        <p>Masukkan berat produk <strong>setelah dikemas</strong> (termasuk bubble wrap/kardus).</p>
-        <p>Data yang akurat sangat penting untuk perhitungan ongkos kirim otomatis agar tidak ada selisih.</p>
-      </>
-    ),
-    purchaseLimit: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Min/Maks Pembelian</h4>
-        <p>Atur jumlah pembelian minimum jika Anda menargetkan penjualan grosir.</p>
-        <p>Atur jumlah maksimum untuk produk edisi terbatas atau saat promo besar untuk mencegah penimbunan.</p>
-      </>
-    ),
-    dangerousGoods: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Produk Berbahaya</h4>
-        <p>Pilih &apos;Ya&apos; jika produk mengandung baterai, magnet, cairan, atau aerosol.</p>
-        <p>Informasi ini penting bagi kurir untuk penanganan khusus agar paket Anda aman sampai tujuan.</p>
-      </>
-    ),
-    preorder: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Pre-Order</h4>
-        <p>Aktifkan fitur ini hanya jika Anda benar-benar butuh waktu lebih untuk membuat produk (misal: custom).</p>
-        <p>Tetapkan waktu pengerjaan yang realistis (lebih baik lebih cepat dari janji) agar reputasi toko terjaga.</p>
-      </>
-    ),
-    condition: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Kondisi Produk</h4>
-        <p>Jujurlah mengenai kondisi produk. &apos;Baru&apos; berarti belum pernah dipakai sama sekali.</p>
-        <p>Jika &apos;Bekas&apos;, jelaskan secara detail kekurangannya di deskripsi untuk membangun kepercayaan.</p>
-      </>
-    ),
-    sku: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips SKU Induk</h4>
-        <p>SKU (Stock Keeping Unit) adalah kode unik internal Anda untuk melacak produk.</p>
-        <p>Buat format yang mudah Anda pahami. Contoh: KMJ-FLNL-MRH-L (Kemeja-Flanel-Merah-L).</p>
-      </>
-    ),
-    cod: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Pembayaran di Tempat (COD)</h4>
-        <p>Mengaktifkan COD dapat menjangkau lebih banyak pembeli, terutama di Banjarmasin.</p>
-        <p>Namun, waspadai risiko paket retur (dikembalikan). Pastikan Anda siap menanggung ongkos kirim jika itu terjadi.</p>
-      </>
-    ),
-    schedule: (
-      <>
-        <h4 className="font-bold text-gray-800">Tips Jadwal Ditampilkan</h4>
-        <p>Jadwalkan produk untuk tayang pada jam ramai, seperti jam makan siang (12:00-13:00 WITA) atau malam hari (19:00-21:00 WITA).</p>
-        <p>Ini bisa meningkatkan visibilitas awal untuk produk baru Anda.</p>
-      </>
-    )
+
+  const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
+    setLoading(true)
+    const formData = new FormData();
+    formData.append('productName', productName);
+    formData.append('description', description);
+    formData.append('idCategorie', String(idCategorie));
+    formData.append('status', status);
+    formData.append('scheduledDate', scheduleDate?.toISOString() || '');
+
+    selectedImages.forEach((img) => formData.append('productPhotos[]', img));
+    if (promoImage) formData.append('promoImage', promoImage);
+    if (videoFile) formData.append('videoFile', videoFile);
+
+    formData.append('isVariationActive', isVariant ? '1' : '0');
+    if (isVariant) {
+      formData.append('variations', JSON.stringify(variations));
+      formData.append('productVariants', JSON.stringify(variantData));
+      variantData.forEach((v, index) => {
+        if (v.image) formData.append(`variant_images[${index}]`, v.image);
+      });
+    }
+
+    // jika tidak pakai variasi
+    if (!isVariant) {
+      formData.append('price', globalPrice);
+      formData.append('stock', globalStock);
+      formData.append('discount', globalDiscount);
+      formData.append('discountPercent', globalDiscountPercent);
+    }
+
+    formData.append('weight', globalWeight);
+    formData.append('length', globalLength);
+    formData.append('width', globalWidth);
+    formData.append('height', globalHeight);
+
+    try {
+      const res = await Post<Response>('zukses', `product`, formData);
+      if (res?.data?.status === 'success') {
+        setLoading(false)
+        setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+        window.location.href = '/my-store/product'
+        localStorage.removeItem('EditProduct');
+      }
+    } catch (error) {
+      setLoading(false)
+      console.error(error);
+      alert('Terjadi kesalahan saat menyimpan produk.');
+    }
   };
 
 
@@ -611,10 +631,8 @@ const AddProductPage: NextPage = () => {
                 ))}
               </InfoCard>
 
+              <TipsCard />
 
-              <InfoCard title="Tips Foto dan Video Produk">
-                {tipsContent[activeTipKey]}
-              </InfoCard>
             </aside>
 
             {/* Kolom Kanan - Form Utama */}
@@ -623,136 +641,34 @@ const AddProductPage: NextPage = () => {
 
               <div className="rounded-lg mb-6">
                 <div
-                  onMouseEnter={() => setActiveTipKey('photo')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
-                    <span className="text-red-500">*</span> Foto Produk
-                  </label>
-                  <div className="mt-1">
-                    <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
-                      <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                      <li className=''>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
-                    </ul>
-                    {/* Preview Gambar */}
-                    <div className="flex flex-wrap gap-2 mt-2 ">
-                      {selectedImages.map((img, index) => (
-                        <img
-                          key={index}
-                          src={URL.createObjectURL(img)}
-                          alt={`preview-${index}`}
-                          className="w-[80px] h-[80px] object-cover border rounded"
-                        />
-                      ))}
-                      <label className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                        <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
-                        <span className="text-[12px] text-[#333333]">Tambah</span>
-                        <span className="text-[12px] text-[#333333]">{selectedImages.length}/10</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleSelectImage}
-                        />
-                      </label>
-                    </div>
-
-                  </div>
-                </div>
-                <div className='mt-4'
-                  onMouseEnter={() => setActiveTipKey('promoPhoto')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
-                    <span className="text-red-500">*</span> Foto Produk Promosi
-                  </label>
-                  <div className="mt-1">
-                    <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4">
-                      <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                      <li className=''>Foto Produk Promosi untuk menampilkan dihasil pencarian SEO</li>
-                    </ul>
-                    <div
-                      className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50"
-                      onClick={() => promoInputRef.current?.click()}
-                    >
-                      {promoImage ? (
-                        // Jika sudah ada gambar, tampilkan preview
-                        <img
-                          src={URL.createObjectURL(promoImage)}
-                          alt="Promo Preview"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        // Jika belum ada, tampilkan ikon kamera dan teks
-                        <>
-                          <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
-                          <span className="text-[12px] text-[#333333]">Tambahkan</span>
-                          <span className="text-[12px] text-[#333333]">0/1</span>
-                        </>
-                      )}
-                      <input
-                        ref={promoInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleSelectPromoImage}
-                        className="hidden"
-                      />
-                    </div>
-
-                  </div>
+                  onMouseEnter={() => setTipKey('photo')}
+                  onMouseLeave={() => setTipKey('default')}>
+                  <ProductImageUploader
+                    selectedImages={selectedImages}
+                    promoImage={promoImage}
+                    onSelectMainImage={handleSelectImage}
+                    onSelectPromoImage={handleSelectPromoImage}
+                  />
                 </div>
                 <hr className="my-6 border-[#CCCCCC]" />
 
-                <div
-                  onMouseEnter={() => setActiveTipKey('video')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    Video Produk
-                  </label>
-                  <div className="flex items-start space-x-6 mt-1">
-                    {/* Hidden input */}
-                    <input
-                      type="file"
-                      id="video-upload"
-                      accept="video/*"
-                      onChange={handleVideoChange}
-                      className="hidden"
-                    />
-
-                    {/* Label to trigger file input */}
-                    <label htmlFor="video-upload">
-                      {videoFile ? (
-                        <video
-                          src={URL.createObjectURL(videoFile)}
-                          className="w-[160px] h-[160px] object-cover rounded-[5px]"
-                          controls
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                          <Video className="w-[29px] h-[29px] text-[#7952B3] mb-1" />
-                          <span className="text-[12px] text-[#333333]">Tambahkan Video</span>
-                        </div>
-                      )}
-                    </label>
-                    <ul className="text-[12px] text-gray-500 list-disc list-inside">
-                      <li>File video maks. harus 30Mb dengan resolusi tidak melebihi 1280 x 1280px.</li>
-                      <li>Durasi: 10-60detik</li>
-                      <li>Format: MP4</li>
-                    </ul>
-                  </div>
+                <div onMouseEnter={() => setTipKey('video')} onMouseLeave={() => setTipKey('default')}>
+                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} />
                 </div>
               </div>
 
               <div className="mb-6 space-y-4">
                 <div
-                  onMouseEnter={() => setActiveTipKey('name')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('name')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Nama Produk" placeholder="Masukkan Nama Produk" maxLength={255} value={productName} setValue={setProductName} required />
                 </div>
                 <div className="mt-[-15px] rounded-md text-[12px] text-[#333333]">
                   <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('category')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('category')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     <span className="text-red-500">*</span> Kategori
                   </label>
@@ -766,18 +682,18 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('description')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('description')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('brand')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('brand')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
                 </div>
                 <div
-                  onMouseEnter={() => setActiveTipKey('brand')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('brand')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
                   <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] mt-1"><option>Pilih Negara Asal</option><option>Indonesia</option></select>
                 </div>
@@ -786,8 +702,8 @@ const AddProductPage: NextPage = () => {
 
               {/* Variasi Produk */}
               <div
-                onMouseEnter={() => setActiveTipKey('variation')}
-                onMouseLeave={() => setActiveTipKey('default')} >
+                onMouseEnter={() => setTipKey('variation')}
+                onMouseLeave={() => setTipKey('default')} >
                 <div className="">
                   <div className='flex items-center justify-left gap-3'>
                     <div className="relative w-[12px] h-[12px] ml-1">
@@ -839,7 +755,10 @@ const AddProductPage: NextPage = () => {
                                         <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
                                           <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
                                           {variationSuggestions
-                                            .filter(s => s.toLowerCase().includes(variation.name.toLowerCase()))
+                                            .filter(s =>
+                                              s.toLowerCase().includes(variation.name.toLowerCase()) &&
+                                              s.toLowerCase() !== (variations[varIndex === 0 ? 1 : 0]?.name?.toLowerCase())
+                                            )
                                             .map((suggestion) => (
                                               <div
                                                 key={suggestion}
@@ -862,10 +781,13 @@ const AddProductPage: NextPage = () => {
                               </div>
                             </div>
                             {
-                              variations?.length > 1 &&
-                              <div onClick={() => handleRemoveVariation(varIndex)} className=' cursor-pointer'>
-                                <X className='w-[24px] h-[24px] text text-gray-500' />
-                              </div>
+                              variations?.length > 1 ?
+                                <div onClick={() => handleRemoveVariation(varIndex)} className=' cursor-pointer'>
+                                  <X className='w-[24px] h-[24px] text text-gray-500' />
+                                </div> :
+                                <div onClick={() => setIsVariant(false)} className=' cursor-pointer'>
+                                  <X className='w-[24px] h-[24px] text text-gray-500' />
+                                </div>
                             }
                           </div>
                           <div className="grid grid-cols-[100px_1fr] items-start gap-4">
@@ -892,11 +814,17 @@ const AddProductPage: NextPage = () => {
                                       />
                                       {showOptionSuggestIndex === `${varIndex}-${optIndex}` &&
                                         (optionSuggestions[variations[varIndex].name] || [])
-                                          .some(s => s.toLowerCase().includes(option.toLowerCase())) && (
+                                          .filter(suggestion =>
+                                            suggestion.toLowerCase().includes(option.toLowerCase()) && // 1. Filter berdasarkan ketikan (tetap ada)
+                                            !variation.options.includes(suggestion)                     // 2. HANYA tampilkan jika belum ada di daftar opsi yang dipilih
+                                          ).length > 0 && (
                                           <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
                                             <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
-                                            {optionSuggestions[variations[varIndex].name]
-                                              .filter(s => s.toLowerCase().includes(option.toLowerCase()))
+                                            {(optionSuggestions[variations[varIndex].name] || [])
+                                              .filter(suggestion =>
+                                                suggestion.toLowerCase().includes(option.toLowerCase()) &&
+                                                !variation.options.includes(suggestion)
+                                              )
                                               .map((suggestion) => (
                                                 <div
                                                   key={suggestion}
@@ -905,9 +833,11 @@ const AddProductPage: NextPage = () => {
                                                 >
                                                   {suggestion}
                                                 </div>
-                                              ))}
+                                              ))
+                                            }
                                           </div>
-                                        )}
+                                        )
+                                      }
                                     </div>
 
                                   </div>
@@ -944,8 +874,8 @@ const AddProductPage: NextPage = () => {
                         </div>
                       )}</div> :
                       <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
-                        onMouseEnter={() => setActiveTipKey('priceStock')}
-                        onMouseLeave={() => setActiveTipKey('default')}>
+                        onMouseEnter={() => setTipKey('priceStock')}
+                        onMouseLeave={() => setTipKey('default')}>
                         <div className="col-span-12 sm:col-span-5">
                           <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                             <span className="text-red-500">*</span>
@@ -953,7 +883,9 @@ const AddProductPage: NextPage = () => {
                           </label>
                           <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" />
+                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                              value={formatRupiahNoRP(globalPrice)}
+                              onChange={(e) => setGlobalPrice(e.target.value)} />
                           </div>
                         </div>
                         <div className="col-span-12 sm:col-span-5 ml-[-20px]">
@@ -962,7 +894,9 @@ const AddProductPage: NextPage = () => {
                             Stok
                           </label>
                           <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                            <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={0} />
+                            <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                              value={globalStock || 0}
+                              onChange={(e) => setGlobalStock(e.target.value)} />
                           </div>
                         </div>
                         <div className="col-span-12 sm:col-span-3">
@@ -970,13 +904,24 @@ const AddProductPage: NextPage = () => {
                             <span className="text-red-500">*</span> Harga Diskon</label>
                           <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" />
+                            <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
+                              readOnly />
                           </div>
                         </div>
-                        <div className="col-span-12 sm:col-span-2 w-1/4">
+                        <div className="col-span-1">
                           <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                            <span className="text-red-500">*</span> Persen Diskon</label>
-                          <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" />
+                            Persen Diskon
+                          </label>
+                          <select
+                            value={globalDiscountPercent}
+                            onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                            className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                          >
+                            <option value="">Pilih Persen</option>
+                            {discountOptions.map(opt => (
+                              <option key={opt} value={opt}>{opt}%</option>
+                            ))}
+                          </select>
                         </div>
                       </div>
                   }
@@ -985,8 +930,8 @@ const AddProductPage: NextPage = () => {
               {
                 isVariant &&
                 <div className="mb-6 mt-2">
-                  <div className="flex items-center gap-4 items-end " onMouseEnter={() => setActiveTipKey('priceStock')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                  <div className="flex items-center gap-4 items-end " onMouseEnter={() => setTipKey('priceStock')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <div className="col-span-12 sm:col-span-5 ">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
 
@@ -1008,17 +953,26 @@ const AddProductPage: NextPage = () => {
                     </div>
                     <div className="col-span-12 sm:col-span-3">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                        Harga Diskon</label>
+                        Harga Setelah Diskon</label>
                       <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                         <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} onChange={(e) => setGlobalDiscount(e.target.value)} />
+                        <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} readOnly />
                       </div>
                     </div>
                     <div className="col-span-12 sm:col-span-2">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
                         Persen Diskon</label>
                       <div className='flex items-center gap-3'>
-                        <input type="text" placeholder="Persen" className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none placeholder:text-[#AAAAAA] w-[85px]" value={globalDiscountPercent} onChange={(e) => setGlobalDiscountPercent(e.target.value)} />
+                        <select
+                          value={globalDiscountPercent}
+                          onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                          className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none w-[120px] h-[42px]"
+                        >
+                          <option value="">Pilih Persen</option>
+                          {discountOptions.map(opt => (
+                            <option key={opt} value={opt}>{opt}%</option>
+                          ))}
+                        </select>
                         {
                           variations[0]?.options[0] != '' &&
                           <div className="col-span-12 sm:col-span-2">
@@ -1032,8 +986,8 @@ const AddProductPage: NextPage = () => {
               }
 
               <div className="overflow-x-auto"
-                onMouseEnter={() => setActiveTipKey('variation')}
-                onMouseLeave={() => setActiveTipKey('default')}>
+                onMouseEnter={() => setTipKey('variation')}
+                onMouseLeave={() => setTipKey('default')}>
                 {
                   variations[0]?.name && isVariant &&
                   <table className="min-w-full divide-y divide-gray-200">
@@ -1059,7 +1013,7 @@ const AddProductPage: NextPage = () => {
                           Stok
                         </th>
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                          Harga Diskon
+                          Harga Setelah Diskon
                         </th>
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">
                           Persen Diskon
@@ -1069,7 +1023,7 @@ const AddProductPage: NextPage = () => {
 
 
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {buildCombinationTable().map((variation, vIndex) =>
+                      {combinations.map((variation, vIndex) =>
                         variation.sizes.map((size, sIndex) => {
                           const index = vIndex * variation.sizes.length + sIndex;
                           const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
@@ -1139,7 +1093,15 @@ const AddProductPage: NextPage = () => {
                                     value={formatRupiahNoRP(rowData.price)}
                                     onChange={(e) => {
                                       const newData = [...variantData];
-                                      newData[index] = { ...rowData, price: e.target.value };
+                                      const priceValue = parseFloat(String(e.target.value).replace(/[^0-9]/g, '')) || 0;
+                                      const percentValue = parseInt(newData[index]?.discountPercent, 10) || 0;
+                                      let newDiscountPrice = '';
+
+                                      if (priceValue > 0 && percentValue > 0) {
+                                        newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                      }
+
+                                      newData[index] = { ...rowData, price: e.target.value, discount: newDiscountPrice };
                                       setVariantData(newData);
                                     }}
                                   />
@@ -1168,27 +1130,34 @@ const AddProductPage: NextPage = () => {
                                     placeholder="Harga"
                                     className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
                                     value={formatRupiahNoRP(rowData.discount)}
-                                    onChange={(e) => {
-                                      const newData = [...variantData];
-                                      newData[index] = { ...rowData, discount: e.target.value };
-                                      setVariantData(newData);
-                                    }}
+                                    readOnly
                                   />
                                 </div>
                               </td>
 
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
-                                <input
-                                  type="text"
-                                  placeholder="Persen"
-                                  className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
-                                  value={rowData.discountPercent}
+                                <select
+                                  value={rowData.discountPercent || ''}
                                   onChange={(e) => {
                                     const newData = [...variantData];
-                                    newData[index] = { ...rowData, discountPercent: e.target.value };
+                                    const percentValue = parseInt(e.target.value, 10) || 0;
+                                    const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+                                    let newDiscountPrice = '';
+
+                                    if (priceValue > 0 && percentValue > 0) {
+                                      newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                    }
+
+                                    newData[index] = { ...rowData, discountPercent: e.target.value, discount: newDiscountPrice };
                                     setVariantData(newData);
                                   }}
-                                />
+                                  className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
+                                >
+                                  <option value="">Pilih Persen</option>
+                                  {discountOptions.map(opt => (
+                                    <option key={opt} value={opt}>{opt}%</option>
+                                  ))}
+                                </select>
                               </td>
                             </tr>
                           )
@@ -1205,8 +1174,8 @@ const AddProductPage: NextPage = () => {
               {/* Info Tambahan */}
               <div className="mb-6 space-y-6 ">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  onMouseEnter={() => setActiveTipKey('purchaseLimit')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('purchaseLimit')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <div>
                     <label className="text-[#333333] font-bold text-[14px]">
                       <span className="text-red-500">*</span>  Min. Jumlah Pembelian
@@ -1222,8 +1191,8 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-15px]'
-                  onMouseEnter={() => setActiveTipKey('weightDimension')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                  onMouseEnter={() => setTipKey('weightDimension')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     Berat dan Dimensi Produk
                   </label>
@@ -1273,8 +1242,8 @@ const AddProductPage: NextPage = () => {
                 </div>
                 {variations[0]?.name && showDimensionTable && isVariant && (
                   <div className="overflow-x-auto mt-4"
-                    onMouseEnter={() => setActiveTipKey('weightDimension')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                    onMouseEnter={() => setTipKey('weightDimension')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <table className="w-full">
                       <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                         <tr>
@@ -1299,7 +1268,7 @@ const AddProductPage: NextPage = () => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {buildCombinationTable().map((variation, vIndex) =>
+                        {combinations.map((variation, vIndex) =>
                           variation.sizes.map((size, sIndex) => {
                             const rowData = variantData[sIndex] || {};
                             return (
@@ -1375,24 +1344,24 @@ const AddProductPage: NextPage = () => {
                     </table>
                   </div>
                 )}
-                <div onMouseEnter={() => setActiveTipKey('dangerousGoods')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('dangerousGoods')}
+                  onMouseLeave={() => setTipKey('default')}>
 
                   <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
                 </div>
-                <div onMouseEnter={() => setActiveTipKey('preorder')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('preorder')}
+                  onMouseLeave={() => setTipKey('default')}>
 
                   <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
                 </div>
-                <div onMouseEnter={() => setActiveTipKey('condition')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('condition')}
+                  onMouseLeave={() => setTipKey('default')}>
 
                   <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
                 </div>
 
-                <div onMouseEnter={() => setActiveTipKey('sku')}
-                  onMouseLeave={() => setActiveTipKey('default')}>
+                <div onMouseEnter={() => setTipKey('sku')}
+                  onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
                     SKU Induk
                   </label>
@@ -1403,8 +1372,8 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-10px]'>
-                  <div onMouseEnter={() => setActiveTipKey('cod')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                  <div onMouseEnter={() => setTipKey('cod')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Pembayaran di Tempat (COD)
                     </label>
@@ -1416,17 +1385,25 @@ const AddProductPage: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="relative" onMouseEnter={() => setActiveTipKey('schedule')}
-                    onMouseLeave={() => setActiveTipKey('default')}>
+                  <div className="relative" onMouseEnter={() => setTipKey('schedule')}
+                    onMouseLeave={() => setTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Jadwal Ditampilkan
                     </label>
                     <div className='mt-2'>
-                      <DateTimePicker />
+                      <DateTimePicker
+                        value={scheduleDate}
+                        onChange={(date) => {
+                          setScheduleDate(date);
+                          validateScheduleDate(date);
+                        }}
+                      />
                     </div>
-                    <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>
-                      Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan
-                    </div>
+                    {scheduleError && (
+                      <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>
+                        {scheduleError}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1437,8 +1414,8 @@ const AddProductPage: NextPage = () => {
               }}>
                 <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline">Kembali</button>
                 <div className="flex items-center space-x-2">
-                  <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:underline">Simpan & Arsipkan</button>
-                  <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200">Simpan & Tampilkan</button>
+                  <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:underline" onClick={() => handleSave('ARCHIVED')}>Simpan & Arsipkan</button>
+                  <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200" onClick={() => handleSave('PUBLISHED')}>Simpan & Tampilkan</button>
                 </div>
               </div>
 
@@ -1459,7 +1436,17 @@ const AddProductPage: NextPage = () => {
       <Modal isOpen={isCategoryModalOpen} onClose={() => setCategoryModalOpen(false)}>
         <CategorySelector onSelectCategory={setTempCategory} initialCategory={category} categories={apiCategories} isLoading={categoryLoading} error={categoryApiError} setIdCategorie={setIdCategorie} setCategoryModalOpen={setCategoryModalOpen} handleConfirmCategory={handleConfirmCategory} />
       </Modal>
-
+      {
+        snackbar.isOpen && (
+          <Snackbar
+            message={snackbar.message}
+            type={snackbar.type}
+            isOpen={snackbar.isOpen}
+            onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+          />
+        )
+      }
+      {loading && <Loading />}
     </MyStoreLayout>
   );
 };
