@@ -120,8 +120,19 @@ const TextAreaInput = ({
 
 
 // Komponen untuk Radio Button
-const RadioGroup = ({ label, name, options, required = false }: { label: string, name: string, options: string[], required?: boolean }) => {
+const RadioGroup = ({ label, name, options, required = false, onChange }: {
+  label: string,
+  name: string,
+  options: string[],
+  required?: boolean,
+  onChange?: (val: string) => void
+}) => {
   const [selectedValue, setSelectedValue] = useState(options[0]);
+
+  useEffect(() => {
+    if (onChange) onChange(selectedValue);
+  }, [selectedValue]);
+
   return (
     <div>
       <label className="block text-[14px] font-bold text-[#333333] mb-2">
@@ -138,23 +149,20 @@ const RadioGroup = ({ label, name, options, required = false }: { label: string,
               onChange={() => setSelectedValue(option)}
               className="hidden"
             />
-            <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
-      ${selectedValue === option ? 'border-[#660077]' : 'border-gray-400'}`}
-            >
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
+              ${selectedValue === option ? 'border-[#660077]' : 'border-gray-400'}`}>
               {selectedValue === option && (
                 <div className="w-2 h-2 rounded-full bg-[#660077]"></div>
               )}
             </div>
-            <span className={`
-              text-[14px] text-[#333333] ${selectedValue === option ? 'font-bold' : 'font-normal'}
-            `}>{option}</span>
+            <span className={`text-[14px] text-[#333333] ${selectedValue === option ? 'font-bold' : 'font-normal'}`}>{option}</span>
           </label>
         ))}
       </div>
     </div>
   );
 };
+
 
 interface Variation {
   name: string;
@@ -235,11 +243,33 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
-  console.log('variantData', variantData)
+  // console.log(variantData)
   //jadwal ditampilkan 
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
+  const [schedule, setSchedule] = useState<string | ''>('');
   const [scheduleError, setScheduleError] = useState('');
 
+  const [isHazardous, setIsHazardous] = useState('0');
+  const [isProductPreOrder, setIsProductPreOrder] = useState('0');
+  const [isUsed, setIsUsed] = useState('0');
+  const [isCodEnabled, setIsCodEnabled] = useState('0');
+
+  //pembelian
+  const [minOrder, setMinOrder] = useState<number>(1);
+  const [maxOrder, setMaxOrder] = useState<number>(1000);
+  useEffect(() => {
+    if (scheduleDate) {
+      const date = new Date(scheduleDate);
+
+      const pad = (n: number) => n.toString().padStart(2, '0');
+
+      // Ambil waktu lokal
+      const formattedDate = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+        `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+
+      setSchedule(formattedDate);
+    }
+  }, [scheduleDate])
 
   useEffect(() => {
     // Membersihkan format rupiah dan memastikan nilai adalah angka
@@ -551,54 +581,124 @@ const AddProductPage: NextPage = () => {
   }, []);
 
   const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
-    setLoading(true)
+    setLoading(true);
     const formData = new FormData();
+
+    // Form input dasar
     formData.append('productName', productName);
     formData.append('description', description);
     formData.append('idCategorie', String(idCategorie));
+    formData.append('parentSku', '1'); // hardcoded karena input tidak tersedia
+    formData.append('condition', 'Baru'); // sesuaikan dari radio jika diperlukan
+    formData.append('scheduledDate', schedule || '');
     formData.append('status', status);
-    formData.append('scheduledDate', scheduleDate?.toISOString() || '');
 
-    selectedImages.forEach((img) => formData.append('productPhotos[]', img));
-    if (promoImage) formData.append('promoImage', promoImage);
-    if (videoFile) formData.append('videoFile', videoFile);
-
+    // Opsi biner (sementara semua hardcoded sesuai contoh)
+    formData.append('isHazardous', isHazardous);
+    formData.append('isProductPreOrder', isProductPreOrder);
+    formData.append('shippingInsurance', '0');
     formData.append('isVariationActive', isVariant ? '1' : '0');
+    formData.append('shippingPerVariation', '0');
+    formData.append('condition', isUsed);
+    formData.append('isCodEnabled', isCodEnabled);
+    formData.append('min_order', minOrder.toString());
+    formData.append('max_order', maxOrder.toString());
+    // Gambar & video
+    selectedImages.forEach((img) => formData.append('productPhotos[]', img));
+    if (videoFile) formData.append('productVideo', videoFile);
+    if (promoImage) formData.append('productPromo', promoImage);
+
+
     if (isVariant) {
-      formData.append('variations', JSON.stringify(variations));
-      formData.append('productVariants', JSON.stringify(variantData));
-      variantData.forEach((v, index) => {
-        if (v.image) formData.append(`variant_images[${index}]`, v.image);
+      formData.append('variations', JSON.stringify(variations)); // array of { name, options }
+
+      const formattedVariants = variantData.map((variant, index) => {
+        const combination: Record<string, string> = {};
+        const flatIndex = index;
+
+        // Pastikan kombinasi tersedia
+        if (
+          combinations.length === 0 ||
+          !combinations[0].sizes ||
+          combinations[0].sizes.length === 0
+        ) {
+          return null; // lewati jika tidak ada kombinasi
+        }
+
+        const colorIndex = Math.floor(flatIndex / combinations[0].sizes.length);
+        const sizeIndex = flatIndex % combinations[0].sizes.length;
+
+        const warna = combinations[colorIndex]?.color;
+        const ukuran = combinations[colorIndex]?.sizes?.[sizeIndex];
+
+        // Tambahkan kombinasi jika nama variasi dan nilai tersedia
+        if (variations[0] && warna) combination[variations[0].name] = warna;
+        if (variations[1] && ukuran) combination[variations[1].name] = ukuran;
+
+        return {
+          id: Date.now() + index, // id sementara
+          combination,
+          price: variant.price.replace(/\./g, ''),
+          stock: variant.stock,
+          sku: variant.stock, // sementara pakai stock sebagai sku
+          image: variant.image ? { preview: URL.createObjectURL(variant.image) } : null,
+          weight: variant.weight,
+          length: variant.length,
+          width: variant.width,
+          height: variant.height,
+          discount: variant.discount,
+          discountPercent: variant.discountPercent,
+        };
+      }).filter(Boolean); // buang yang null (kombinasi kosong)
+
+      formData.append('productVariants', JSON.stringify(formattedVariants));
+
+      // Upload gambar jika ada
+      variantData.forEach((v, i) => {
+        if (v.image) {
+          formData.append(`variant_images[${i}]`, v.image);
+        }
       });
-    }
 
-    // jika tidak pakai variasi
-    if (!isVariant) {
-      formData.append('price', globalPrice);
+    } else {
+      formData.append('price', globalPrice.replace(/\./g, ''));
       formData.append('stock', globalStock);
-      formData.append('discount', globalDiscount);
-      formData.append('discountPercent', globalDiscountPercent);
+      formData.append('price_discount', globalDiscount);
+      formData.append('discount', globalDiscountPercent);
     }
 
-    formData.append('weight', globalWeight);
+    // Berat & Dimensi
+    formData.append('shippingWeight', globalWeight);
     formData.append('length', globalLength);
     formData.append('width', globalWidth);
     formData.append('height', globalHeight);
+    formData.append('packageDimensions', JSON.stringify({
+      length: globalLength,
+      width: globalWidth,
+      height: globalHeight,
+    }));
+
+    // Spesifikasi (sementara hardcoded, bisa diganti sesuai input UI)
+    formData.append('specifications', JSON.stringify({
+      Merek: brand,
+      'Negara Asal': '2',
+    }));
 
     try {
       const res = await Post<Response>('zukses', `product`, formData);
       if (res?.data?.status === 'success') {
-        setLoading(false)
+        setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        window.location.href = '/my-store/product'
+        // window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.error(error);
       alert('Terjadi kesalahan saat menyimpan produk.');
     }
   };
+
 
 
   return (
@@ -1180,13 +1280,13 @@ const AddProductPage: NextPage = () => {
                     <label className="text-[#333333] font-bold text-[14px]">
                       <span className="text-red-500">*</span>  Min. Jumlah Pembelian
                     </label>
-                    <input type="number" defaultValue="1" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" />
+                    <input type="number" defaultValue="1" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
                   </div>
                   <div>
                     <label className="text-[#333333] font-bold text-[14px]">
                       <span className="text-red-500">*</span>  Maks. Jumlah Pembelian
                     </label>
-                    <input type="number" defaultValue="1000" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" />
+                    <input type="number" defaultValue="1000" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" value={maxOrder} onChange={(e) => setMaxOrder(Number(e.target.value))} />
                   </div>
                 </div>
 
@@ -1347,17 +1447,17 @@ const AddProductPage: NextPage = () => {
                 <div onMouseEnter={() => setTipKey('dangerousGoods')}
                   onMouseLeave={() => setTipKey('default')}>
 
-                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} />
+                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} onChange={(value) => setIsHazardous(value === 'Tidak' ? '0' : '1')} />
                 </div>
                 <div onMouseEnter={() => setTipKey('preorder')}
                   onMouseLeave={() => setTipKey('default')}>
 
-                  <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} />
+                  <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} onChange={(value) => setIsProductPreOrder(value === 'Tidak' ? '0' : '1')} />
                 </div>
                 <div onMouseEnter={() => setTipKey('condition')}
                   onMouseLeave={() => setTipKey('default')}>
 
-                  <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required />
+                  <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required onChange={(value) => setIsUsed(value === 'Tidak' ? '0' : '1')} />
                 </div>
 
                 <div onMouseEnter={() => setTipKey('sku')}
@@ -1378,7 +1478,8 @@ const AddProductPage: NextPage = () => {
                       Pembayaran di Tempat (COD)
                     </label>
                     <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
-                      <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" />
+                      <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isCodEnabled === '1'}
+                        onChange={(e) => setIsCodEnabled(e.target.checked ? '1' : '0')} />
                       <div className='mt-[-5px]'>
                         <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
                         <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima. Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
