@@ -89,21 +89,27 @@ const CropModal: React.FC<CropModalProps> = ({ imageSrc, onClose, onCropComplete
             <div className="bg-white p-4 rounded-lg shadow-md w-[90vw] sm:max-w-md">
                 <h2 className="text-lg font-semibold mb-4">Crop Gambar</h2>
 
-                <ReactCrop
-                    crop={crop}
-                    onChange={(c) => setCrop(c)}
-                    onComplete={(c) => setCompletedCrop(c)}
-                    keepSelection
-                    locked
-                >
-                    <img
-                        ref={imgRef}
-                        src={imageSrc}
-                        alt="To crop"
-                        onLoad={onImageLoad}
-                        className="max-w-full h-auto"
-                    />
-                </ReactCrop>
+                <div className="max-h-[500px] flex justify-center items-center">
+                    <ReactCrop
+                        crop={crop}
+                        onChange={(c) => setCrop({ ...c, height: Math.min(c.height ?? 500, 500) })}
+                        onComplete={(c) => setCompletedCrop(c)}
+                        aspect={1}
+                        keepSelection
+                        minWidth={50}
+                        minHeight={50}
+                    >
+                        <img
+                            ref={imgRef}
+                            src={imageSrc}
+                            alt="To crop"
+                            onLoad={onImageLoad}
+                            className="max-w-full h-auto"
+                            style={{ maxHeight: '500px', objectFit: 'contain' }}
+                        />
+                    </ReactCrop>
+                </div>
+
 
                 <div className="flex justify-end mt-4 gap-2">
                     <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Batal</button>

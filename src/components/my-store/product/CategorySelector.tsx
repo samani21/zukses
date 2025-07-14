@@ -326,9 +326,9 @@ const CategorySelector: FC<{
                             </div>
                         ) : (
                             // TAMPILAN KOLOM KATEGORI (Default)
-                            <div ref={columnsContainerRef} className="flex flex-row h-full overflow-x-auto bg-gray-50/50 border border-[#E9E9E9]">
+                            <div ref={columnsContainerRef} className="flex flex-row h-full overflow-x-auto bg-gray-50/50 border border-[#E9E9E9] custom-scrollbar">
                                 {columns.map((column, colIndex) => (
-                                    <div key={colIndex} className="w-1/4 h-full bg-white border-r border-[#E9E9E9] overflow-y-auto flex-shrink-0">
+                                    <div key={colIndex} className="w-1/4 h-full bg-white border-r border-[#E9E9E9] overflow-y-auto flex-shrink-0 custom-scrollbar">
                                         <ul>
                                             {column.map((cat) => (
                                                 <li key={cat.id}>
