@@ -712,7 +712,7 @@ const AddProductPage: NextPage = () => {
       if (res?.data?.status === 'success') {
         setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        // window.location.href = '/my-store/product';
+        window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
@@ -1607,7 +1607,7 @@ const AddProductPage: NextPage = () => {
               <div className="bg-white flex justify-between items-center sticky bottom-0 p-4" style={{
                 boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'
               }}>
-                <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline">Kembali</button>
+                <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline" onClick={() => window.location.href = '/my-store/product'}>Kembali</button>
                 <div className="flex items-center space-x-2">
                   <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:underline" onClick={() => handleSave('ARCHIVED')}>Simpan & Arsipkan</button>
                   <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200" onClick={() => handleSave('PUBLISHED')}>Simpan & Tampilkan</button>
@@ -1617,7 +1617,7 @@ const AddProductPage: NextPage = () => {
             </div>
           </div>
         </main>
-      </div>
+      </div >
       {cropModalImage && cropCallback && (
         <CropModal
           imageSrc={cropModalImage}
@@ -1642,7 +1642,7 @@ const AddProductPage: NextPage = () => {
         )
       }
       {loading && <Loading />}
-    </MyStoreLayout>
+    </MyStoreLayout >
   );
 };
 
