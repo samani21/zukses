@@ -4,9 +4,10 @@ import { Video, X } from 'lucide-react';
 interface VideoUploaderProps {
     videoFile: File | null;
     onVideoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    urlvideoFile?: string | null;
 }
 
-const VideoUploader = React.memo(({ videoFile, onVideoChange }: VideoUploaderProps) => {
+const VideoUploader = React.memo(({ videoFile, onVideoChange, urlvideoFile }: VideoUploaderProps) => {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     console.log('Rendering VideoUploader...');
@@ -32,7 +33,7 @@ const VideoUploader = React.memo(({ videoFile, onVideoChange }: VideoUploaderPro
                 {videoFile ? (
                     <div className="relative w-[160px] h-[160px]">
                         <video
-                            src={URL.createObjectURL(videoFile)}
+                            src={urlvideoFile ? urlvideoFile : URL.createObjectURL(videoFile)}
                             className="w-full h-full object-cover rounded-[5px] cursor-pointer"
                             controls
                             onClick={() => inputRef.current?.click()}

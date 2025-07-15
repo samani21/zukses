@@ -234,12 +234,17 @@ async function convertImageUrlToFile(url: string): Promise<File | null> {
   }
 }
 
+type MediaItem = {
+  url: string;
+  type: string;
+};
 
 // Komponen Utama Halaman
 const AddProductPage: NextPage = () => {
   const router = useRouter()
   const params = router?.query;
   const [productName, setProductName] = useState('');
+  const [idProduct, setIdProduct] = useState<number>();
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('');
   const [showDimensionTable, setShowDimensionTable] = useState(false);
@@ -257,10 +262,14 @@ const AddProductPage: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
+  const [urlpromoImage, setUrlPromoImage] = useState<string>(''); //foto produk promosi
+  const [urlvideoFile, setUrlVideoFile] = useState<string | null>(null); //video produk
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
   const [category, setCategory] = useState('');
   const discountOptions = Array.from({ length: 14 }, (_, i) => (i + 1) * 5);
-
+  console.log('selectedImages', selectedImages)
+  console.log('promoImage', urlpromoImage)
+  console.log('videoFile', videoFile)
   const [cropModalImage, setCropModalImage] = useState<string | null>(null);
   const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
   const tipsChecklist = {
@@ -636,7 +645,9 @@ const AddProductPage: NextPage = () => {
 
   const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log('file', file)
     setVideoFile(file ?? null);
+    setUrlVideoFile(null)
   }, []);
 
   useEffect(() => {
@@ -761,7 +772,16 @@ const AddProductPage: NextPage = () => {
     formData.append('min_order', minOrder.toString());
     formData.append('max_order', maxOrder.toString());
     // Gambar & video
-    selectedImages.forEach((img) => formData.append('productPhotos[]', img));
+    selectedImages.forEach((img) => {
+      if (typeof img === 'string') {
+        // Media lama (URL)
+        formData.append('existing_media[]', img);
+      } else if (img instanceof File) {
+        // Media baru (File upload)
+        formData.append('productPhotos[]', img);
+      }
+    });
+
     if (videoFile) formData.append('productVideo', videoFile);
     if (promoImage) formData.append('productPromo', promoImage);
 
@@ -858,12 +878,34 @@ const AddProductPage: NextPage = () => {
     }));
 
     try {
-      const res = await Post<Response>('zukses', `product`, formData);
-      if (res?.data?.status === 'success') {
-        setLoading(false);
-        setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        window.location.href = '/my-store/product';
-        localStorage.removeItem('EditProduct');
+      if (idProduct) {
+        // selectedImages.forEach((photo, index) => {
+        //   if (typeof photo === 'string') {
+        //     formData.append(`productPhotosPreview[${index}]`, photo);
+        //   }
+        // });
+        if (urlpromoImage) {
+          formData.append('promoImage', urlpromoImage);
+        }
+        if (urlvideoFile) {
+          formData.append('productVideoPreview', urlvideoFile);
+        }
+
+        const res = await Post<Response>('zukses', `product/${idProduct}`, formData);
+        if (res?.data?.status === 'success') {
+          setLoading(false);
+          setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
+          window.location.href = '/my-store/product'
+          localStorage.removeItem('EditProduct');
+        }
+      } else {
+        const res = await Post<Response>('zukses', `product`, formData);
+        if (res?.data?.status === 'success') {
+          setLoading(false);
+          setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+          window.location.href = '/my-store/product';
+          localStorage.removeItem('EditProduct');
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -912,6 +954,7 @@ const AddProductPage: NextPage = () => {
           const data = JSON.parse(dataString);
 
           setProductName(data.name || '');
+          setIdProduct(data.id || '');
           setSku(data.sku || '');
           setDescription(data.desc || '');
           const brand = (data.specifications as Specification[])?.find((s) => s.name === 'Merek')?.value || '';
@@ -927,8 +970,21 @@ const AddProductPage: NextPage = () => {
           setIsHazardous(String(data.delivery?.is_dangerous_product || 0));
           setCategory(data.category || '');
           setIdCategorie(data.category_id || undefined);
-          setSelectedImages(data.media.map((m: { url: string }) => m.url));
+          setSelectedImages(
+            data.media
+              .filter((m: MediaItem) => m.type === 'image')
+              .map((m: MediaItem) => m.url)
+          );
+          setVideoFile(
+            data.media
+              .filter((m: MediaItem) => m.type === 'video')
+              .map((m: MediaItem) => m.url)
+          );
+          setUrlVideoFile(data.media
+            .filter((m: MediaItem) => m.type === 'video')
+            .map((m: MediaItem) => m.url))
           setPromoImage(data.image); // string
+          setUrlPromoImage(data.image); // string
           const raw = data?.scheduled_date;
           if (raw) {
             const parsed = new Date(raw.replace(' ', 'T'));
@@ -1047,7 +1103,7 @@ const AddProductPage: NextPage = () => {
                 <hr className="my-6 border-[#CCCCCC]" />
 
                 <div onMouseEnter={() => setTipKey('video')} onMouseLeave={() => setTipKey('default')}>
-                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} />
+                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} urlvideoFile={urlvideoFile} />
                 </div>
               </div>
 
