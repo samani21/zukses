@@ -2,8 +2,8 @@ import React, { useRef } from 'react';
 import { Camera, X } from 'lucide-react';
 
 interface ProductImageUploaderProps {
-    selectedImages: File[];
-    promoImage: File | null;
+    selectedImages: (File | string)[];
+    promoImage: File | string | null;
     onSelectMainImage: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onReplaceMainImage: (index: number, file: File) => void;
     onRemoveMainImage: (index: number) => void;
@@ -46,7 +46,7 @@ const ProductImageUploader = React.memo(({
                     {selectedImages.map((img, index) => (
                         <div key={index} className="relative w-[80px] h-[80px]">
                             <img
-                                src={URL.createObjectURL(img)}
+                                src={typeof img === 'string' ? img : URL.createObjectURL(img)}
                                 alt={`preview-${index}`}
                                 className="w-full h-full object-cover border rounded cursor-pointer"
                                 onClick={() => replaceInputRefs.current[index]?.click()}
@@ -121,7 +121,7 @@ const ProductImageUploader = React.memo(({
                     {promoImage ? (
                         <>
                             <img
-                                src={URL.createObjectURL(promoImage)}
+                                src={typeof promoImage === 'string' ? promoImage : URL.createObjectURL(promoImage)}
                                 alt="Promo Preview"
                                 className="w-full h-full object-cover rounded"
                             />

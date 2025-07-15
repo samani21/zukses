@@ -184,7 +184,7 @@ const ProductPage: NextPage = () => {
                                                     </button>
                                                     <button className="text-gray-400 hover:text-indigo-600 transition-colors"
                                                         onClick={() => {
-                                                            window.location.href = '/my-store/add-product-old?type=edit'
+                                                            window.location.href = '/my-store/add-product?type=edit'
                                                             localStorage.setItem('EditProduct', JSON.stringify(product))
                                                         }}>
                                                         <FilePenLine size={20} />
