@@ -11,6 +11,7 @@ import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
 import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Get from 'services/api/Get';
@@ -56,7 +57,7 @@ const TextInput = ({ label, placeholder, maxLength, value, setValue, required = 
         maxLength={maxLength}
       />
       <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-        {value.length}/{maxLength}
+        {value?.length}/{maxLength}
       </span>
     </div>
   </div>
@@ -111,23 +112,36 @@ const TextAreaInput = ({
           style={{ resize: 'none', maxHeight: '480px', overflowY: 'auto', }} // maksimal 30 baris, tidak bisa di-resize
         />
         <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-          {value.length}/{maxLength}
+          {value?.length}/{maxLength}
         </span>
       </div>
     </div>
   );
 };
 
-
-// Komponen untuk Radio Button
-const RadioGroup = ({ label, name, options, required = false, onChange }: {
-  label: string,
-  name: string,
-  options: string[],
-  required?: boolean,
-  onChange?: (val: string) => void
+const RadioGroup = ({
+  label,
+  name,
+  options,
+  required = false,
+  onChange,
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  options: string[];
+  required?: boolean;
+  onChange?: (val: string) => void;
+  defaultValue?: string;
 }) => {
-  const [selectedValue, setSelectedValue] = useState(options[0]);
+  const [selectedValue, setSelectedValue] = useState(defaultValue ?? options[0]);
+
+  useEffect(() => {
+    // isi ulang selectedValue saat defaultValue berubah (saat data edit dimuat ulang)
+    if (defaultValue) {
+      setSelectedValue(defaultValue);
+    }
+  }, [defaultValue]);
 
   useEffect(() => {
     if (onChange) onChange(selectedValue);
@@ -139,7 +153,7 @@ const RadioGroup = ({ label, name, options, required = false, onChange }: {
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="flex items-center space-x-6">
-        {options.map(option => (
+        {options.map((option) => (
           <label key={option} className="flex items-center space-x-2 cursor-pointer">
             <input
               type="radio"
@@ -149,19 +163,25 @@ const RadioGroup = ({ label, name, options, required = false, onChange }: {
               onChange={() => setSelectedValue(option)}
               className="hidden"
             />
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
-              ${selectedValue === option ? 'border-[#660077]' : 'border-gray-400'}`}>
-              {selectedValue === option && (
-                <div className="w-2 h-2 rounded-full bg-[#660077]"></div>
-              )}
+            <div
+              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
+                ${selectedValue === option ? 'border-[#660077]' : 'border-gray-400'}`}
+            >
+              {selectedValue === option && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
             </div>
-            <span className={`text-[14px] text-[#333333] ${selectedValue === option ? 'font-bold' : 'font-normal'}`}>{option}</span>
+            <span
+              className={`text-[14px] text-[#333333] ${selectedValue === option ? 'font-bold' : 'font-normal'
+                }`}
+            >
+              {option}
+            </span>
           </label>
         ))}
       </div>
     </div>
   );
 };
+
 
 
 interface Variation {
@@ -174,15 +194,47 @@ interface VariantRowData {
   stock: string;
   discount: string;
   discountPercent: string;
-  image?: File;
+  image?: File | null;
   weight?: string;
   length?: string;
   width?: string;
   height?: string;
 }
 
+type Specification = {
+  name: string;
+  value: string;
+};
+
+type CombinationItem = {
+  price?: number | string;
+  stock?: number | string;
+  discount_price?: number | string;
+  discount_percent?: number | string;
+  weight?: number | string;
+  length?: number | string;
+  width?: number | string;
+  height?: number | string;
+  image?: string;
+};
+
+
+async function convertImageUrlToFile(url: string): Promise<File | null> {
+  try {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const filename = url.split('/').pop() || 'image.jpg';
+    return new File([blob], filename, { type: blob.type });
+  } catch {
+    return null;
+  }
+}
+
+
 // Komponen Utama Halaman
 const AddProductPage: NextPage = () => {
+  const router = useRouter()
+  const params = router?.query;
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('');
@@ -194,7 +246,6 @@ const AddProductPage: NextPage = () => {
   // ];
   const setTipKey = useTipsStore((s) => s.setTipKey);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  console.log('errors', errors)
   const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
@@ -206,11 +257,11 @@ const AddProductPage: NextPage = () => {
   const [cropModalImage, setCropModalImage] = useState<string | null>(null);
   const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
   const tipsChecklist = {
-    'Tambah min. 1 Foto': selectedImages.length >= 1,
+    'Tambah min. 1 Foto': selectedImages?.length >= 1,
     'Tambah 1 Foto Promosi': promoImage !== null,
     'Tambahkan Video': videoFile !== null,
-    'Nama 25+ karakter': productName.length >= 25,
-    'Deskripsi 100+ karakter': description.length >= 100,
+    'Nama 25+ karakter': productName?.length >= 25,
+    'Deskripsi 100+ karakter': description?.length >= 100,
   };
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [tempCategory, setTempCategory] = useState(category);
@@ -243,14 +294,13 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
-  console.log('variations', variations)
-  console.log('variations', variantData)
-  // console.log(variantData)
+
+  const [sku, setSku] = useState('');
+  console.log(variantData)
   //jadwal ditampilkan 
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
   const [schedule, setSchedule] = useState<string | ''>('');
   const [scheduleError, setScheduleError] = useState('');
-
   const [isHazardous, setIsHazardous] = useState('0');
   const [isProductPreOrder, setIsProductPreOrder] = useState('0');
   const [isUsed, setIsUsed] = useState('0');
@@ -315,7 +365,7 @@ const AddProductPage: NextPage = () => {
 
     const updatedData = combinations.flatMap((variation, vIndex) =>
       variation.sizes.map((_, sIndex) => {
-        const index = vIndex * variation.sizes.length + sIndex;
+        const index = vIndex * variation.sizes?.length + sIndex;
         const existing = variantData[index] || {};
 
         return {
@@ -349,7 +399,7 @@ const AddProductPage: NextPage = () => {
   };
 
   const handleAddVariation = () => {
-    if (variations.length < 2) {
+    if (variations?.length < 2) {
       setVariations([...variations, { name: '', options: [''] }]);
     }
   };
@@ -381,7 +431,7 @@ const AddProductPage: NextPage = () => {
 
     // Cek: Jika terakhir & user ngetik, tambah input baru
     const options = updated[varIndex].options;
-    const isLast = optIndex === options.length - 1;
+    const isLast = optIndex === options?.length - 1;
 
     if (isLast && value.trim() !== '') {
       options.push('');
@@ -389,9 +439,9 @@ const AddProductPage: NextPage = () => {
 
     // Hapus trailing kosong lebih dari 1
     if (
-      options.length >= 2 &&
-      options[options.length - 1].trim() === '' &&
-      options[options.length - 2].trim() === ''
+      options?.length >= 2 &&
+      options[options?.length - 1].trim() === '' &&
+      options[options?.length - 2].trim() === ''
     ) {
       options.pop();
     }
@@ -405,7 +455,7 @@ const AddProductPage: NextPage = () => {
     const options = updated[varIndex].options;
 
     // Hapus hanya jika lebih dari 1 opsi
-    if (options.length > 1) {
+    if (options?.length > 1) {
       options.splice(optIndex, 1);
     } else {
       options[0] = '';
@@ -418,7 +468,7 @@ const AddProductPage: NextPage = () => {
     const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
     let var2 = variations[1]?.options.filter(opt => opt.trim() !== '');
 
-    if (!var2 || var2.length === 0) {
+    if (!var2 || var2?.length === 0) {
       var2 = ['']; // fallback satu elemen kosong agar tetap render row
     }
 
@@ -429,9 +479,10 @@ const AddProductPage: NextPage = () => {
   };
 
 
-  useEffect(() => {
-    setVariantData([]);
-  }, [variations]);
+  // useEffect(() => {
+
+  //   setVariantData([]);
+  // }, [variations,params]);
 
   const handleVariantImageUpload = (clickedIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -449,7 +500,7 @@ const AddProductPage: NextPage = () => {
           let currentFlatIndex = 0;
           let selectedColor = '';
           for (const variation of combinations) {
-            for (let i = 0; i < variation.sizes.length; i++) {
+            for (let i = 0; i < variation.sizes?.length; i++) {
               if (currentFlatIndex === clickedIndex) {
                 selectedColor = variation.color;
               }
@@ -460,7 +511,7 @@ const AddProductPage: NextPage = () => {
           // Simpan image ke semua kombinasi yang punya warna sama
           currentFlatIndex = 0;
           for (const variation of combinations) {
-            for (let i = 0; i < variation.sizes.length; i++) {
+            for (let i = 0; i < variation.sizes?.length; i++) {
               if (variation.color === selectedColor) {
                 updated[currentFlatIndex] = {
                   ...updated[currentFlatIndex],
@@ -485,7 +536,7 @@ const AddProductPage: NextPage = () => {
 
     const updatedData = combinations.flatMap((variation, vIndex) =>
       variation.sizes.map((_, sIndex) => {
-        const index = vIndex * variation.sizes.length + sIndex;
+        const index = vIndex * variation.sizes?.length + sIndex;
         const existing = variantData[index] || {};
 
         return {
@@ -505,7 +556,7 @@ const AddProductPage: NextPage = () => {
     const var1 = variations[0]?.options.filter(opt => opt.trim() !== '') || [];
     let var2 = variations[1]?.options.filter(opt => opt.trim() !== '');
 
-    if (!var2 || var2.length === 0) {
+    if (!var2 || var2?.length === 0) {
       var2 = [''];
     }
 
@@ -521,7 +572,7 @@ const AddProductPage: NextPage = () => {
   //image
   const handleSelectImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0]) return;
-    if (selectedImages.length >= 10) {
+    if (selectedImages?.length >= 10) {
       alert('Maksimal 10 gambar');
       return;
     }
@@ -536,7 +587,7 @@ const AddProductPage: NextPage = () => {
       }
     };
     reader.readAsDataURL(file);
-  }, [selectedImages.length]);
+  }, [selectedImages?.length]);
 
   // const handleSelectPromoImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
   //   if (!e.target.files || !e.target.files[0]) return;
@@ -592,7 +643,7 @@ const AddProductPage: NextPage = () => {
     if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
     if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
     if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
-    if (selectedImages.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
+    if (selectedImages?.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
     if (!promoImage) newErrors.promo = 'Gambar promosi wajib diunggah';
     if (!isVariant) {
       if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
@@ -606,8 +657,8 @@ const AddProductPage: NextPage = () => {
       const totalVariant = variations?.length > 1
         ? (optionCount1 - 1) + (optionCount2 - 1)
         : optionCount1 - 1;
-      console.log(variantData.length, totalVariant)
-      if (!variantData || variantData.length < totalVariant) {
+      console.log(variantData?.length, totalVariant)
+      if (!variantData || variantData?.length < totalVariant) {
         newErrors.variant = 'Harga dan stock tidak boleh kosong';
       }
 
@@ -639,7 +690,7 @@ const AddProductPage: NextPage = () => {
     // videoFile tidak wajib
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return Object.keys(newErrors)?.length === 0;
   };
 
   const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
@@ -651,7 +702,7 @@ const AddProductPage: NextPage = () => {
     formData.append('productName', productName);
     formData.append('description', description);
     formData.append('idCategorie', String(idCategorie));
-    formData.append('parentSku', '1'); // hardcoded karena input tidak tersedia
+    formData.append('parentSku', sku); // hardcoded karena input tidak tersedia
     formData.append('condition', 'Baru'); // sesuaikan dari radio jika diperlukan
     formData.append('scheduledDate', schedule || '');
     formData.append('status', status);
@@ -681,15 +732,15 @@ const AddProductPage: NextPage = () => {
 
         // Pastikan kombinasi tersedia
         if (
-          combinations.length === 0 ||
+          combinations?.length === 0 ||
           !combinations[0].sizes ||
-          combinations[0].sizes.length === 0
+          combinations[0].sizes?.length === 0
         ) {
           return null; // lewati jika tidak ada kombinasi
         }
 
-        const colorIndex = Math.floor(flatIndex / combinations[0].sizes.length);
-        const sizeIndex = flatIndex % combinations[0].sizes.length;
+        const colorIndex = Math.floor(flatIndex / combinations[0].sizes?.length);
+        const sizeIndex = flatIndex % combinations[0].sizes?.length;
 
         const warna = combinations[colorIndex]?.color;
         const ukuran = combinations[colorIndex]?.sizes?.[sizeIndex];
@@ -714,7 +765,7 @@ const AddProductPage: NextPage = () => {
           sku: variant.stock, // sementara pakai stock sebagai sku
           image: variant.image ? { preview: URL.createObjectURL(variant.image) } : null,
           weight: variant.weight,
-          length: variant.length,
+          length: variant?.length,
           width: variant.width,
           height: variant.height,
           discount: discontPercent,
@@ -768,7 +819,7 @@ const AddProductPage: NextPage = () => {
       if (res?.data?.status === 'success') {
         setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        window.location.href = '/my-store/product';
+        // window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
@@ -809,6 +860,90 @@ const AddProductPage: NextPage = () => {
   const handleRemovePromoImage = () => {
     setPromoImage(null);
   };
+
+  useEffect(() => {
+    if (params?.type === 'edit') {
+      const dataString = localStorage.getItem('EditProduct');
+      if (dataString) {
+        try {
+          const data = JSON.parse(dataString);
+
+          setProductName(data.name || '');
+          setSku(data.sku || '');
+          setDescription(data.desc || '');
+          const brand = (data.specifications as Specification[])?.find((s) => s.name === 'Merek')?.value || '';
+          const origin = (data.specifications as Specification[])?.find((s) => s.name === 'Negara Asal')?.value || '';
+
+          setBrand(brand);
+          setCountryOrigin(origin);
+          setMinOrder(data.min_purchase || 1);
+          setMaxOrder(data.max_purchase || 1000);
+          setIsUsed(String(data.is_used || 0));
+          setIsCodEnabled(String(data.is_cod_enabled || 0));
+          setIsProductPreOrder(String(data.delivery?.is_pre_order || '1'));
+          setIsHazardous(String(data.delivery?.is_dangerous_product || 0));
+          setCategory(data.category || '');
+          setIdCategorie(data.category_id || undefined);
+          setSelectedImages(data.media.map((m: { url: string }) => m.url));
+          setPromoImage(data.image); // string
+          const raw = data?.scheduled_date;
+          if (raw) {
+            const parsed = new Date(raw.replace(' ', 'T'));
+            if (!isNaN(parsed.getTime())) {
+              setScheduleDate(parsed);
+              console.log(parsed)
+            }
+          }
+
+          if (data?.variants && data?.variants.length > 0) {
+            setIsVariant(true);
+
+            const mappedVariants = data.variants.map((v: { variant: string; options: string[] }) => ({
+              name: v.variant,
+              options: v.options || [],
+            }));
+            setVariations(mappedVariants);
+          }
+          if (data.combinations) {
+            const mapVariants = async () => {
+              const formatted = await Promise.all(
+                (data.combinations as CombinationItem[]).map(async (item) => ({
+                  price: item.price?.toString() || '',
+                  stock: item.stock?.toString() || '',
+                  discount: item.discount_price?.toString() || '',
+                  discountPercent: item.discount_percent?.toString() || '',
+                  weight: item.weight?.toString() || '',
+                  length: item.length?.toString() || '',
+                  width: item.width?.toString() || '',
+                  height: item.height?.toString() || '',
+                  image: item.image ? await convertImageUrlToFile(item.image) : null,
+                }))
+              );
+
+              console.log('edit', formatted);
+              setVariantData(formatted);
+            };
+
+            mapVariants();
+          }
+
+          if (!data.variants || data.variants.length === 0) {
+            setIsVariant(false);
+            setGlobalPrice(data.price?.toString() || '');
+            setGlobalStock(data.stock?.toString() || '');
+            setGlobalDiscount(data.discount_price?.toString() || '');
+            setGlobalDiscountPercent(data.discount_percent?.toString() || '');
+            setGlobalWeight(data.delivery?.weight || '');
+            setGlobalLength(data.delivery?.length || '');
+            setGlobalWidth(data.delivery?.width || '');
+            setGlobalHeight(data.delivery?.height || '');
+          }
+        } catch (err) {
+          console.error('Failed to parse EditProduct from localStorage', err);
+        }
+      }
+    }
+  }, [params]);
 
   return (
     <MyStoreLayout>
@@ -1011,7 +1146,7 @@ const AddProductPage: NextPage = () => {
                                 </div>
 
                                 <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                                  {variation.name.length}/20
+                                  {variation.name?.length}/20
                                 </span>
                               </div>
                             </div>
@@ -1052,7 +1187,7 @@ const AddProductPage: NextPage = () => {
                                           .filter(suggestion =>
                                             suggestion.toLowerCase().includes(option.toLowerCase()) && // 1. Filter berdasarkan ketikan (tetap ada)
                                             !variation.options.includes(suggestion)                     // 2. HANYA tampilkan jika belum ada di daftar opsi yang dipilih
-                                          ).length > 0 && (
+                                          )?.length > 0 && (
                                           <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
                                             <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
                                             {(optionSuggestions[variations[varIndex].name] || [])
@@ -1093,7 +1228,7 @@ const AddProductPage: NextPage = () => {
                         </div>
                       ))}
 
-                      {variations.length < 2 && (
+                      {variations?.length < 2 && (
                         <div className='flex justif-left items-center gap-3'>
                           <button
                             type="button"
@@ -1269,7 +1404,7 @@ const AddProductPage: NextPage = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {combinations.map((variation, vIndex) =>
                         variation.sizes.map((size, sIndex) => {
-                          const index = vIndex * variation.sizes.length + sIndex;
+                          const index = vIndex * variation.sizes?.length + sIndex;
                           const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
 
                           return (
@@ -1278,7 +1413,7 @@ const AddProductPage: NextPage = () => {
                                 variation.color !== '' && (
                                   <td
                                     className="px-4 py-4 whitespace-nowrap align-top"
-                                    rowSpan={variation.sizes.length}
+                                    rowSpan={variation.sizes?.length}
                                   >
                                     <div className="grid justify-center">
                                       <span className="text-center w-full text-[#333333] text-[14px]">
@@ -1296,7 +1431,7 @@ const AddProductPage: NextPage = () => {
                                             />
                                             <label htmlFor={`variant-img-${index}`} className=" mt-1 cursor-pointer">
                                               <img
-                                                src={URL.createObjectURL(rowData.image)}
+                                                src={typeof rowData.image === 'string' ? rowData.image : URL.createObjectURL(rowData.image)}
                                                 alt="Varian"
                                                 className="w-[60px] h-[60px] object-cover border rounded-[5px]"
                                               />
@@ -1511,13 +1646,13 @@ const AddProductPage: NextPage = () => {
                     <table className="w-full">
                       <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                         <tr>
-                          {variations[0]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                          {variations[0]?.options.filter(opt => opt.trim() !== '')?.length > 0 && (
                             <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
                               {variations[0]?.name || 'Variasi 1'}
                             </th>
                           )}
 
-                          {variations[1]?.options.filter(opt => opt.trim() !== '').length > 0 && (
+                          {variations[1]?.options.filter(opt => opt.trim() !== '')?.length > 0 && (
                             <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
                               {variations[1]?.name || 'Variasi 2'}
                             </th>
@@ -1534,7 +1669,7 @@ const AddProductPage: NextPage = () => {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {combinations.map((variation, vIndex) =>
                           variation.sizes.map((size, sIndex) => {
-                            const index = vIndex * variation.sizes.length + sIndex;
+                            const index = vIndex * variation.sizes?.length + sIndex;
                             const rowData = variantData[index] || {};
 
                             return (
@@ -1542,7 +1677,7 @@ const AddProductPage: NextPage = () => {
                                 {sIndex === 0 && variation.color !== '' && (
                                   <td
                                     className="px-4 py-4 align-middle border border-[#AAAAAA] align-top text-center"
-                                    rowSpan={variation.sizes.length}
+                                    rowSpan={variation.sizes?.length}
                                   >
                                     <span className="font-medium text-gray-900 text-[14px]">{variation.color}</span>
                                   </td>
@@ -1596,7 +1731,7 @@ const AddProductPage: NextPage = () => {
                                       type="number"
                                       placeholder="Panjang"
                                       className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
-                                      value={rowData.length || ''}
+                                      value={rowData?.length || ''}
                                       onChange={(e) => {
                                         const updated = [...variantData];
                                         updated[index] = { ...rowData, length: e.target.value };
@@ -1651,18 +1786,35 @@ const AddProductPage: NextPage = () => {
                 )}
                 <div onMouseEnter={() => setTipKey('dangerousGoods')}
                   onMouseLeave={() => setTipKey('default')}>
-
-                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} onChange={(value) => setIsHazardous(value === 'Tidak' ? '0' : '1')} />
+                  <RadioGroup
+                    label="Pre Order"
+                    name="preorder"
+                    options={['Tidak', 'Ya']}
+                    defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'}
+                    onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')}
+                  />
                 </div>
                 <div onMouseEnter={() => setTipKey('preorder')}
                   onMouseLeave={() => setTipKey('default')}>
-
-                  <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} onChange={(value) => setIsProductPreOrder(value === 'Tidak' ? '0' : '1')} />
+                  <RadioGroup
+                    label="Pre Order"
+                    name="preorder"
+                    options={['Tidak', 'Ya']}
+                    defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'}
+                    onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')}
+                  />
                 </div>
                 <div onMouseEnter={() => setTipKey('condition')}
                   onMouseLeave={() => setTipKey('default')}>
 
-                  <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required onChange={(value) => setIsUsed(value === 'Tidak' ? '0' : '1')} />
+                  <RadioGroup
+                    label="Kondisi"
+                    name="condition"
+                    options={['Baru', 'Bekas Dipakai']}
+                    required
+                    defaultValue={isUsed === '1' ? 'Bekas Dipakai' : 'Baru'}
+                    onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')}
+                  />
                 </div>
 
                 <div onMouseEnter={() => setTipKey('sku')}
@@ -1670,7 +1822,7 @@ const AddProductPage: NextPage = () => {
                   <label className="text-[#333333] font-bold text-[14px]">
                     SKU Induk
                   </label>
-                  <input type="text" placeholder="Masukkan kode unik untuk setiap produk agar mudah dilacak dan dikelola di sistem." className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                  <input type="text" placeholder="Masukkan kode unik untuk setiap produk agar mudah dilacak dan dikelola di sistem." className="w-full px-3 py-2 border border-gray-300 rounded-md" value={sku} onChange={(e) => setSku(e?.target?.value)} />
                 </div>
                 <div className="mt-[-15px] text-[14px] text-[#333333]">
                   Masukkan kode unik untuk setiap produk agar mudah dilacak dan dikelola di sistem.
@@ -1698,7 +1850,7 @@ const AddProductPage: NextPage = () => {
                     </label>
                     <div className='mt-2'>
                       <DateTimePicker
-                        value={scheduleDate}
+                        value={new Date(schedule.toString())}
                         onChange={(date) => {
                           setScheduleDate(date);
                           validateScheduleDate(date);

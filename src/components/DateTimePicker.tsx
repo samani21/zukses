@@ -34,16 +34,18 @@ export default function DateTimePicker({
   onChange: (date: Date) => void;
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-
+  const pickerRef = useRef<flatpickr.Instance | null>(null);
   useEffect(() => {
     if (!inputRef.current) return;
-
+    if (pickerRef.current) {
+      pickerRef.current.destroy(); // Destroy jika sebelumnya sudah ada
+    }
     const instance = flatpickr(inputRef.current, {
       locale: customIndonesianLocale,
       enableTime: true,
       dateFormat: 'd F Y, H:i',
-      ...(value ? { defaultDate: value } : {}),
-      minDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      defaultDate: value ?? undefined,
+      // minDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
       onReady(selectedDates, dateStr, instance) {
         const calendarContainer = instance.calendarContainer;
         if (calendarContainer.querySelector('.picker-content-wrapper')) return;
@@ -225,11 +227,12 @@ export default function DateTimePicker({
         }
       },
     });
+    pickerRef.current = instance;
 
     return () => {
       instance.destroy();
     };
-  }, []);
+  }, [value]);
 
   return (
     <div className="w-full border border-[#AAAAAA] rounded-[5px] flex justify-between items-center px-2">
