@@ -768,7 +768,7 @@ const AddProductPage: NextPage = () => {
       if (res?.data?.status === 'success') {
         setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        // window.location.href = '/my-store/product';
+        window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
