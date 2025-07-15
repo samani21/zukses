@@ -695,9 +695,6 @@ const AddProductPage: NextPage = () => {
         if (!variantData[i]?.price) {
           newErrors[`variantPrice_${i}`] = 'Harga wajib diisi';
         }
-        if (!variantData[i]?.image) {
-          newErrors[`variantImage_${i}`] = 'Gambar wajib diisi';
-        }
         if (!variantData[i]?.stock) {
           newErrors[`variantStock_${i}`] = 'Stock wajib diisi';
         }
@@ -865,7 +862,7 @@ const AddProductPage: NextPage = () => {
       if (res?.data?.status === 'success') {
         setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        // window.location.href = '/my-store/product';
+        window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
