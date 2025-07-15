@@ -42,7 +42,9 @@ const ProductImageUploader = React.memo(({
                     <li>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
                 </ul>
 
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div
+                    id="images"
+                    className="flex flex-wrap gap-2 mt-2">
                     {selectedImages.map((img, index) => (
                         <div key={index} className="relative w-[80px] h-[80px]">
                             <img
@@ -99,7 +101,9 @@ const ProductImageUploader = React.memo(({
             </div>
 
             {/* FOTO PROMOSI */}
-            <div className="mt-4">
+            <div
+                id="promo"
+                className="mt-4">
                 <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
                     <span className="text-red-500">*</span> Foto Produk Promosi
                 </label>

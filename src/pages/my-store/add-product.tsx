@@ -1,6 +1,7 @@
 import DateTimePicker from 'components/DateTimePicker';
 import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
+import { ModalError } from 'components/ModalError';
 import CropModal from 'components/my-store/addProduct/CropModal';
 import ProductImageUploader from 'components/my-store/addProduct/ProductImageUploader';
 import TipsCard from 'components/my-store/addProduct/TipsCard';
@@ -9,7 +10,7 @@ import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
-import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
+import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X, AlertTriangle } from 'lucide-react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
@@ -43,8 +44,8 @@ const InfoCard = ({ title, children }: { title: string; children: React.ReactNod
 
 
 // Komponen input dengan label dan character counter
-const TextInput = ({ label, placeholder, maxLength, value, setValue, required = false }: { label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
-  <div>
+const TextInput = ({ id, label, placeholder, maxLength, value, setValue, required = false }: { id?: string; label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
+  <div id={id}>
     <label className="text-[#333333] font-bold text-[14px]">
       {required && <span className="text-red-500">*</span>} {label}
     </label>
@@ -71,6 +72,7 @@ const TextAreaInput = ({
   value,
   setValue,
   required = false,
+  id,
 }: {
   label: string,
   placeholder: string,
@@ -78,6 +80,7 @@ const TextAreaInput = ({
   value: string,
   setValue: (val: string) => void,
   required?: boolean
+  id?: string
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -95,7 +98,7 @@ const TextAreaInput = ({
   }, [value]);
 
   return (
-    <div>
+    <div id={id}>
       <label className="text-[#333333] font-bold text-[14px]">
         {required && <span className="text-red-500">*</span>} {label}
       </label>
@@ -316,6 +319,29 @@ const AddProductPage: NextPage = () => {
 
   const [countryOrigin, setCountryOrigin] = useState('');
 
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState('');
+  const scrollToFirstError = (errors: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errors)[0];
+    if (!firstErrorKey) return;
+
+    // Coba temukan elemennya
+    const element = document.getElementById(firstErrorKey);
+    if (element) {
+      // Gulir elemen ke tengah layar
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      // Beri highlight visual sementara (opsional tapi sangat membantu)
+      element.style.transition = 'background-color 0.5s ease';
+      element.style.backgroundColor = '#fff2f2'; // Warna highlight merah muda
+      setTimeout(() => {
+        element.style.backgroundColor = ''; // Hapus highlight setelah 2 detik
+      }, 2000);
+    }
+  };
   useEffect(() => {
     if (scheduleDate) {
       const date = new Date(scheduleDate);
@@ -641,14 +667,13 @@ const AddProductPage: NextPage = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!productName.trim()) newErrors.productName = 'Nama produk wajib diisi';
-    if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
-    if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
-    if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
-    if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
-    if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
     if (selectedImages?.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
     if (!promoImage) newErrors.promo = 'Gambar promosi wajib diunggah';
+    if (!productName.trim()) newErrors.productName = 'Nama produk wajib diisi';
+    if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
+    if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
+    if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
+    if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
     if (!isVariant) {
       if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
       if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
@@ -690,6 +715,7 @@ const AddProductPage: NextPage = () => {
         }
       }
     }
+    if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
 
     // videoFile tidak wajib
 
@@ -698,7 +724,23 @@ const AddProductPage: NextPage = () => {
   };
 
   const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      setErrors(currentErrors => {
+        const firstErrorMessage = Object.values(currentErrors)[0];
+
+        // 1. Tampilkan MODAL dengan pesan error pertama
+        setErrorModalMessage(firstErrorMessage || 'Harap periksa kembali data yang Anda masukkan.');
+        setIsErrorModalOpen(true);
+
+        // 2. Gulir ke elemen yang error (logika ini tetap sama)
+        scrollToFirstError(currentErrors);
+
+        return currentErrors;
+      });
+
+      return; // Hentikan eksekusi
+    }
+
     setLoading(true);
     const formData = new FormData();
 
@@ -989,6 +1031,7 @@ const AddProductPage: NextPage = () => {
 
               <div className="rounded-lg mb-6">
                 <div
+
                   onMouseEnter={() => setTipKey('photo')}
                   onMouseLeave={() => setTipKey('default')}>
                   <ProductImageUploader
@@ -1013,6 +1056,7 @@ const AddProductPage: NextPage = () => {
 
               <div className="mb-6 space-y-4">
                 <div
+                  id="productName"
                   onMouseEnter={() => setTipKey('name')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Nama Produk" placeholder="Masukkan Nama Produk" maxLength={255} value={productName} setValue={setProductName} required />
@@ -1025,6 +1069,7 @@ const AddProductPage: NextPage = () => {
                   <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
                 </div>
                 <div
+                  id="category"
                   onMouseEnter={() => setTipKey('category')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
@@ -1043,6 +1088,7 @@ const AddProductPage: NextPage = () => {
                   )}
                 </div>
                 <div
+                  id="description"
                   onMouseEnter={() => setTipKey('description')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
@@ -1051,6 +1097,7 @@ const AddProductPage: NextPage = () => {
                   )}
                 </div>
                 <div
+                  id="brand"
                   onMouseEnter={() => setTipKey('brand')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
@@ -1059,6 +1106,7 @@ const AddProductPage: NextPage = () => {
                   )}
                 </div>
                 <div
+                  id="countryOrigin"
                   onMouseEnter={() => setTipKey('brand')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
@@ -1248,7 +1296,9 @@ const AddProductPage: NextPage = () => {
                         </div>
                       )}</div> :
                       <>
-                        <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
+                        <div
+                          id="globalPrice"
+                          className="flex items-center gap-4 items-end mt-4 w-[75%]"
                           onMouseEnter={() => setTipKey('priceStock')}
                           onMouseLeave={() => setTipKey('default')}>
                           <div className="col-span-12 sm:col-span-5">
@@ -1409,6 +1459,7 @@ const AddProductPage: NextPage = () => {
               )}
 
               <div className="overflow-x-auto"
+                id="variant"
                 onMouseEnter={() => setTipKey('variation')}
                 onMouseLeave={() => setTipKey('default')}>
                 {
@@ -1683,6 +1734,7 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-15px]'
+                  id="globalDelivry"
                   onMouseEnter={() => setTipKey('weightDimension')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
@@ -1939,7 +1991,9 @@ const AddProductPage: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="relative" onMouseEnter={() => setTipKey('schedule')}
+                  <div className="relative"
+                    id="schedule"
+                    onMouseEnter={() => setTipKey('schedule')}
                     onMouseLeave={() => setTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Jadwal Ditampilkan
@@ -2004,6 +2058,32 @@ const AddProductPage: NextPage = () => {
         )
       }
       {loading && <Loading />}
+      <ModalError
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        title="Input Belum Lengkap"
+        hideCloseButton={true} // Sembunyikan tombol 'X' agar user fokus pada tombol 'Mengerti'
+      >
+        <div className="flex flex-col items-center text-center">
+          {/* Ikon Peringatan */}
+          <div className="mb-5">
+            <AlertTriangle className="w-20 h-20 text-yellow-400" />
+          </div>
+
+          {/* Pesan Error */}
+          <p className="text-base text-gray-600 mb-6">
+            {errorModalMessage}
+          </p>
+
+          {/* Tombol Aksi */}
+          <button
+            onClick={() => setIsErrorModalOpen(false)}
+            className="bg-[#52357B] text-white font-bold w-full py-3 px-8 rounded-lg hover:bg-[#483AA0] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-200"
+          >
+            Saya Mengerti
+          </button>
+        </div>
+      </ModalError>
     </MyStoreLayout >
   );
 };
