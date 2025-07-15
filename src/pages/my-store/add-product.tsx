@@ -7,7 +7,7 @@ import ProductImageUploader from 'components/my-store/addProduct/ProductImageUpl
 import TipsCard from 'components/my-store/addProduct/TipsCard';
 import VideoUploader from 'components/my-store/addProduct/VideoUploader';
 import CategorySelector from 'components/my-store/product/CategorySelector';
-import { formatRupiahNoRP } from 'components/Rupiah';
+import { formatRupiahNoRP, formatRupiahNoRPHarga } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
 import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X, AlertTriangle } from 'lucide-react';
@@ -1418,7 +1418,7 @@ const AddProductPage: NextPage = () => {
                               <span className="text-red-500">*</span> Harga Diskon</label>
                             <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                               <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                              <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
+                              <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)}
                                 readOnly />
                             </div>
                           </div>
@@ -1490,7 +1490,7 @@ const AddProductPage: NextPage = () => {
                       <div className='flex items-center gap-3'>
                         <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                           <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                          <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} readOnly />
+                          <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)} readOnly />
                         </div>
                         {
                           variations[0]?.options[0] != '' &&
@@ -1747,7 +1747,7 @@ const AddProductPage: NextPage = () => {
                                     type="text"
                                     placeholder="Harga"
                                     className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                    value={formatRupiahNoRP(rowData.discount)}
+                                    value={formatRupiahNoRPHarga(rowData.discount)}
                                     readOnly
                                   />
                                 </div>
