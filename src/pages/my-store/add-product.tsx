@@ -240,6 +240,9 @@ const AddProductPage: NextPage = () => {
   const [brand, setBrand] = useState('');
   const [showDimensionTable, setShowDimensionTable] = useState(false);
   const [isVariant, setIsVariant] = useState<boolean>(false);
+  const [showPercentSuggest, setShowPercentSuggest] = useState(false);
+  const [showPercentSuggestIndex, setShowPercentSuggestIndex] = useState<number | null>(null);
+
   // const variations = [
   //   { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
@@ -1274,16 +1277,37 @@ const AddProductPage: NextPage = () => {
                             <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                               Persen Diskon
                             </label>
-                            <select
-                              value={globalDiscountPercent}
-                              onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                              className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
-                            >
-                              <option value="">Persen</option>
-                              {discountOptions.map(opt => (
-                                <option key={opt} value={opt}>{opt}%</option>
-                              ))}
-                            </select>
+                            <div className="relative">
+                              <div className="relative">
+                                <input
+                                  type="number"
+                                  placeholder="Diskon (%)"
+                                  className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                                  value={globalDiscountPercent}
+                                  onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                                  onFocus={() => setShowPercentSuggest(true)}
+                                  onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
+                                />
+                                {showPercentSuggest && (
+                                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
+                                    {discountOptions
+                                      .filter(opt =>
+                                        globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
+                                      )
+                                      .map(opt => (
+                                        <div
+                                          key={opt}
+                                          className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                          onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
+                                        >
+                                          {opt}%
+                                        </div>
+                                      ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
                           </div>
                           <div className="col-span-12 sm:col-span-3">
                             <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
@@ -1326,16 +1350,35 @@ const AddProductPage: NextPage = () => {
                     <div className="col-span-12 sm:col-span-3">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                         Persen Diskon</label>
-                      <select
-                        value={globalDiscountPercent}
-                        onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                        className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none w-[120px] h-[42px]"
-                      >
-                        <option value="">Pilih Persen</option>
-                        {discountOptions.map(opt => (
-                          <option key={opt} value={opt}>{opt}%</option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Diskon (%)"
+                          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                          value={globalDiscountPercent}
+                          onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                          onFocus={() => setShowPercentSuggest(true)}
+                          onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
+                        />
+                        {showPercentSuggest && (
+                          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
+                            {discountOptions
+                              .filter(opt =>
+                                globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
+                              )
+                              .map(opt => (
+                                <div
+                                  key={opt}
+                                  className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                  onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
+                                >
+                                  {opt}%
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+
                     </div>
                     <div className="col-span-12 sm:col-span-2">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
@@ -1516,30 +1559,59 @@ const AddProductPage: NextPage = () => {
                                 )}
                               </td>
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
-                                <select
-                                  value={rowData.discountPercent || ''}
-                                  onChange={(e) => {
-                                    const newData = [...variantData];
-                                    const percentValue = parseInt(e.target.value, 10) || 0;
-                                    const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-                                    let newDiscountPrice = '';
+                                <div className="relative">
+                                  <input
+                                    type="number"
+                                    placeholder="Diskon (%)"
+                                    className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
+                                    value={rowData.discountPercent || ''}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      const newData = [...variantData];
+                                      const percentValue = parseInt(value, 10) || 0;
+                                      const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+                                      let newDiscountPrice = '';
 
-                                    if (priceValue > 0 && percentValue > 0) {
-                                      newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
-                                    }
+                                      if (priceValue > 0 && percentValue > 0) {
+                                        newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                      }
 
-                                    newData[index] = { ...rowData, discountPercent: e.target.value, discount: newDiscountPrice };
-                                    setVariantData(newData);
-                                  }}
-                                  className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
-                                >
-                                  <option value="">Pilih Persen</option>
-                                  {discountOptions.map(opt => (
-                                    <option key={opt} value={opt}>{opt}%</option>
-                                  ))}
-                                </select>
+                                      newData[index] = { ...rowData, discountPercent: value, discount: newDiscountPrice };
+                                      setVariantData(newData);
+                                    }}
+                                    onFocus={() => setShowPercentSuggestIndex(index)}
+                                    onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)} // agar tetap bisa klik dropdown
+                                  />
+
+                                  {showPercentSuggestIndex === index && (
+                                    <div
+                                      className="absolute top-full mt-1 w-full z-50 bg-white border border-gray-300 rounded-md shadow-md"
+                                      style={{ scrollbarWidth: 'none' }}
+                                    >
+                                      {discountOptions
+                                        .filter(opt =>
+                                          rowData.discountPercent === '' || opt.toString() !== rowData.discountPercent
+                                        )
+                                        .map(opt => (
+                                          <div
+                                            key={opt}
+                                            className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                            onMouseDown={() => {
+                                              const newData = [...variantData];
+                                              const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+                                              const newDiscountPrice = priceValue > 0 ? String(priceValue - (priceValue * (opt / 100))) : '';
+
+                                              newData[index] = { ...rowData, discountPercent: opt.toString(), discount: newDiscountPrice };
+                                              setVariantData(newData);
+                                            }}
+                                          >
+                                            {opt}%
+                                          </div>
+                                        ))}
+                                    </div>
+                                  )}
+                                </div>
                               </td>
-
                               <td className="px-4 py-4 border border-[#AAAAAA]">
                                 <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
                                   <span className="text-[15px] text-[#555555] mr-2">Rp</span>
