@@ -194,7 +194,7 @@ const AddProductPage: NextPage = () => {
   // ];
   const setTipKey = useTipsStore((s) => s.setTipKey);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
+  console.log('errors', errors)
   const [snackbar, setSnackbar] = useState<{ message: string; type?: 'success' | 'error' | 'info'; isOpen: boolean; }>({ message: '', type: 'info', isOpen: false });
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
@@ -235,7 +235,7 @@ const AddProductPage: NextPage = () => {
   ]);
   const [dragStartIndex, setDragStartIndex] = useState<number | null>(null);
   const [globalPrice, setGlobalPrice] = useState('');
-  const [globalStock, setGlobalStock] = useState('');
+  const [globalStock, setGlobalStock] = useState('1');
   const [globalDiscount, setGlobalDiscount] = useState('');
   const [globalDiscountPercent, setGlobalDiscountPercent] = useState('');
   const [variantData, setVariantData] = useState<VariantRowData[]>([]); // [ [row0], [row1], ... ]
@@ -243,6 +243,8 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
+  console.log('variations', variations)
+  console.log('variations', variantData)
   // console.log(variantData)
   //jadwal ditampilkan 
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
@@ -592,9 +594,47 @@ const AddProductPage: NextPage = () => {
     if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
     if (selectedImages.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
     if (!promoImage) newErrors.promo = 'Gambar promosi wajib diunggah';
-    if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
-    if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
-    if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Pengiriman wajib diisi';
+    if (!isVariant) {
+      if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
+      if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
+      if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Pengiriman wajib diisi';
+    }
+    if (isVariant) {
+      const optionCount1 = variations[0]?.options?.length ?? 0;
+      const optionCount2 = variations[1]?.options?.length ?? 0;
+
+      const totalVariant = variations?.length > 1
+        ? (optionCount1 - 1) + (optionCount2 - 1)
+        : optionCount1 - 1;
+      console.log(variantData.length, totalVariant)
+      if (!variantData || variantData.length < totalVariant) {
+        newErrors.variant = 'Harga dan stock tidak boleh kosong';
+      }
+
+      for (let i = 0; i < (variantData?.length ?? 0); i++) {
+        if (!variantData[i]?.price) {
+          newErrors[`variantPrice_${i}`] = 'Harga wajib diisi';
+        }
+        if (!variantData[i]?.image) {
+          newErrors[`variantImage_${i}`] = 'Gambar wajib diisi';
+        }
+        if (!variantData[i]?.stock) {
+          newErrors[`variantStock_${i}`] = 'Stock wajib diisi';
+        }
+        if (!variantData[i]?.height) {
+          newErrors[`variantHeight_${i}`] = 'Tinggi wajib diisi';
+        }
+        if (!variantData[i]?.length) {
+          newErrors[`variantLength_${i}`] = 'Panjang wajib diisi';
+        }
+        if (!variantData[i]?.weight) {
+          newErrors[`variantWeight_${i}`] = 'Berat wajib diisi';
+        }
+        if (!variantData[i]?.width) {
+          newErrors[`variantWidth_${i}`] = 'Lebar wajib diisi';
+        }
+      }
+    }
 
     // videoFile tidak wajib
 
@@ -657,11 +697,19 @@ const AddProductPage: NextPage = () => {
         // Tambahkan kombinasi jika nama variasi dan nilai tersedia
         if (variations[0] && warna) combination[variations[0].name] = warna;
         if (variations[1] && ukuran) combination[variations[1].name] = ukuran;
-
+        let discontPercent
+        let discount
+        if (variant.discountPercent > '0') {
+          discontPercent = variant.discountPercent;
+          discount = variant.discount;
+        } else {
+          discontPercent = 0;
+          discount = variant?.price?.replace(/\./g, '')
+        }
         return {
           id: Date.now() + index, // id sementara
           combination,
-          price: variant.price.replace(/\./g, ''),
+          price: variant?.price?.replace(/\./g, ''),
           stock: variant.stock,
           sku: variant.stock, // sementara pakai stock sebagai sku
           image: variant.image ? { preview: URL.createObjectURL(variant.image) } : null,
@@ -669,8 +717,8 @@ const AddProductPage: NextPage = () => {
           length: variant.length,
           width: variant.width,
           height: variant.height,
-          discount: variant.discount,
-          discountPercent: variant.discountPercent,
+          discount: discontPercent,
+          discountPercent: discount,
         };
       }).filter(Boolean); // buang yang null (kombinasi kosong)
 
@@ -682,19 +730,27 @@ const AddProductPage: NextPage = () => {
           formData.append(`variant_images[${i}]`, v.image);
         }
       });
-
+      formData.append('shippingWeight', String(variantData[0]?.weight ?? 0));
+      formData.append('length', String(variantData[0]?.length ?? 0));
+      formData.append('width', String(variantData[0]?.width ?? 0));
+      formData.append('height', String(variantData[0]?.height ?? 0));
     } else {
-      formData.append('price', globalPrice.replace(/\./g, ''));
+      formData.append('price', globalPrice?.replace(/\./g, ''));
       formData.append('stock', globalStock);
-      formData.append('price_discount', globalDiscount);
-      formData.append('discount', globalDiscountPercent);
+      formData.append('shippingWeight', globalWeight);
+      formData.append('length', globalLength);
+      formData.append('width', globalWidth);
+      formData.append('height', globalHeight);
+      if (globalDiscountPercent > '0') {
+        formData.append('price_discount', globalDiscount);
+        formData.append('discount', globalDiscountPercent);
+      } else {
+        formData.append('price_discount', globalPrice?.replace(/\./g, ''));
+        formData.append('discount', '0');
+      }
     }
 
     // Berat & Dimensi
-    formData.append('shippingWeight', globalWeight);
-    formData.append('length', globalLength);
-    formData.append('width', globalWidth);
-    formData.append('height', globalHeight);
     formData.append('packageDimensions', JSON.stringify({
       length: globalLength,
       width: globalWidth,
@@ -704,7 +760,7 @@ const AddProductPage: NextPage = () => {
     // Spesifikasi (sementara hardcoded, bisa diganti sesuai input UI)
     formData.append('specifications', JSON.stringify({
       Merek: brand,
-      'Negara Asal': '2',
+      'Negara Asal': countryOrigin,
     }));
 
     try {
@@ -712,7 +768,7 @@ const AddProductPage: NextPage = () => {
       if (res?.data?.status === 'success') {
         setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        window.location.href = '/my-store/product';
+        // window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
@@ -1074,8 +1130,8 @@ const AddProductPage: NextPage = () => {
                               Stok
                             </label>
                             <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                              <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
-                                value={globalStock || 0}
+                              <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                                value={globalStock}
                                 onChange={(e) => setGlobalStock(e.target.value)} />
                             </div>
                           </div>
@@ -1104,21 +1160,13 @@ const AddProductPage: NextPage = () => {
                             </div>
                           </div>
                         </div>
-                        {errors.globalPrice && errors.globalStock ? (
-                          <div className="text-red-500 text-sm mt-1">Harga dan Stok wajib diisi</div>
-                        ) : errors.globalPrice ? (
-                          <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
-                        ) : errors?.globalStock && (
-                          <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
-                        )}
-
                       </>
                   }
                 </div>
               </div>
               {
                 isVariant &&
-                <div className="mb-6 mt-2">
+                <div className="mb-2 mt-2">
                   <div className="flex items-center gap-4 items-end " onMouseEnter={() => setTipKey('priceStock')}
                     onMouseLeave={() => setTipKey('default')}>
                     <div className="col-span-12 sm:col-span-5 ">
@@ -1137,7 +1185,7 @@ const AddProductPage: NextPage = () => {
                         Stok
                       </label>
                       <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                        <input type="text" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock || 0} onChange={(e) => setGlobalStock(e.target.value)} />
+                        <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
                       </div>
                     </div>
                     <div className="col-span-12 sm:col-span-3">
@@ -1173,6 +1221,14 @@ const AddProductPage: NextPage = () => {
                   </div>
                 </div>
               }
+              {errors.globalPrice && errors.globalStock ? (
+                <div className="text-red-500 text-sm mt-1">Harga dan Stok wajib diisi</div>
+              ) : errors.globalPrice ? (
+                <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
+              ) : errors?.globalStock && (
+                <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
+              )}
+
               <div className="overflow-x-auto"
                 onMouseEnter={() => setTipKey('variation')}
                 onMouseLeave={() => setTipKey('default')}>
@@ -1201,10 +1257,10 @@ const AddProductPage: NextPage = () => {
                           Stok
                         </th>
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                          Harga Setelah Diskon
+                          Persen Diskon
                         </th>
                         <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">
-                          Persen Diskon
+                          Harga Setelah Diskon
                         </th>
                       </tr>
                     </thead>
@@ -1261,6 +1317,11 @@ const AddProductPage: NextPage = () => {
                                           </div>
                                         )}
                                       </div>
+                                      {errors[`variantImage_${index}`] && (
+                                        <div className="text-red-500 text-sm mt-1">
+                                          {errors[`variantImage_${index}`]}
+                                        </div>
+                                      )}
                                     </div>
                                   </td>
                                 )}
@@ -1294,11 +1355,16 @@ const AddProductPage: NextPage = () => {
                                     }}
                                   />
                                 </div>
+                                {errors[`variantPrice_${index}`] && (
+                                  <div className="text-red-500 text-sm mt-1">
+                                    {errors[`variantPrice_${index}`]}
+                                  </div>
+                                )}
                               </td>
 
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={100}>
                                 <input
-                                  type="text"
+                                  type="number"
                                   placeholder="Stock"
                                   className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
                                   value={rowData.stock}
@@ -1308,21 +1374,12 @@ const AddProductPage: NextPage = () => {
                                     setVariantData(newData);
                                   }}
                                 />
+                                {errors[`variantStock_${index}`] && (
+                                  <div className="text-red-500 text-sm mt-1">
+                                    {errors[`variantStock_${index}`]}
+                                  </div>
+                                )}
                               </td>
-
-                              <td className="px-4 py-4 border border-[#AAAAAA]">
-                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
-                                  <span className="text-[15px] text-[#555555] mr-2">Rp</span>
-                                  <input
-                                    type="text"
-                                    placeholder="Harga"
-                                    className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                    value={formatRupiahNoRP(rowData.discount)}
-                                    readOnly
-                                  />
-                                </div>
-                              </td>
-
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
                                 <select
                                   value={rowData.discountPercent || ''}
@@ -1347,6 +1404,19 @@ const AddProductPage: NextPage = () => {
                                   ))}
                                 </select>
                               </td>
+
+                              <td className="px-4 py-4 border border-[#AAAAAA]">
+                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                  <span className="text-[15px] text-[#555555] mr-2">Rp</span>
+                                  <input
+                                    type="text"
+                                    placeholder="Harga"
+                                    className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
+                                    value={formatRupiahNoRP(rowData.discount)}
+                                    readOnly
+                                  />
+                                </div>
+                              </td>
                             </tr>
                           )
                         })
@@ -1357,6 +1427,9 @@ const AddProductPage: NextPage = () => {
 
                   </table>
                 }
+                {errors.variant && (
+                  <div className="text-red-500 text-sm mt-1">{errors.variant}</div>
+                )}
               </div>
 
               {/* Info Tambahan */}
@@ -1386,18 +1459,18 @@ const AddProductPage: NextPage = () => {
                   </label>
                   <div className="flex items-center gap-3 mt-4">
                     <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                      <input type="text" placeholder="Berat" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
+                      <input type="number" placeholder="Berat" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
                         onChange={(e) => setGlobalWeight(e.target.value)} />
                       <span className="text-[15px] text-[#555555]">Gr</span>
                     </div>
                     <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                      <input type="text" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                      <input type="number" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
                         value={globalWidth} onChange={(e) => setGlobalWidth(e.target.value)} />
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <input type="text" placeholder="Panjang" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                      <input type="number" placeholder="Panjang" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
                         value={globalLength} onChange={(e) => setGlobalLength(e.target.value)} />
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <input type="text" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
+                      <input type="number" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
                         value={globalHeight} onChange={(e) => setGlobalHeight(e.target.value)} />
                       <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
                       <span className="text-[15px] text-[#555555]">Cm</span>
@@ -1461,7 +1534,9 @@ const AddProductPage: NextPage = () => {
                       <tbody className="bg-white divide-y divide-gray-200">
                         {combinations.map((variation, vIndex) =>
                           variation.sizes.map((size, sIndex) => {
-                            const rowData = variantData[sIndex] || {};
+                            const index = vIndex * variation.sizes.length + sIndex;
+                            const rowData = variantData[index] || {};
+
                             return (
                               <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
                                 {sIndex === 0 && variation.color !== '' && (
@@ -1472,6 +1547,7 @@ const AddProductPage: NextPage = () => {
                                     <span className="font-medium text-gray-900 text-[14px]">{variation.color}</span>
                                   </td>
                                 )}
+
                                 {variations[1]?.name && (
                                   <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] align-middle border border-[#AAAAAA] text-center" width={100}>
                                     {size || ''}
@@ -1482,57 +1558,95 @@ const AddProductPage: NextPage = () => {
                                 <td className="px-4 py-4 border border-[#AAAAAA]" width={150}>
                                   <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-3">
                                     <input
-                                      type="text"
+                                      type="number"
                                       placeholder="Berat"
                                       value={rowData.weight || ''}
                                       onChange={(e) => {
                                         const updated = [...variantData];
-                                        updated[sIndex] = { ...rowData, weight: e.target.value };
+                                        updated[index] = { ...rowData, weight: e.target.value };
                                         setVariantData(updated);
                                       }}
                                       className="w-full p-1.5 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
                                     />
                                     <span className="text-[14px] text-gray-500 ml-2">gr</span>
                                   </div>
+                                  {errors[`variantWeight_${index}`] && (
+                                    <div className="text-red-500 text-sm mt-1">
+                                      {errors[`variantWeight_${index}`]}
+                                    </div>
+                                  )}
                                 </td>
 
                                 {/* Dimensi */}
                                 <td className="px-4 py-4 border border-[#AAAAAA]">
                                   <div className="border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between gap-2">
-                                    <input type="text" placeholder="Lebar" className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
+                                    <input
+                                      type="number"
+                                      placeholder="Lebar"
+                                      className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
                                       value={rowData.width || ''}
                                       onChange={(e) => {
                                         const updated = [...variantData];
-                                        updated[sIndex] = { ...rowData, width: e.target.value };
+                                        updated[index] = { ...rowData, width: e.target.value };
                                         setVariantData(updated);
-                                      }} />
+                                      }}
+                                    />
                                     <p className="text-[#AAAAAA]">|</p>
-                                    <input type="text" placeholder="Panjang" className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
+                                    <input
+                                      type="number"
+                                      placeholder="Panjang"
+                                      className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
                                       value={rowData.length || ''}
                                       onChange={(e) => {
                                         const updated = [...variantData];
-                                        updated[sIndex] = { ...rowData, length: e.target.value };
+                                        updated[index] = { ...rowData, length: e.target.value };
                                         setVariantData(updated);
-                                      }} />
+                                      }}
+                                    />
                                     <p className="text-[#AAAAAA]">|</p>
-                                    <input type="text" placeholder="Tinggi" className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
+                                    <input
+                                      type="number"
+                                      placeholder="Tinggi"
+                                      className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
                                       value={rowData.height || ''}
                                       onChange={(e) => {
                                         const updated = [...variantData];
-                                        updated[sIndex] = { ...rowData, height: e.target.value };
+                                        updated[index] = { ...rowData, height: e.target.value };
                                         setVariantData(updated);
-                                      }} />
+                                      }}
+                                    />
                                     <p className="text-[#AAAAAA]">|</p>
                                     <p className="text-[#555555]">Cm</p>
                                   </div>
+                                  <div>
+                                    {errors[`variantWidth_${index}`] && (
+                                      <span className="text-red-500 text-sm mt-1">
+                                        {errors[`variantWidth_${index}`]},
+                                      </span>
+                                    )}
+                                    {errors[`variantLength_${index}`] && (
+                                      <span className="text-red-500 text-sm mt-1  ml-1">
+                                        {errors[`variantLength_${index}`]},
+                                      </span>
+                                    )}
+                                    {errors[`variantHeight_${index}`] && (
+                                      <span className="text-red-500 text-sm mt-1 ml-1">
+                                        {errors[`variantHeight_${index}`]}
+                                      </span>
+                                    )}
+                                  </div>
                                 </td>
                               </tr>
-                            )
+                            );
                           })
                         )}
+
                       </tbody>
 
                     </table>
+                    {errors.variant && (
+                      <div className="text-red-500 text-sm mt-1">{errors.variant}</div>
+                    )}
                   </div>
                 )}
                 <div onMouseEnter={() => setTipKey('dangerousGoods')}
