@@ -1,6 +1,7 @@
 import DateTimePicker from 'components/DateTimePicker';
 import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
+import { ModalError } from 'components/ModalError';
 import CropModal from 'components/my-store/addProduct/CropModal';
 import ProductImageUploader from 'components/my-store/addProduct/ProductImageUploader';
 import TipsCard from 'components/my-store/addProduct/TipsCard';
@@ -9,11 +10,12 @@ import CategorySelector from 'components/my-store/product/CategorySelector';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
-import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X } from 'lucide-react';
+import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X, AlertTriangle } from 'lucide-react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
@@ -42,8 +44,8 @@ const InfoCard = ({ title, children }: { title: string; children: React.ReactNod
 
 
 // Komponen input dengan label dan character counter
-const TextInput = ({ label, placeholder, maxLength, value, setValue, required = false }: { label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
-  <div>
+const TextInput = ({ id, label, placeholder, maxLength, value, setValue, required = false }: { id?: string; label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
+  <div id={id}>
     <label className="text-[#333333] font-bold text-[14px]">
       {required && <span className="text-red-500">*</span>} {label}
     </label>
@@ -70,6 +72,7 @@ const TextAreaInput = ({
   value,
   setValue,
   required = false,
+  id,
 }: {
   label: string,
   placeholder: string,
@@ -77,6 +80,7 @@ const TextAreaInput = ({
   value: string,
   setValue: (val: string) => void,
   required?: boolean
+  id?: string
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,7 +98,7 @@ const TextAreaInput = ({
   }, [value]);
 
   return (
-    <div>
+    <div id={id}>
       <label className="text-[#333333] font-bold text-[14px]">
         {required && <span className="text-red-500">*</span>} {label}
       </label>
@@ -240,6 +244,9 @@ const AddProductPage: NextPage = () => {
   const [brand, setBrand] = useState('');
   const [showDimensionTable, setShowDimensionTable] = useState(false);
   const [isVariant, setIsVariant] = useState<boolean>(false);
+  const [showPercentSuggest, setShowPercentSuggest] = useState(false);
+  const [showPercentSuggestIndex, setShowPercentSuggestIndex] = useState<number | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   // const variations = [
   //   { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
@@ -312,6 +319,29 @@ const AddProductPage: NextPage = () => {
 
   const [countryOrigin, setCountryOrigin] = useState('');
 
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState('');
+  const scrollToFirstError = (errors: { [key: string]: string }) => {
+    const firstErrorKey = Object.keys(errors)[0];
+    if (!firstErrorKey) return;
+
+    // Coba temukan elemennya
+    const element = document.getElementById(firstErrorKey);
+    if (element) {
+      // Gulir elemen ke tengah layar
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+
+      // Beri highlight visual sementara (opsional tapi sangat membantu)
+      element.style.transition = 'background-color 0.5s ease';
+      element.style.backgroundColor = '#fff2f2'; // Warna highlight merah muda
+      setTimeout(() => {
+        element.style.backgroundColor = ''; // Hapus highlight setelah 2 detik
+      }, 2000);
+    }
+  };
   useEffect(() => {
     if (scheduleDate) {
       const date = new Date(scheduleDate);
@@ -637,14 +667,13 @@ const AddProductPage: NextPage = () => {
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
-    if (!productName.trim()) newErrors.productName = 'Nama produk wajib diisi';
-    if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
-    if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
-    if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
-    if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
-    if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
     if (selectedImages?.length === 0) newErrors.images = 'Minimal 1 gambar utama harus diunggah';
     if (!promoImage) newErrors.promo = 'Gambar promosi wajib diunggah';
+    if (!productName.trim()) newErrors.productName = 'Nama produk wajib diisi';
+    if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
+    if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
+    if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
+    if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
     if (!isVariant) {
       if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
       if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
@@ -666,9 +695,6 @@ const AddProductPage: NextPage = () => {
         if (!variantData[i]?.price) {
           newErrors[`variantPrice_${i}`] = 'Harga wajib diisi';
         }
-        if (!variantData[i]?.image) {
-          newErrors[`variantImage_${i}`] = 'Gambar wajib diisi';
-        }
         if (!variantData[i]?.stock) {
           newErrors[`variantStock_${i}`] = 'Stock wajib diisi';
         }
@@ -686,6 +712,7 @@ const AddProductPage: NextPage = () => {
         }
       }
     }
+    if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
 
     // videoFile tidak wajib
 
@@ -694,7 +721,23 @@ const AddProductPage: NextPage = () => {
   };
 
   const handleSave = async (status: 'PUBLISHED' | 'ARCHIVED') => {
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      setErrors(currentErrors => {
+        const firstErrorMessage = Object.values(currentErrors)[0];
+
+        // 1. Tampilkan MODAL dengan pesan error pertama
+        setErrorModalMessage(firstErrorMessage || 'Harap periksa kembali data yang Anda masukkan.');
+        setIsErrorModalOpen(true);
+
+        // 2. Gulir ke elemen yang error (logika ini tetap sama)
+        scrollToFirstError(currentErrors);
+
+        return currentErrors;
+      });
+
+      return; // Hentikan eksekusi
+    }
+
     setLoading(true);
     const formData = new FormData();
 
@@ -819,7 +862,7 @@ const AddProductPage: NextPage = () => {
       if (res?.data?.status === 'success') {
         setLoading(false);
         setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        // window.location.href = '/my-store/product';
+        window.location.href = '/my-store/product';
         localStorage.removeItem('EditProduct');
       }
     } catch (error) {
@@ -985,6 +1028,7 @@ const AddProductPage: NextPage = () => {
 
               <div className="rounded-lg mb-6">
                 <div
+
                   onMouseEnter={() => setTipKey('photo')}
                   onMouseLeave={() => setTipKey('default')}>
                   <ProductImageUploader
@@ -1009,6 +1053,7 @@ const AddProductPage: NextPage = () => {
 
               <div className="mb-6 space-y-4">
                 <div
+                  id="productName"
                   onMouseEnter={() => setTipKey('name')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Nama Produk" placeholder="Masukkan Nama Produk" maxLength={255} value={productName} setValue={setProductName} required />
@@ -1021,6 +1066,7 @@ const AddProductPage: NextPage = () => {
                   <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
                 </div>
                 <div
+                  id="category"
                   onMouseEnter={() => setTipKey('category')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
@@ -1039,6 +1085,7 @@ const AddProductPage: NextPage = () => {
                   )}
                 </div>
                 <div
+                  id="description"
                   onMouseEnter={() => setTipKey('description')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
@@ -1047,6 +1094,7 @@ const AddProductPage: NextPage = () => {
                   )}
                 </div>
                 <div
+                  id="brand"
                   onMouseEnter={() => setTipKey('brand')}
                   onMouseLeave={() => setTipKey('default')}>
                   <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
@@ -1055,6 +1103,7 @@ const AddProductPage: NextPage = () => {
                   )}
                 </div>
                 <div
+                  id="countryOrigin"
                   onMouseEnter={() => setTipKey('brand')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
@@ -1244,7 +1293,9 @@ const AddProductPage: NextPage = () => {
                         </div>
                       )}</div> :
                       <>
-                        <div className="flex items-center gap-4 items-end mt-4 w-[75%]"
+                        <div
+                          id="globalPrice"
+                          className="flex items-center gap-4 items-end mt-4 w-[75%]"
                           onMouseEnter={() => setTipKey('priceStock')}
                           onMouseLeave={() => setTipKey('default')}>
                           <div className="col-span-12 sm:col-span-5">
@@ -1274,16 +1325,37 @@ const AddProductPage: NextPage = () => {
                             <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                               Persen Diskon
                             </label>
-                            <select
-                              value={globalDiscountPercent}
-                              onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                              className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
-                            >
-                              <option value="">Persen</option>
-                              {discountOptions.map(opt => (
-                                <option key={opt} value={opt}>{opt}%</option>
-                              ))}
-                            </select>
+                            <div className="relative">
+                              <div className="relative">
+                                <input
+                                  type="number"
+                                  placeholder="Diskon (%)"
+                                  className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                                  value={globalDiscountPercent}
+                                  onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                                  onFocus={() => setShowPercentSuggest(true)}
+                                  onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
+                                />
+                                {showPercentSuggest && (
+                                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
+                                    {discountOptions
+                                      .filter(opt =>
+                                        globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
+                                      )
+                                      .map(opt => (
+                                        <div
+                                          key={opt}
+                                          className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                          onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
+                                        >
+                                          {opt}%
+                                        </div>
+                                      ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
                           </div>
                           <div className="col-span-12 sm:col-span-3">
                             <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
@@ -1326,16 +1398,35 @@ const AddProductPage: NextPage = () => {
                     <div className="col-span-12 sm:col-span-3">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
                         Persen Diskon</label>
-                      <select
-                        value={globalDiscountPercent}
-                        onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                        className="px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none w-[120px] h-[42px]"
-                      >
-                        <option value="">Pilih Persen</option>
-                        {discountOptions.map(opt => (
-                          <option key={opt} value={opt}>{opt}%</option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder="Diskon (%)"
+                          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                          value={globalDiscountPercent}
+                          onChange={(e) => setGlobalDiscountPercent(e.target.value)}
+                          onFocus={() => setShowPercentSuggest(true)}
+                          onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
+                        />
+                        {showPercentSuggest && (
+                          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
+                            {discountOptions
+                              .filter(opt =>
+                                globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
+                              )
+                              .map(opt => (
+                                <div
+                                  key={opt}
+                                  className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                  onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
+                                >
+                                  {opt}%
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
+
                     </div>
                     <div className="col-span-12 sm:col-span-2">
                       <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
@@ -1365,6 +1456,7 @@ const AddProductPage: NextPage = () => {
               )}
 
               <div className="overflow-x-auto"
+                id="variant"
                 onMouseEnter={() => setTipKey('variation')}
                 onMouseLeave={() => setTipKey('default')}>
                 {
@@ -1516,30 +1608,82 @@ const AddProductPage: NextPage = () => {
                                 )}
                               </td>
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
-                                <select
-                                  value={rowData.discountPercent || ''}
-                                  onChange={(e) => {
-                                    const newData = [...variantData];
-                                    const percentValue = parseInt(e.target.value, 10) || 0;
-                                    const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-                                    let newDiscountPrice = '';
+                                {/* Wrapper untuk input, tidak perlu 'relative' lagi tapi tidak apa-apa jika ada */}
+                                <div>
+                                  <input
+                                    type="number"
+                                    placeholder="Diskon (%)"
+                                    className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
+                                    value={rowData.discountPercent || ''}
+                                    onChange={(e) => {
+                                      // Logika onChange Anda tetap sama, tidak perlu diubah
+                                      const value = e.target.value;
+                                      const newData = [...variantData];
+                                      const percentValue = parseInt(value, 10) || 0;
+                                      const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+                                      let newDiscountPrice = '';
 
-                                    if (priceValue > 0 && percentValue > 0) {
-                                      newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
-                                    }
+                                      if (priceValue > 0 && percentValue > 0) {
+                                        newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                      }
 
-                                    newData[index] = { ...rowData, discountPercent: e.target.value, discount: newDiscountPrice };
-                                    setVariantData(newData);
-                                  }}
-                                  className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
-                                >
-                                  <option value="">Pilih Persen</option>
-                                  {discountOptions.map(opt => (
-                                    <option key={opt} value={opt}>{opt}%</option>
-                                  ))}
-                                </select>
+                                      newData[index] = { ...rowData, discountPercent: value, discount: newDiscountPrice };
+                                      setVariantData(newData);
+                                    }}
+                                    // UBAH onFocus untuk MENGHITUNG POSISI
+                                    onFocus={(e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      setDropdownPosition({
+                                        top: rect.bottom, // Posisi bawah input (relatif ke layar)
+                                        left: rect.left,  // Posisi kiri input (relatif ke layar)
+                                        width: rect.width, // Lebar dropdown sama dengan input
+                                      });
+                                      setShowPercentSuggestIndex(index);
+                                    }}
+                                    onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)}
+                                  />
+
+                                  {/* Dropdown sekarang dirender via Portal. 
+      Tidak ada output visual di sini, tapi akan muncul di <body>
+    */}
+                                  {showPercentSuggestIndex === index && createPortal(
+                                    <div
+                                      className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
+                                      style={{
+                                        position: 'fixed', // Gunakan 'fixed' agar benar-benar melayang
+                                        top: `${dropdownPosition.top + 4}px`, // +4px untuk memberi sedikit jarak
+                                        left: `${dropdownPosition.left}px`,
+                                        width: `${dropdownPosition.width}px`,
+                                        zIndex: 9999, // z-index super tinggi untuk memastikan di paling atas
+                                      }}
+                                    >
+                                      {discountOptions
+                                        .filter(opt =>
+                                          rowData.discountPercent === '' || opt.toString() !== rowData.discountPercent
+                                        )
+                                        .map(opt => (
+                                          <div
+                                            key={opt}
+                                            className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                            // event onMouseDown untuk memilih opsi
+                                            onMouseDown={() => {
+                                              const newData = [...variantData];
+                                              const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+                                              const newDiscountPrice = priceValue > 0 ? String(priceValue - (priceValue * (opt / 100))) : '';
+
+                                              newData[index] = { ...rowData, discountPercent: opt.toString(), discount: newDiscountPrice };
+                                              setVariantData(newData);
+                                              setShowPercentSuggestIndex(null); // Langsung tutup dropdown setelah dipilih
+                                            }}
+                                          >
+                                            {opt}%
+                                          </div>
+                                        ))}
+                                    </div>,
+                                    document.body // Ini adalah target Portal
+                                  )}
+                                </div>
                               </td>
-
                               <td className="px-4 py-4 border border-[#AAAAAA]">
                                 <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
                                   <span className="text-[15px] text-[#555555] mr-2">Rp</span>
@@ -1587,6 +1731,7 @@ const AddProductPage: NextPage = () => {
                 </div>
 
                 <div className='mt-[-15px]'
+                  id="globalDelivry"
                   onMouseEnter={() => setTipKey('weightDimension')}
                   onMouseLeave={() => setTipKey('default')}>
                   <label className="text-[#333333] font-bold text-[14px]">
@@ -1843,7 +1988,9 @@ const AddProductPage: NextPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="relative" onMouseEnter={() => setTipKey('schedule')}
+                  <div className="relative"
+                    id="schedule"
+                    onMouseEnter={() => setTipKey('schedule')}
                     onMouseLeave={() => setTipKey('default')}>
                     <label className="text-[#333333] font-bold text-[14px]">
                       Jadwal Ditampilkan
@@ -1908,6 +2055,32 @@ const AddProductPage: NextPage = () => {
         )
       }
       {loading && <Loading />}
+      <ModalError
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        title="Input Belum Lengkap"
+        hideCloseButton={true} // Sembunyikan tombol 'X' agar user fokus pada tombol 'Mengerti'
+      >
+        <div className="flex flex-col items-center text-center">
+          {/* Ikon Peringatan */}
+          <div className="mb-5">
+            <AlertTriangle className="w-20 h-20 text-yellow-400" />
+          </div>
+
+          {/* Pesan Error */}
+          <p className="text-base text-gray-600 mb-6">
+            {errorModalMessage}
+          </p>
+
+          {/* Tombol Aksi */}
+          <button
+            onClick={() => setIsErrorModalOpen(false)}
+            className="bg-[#52357B] text-white font-bold w-full py-3 px-8 rounded-lg hover:bg-[#483AA0] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 transition-all duration-200"
+          >
+            Saya Mengerti
+          </button>
+        </div>
+      </ModalError>
     </MyStoreLayout >
   );
 };
