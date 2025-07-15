@@ -923,7 +923,7 @@ const AddProductPage: NextPage = () => {
           setMaxOrder(data.max_purchase || 1000);
           setIsUsed(String(data.is_used || 0));
           setIsCodEnabled(String(data.is_cod_enabled || 0));
-          setIsProductPreOrder(String(data.delivery?.is_pre_order || '1'));
+          setIsProductPreOrder(String(data.delivery?.is_pre_order || 0));
           setIsHazardous(String(data.delivery?.is_dangerous_product || 0));
           setCategory(data.category || '');
           setIdCategorie(data.category_id || undefined);
@@ -1931,13 +1931,8 @@ const AddProductPage: NextPage = () => {
                 )}
                 <div onMouseEnter={() => setTipKey('dangerousGoods')}
                   onMouseLeave={() => setTipKey('default')}>
-                  <RadioGroup
-                    label="Pre Order"
-                    name="preorder"
-                    options={['Tidak', 'Ya']}
-                    defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'}
-                    onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')}
-                  />
+                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} defaultValue={isHazardous === '1' ? 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar' : 'Tidak'}
+                    onChange={(value) => setIsHazardous(value === 'Tidak' ? '0' : '1')} />
                 </div>
                 <div onMouseEnter={() => setTipKey('preorder')}
                   onMouseLeave={() => setTipKey('default')}>
