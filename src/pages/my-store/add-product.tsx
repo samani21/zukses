@@ -14,6 +14,7 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
@@ -242,7 +243,7 @@ const AddProductPage: NextPage = () => {
   const [isVariant, setIsVariant] = useState<boolean>(false);
   const [showPercentSuggest, setShowPercentSuggest] = useState(false);
   const [showPercentSuggestIndex, setShowPercentSuggestIndex] = useState<number | null>(null);
-
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   // const variations = [
   //   { color: 'Merah', sizes: ['Besar', 'Sedang', 'Kecil'] },
   //   { color: 'Oranye', sizes: ['Besar', 'Sedang', 'Kecil'] },
@@ -1559,13 +1560,15 @@ const AddProductPage: NextPage = () => {
                                 )}
                               </td>
                               <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
-                                <div className="relative">
+                                {/* Wrapper untuk input, tidak perlu 'relative' lagi tapi tidak apa-apa jika ada */}
+                                <div>
                                   <input
                                     type="number"
                                     placeholder="Diskon (%)"
                                     className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
                                     value={rowData.discountPercent || ''}
                                     onChange={(e) => {
+                                      // Logika onChange Anda tetap sama, tidak perlu diubah
                                       const value = e.target.value;
                                       const newData = [...variantData];
                                       const percentValue = parseInt(value, 10) || 0;
@@ -1579,14 +1582,32 @@ const AddProductPage: NextPage = () => {
                                       newData[index] = { ...rowData, discountPercent: value, discount: newDiscountPrice };
                                       setVariantData(newData);
                                     }}
-                                    onFocus={() => setShowPercentSuggestIndex(index)}
-                                    onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)} // agar tetap bisa klik dropdown
+                                    // UBAH onFocus untuk MENGHITUNG POSISI
+                                    onFocus={(e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      setDropdownPosition({
+                                        top: rect.bottom, // Posisi bawah input (relatif ke layar)
+                                        left: rect.left,  // Posisi kiri input (relatif ke layar)
+                                        width: rect.width, // Lebar dropdown sama dengan input
+                                      });
+                                      setShowPercentSuggestIndex(index);
+                                    }}
+                                    onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)}
                                   />
 
-                                  {showPercentSuggestIndex === index && (
+                                  {/* Dropdown sekarang dirender via Portal. 
+      Tidak ada output visual di sini, tapi akan muncul di <body>
+    */}
+                                  {showPercentSuggestIndex === index && createPortal(
                                     <div
-                                      className="absolute top-full mt-1 w-full z-50 bg-white border border-gray-300 rounded-md shadow-md"
-                                      style={{ scrollbarWidth: 'none' }}
+                                      className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
+                                      style={{
+                                        position: 'fixed', // Gunakan 'fixed' agar benar-benar melayang
+                                        top: `${dropdownPosition.top + 4}px`, // +4px untuk memberi sedikit jarak
+                                        left: `${dropdownPosition.left}px`,
+                                        width: `${dropdownPosition.width}px`,
+                                        zIndex: 9999, // z-index super tinggi untuk memastikan di paling atas
+                                      }}
                                     >
                                       {discountOptions
                                         .filter(opt =>
@@ -1596,6 +1617,7 @@ const AddProductPage: NextPage = () => {
                                           <div
                                             key={opt}
                                             className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                            // event onMouseDown untuk memilih opsi
                                             onMouseDown={() => {
                                               const newData = [...variantData];
                                               const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
@@ -1603,12 +1625,14 @@ const AddProductPage: NextPage = () => {
 
                                               newData[index] = { ...rowData, discountPercent: opt.toString(), discount: newDiscountPrice };
                                               setVariantData(newData);
+                                              setShowPercentSuggestIndex(null); // Langsung tutup dropdown setelah dipilih
                                             }}
                                           >
                                             {opt}%
                                           </div>
                                         ))}
-                                    </div>
+                                    </div>,
+                                    document.body // Ini adalah target Portal
                                   )}
                                 </div>
                               </td>
