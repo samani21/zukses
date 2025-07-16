@@ -7,7 +7,7 @@ import ProductImageUploader from 'components/my-store/addProduct/ProductImageUpl
 import TipsCard from 'components/my-store/addProduct/TipsCard';
 import VideoUploader from 'components/my-store/addProduct/VideoUploader';
 import CategorySelector from 'components/my-store/product/CategorySelector';
-import { formatRupiahNoRP } from 'components/Rupiah';
+import { formatRupiahNoRP, formatRupiahNoRPHarga } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
 import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X, AlertTriangle } from 'lucide-react';
@@ -234,12 +234,17 @@ async function convertImageUrlToFile(url: string): Promise<File | null> {
   }
 }
 
+type MediaItem = {
+  url: string;
+  type: string;
+};
 
 // Komponen Utama Halaman
 const AddProductPage: NextPage = () => {
   const router = useRouter()
   const params = router?.query;
   const [productName, setProductName] = useState('');
+  const [idProduct, setIdProduct] = useState<number>();
   const [description, setDescription] = useState('');
   const [brand, setBrand] = useState('');
   const [showDimensionTable, setShowDimensionTable] = useState(false);
@@ -257,10 +262,14 @@ const AddProductPage: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
+  const [urlpromoImage, setUrlPromoImage] = useState<string>(''); //foto produk promosi
+  const [urlvideoFile, setUrlVideoFile] = useState<string | null>(null); //video produk
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
   const [category, setCategory] = useState('');
   const discountOptions = Array.from({ length: 14 }, (_, i) => (i + 1) * 5);
-
+  console.log('selectedImages', selectedImages)
+  console.log('promoImage', urlpromoImage)
+  console.log('videoFile', videoFile)
   const [cropModalImage, setCropModalImage] = useState<string | null>(null);
   const [cropCallback, setCropCallback] = useState<((file: File) => void) | null>(null);
   const tipsChecklist = {
@@ -636,7 +645,9 @@ const AddProductPage: NextPage = () => {
 
   const handleVideoChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log('file', file)
     setVideoFile(file ?? null);
+    setUrlVideoFile(null)
   }, []);
 
   useEffect(() => {
@@ -761,7 +772,16 @@ const AddProductPage: NextPage = () => {
     formData.append('min_order', minOrder.toString());
     formData.append('max_order', maxOrder.toString());
     // Gambar & video
-    selectedImages.forEach((img) => formData.append('productPhotos[]', img));
+    selectedImages.forEach((img) => {
+      if (typeof img === 'string') {
+        // Media lama (URL)
+        formData.append('existing_media[]', img);
+      } else if (img instanceof File) {
+        // Media baru (File upload)
+        formData.append('productPhotos[]', img);
+      }
+    });
+
     if (videoFile) formData.append('productVideo', videoFile);
     if (promoImage) formData.append('productPromo', promoImage);
 
@@ -811,8 +831,8 @@ const AddProductPage: NextPage = () => {
           length: variant?.length,
           width: variant.width,
           height: variant.height,
-          discount: discontPercent,
-          discountPercent: discount,
+          discount: discount,
+          discountPercent: discontPercent,
         };
       }).filter(Boolean); // buang yang null (kombinasi kosong)
 
@@ -858,12 +878,34 @@ const AddProductPage: NextPage = () => {
     }));
 
     try {
-      const res = await Post<Response>('zukses', `product`, formData);
-      if (res?.data?.status === 'success') {
-        setLoading(false);
-        setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-        window.location.href = '/my-store/product';
-        localStorage.removeItem('EditProduct');
+      if (idProduct) {
+        // selectedImages.forEach((photo, index) => {
+        //   if (typeof photo === 'string') {
+        //     formData.append(`productPhotosPreview[${index}]`, photo);
+        //   }
+        // });
+        if (urlpromoImage) {
+          formData.append('promoImage', urlpromoImage);
+        }
+        if (urlvideoFile) {
+          formData.append('productVideoPreview', urlvideoFile);
+        }
+
+        const res = await Post<Response>('zukses', `product/${idProduct}`, formData);
+        if (res?.data?.status === 'success') {
+          setLoading(false);
+          setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
+          window.location.href = '/my-store/product'
+          localStorage.removeItem('EditProduct');
+        }
+      } else {
+        const res = await Post<Response>('zukses', `product`, formData);
+        if (res?.data?.status === 'success') {
+          setLoading(false);
+          setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
+          window.location.href = '/my-store/product';
+          localStorage.removeItem('EditProduct');
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -912,6 +954,7 @@ const AddProductPage: NextPage = () => {
           const data = JSON.parse(dataString);
 
           setProductName(data.name || '');
+          setIdProduct(data.id || '');
           setSku(data.sku || '');
           setDescription(data.desc || '');
           const brand = (data.specifications as Specification[])?.find((s) => s.name === 'Merek')?.value || '';
@@ -927,8 +970,21 @@ const AddProductPage: NextPage = () => {
           setIsHazardous(String(data.delivery?.is_dangerous_product || 0));
           setCategory(data.category || '');
           setIdCategorie(data.category_id || undefined);
-          setSelectedImages(data.media.map((m: { url: string }) => m.url));
+          setSelectedImages(
+            data.media
+              .filter((m: MediaItem) => m.type === 'image')
+              .map((m: MediaItem) => m.url)
+          );
+          setVideoFile(
+            data.media
+              .filter((m: MediaItem) => m.type === 'video')
+              .map((m: MediaItem) => m.url)
+          );
+          setUrlVideoFile(data.media
+            .filter((m: MediaItem) => m.type === 'video')
+            .map((m: MediaItem) => m.url))
           setPromoImage(data.image); // string
+          setUrlPromoImage(data.image); // string
           const raw = data?.scheduled_date;
           if (raw) {
             const parsed = new Date(raw.replace(' ', 'T'));
@@ -987,7 +1043,41 @@ const AddProductPage: NextPage = () => {
       }
     }
   }, [params]);
+  // Letakkan fungsi ini di dekat handleVariantImageUpload
+  const handleRemoveVariantImage = (clickedIndex: number) => {
+    const updated = [...variantData];
 
+    // Temukan warna yang sesuai dengan baris yang diklik
+    let targetColor = '';
+    let flatIdx = 0;
+    for (const v of combinations) {
+      const rowCount = v.sizes.length || 1;
+      if (clickedIndex >= flatIdx && clickedIndex < flatIdx + rowCount) {
+        targetColor = v.color;
+        break;
+      }
+      flatIdx += rowCount;
+    }
+
+    if (!targetColor) return; // Keluar jika warna tidak ditemukan
+
+    // Hapus (set ke null) gambar untuk semua varian dengan warna yang sama
+    flatIdx = 0;
+    for (const v of combinations) {
+      const rowCount = v.sizes.length || 1;
+      if (v.color === targetColor) {
+        for (let i = 0; i < rowCount; i++) {
+          const currentIndex = flatIdx + i;
+          if (updated[currentIndex]) {
+            updated[currentIndex].image = null;
+          }
+        }
+      }
+      flatIdx += rowCount;
+    }
+
+    setVariantData(updated);
+  };
   return (
     <MyStoreLayout>
       <div className="min-h-screen font-sans mt-[-10px]">
@@ -1047,7 +1137,7 @@ const AddProductPage: NextPage = () => {
                 <hr className="my-6 border-[#CCCCCC]" />
 
                 <div onMouseEnter={() => setTipKey('video')} onMouseLeave={() => setTipKey('default')}>
-                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} />
+                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} urlvideoFile={urlvideoFile} />
                 </div>
               </div>
 
@@ -1362,7 +1452,7 @@ const AddProductPage: NextPage = () => {
                               <span className="text-red-500">*</span> Harga Diskon</label>
                             <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                               <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                              <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)}
+                              <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)}
                                 readOnly />
                             </div>
                           </div>
@@ -1434,7 +1524,7 @@ const AddProductPage: NextPage = () => {
                       <div className='flex items-center gap-3'>
                         <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                           <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                          <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalDiscount)} readOnly />
+                          <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)} readOnly />
                         </div>
                         {
                           variations[0]?.options[0] != '' &&
@@ -1513,7 +1603,16 @@ const AddProductPage: NextPage = () => {
                                       </span>
                                       <div className="flex justify-center mt-2">
                                         {rowData.image ? (
-                                          <div>
+                                          // --- AWAL PERUBAHAN ---
+                                          <div className="relative w-[60px] h-[60px]">
+                                            <label htmlFor={`variant-img-${index}`} className="cursor-pointer">
+                                              <img
+                                                // Penanganan src yang lebih aman untuk File object atau string URL
+                                                src={rowData.image instanceof File ? URL.createObjectURL(rowData.image) : String(rowData.image)}
+                                                alt="Varian"
+                                                className="w-full h-full object-cover border rounded-[5px]"
+                                              />
+                                            </label>
                                             <input
                                               type="file"
                                               accept="image/*"
@@ -1521,14 +1620,17 @@ const AddProductPage: NextPage = () => {
                                               onChange={(e) => handleVariantImageUpload(index, e)}
                                               id={`variant-img-${index}`}
                                             />
-                                            <label htmlFor={`variant-img-${index}`} className=" mt-1 cursor-pointer">
-                                              <img
-                                                src={typeof rowData.image === 'string' ? rowData.image : URL.createObjectURL(rowData.image)}
-                                                alt="Varian"
-                                                className="w-[60px] h-[60px] object-cover border rounded-[5px]"
-                                              />
-                                            </label>
+                                            {/* Tombol Hapus Gambar */}
+                                            <button
+                                              type="button"
+                                              onClick={() => handleRemoveVariantImage(index)} // Memanggil fungsi hapus
+                                              className="absolute top-[-5px] right-[-5px] bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm font-bold shadow-md hover:bg-red-700"
+                                              aria-label="Hapus gambar"
+                                            >
+                                              &times;
+                                            </button>
                                           </div>
+                                          // --- AKHIR PERUBAHAN ---
                                         ) : (
                                           <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
                                             <input
@@ -1538,7 +1640,7 @@ const AddProductPage: NextPage = () => {
                                               onChange={(e) => handleVariantImageUpload(index, e)}
                                               id={`variant-img-${index}`}
                                             />
-                                            <label htmlFor={`variant-img-${index}`} className="text-xs text-blue-600 mt-1 cursor-pointer">
+                                            <label htmlFor={`variant-img-${index}`} className="cursor-pointer">
                                               <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
                                             </label>
                                           </div>
@@ -1691,7 +1793,7 @@ const AddProductPage: NextPage = () => {
                                     type="text"
                                     placeholder="Harga"
                                     className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                    value={formatRupiahNoRP(rowData.discount)}
+                                    value={formatRupiahNoRPHarga(rowData.discount)}
                                     readOnly
                                   />
                                 </div>
