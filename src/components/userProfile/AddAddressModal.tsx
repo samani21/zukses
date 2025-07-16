@@ -155,7 +155,6 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
     const validateForm = () => {
         const newErrors: typeof errors = {};
         if (!formData.name.trim()) newErrors.name = 'Nama Lengkap tidak boleh kosong';
-        if (!formData.detailAddress.trim()) newErrors.detailAddress = 'Detail alamat tidak boleh kosong';
         if (!formData.phone.trim()) newErrors.phone = 'Nomor Telepon tidak boleh kosong';
         if (!formData.kodePos) {
             newErrors.address = 'Alamat (Provinsi, Kota, Kecamatan, Kode Pos) harus lengkap';
@@ -343,15 +342,17 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                     <TextField
                                         fullWidth
                                         variant="outlined"
-                                        label="Ketik atau klik disini"
+                                        label="Nama Jalan, Gedung dll"
                                         value={formData.fullAddressStreet}
                                         onChange={(e) => handleChange('fullAddressStreet', e.target.value)}
                                         error={!!errors.fullAddressStreet}
                                         helperText={errors.fullAddressStreet}
                                         autoComplete="off"
+                                        multiline
+                                        rows={4}
                                     />
                                 </WrapperInput>
-                                <WrapperInput>
+                                {/* <WrapperInput>
                                     <TextField
                                         fullWidth
                                         variant="outlined"
@@ -365,7 +366,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                     {errors.detailAddress && (
                                         <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
                                     )}
-                                </WrapperInput>
+                                </WrapperInput> */}
                                 {/* <WrapperInput>
                                     <input
                                         id="detailAddress"
