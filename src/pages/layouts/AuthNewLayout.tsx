@@ -1,7 +1,16 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 
 export default function AuthNewLayout({ children }: { children: React.ReactNode }) {
+    const router = useRouter();
+    const [hiddeLogo, setHiddenLogo] = useState<boolean>(false);
+    useEffect(() => {
+        if (router.pathname === '/auth-new/login' || router.pathname === '/auth-new/register') {
+            setHiddenLogo(true)
+        }
+    }, [router])
     return (
         <>
             <Head>
@@ -11,18 +20,23 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
             </Head>
 
             <main className="flex flex-col items-center justify-center min-h-screen bg-[#F1F5F9] font-sans p-4" style={{ letterSpacing: "-0.04em" }}>
-                {/* Logo Utama */}
-                <h1 className="text-[40px] font-semibold text-[#4A52B2] mb-8">
-                    Zukses
-                </h1>
-
-                {/* Kotak Form Login */}
-                {children}
-
-                {/* Teks Footer */}
-                <div className="mt-8 text-center text-[17px] text-[#444444] font-[500] max-w-md">
-                    <p className="font-semibold">Jual Beli mudah, praktis dan aman hanya di zukses</p>
-                    <p>Tempatnya Belanja semua kebutuhanmu</p>
+                <div className="w-[419px] max-w-md bg-white rounded-lg py-4" style={{ boxShadow: "1px 1px 11px rgba(0, 0, 0, 0.1)" }}>
+                    <div className={`p-8 space-y-6 ${hiddeLogo ? 'pb-2' : ''}`}>
+                        {
+                            !hiddeLogo &&
+                            <h1 className="text-[40px] font-semibold text-[#4A52B2] mb-8 text-center">
+                                Zukses
+                            </h1>
+                        }
+                        {children}
+                    </div>
+                    {
+                        hiddeLogo &&
+                        <div className="text-center text-[16px] text-[#444444] font-[500] max-w-md pb-8">
+                            <p className="font-semibold">Jual Beli mudah, praktis dan aman hanya di zukses</p>
+                            <p>Tempatnya Belanja semua kebutuhanmu</p>
+                        </div>
+                    }
                 </div>
             </main>
         </>
