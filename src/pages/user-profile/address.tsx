@@ -191,7 +191,7 @@ const AddressPage = () => {
                                         <span className="font-bold text-[16px] mr-1">{address.name_receiver}</span>
                                         <span className='text-[16px]'> | {address.number_receiver}</span>
                                     </div>
-                                    <p className='mt-2 text-[14px]'>{address.full_address},{address?.detail_address}</p>
+                                    <p className='mt-2 text-[14px]'>{address.full_address}</p>
                                     <p className='mt-[-5px] text-[14px]'>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
                                     <div className="flex gap-2 mt-1">
                                         {address.is_primary ? <span className="text-[#E67514] font-bold text-[14px] py-0.5 rounded-sm">Alamat Utama</span> : ''}
