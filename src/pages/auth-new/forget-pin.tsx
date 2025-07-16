@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 // Komponen untuk ikon Google (inline SVG)
 const GoogleIcon = () => (
@@ -11,17 +10,15 @@ const GoogleIcon = () => (
     </svg>
 );
 
-const RegisterPage: NextPage = () => {
-    const router = useRouter();
-
+const ForgetPinPage: NextPage = () => {
     return (
         <AuthNewLayout>
             <div className="text-center">
-                <h2 className="text-[22px] font-bold text-[#444444]">Daftar Sekarang</h2>
+                <h2 className="text-[22px] font-bold text-[#444444]">Lupa Password</h2>
                 <p className="mt-2 text-[14px] font-medium text-[#444444]">
-                    Sudah punya akun Zukses?{' '}
-                    <span className="font-bold text-[14px] text-[#FF2D60] cursor-pointer" onClick={() => router.push('/auth-new/login')}>
-                        Masuk
+                    Belum punya Akun Zukses?{' '}
+                    <span className="font-bold text-[14px] text-[#FF2D60] cursor-pointer" onClick={() => window.location.href = '/auth-new/register'}>
+                        Daftar
                     </span>
                 </p>
             </div>
@@ -40,15 +37,14 @@ const RegisterPage: NextPage = () => {
                         className="appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                         placeholder="Masukkan Nomor HP atau E-mail"
                     />
-                    <p className="mt-1 text-[12px] font-[500] text-[#888888] text-center">Contoh: 0123456789</p>
+                    <p className="mt-1 text-[12px] ml-4 font-[500] text-[#888888]">Contoh: 0123456789</p>
                 </div>
-
                 <div>
                     <button
                         type="submit"
                         className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[22px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
-                        Selanjutnya
+                        Masuk
                     </button>
                 </div>
             </form>
@@ -56,7 +52,7 @@ const RegisterPage: NextPage = () => {
             {/* Pemisah */}
             <div className="my-6 flex items-center justify-center">
                 <div className="flex-grow w-[81px] border-t border-[#CCCCCC]"></div>
-                <span className="mx-4 text-[14px] font-[500] text-[#666666]">atau daftar dengan</span>
+                <span className="mx-4 text-[14px] font-[500] text-[#666666]">atau masuk dengan</span>
                 <div className="flex-grow w-[81px] border-t border-[#CCCCCC]"></div>
             </div>
 
@@ -86,4 +82,4 @@ const RegisterPage: NextPage = () => {
     );
 };
 
-export default RegisterPage;
+export default ForgetPinPage;
