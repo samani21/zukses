@@ -44,6 +44,7 @@ body {
     user-select: text;
     margin: 0px;
     letter-spacing: -0.04em;
+    line-height: 121%;
 }
 
 .flatpickr-calendar {
