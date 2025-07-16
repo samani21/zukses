@@ -831,8 +831,8 @@ const AddProductPage: NextPage = () => {
           length: variant?.length,
           width: variant.width,
           height: variant.height,
-          discount: discontPercent,
-          discountPercent: discount,
+          discount: discount,
+          discountPercent: discontPercent,
         };
       }).filter(Boolean); // buang yang null (kombinasi kosong)
 
@@ -1043,7 +1043,41 @@ const AddProductPage: NextPage = () => {
       }
     }
   }, [params]);
+  // Letakkan fungsi ini di dekat handleVariantImageUpload
+  const handleRemoveVariantImage = (clickedIndex: number) => {
+    const updated = [...variantData];
 
+    // Temukan warna yang sesuai dengan baris yang diklik
+    let targetColor = '';
+    let flatIdx = 0;
+    for (const v of combinations) {
+      const rowCount = v.sizes.length || 1;
+      if (clickedIndex >= flatIdx && clickedIndex < flatIdx + rowCount) {
+        targetColor = v.color;
+        break;
+      }
+      flatIdx += rowCount;
+    }
+
+    if (!targetColor) return; // Keluar jika warna tidak ditemukan
+
+    // Hapus (set ke null) gambar untuk semua varian dengan warna yang sama
+    flatIdx = 0;
+    for (const v of combinations) {
+      const rowCount = v.sizes.length || 1;
+      if (v.color === targetColor) {
+        for (let i = 0; i < rowCount; i++) {
+          const currentIndex = flatIdx + i;
+          if (updated[currentIndex]) {
+            updated[currentIndex].image = null;
+          }
+        }
+      }
+      flatIdx += rowCount;
+    }
+
+    setVariantData(updated);
+  };
   return (
     <MyStoreLayout>
       <div className="min-h-screen font-sans mt-[-10px]">
@@ -1569,7 +1603,16 @@ const AddProductPage: NextPage = () => {
                                       </span>
                                       <div className="flex justify-center mt-2">
                                         {rowData.image ? (
-                                          <div>
+                                          // --- AWAL PERUBAHAN ---
+                                          <div className="relative w-[60px] h-[60px]">
+                                            <label htmlFor={`variant-img-${index}`} className="cursor-pointer">
+                                              <img
+                                                // Penanganan src yang lebih aman untuk File object atau string URL
+                                                src={rowData.image instanceof File ? URL.createObjectURL(rowData.image) : String(rowData.image)}
+                                                alt="Varian"
+                                                className="w-full h-full object-cover border rounded-[5px]"
+                                              />
+                                            </label>
                                             <input
                                               type="file"
                                               accept="image/*"
@@ -1577,14 +1620,17 @@ const AddProductPage: NextPage = () => {
                                               onChange={(e) => handleVariantImageUpload(index, e)}
                                               id={`variant-img-${index}`}
                                             />
-                                            <label htmlFor={`variant-img-${index}`} className=" mt-1 cursor-pointer">
-                                              <img
-                                                src={typeof rowData.image === 'string' ? rowData.image : URL.createObjectURL(rowData.image)}
-                                                alt="Varian"
-                                                className="w-[60px] h-[60px] object-cover border rounded-[5px]"
-                                              />
-                                            </label>
+                                            {/* Tombol Hapus Gambar */}
+                                            <button
+                                              type="button"
+                                              onClick={() => handleRemoveVariantImage(index)} // Memanggil fungsi hapus
+                                              className="absolute top-[-5px] right-[-5px] bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm font-bold shadow-md hover:bg-red-700"
+                                              aria-label="Hapus gambar"
+                                            >
+                                              &times;
+                                            </button>
                                           </div>
+                                          // --- AKHIR PERUBAHAN ---
                                         ) : (
                                           <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
                                             <input
@@ -1594,7 +1640,7 @@ const AddProductPage: NextPage = () => {
                                               onChange={(e) => handleVariantImageUpload(index, e)}
                                               id={`variant-img-${index}`}
                                             />
-                                            <label htmlFor={`variant-img-${index}`} className="text-xs text-blue-600 mt-1 cursor-pointer">
+                                            <label htmlFor={`variant-img-${index}`} className="cursor-pointer">
                                               <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
                                             </label>
                                           </div>
