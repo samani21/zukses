@@ -193,6 +193,7 @@ const RegisterPage: NextPage = () => {
                             onKeyDown={handleKeyDown}
                             className={`appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[14px] md:text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[14px] md:text-[16px] palceholder:text-[#999999] focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
                             placeholder="Masukkan Nomor HP atau E-mail"
+                            autoComplete='off'
                         />
                     </div>
                     {error && <p className="mt-2 text-[12px] md:text-sm text-red-600 text-center">{error}</p>}

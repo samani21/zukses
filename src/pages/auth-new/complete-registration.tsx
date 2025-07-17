@@ -3,6 +3,25 @@ import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 import { useEffect, useState } from 'react';
+import { Listbox } from '@headlessui/react'
+import { ChevronDown } from 'lucide-react'
+
+const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'))
+const months = [
+    { name: 'Januari', value: '1' },
+    { name: 'Februari', value: '2' },
+    { name: 'Maret', value: '3' },
+    { name: 'April', value: '4' },
+    { name: 'Mei', value: '5' },
+    { name: 'Juni', value: '6' },
+    { name: 'Juli', value: '7' },
+    { name: 'Agustus', value: '8' },
+    { name: 'September', value: '9' },
+    { name: 'Oktober', value: '10' },
+    { name: 'November', value: '11' },
+    { name: 'Desember', value: '12' }
+]
+const years = Array.from({ length: 100 }, (_, i) => (2025 - i).toString())
 
 type FormErrors = {
     fullName?: string;
@@ -50,6 +69,38 @@ const CompleteRegister: NextPage = () => {
         }
     }, [router.isReady]);
 
+    useEffect(() => {
+        const { day, month, year } = birthDate;
+
+        if (day && month && year) {
+            const d = Number(day);
+            const m = Number(month);
+            const y = Number(year);
+
+            if (!isValidDate(d, m, y)) {
+                setErrors((prev) => ({
+                    ...prev,
+                    birthDate: 'Tanggal lahir tidak valid',
+                }));
+            } else {
+                setErrors((prev) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { birthDate, ...rest } = prev;
+                    return rest;
+                });
+            }
+        }
+    }, [birthDate]);
+
+
+    const isValidDate = (d: number, m: number, y: number) => {
+        const date = new Date(y, m - 1, d);
+        return (
+            date.getFullYear() === y &&
+            date.getMonth() === m - 1 &&
+            date.getDate() === d
+        );
+    };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -62,6 +113,14 @@ const CompleteRegister: NextPage = () => {
 
         if (!birthDate.day || !birthDate.month || !birthDate.year) {
             newErrors.birthDate = 'Tanggal lahir wajib diisi';
+        } else {
+            const day = Number(birthDate.day);
+            const month = Number(birthDate.month);
+            const year = Number(birthDate.year);
+
+            if (!isValidDate(day, month, year)) {
+                newErrors.birthDate = 'Tanggal lahir tidak valid';
+            }
         }
 
         if (!password) {
@@ -126,13 +185,13 @@ const CompleteRegister: NextPage = () => {
                         />
                     </div>
                     <div className="w-full">
-                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Nomor HP / Email</label>
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Nama Lengkap</label>
                         <input
                             type="text"
                             placeholder="Nama Lengkap"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full border rounded-[10px] h-[50px] text-[14px] md:text-[16px] mt-2 font-[500] px-3 py-2 border-[#AAAAAA] outline-none"
+                            className="w-full border rounded-[10px] h-[50px] text-[14px] md:text-[16px] mt-2 font-[500] px-3 py-2 border-[#AAAAAA] focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 "
                         />
                         {errors.fullName && (
                             <p className="text-red-500 text-[12px] mt-1 px-3">{errors.fullName}</p>
@@ -192,46 +251,81 @@ const CompleteRegister: NextPage = () => {
                     <div className='w-full'>
                         <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Tanggal Lahir</label>
                         <div className=" flex gap-2 mt-2">
-                            <select
-                                value={birthDate.day}
-                                onChange={(e) => setBirthDate({ ...birthDate, day: e.target.value })}
-                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[14px] md:text-[16px] h-[50px] px-2 py-2"
-                            >
-                                <option value="">Tanggal</option>
-                                {[...Array(31)].map((_, i) => (
-                                    <option key={i + 1} value={i + 1}>
-                                        {i + 1}
-                                    </option>
-                                ))}
-                            </select>
-                            <select
-                                value={birthDate.month}
-                                onChange={(e) => setBirthDate({ ...birthDate, month: e.target.value })}
-                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[14px] md:text-[16px] h-[50px] px-2 py-2"
-                            >
-                                <option value="">Bulan</option>
-                                {[
-                                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                                ].map((month, i) => (
-                                    <option key={month} value={i + 1}>
-                                        {month}
-                                    </option>
-                                ))}
-                            </select>
-                            <select
-                                value={birthDate.year}
-                                onChange={(e) => setBirthDate({ ...birthDate, year: e.target.value })}
-                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[14px] md:text-[16px] h-[50px] px-2 py-2"
-                            >
-                                <option value="">Tahun</option>
-                                {Array.from({ length: 100 }, (_, i) => 2025 - i).map((year) => (
-                                    <option key={year} value={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </select>
+                            {/* Hari */}
+                            <div className="w-[28%]">
+                                <Listbox value={birthDate.day} onChange={(val) => setBirthDate({ ...birthDate, day: val })}>
+                                    {({ open }) => (
+                                        <div className="relative">
+                                            <Listbox.Button
+                                                className={`w-full h-[50px] rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
+                                                    } px-3 text-left flex items-center justify-between text-[14px]`}
+                                            >
+                                                {birthDate.day || 'Tanggal'}
+                                                <ChevronDown className="w-4 h-4 text-[#666666]" />
+                                            </Listbox.Button>
+                                            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                                                {days.map((day) => (
+                                                    <Listbox.Option key={day} value={day} className="cursor-pointer px-4 py-2 hover:bg-gray-100">
+                                                        {day}
+                                                    </Listbox.Option>
+                                                ))}
+                                            </Listbox.Options>
+                                        </div>
+                                    )}
+                                </Listbox>
+
+                            </div>
+
+                            {/* Bulan */}
+                            <div className="w-1/2">
+                                <Listbox value={birthDate.month} onChange={(val) => setBirthDate({ ...birthDate, month: val })}>
+                                    {({ open }) => (
+                                        <div className="relative">
+                                            <Listbox.Button
+                                                className={`w-full h-[50px] rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
+                                                    } px-3 text-left flex items-center justify-between text-[14px]`}
+                                            >
+                                                {birthDate.month ? months[Number(birthDate.month) - 1]?.name : 'Bulan'}
+                                                <ChevronDown className="w-4 h-4 text-[#666666]" />
+                                            </Listbox.Button>
+                                            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                                                {months.map((month) => (
+                                                    <Listbox.Option key={month.value} value={month.value} className="cursor-pointer px-4 py-2 hover:bg-gray-100">
+                                                        {month.name}
+                                                    </Listbox.Option>
+                                                ))}
+                                            </Listbox.Options>
+                                        </div>
+                                    )}
+                                </Listbox>
+                            </div>
+
+                            {/* Tahun */}
+                            <div className="w-[28%]">
+                                <Listbox value={birthDate.year} onChange={(val) => setBirthDate({ ...birthDate, year: val })}>
+                                    {({ open }) => (
+                                        <div className="relative">
+                                            <Listbox.Button
+                                                className={`w-full h-[50px] rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
+                                                    } px-3 text-left flex items-center justify-between text-[14px]`}
+                                            >
+                                                {birthDate.year || 'Tahun'}
+                                                <ChevronDown className="w-4 h-4 text-[#666666]" />
+                                            </Listbox.Button>
+                                            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                                                {years.map((year) => (
+                                                    <Listbox.Option key={year} value={year} className="cursor-pointer px-4 py-2 hover:bg-gray-100">
+                                                        {year}
+                                                    </Listbox.Option>
+                                                ))}
+                                            </Listbox.Options>
+                                        </div>
+                                    )}
+
+                                </Listbox>
+                            </div>
                         </div>
+
                         {errors.birthDate && (
                             <p className="text-red-500 text-[12px] mt-1 px-3">{errors.birthDate}</p>
                         )}
@@ -246,7 +340,7 @@ const CompleteRegister: NextPage = () => {
                             placeholder="Masukkan Password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border-[#AAAAAA] mt-2 h-[50px] border outline-none rounded-[10px] px-3 pr-10 py-2"
+                            className="w-full border-[#AAAAAA] mt-2 h-[50px] border rounded-[10px] px-3 pr-10 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10"
                         />
                         <div
                             className="absolute top-[52px] right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
@@ -270,7 +364,7 @@ const CompleteRegister: NextPage = () => {
                             placeholder="Ulangi Masukkan Password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            className="w-full border rounded-[10px] mt-2 px-3 pr-10 py-2 border-[#AAAAAA] outline-none h-[50px]"
+                            className="w-full border rounded-[10px] mt-2 px-3 pr-10 py-2 border-[#AAAAAA] h-[50px] focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 "
                         />
                         <div
                             className="absolute top-[52px] right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
