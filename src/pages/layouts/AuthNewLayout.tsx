@@ -1,4 +1,3 @@
-import { ArrowLeft } from 'lucide-react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -24,9 +23,6 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
                 <div
                     className={`w-full max-w-[419px] bg-white rounded-lg py-4 bg-red-500 md:shadow-[1px_1px_11px_rgba(0,0,0,0.1)]`}
                 >
-                    <div className='md:hidden px-4'>
-                        <ArrowLeft className='w-[25px] h-[25px]' onClick={() => router.push('/')} />
-                    </div>
                     <div className={`p-8 space-y-6 ${hiddeLogo ? 'pb-2' : ''}`}>
                         {/* {
                             !hiddeLogo &&
@@ -38,7 +34,7 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
                     </div>
                     {
                         hiddeLogo &&
-                        <div className="text-center text-[16px] text-[#444444] font-[500] max-w-md pb-8">
+                        <div className="text-center text-[14px] md:text-[16px] text-[#444444] font-[500] max-w-md pb-8">
                             <p className="font-semibold">Jual Beli mudah, praktis dan aman hanya di zukses</p>
                             <p>Tempatnya Belanja semua kebutuhanmu</p>
                         </div>
