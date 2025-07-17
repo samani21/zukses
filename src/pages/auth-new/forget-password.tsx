@@ -10,7 +10,7 @@ const GoogleIcon = () => (
     </svg>
 );
 
-const ForgetPinPage: NextPage = () => {
+const ForgetPasswordPage: NextPage = () => {
     return (
         <AuthNewLayout>
             <div className="text-center">
@@ -34,15 +34,15 @@ const ForgetPinPage: NextPage = () => {
                         name="contact"
                         type="text"
                         required
-                        className="appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                        className="appearance-none rounded-[10px] relative block w-full px-8 py-3 border text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                         placeholder="Masukkan Nomor HP atau E-mail"
                     />
-                    <p className="mt-1 text-[12px] ml-4 font-[500] text-[#888888]">Contoh: 0123456789</p>
+                    <p className="mt-1 text-[12px]  font-[500] text-[#888888] px-8">Contoh: 0123456789</p>
                 </div>
                 <div>
                     <button
                         type="submit"
-                        className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[22px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                         Masuk
                     </button>
@@ -82,4 +82,4 @@ const ForgetPinPage: NextPage = () => {
     );
 };
 
-export default ForgetPinPage;
+export default ForgetPasswordPage;

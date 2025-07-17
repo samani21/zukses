@@ -1,6 +1,13 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
+import { useEffect, useState } from 'react';
+
+// --- DEMO CREDENTIALS ---
+// Define the demo email and phone number that will trigger the redirect.
+const DEMO_EMAIL = 'demo@example.com';
+const DEMO_PHONE = '6281234567890';
+
 // Komponen untuk ikon Google (inline SVG)
 const GoogleIcon = () => (
     <svg className="w-5 h-5" viewBox="0 0 48 48">
@@ -13,6 +20,141 @@ const GoogleIcon = () => (
 
 const RegisterPage: NextPage = () => {
     const router = useRouter();
+    const [contact, setContact] = useState(''); // State untuk menyimpan nilai input mentah
+    const [error, setError] = useState('');
+    const [isPhone, setIsPhone] = useState(false);
+
+    // Fungsi validasi yang dijalankan setelah debounce
+    const runValidation = (value: string): boolean => {
+        setError('');
+
+        if (!value) {
+            setIsPhone(false);
+            return true;
+        }
+
+        // Cek apakah input adalah email
+        if (value.includes('@') || /[^0-9+]/.test(value)) {
+            setIsPhone(false);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (value.includes('@') && !emailRegex.test(value)) {
+                setError('Format E-mail salah.');
+                return false;
+            }
+            return true;
+        }
+
+        // Jika bukan email, cek apakah itu nomor HP
+        const phoneValidationRegex = /^(08|62|\+62)\d*$/;
+        if (phoneValidationRegex.test(value)) {
+            setIsPhone(true);
+            return true;
+        }
+
+        // Jika format awal tidak cocok, tampilkan error
+        setIsPhone(false);
+        setError('Nomor HP harus diawali dengan 08, 62, atau +62.');
+        return false;
+    };
+
+    // --- MODIFIED useEffect ---
+    // Debounce validasi dan Cek kredensial demo
+    useEffect(() => {
+        // Lanjutkan dengan validasi debounce jika bukan kredensial demo
+        const handler = setTimeout(() => {
+            runValidation(contact);
+        }, 500); // Tunggu 500ms setelah user berhenti mengetik
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [contact, router]); // Tambahkan router ke dependency array
+
+    // Handler untuk tombol Backspace pada input yang sudah kosong (untuk menghapus prefix)
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && e.currentTarget.value === '') {
+            setContact('');
+            setIsPhone(false);
+        }
+    };
+
+    // Handler untuk perubahan input
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const displayedValue = e.target.value;
+
+        if (displayedValue === '') {
+            setContact('');
+            setIsPhone(false);
+            return;
+        }
+
+        if (isPhone) {
+            if (contact.startsWith('+62')) {
+                setContact('+62' + displayedValue);
+            } else if (contact.startsWith('62')) {
+                setContact('62' + displayedValue);
+            } else if (contact.startsWith('08')) {
+                setContact('0' + displayedValue);
+            } else {
+                setContact(displayedValue);
+            }
+        } else {
+            setContact(displayedValue);
+        }
+    };
+
+    // Fungsi untuk memformat nomor HP ke format '62...' untuk backend
+    const formatPhoneNumber = (number: string) => {
+        if (number.startsWith('+62')) {
+            return '62' + number.substring(3);
+        }
+        if (number.startsWith('62')) {
+            return number;
+        }
+        if (number.startsWith('08')) {
+            return '62' + number.substring(1);
+        }
+        return number;
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const isValid = runValidation(contact);
+
+        if (!isValid || !contact) {
+            if (!contact) {
+                setError("Nomor HP atau E-mail tidak boleh kosong.");
+            } else if (!error) {
+                setError("Format input tidak valid.");
+            }
+            return;
+        }
+
+        if (isPhone) {
+            const formattedNumber = formatPhoneNumber(contact);
+            if (formattedNumber === DEMO_PHONE) {
+                router.push(`/auth-new/verification?contact=${formattedNumber}`);
+                return; // Hentikan eksekusi lebih lanjut untuk menghindari validasi yang tidak perlu
+            }
+        } else {
+            if (contact === DEMO_EMAIL) {
+                router.push(`/auth-new/verification?contact=${contact}`);
+                return; // Hentikan eksekusi lebih lanjut untuk menghindari validasi yang tidak perlu
+            }
+        }
+    };
+
+    // Menentukan nilai yang akan ditampilkan di input field
+    let displayContact = contact;
+    if (isPhone) {
+        if (contact.startsWith('+62')) {
+            displayContact = contact.substring(3);
+        } else if (contact.startsWith('62')) {
+            displayContact = contact.substring(2);
+        } else if (contact.startsWith('08')) {
+            displayContact = contact.substring(1);
+        }
+    }
 
     return (
         <AuthNewLayout>
@@ -26,27 +168,41 @@ const RegisterPage: NextPage = () => {
                 </p>
             </div>
 
-            <form className="mt-4 space-y-4">
-                {/* Input Nomor HP atau E-mail */}
+            <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate>
                 <div>
                     <label htmlFor="contact" className="sr-only">
                         Nomor HP atau E-mail
                     </label>
-                    <input
-                        id="contact"
-                        name="contact"
-                        type="text"
-                        required
-                        className="appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                        placeholder="Masukkan Nomor HP atau E-mail"
-                    />
-                    <p className="mt-1 text-[12px] font-[500] text-[#888888] text-center">Contoh: 0123456789</p>
+                    <div className="relative">
+                        {isPhone && (
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="text-gray-500 sm:text-sm">(+62)</span>
+                            </div>
+                        )}
+                        <input
+                            id="contact"
+                            name="contact"
+                            type="text"
+                            required
+                            value={displayContact}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            className={`appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                            placeholder="Masukkan Nomor HP atau E-mail"
+                        />
+                    </div>
+                    {error && <p className="mt-2 text-sm text-red-600 text-center">{error}</p>}
+                    {!error && (
+                        <p className="mt-1 text-[12px] font-[500] text-[#888888] text-center">
+                            Contoh: 08123456789 atau email@contoh.com
+                        </p>
+                    )}
                 </div>
 
                 <div>
                     <button
                         type="submit"
-                        className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[22px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="group h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                         Selanjutnya
                     </button>
@@ -85,5 +241,4 @@ const RegisterPage: NextPage = () => {
         </AuthNewLayout>
     );
 };
-
 export default RegisterPage;

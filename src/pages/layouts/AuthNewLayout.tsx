@@ -20,14 +20,14 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
             </Head>
 
             <main className="flex flex-col items-center justify-center min-h-screen bg-[#F1F5F9] font-sans p-4" style={{ letterSpacing: "-0.04em" }}>
-                <div className="w-[419px] max-w-md bg-white rounded-lg py-4" style={{ boxShadow: "1px 1px 11px rgba(0, 0, 0, 0.1)" }}>
+                <div className={`${router?.pathname === '/auth-new/complete-registration' ? "w-[919px]" : "w-[419px]"}  bg-white rounded-lg py-4`} style={{ boxShadow: "1px 1px 11px rgba(0, 0, 0, 0.1)" }}>
                     <div className={`p-8 space-y-6 ${hiddeLogo ? 'pb-2' : ''}`}>
-                        {
+                        {/* {
                             !hiddeLogo &&
                             <h1 className="text-[40px] font-semibold text-[#4A52B2] mb-8 text-center">
                                 Zukses
                             </h1>
-                        }
+                        } */}
                         {children}
                     </div>
                     {

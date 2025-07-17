@@ -53,8 +53,8 @@ const LoginPage: NextPage = () => {
                         className="appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                         placeholder="Masukkan PIN"
                     />
-                    <p className="text-[12px] text-[#555555] font-bold ml-4 mt-1 cursor-pointer" onClick={(() => window.location.href = '/auth-new/forget-pin')}>
-                        Lupa PIN?
+                    <p className="text-[12px] text-[#555555] font-bold ml-4 mt-1 cursor-pointer" onClick={(() => window.location.href = '/auth-new/forget-password')}>
+                        Lupa Password?
                     </p>
                 </div>
 
@@ -62,7 +62,7 @@ const LoginPage: NextPage = () => {
                 <div>
                     <button
                         type="submit"
-                        className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[22px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
                         Masuk
                     </button>
