@@ -1,73 +1,331 @@
+import { Eye, EyeOff } from 'lucide-react';
 import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
-// Komponen untuk ikon Google (inline SVG)
-const GoogleIcon = () => (
-    <svg className="w-5 h-5" viewBox="0 0 48 48">
-        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
-        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
-        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
-        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
-    </svg>
-);
+import { useEffect, useState } from 'react';
 
+const DEMO_EMAIL = 'demo@example.com';
+const DEMO_PHONE = '6281234567890';
+type FormErrors = {
+    password?: string;
+    confirmPassword?: string;
+};
 const ForgetPasswordPage: NextPage = () => {
+    const router = useRouter();
+    const [contact, setContact] = useState('');
+    const [error, setError] = useState('');
+    const [isPhone, setIsPhone] = useState(false);
+    const [NexSteps, setNexytSteps] = useState<boolean>(false);
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [errors, setErrors] = useState<FormErrors>({});
+    useEffect(() => {
+        if (!router.isReady) return;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const query = { ...router.query };
+        let updated = false;
+
+        if (typeof query.contact === 'string') {
+            setContact(query.contact);
+            delete query.contact;
+            updated = true;
+        }
+
+        if (query.type === 'next') {
+            setNexytSteps(true);
+            delete query.type;
+            updated = true;
+        }
+
+        if (updated) {
+            router.replace(
+                {
+                    pathname: router.pathname,
+                    query,
+                },
+                undefined,
+                { shallow: true }
+            );
+        }
+    }, [router.isReady]);
+    const runValidation = (value: string): boolean => {
+        setError('');
+
+        if (!value) {
+            setIsPhone(false);
+            return true;
+        }
+
+        if (value.includes('@') || /[^0-9+]/.test(value)) {
+            setIsPhone(false);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (value.includes('@') && !emailRegex.test(value)) {
+                setError('Format E-mail salah.');
+                return false;
+            }
+            return true;
+        }
+
+        const phoneRegex = /^(08|62|\+62)\d*$/;
+        if (phoneRegex.test(value)) {
+            setIsPhone(true);
+            return true;
+        }
+
+        setIsPhone(false);
+        setError('Nomor HP harus diawali dengan 08, 62, atau +62.');
+        return false;
+    };
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            runValidation(contact);
+        }, 500);
+        return () => clearTimeout(timeout);
+    }, [contact]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && e.currentTarget.value === '') {
+            setContact('');
+            setIsPhone(false);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const displayedValue = e.target.value;
+
+        if (displayedValue === '') {
+            setContact('');
+            setIsPhone(false);
+            return;
+        }
+
+        if (isPhone) {
+            if (contact.startsWith('+62')) {
+                setContact('+62' + displayedValue);
+            } else if (contact.startsWith('62')) {
+                setContact('62' + displayedValue);
+            } else if (contact.startsWith('08')) {
+                setContact('0' + displayedValue);
+            } else {
+                setContact(displayedValue);
+            }
+        } else {
+            setContact(displayedValue);
+        }
+    };
+
+    const formatPhoneNumber = (number: string) => {
+        if (number.startsWith('+62')) return '62' + number.slice(3);
+        if (number.startsWith('62')) return number;
+        if (number.startsWith('08')) return '62' + number.slice(1);
+        return number;
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const isValid = runValidation(contact);
+
+        if (!isValid || !contact) {
+            if (!contact) {
+                setError("Nomor HP atau E-mail tidak boleh kosong.");
+            } else if (!error) {
+                setError("Format input tidak valid.");
+            }
+            return;
+        }
+
+        if (isPhone) {
+            const formatted = formatPhoneNumber(contact);
+            if (formatted === DEMO_PHONE) {
+                router.push(`/auth-new/verification?contact=${formatted}&type=lupa`);
+                return;
+            }
+        } else {
+            if (contact === DEMO_EMAIL) {
+                router.push(`/auth-new/verification?contact=${contact}&type=lupa`);
+                return;
+            }
+        }
+
+        setError("Akun tidak ditemukan");
+    };
+    const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const newErrors: FormErrors = {};
+        if (!password) {
+            newErrors.password = 'Password wajib diisi';
+        } else if (password.length < 6) {
+            newErrors.password = 'Password minimal 6 karakter';
+        } else if (!/(?=.*[A-Za-z])(?=.*\d)/.test(password)) {
+            newErrors.password = 'Password harus mengandung huruf dan angka';
+        }
+
+
+        if (!confirmPassword) {
+            newErrors.confirmPassword = 'Konfirmasi password wajib diisi';
+        } else if (password !== confirmPassword) {
+            newErrors.confirmPassword = 'Password tidak cocok';
+        }
+
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
+
+        // jika semua valid, kirim data
+        console.log({
+            contact,
+            password,
+            confirmPassword,
+        });
+        router.push('/')
+    };
+
+    let displayContact = contact;
+    if (isPhone) {
+        if (contact.startsWith('+62')) displayContact = contact.slice(3);
+        else if (contact.startsWith('62')) displayContact = contact.slice(2);
+        else if (contact.startsWith('08')) displayContact = contact.slice(1);
+    }
+
     return (
         <AuthNewLayout>
             <div className="text-center">
                 <h2 className="text-[22px] font-bold text-[#444444]">Lupa Password</h2>
                 <p className="mt-2 text-[14px] font-medium text-[#444444]">
                     Belum punya Akun Zukses?{' '}
-                    <span className="font-bold text-[14px] text-[#FF2D60] cursor-pointer" onClick={() => window.location.href = '/auth-new/register'}>
+                    <span
+                        className="font-bold text-[14px] text-[#FF2D60] cursor-pointer"
+                        onClick={() => router.push('/auth-new/register')}
+                    >
                         Daftar
                     </span>
                 </p>
             </div>
 
-            <form className="mt-4 space-y-4">
-                {/* Input Nomor HP atau E-mail */}
-                <div>
-                    <label htmlFor="contact" className="sr-only">
-                        Nomor HP atau E-mail
-                    </label>
-                    <input
-                        id="contact"
-                        name="contact"
-                        type="text"
-                        required
-                        className="appearance-none rounded-[10px] relative block w-full px-8 py-3 border text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                        placeholder="Masukkan Nomor HP atau E-mail"
-                    />
-                    <p className="mt-1 text-[12px]  font-[500] text-[#888888] px-8">Contoh: 0123456789</p>
-                </div>
-                <div>
-                    <button
-                        type="submit"
-                        className="group  h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                        Masuk
-                    </button>
-                </div>
-            </form>
+            {
+                NexSteps ?
+                    <form className="mt-6 space-y-6" onSubmit={handleSave} noValidate>
+                        <div>
+                            <label htmlFor="contact" className="sr-only">
+                                Nomor HP atau E-mail
+                            </label>
+                            <div className="relative">
+                                {isPhone && (
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span className="text-gray-500 sm:text-sm">(+62)</span>
+                                    </div>
+                                )}
+                                <input
+                                    id="contact"
+                                    name="contact"
+                                    type="text"
+                                    required
+                                    value={displayContact}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleKeyDown}
+                                    readOnly
+                                    className={`appearance-none rounded-[10px] bg-[#EEEEEE] relative block w-full px-3 py-3 border text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                                    placeholder="Masukkan Nomor HP atau E-mail"
+                                />
+                            </div>
+                        </div>
+                        <div className='mt-[-10px]'>
+                            <div className="w-full relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Masukkan Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full border-[#AAAAAA] mt-2 h-[50px] border outline-none rounded-[10px] px-3 pr-10 py-2"
+                                />
+                                <div
+                                    className="absolute top-[35px] right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </div>
+                                <p className="text-[12px] text-[#555555] font-[500] mt-1 px-3" style={{ lineHeight: '121%' }}>
+                                    Masukkan Minimal 6 Digit Kombinasi Angka dan Huruf<br />
+                                    <span>Contoh : Zukses01</span>
+                                </p>
+                                {errors.password && (
+                                    <p className="text-red-500 text-[12px] mt-1 px-3">{errors.password}</p>
+                                )}
+                            </div>
 
-            {/* Pemisah */}
-            <div className="my-6 flex items-center justify-center">
-                <div className="flex-grow w-[81px] border-t border-[#CCCCCC]"></div>
-                <span className="mx-4 text-[14px] font-[500] text-[#666666]">atau masuk dengan</span>
-                <div className="flex-grow w-[81px] border-t border-[#CCCCCC]"></div>
-            </div>
+                            <div className="w-full relative">
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    placeholder="Ulangi Masukkan Password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full border rounded-[10px] mt-2 px-3 pr-10 py-2 border-[#AAAAAA] outline-none h-[50px]"
+                                />
+                                <div
+                                    className="absolute top-[35px] right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                >
+                                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                </div>
+                                {errors.confirmPassword && (
+                                    <p className="text-red-500 text-[12px] mt-1 px-3">{errors.confirmPassword}</p>
+                                )}
 
-            {/* Tombol Login Google */}
-            <div>
-                <button
-                    type="button"
-                    className="w-full h-[50px] inline-flex justify-center items-center py-2 px-4 border border-[#AAAAAA] rounded-[10px] shadow-sm bg-white text-[16px] gap-1 font-bold text-[#777777] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    <GoogleIcon />
-                    Google
-                </button>
-            </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className="group h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                Selanjutnya
+                            </button>
+                        </div>
+                    </form> :
+                    <form className="mt-6 space-y-6" onSubmit={handleSubmit} noValidate>
+                        <div>
+                            <label htmlFor="contact" className="sr-only">
+                                Nomor HP atau E-mail
+                            </label>
+                            <div className="relative">
+                                {isPhone && (
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span className="text-gray-500 sm:text-sm">(+62)</span>
+                                    </div>
+                                )}
+                                <input
+                                    id="contact"
+                                    name="contact"
+                                    type="text"
+                                    required
+                                    value={displayContact}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleKeyDown}
+                                    className={`appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                                    placeholder="Masukkan Nomor HP atau E-mail"
+                                />
+                            </div>
+                            {error && <p className="mt-2 text-sm text-red-600 text-center">{error}</p>}
+                            {!error && (
+                                <p className="mt-1 text-[12px] font-[500] text-[#888888] text-center">
+                                    Contoh: 08123456789 atau email@contoh.com
+                                </p>
+                            )}
+                        </div>
+                        <div>
+                            <button
+                                type="submit"
+                                className="group h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                                Selanjutnya
+                            </button>
+                        </div>
+                    </form>
+            }
 
-            {/* Syarat & Ketentuan */}
+
             <div className="mt-6 text-center text-[14px] font-medium text-[#444444]">
                 <p>Dengan masuk disini, kamu menyetujui</p>
                 <span className="font-bold cursor-pointer text-[#FF2D60] hover:text-red-600">
