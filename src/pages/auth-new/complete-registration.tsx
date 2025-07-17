@@ -237,7 +237,7 @@ const CompleteRegister: NextPage = () => {
 
                 <div className="flex gap-4">
                     <div className="w-full relative">
-                        <label className='text-[#555555] font-bold text-[16px]'>Tanggal Lahir</label>
+                        <label className='text-[#555555] font-bold text-[16px]'>Kata Sandi</label>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Masukkan Password"
@@ -261,7 +261,7 @@ const CompleteRegister: NextPage = () => {
                     </div>
 
                     <div className="w-full relative">
-                        <label className='text-[#555555] font-bold text-[16px]'>Tanggal Lahir</label>
+                        <label className='text-[#555555] font-bold text-[16px]'>Konfirmasi Kata Sandi</label>
                         <input
                             type={showConfirmPassword ? 'text' : 'password'}
                             placeholder="Ulangi Masukkan Password"
