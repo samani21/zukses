@@ -9,7 +9,7 @@ const VerificationPage: NextPage = () => {
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState<boolean>(false);
     const router = useRouter();
-    const [counter, setCounter] = useState(90);
+    const [counter, setCounter] = useState(120);
     const [error, setError] = useState('');
     const [contact, setContact] = useState<string>('');
     const [type, setType] = useState<string>('');
@@ -110,7 +110,7 @@ const VerificationPage: NextPage = () => {
                 </div>
                 <div className="text-center">
                     <h2 className="text-[22px] font-bold text-[#444444]">Masukkan Kode Verifikasi</h2>
-                    <p className="mt-2 text-[14px] font-medium text-[#444444]">
+                    <p className="mt-2 text-[12px] md:text-[14px] font-medium text-[#444444]">
                         Kode verifikasi telah dikirim melalui {isEmail(contact) ? 'Email' : 'WhatsApp'} ke <br />
                         <span className="font-bold">{formatContactMasked(contact)}</span>
                     </p>
@@ -131,13 +131,13 @@ const VerificationPage: NextPage = () => {
                     <button
                         onClick={handleSubmit}
                         disabled={otp.length < 6 || loading}
+                        className='text-[16px] md:text-[18px]'
                         style={{
                             backgroundColor: "#FF2D60",
                             color: '#fff',
                             padding: '10px 20px',
                             border: 'none',
                             borderRadius: '8px',
-                            fontSize: '18px',
                             cursor: otp.length < 6 || loading ? 'not-allowed' : 'pointer',
                             opacity: otp.length < 6 || loading ? 0.6 : 1,
                             width: "100%",
