@@ -257,7 +257,7 @@ const CompleteRegister: NextPage = () => {
                                     {({ open }) => (
                                         <div className="relative">
                                             <Listbox.Button
-                                                className={`w-full h-[50px] rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
+                                                className={`w-full h-[50px] rounded-[10px] text-[#666666] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
                                                     } px-3 text-left flex items-center justify-between text-[14px]`}
                                             >
                                                 {birthDate.day || 'Tanggal'}
@@ -282,7 +282,7 @@ const CompleteRegister: NextPage = () => {
                                     {({ open }) => (
                                         <div className="relative">
                                             <Listbox.Button
-                                                className={`w-full h-[50px] rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
+                                                className={`w-full h-[50px] text-[#666666]  rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
                                                     } px-3 text-left flex items-center justify-between text-[14px]`}
                                             >
                                                 {birthDate.month ? months[Number(birthDate.month) - 1]?.name : 'Bulan'}
@@ -306,7 +306,7 @@ const CompleteRegister: NextPage = () => {
                                     {({ open }) => (
                                         <div className="relative">
                                             <Listbox.Button
-                                                className={`w-full h-[50px] rounded-[10px] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
+                                                className={`w-full h-[50px] rounded-[10px] text-[#666666] border ${open ? 'border-blue-500 ring-1 ring-blue-500' : 'border-[#AAAAAA]'
                                                     } px-3 text-left flex items-center justify-between text-[14px]`}
                                             >
                                                 {birthDate.year || 'Tahun'}
