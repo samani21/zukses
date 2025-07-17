@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
@@ -98,9 +98,12 @@ const CompleteRegister: NextPage = () => {
 
     return (
         <AuthNewLayout>
-            <div className="text-left">
+            <div className='fixed top-0 py-1 left-0 md:hidden px-4 bg-white w-full'>
+                <ArrowLeft className='w-[25px] h-[25px]' onClick={() => router.push('/auth-new/register')} />
+            </div>
+            <div className="text-left pr-4 pl-4 md:pr-0 md:pl-0">
                 <h2 className="text-[22px] font-bold text-[#444444]">Lengkapi Pendaftaran</h2>
-                <p className="mt-2 text-[14px] font-medium text-[#444444]">
+                <p className="hidden md:block mt-2 text-[14px] font-medium text-[#444444]">
                     Sudah punya akun Zukses?{' '}
                     <span
                         className="font-bold text-[14px] text-[#FF2D60] cursor-pointer"
@@ -111,25 +114,25 @@ const CompleteRegister: NextPage = () => {
                 </p>
             </div>
 
-            <form className="mt-4 space-y-4" onSubmit={handleSubmit} noValidate style={{ letterSpacing: "-0.04em" }}>
-                <div className="flex gap-4">
-                    <div className="w-full">
-                        <label className='text-[#555555] font-bold text-[16px]'>Nomor HP / Email</label>
+            <form className="mt-4 space-y-4 pr-4 pl-4 md:pr-0 md:pl-0" onSubmit={handleSubmit} noValidate style={{ letterSpacing: "-0.04em" }}>
+                <div className="md:flex gap-4 ">
+                    <div className="w-full mb-4">
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Nomor HP / Email</label>
                         <input
                             type="text"
                             value={contact}
                             readOnly
-                            className="w-full border rounded-[10px] h-[50px] text-[16px] mt-2 font-[500] px-3 py-2 bg-[#EEEEEE] border-[#AAAAAA] outline-none"
+                            className="w-full border rounded-[10px] h-[50px] text-[14px] md:text-[16px] mt-2 font-[500] px-3 py-2 bg-[#EEEEEE] border-[#AAAAAA] outline-none"
                         />
                     </div>
                     <div className="w-full">
-                        <label className='text-[#555555] font-bold text-[16px]'>Nomor HP / Email</label>
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Nomor HP / Email</label>
                         <input
                             type="text"
                             placeholder="Nama Lengkap"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full border rounded-[10px] h-[50px] text-[16px] mt-2 font-[500] px-3 py-2 border-[#AAAAAA] outline-none"
+                            className="w-full border rounded-[10px] h-[50px] text-[14px] md:text-[16px] mt-2 font-[500] px-3 py-2 border-[#AAAAAA] outline-none"
                         />
                         {errors.fullName && (
                             <p className="text-red-500 text-[12px] mt-1 px-3">{errors.fullName}</p>
@@ -137,9 +140,9 @@ const CompleteRegister: NextPage = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="md:flex gap-4">
                     <div className='w-full'>
-                        <label className='text-[#555555] font-bold text-[16px]'>Jenis Kelamin</label>
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Jenis Kelamin</label>
 
                         <div className='flex items-center gap-4 mt-2 h-[50px]'>
                             <label className="flex items-center space-x-2 cursor-pointer">
@@ -187,12 +190,12 @@ const CompleteRegister: NextPage = () => {
                         </div>
                     </div>
                     <div className='w-full'>
-                        <label className='text-[#555555] font-bold text-[16px]'>Tanggal Lahir</label>
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Tanggal Lahir</label>
                         <div className=" flex gap-2 mt-2">
                             <select
                                 value={birthDate.day}
                                 onChange={(e) => setBirthDate({ ...birthDate, day: e.target.value })}
-                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[16px] h-[50px] px-2 py-2"
+                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[14px] md:text-[16px] h-[50px] px-2 py-2"
                             >
                                 <option value="">Tanggal</option>
                                 {[...Array(31)].map((_, i) => (
@@ -204,7 +207,7 @@ const CompleteRegister: NextPage = () => {
                             <select
                                 value={birthDate.month}
                                 onChange={(e) => setBirthDate({ ...birthDate, month: e.target.value })}
-                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[16px] h-[50px] px-2 py-2"
+                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[14px] md:text-[16px] h-[50px] px-2 py-2"
                             >
                                 <option value="">Bulan</option>
                                 {[
@@ -219,7 +222,7 @@ const CompleteRegister: NextPage = () => {
                             <select
                                 value={birthDate.year}
                                 onChange={(e) => setBirthDate({ ...birthDate, year: e.target.value })}
-                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[16px] h-[50px] px-2 py-2"
+                                className="w-1/3 border rounded-[10px] border-[#AAAAAAAA] outline-none text-[14px] md:text-[16px] h-[50px] px-2 py-2"
                             >
                                 <option value="">Tahun</option>
                                 {Array.from({ length: 100 }, (_, i) => 2025 - i).map((year) => (
@@ -235,9 +238,9 @@ const CompleteRegister: NextPage = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-4">
-                    <div className="w-full relative">
-                        <label className='text-[#555555] font-bold text-[16px]'>Kata Sandi</label>
+                <div className="md:flex gap-4">
+                    <div className="w-full relative mb-4 md:mb-0">
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Kata Sandi</label>
                         <input
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Masukkan Password"
@@ -261,7 +264,7 @@ const CompleteRegister: NextPage = () => {
                     </div>
 
                     <div className="w-full relative">
-                        <label className='text-[#555555] font-bold text-[16px]'>Konfirmasi Kata Sandi</label>
+                        <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Konfirmasi Kata Sandi</label>
                         <input
                             type={showConfirmPassword ? 'text' : 'password'}
                             placeholder="Ulangi Masukkan Password"
@@ -286,7 +289,7 @@ const CompleteRegister: NextPage = () => {
                 <div>
                     <button
                         type="submit"
-                        className="h-[50px] w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700"
+                        className="h-[50px] w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[16px] md:text-[18px] rounded-[10px] text-white bg-[#0075C9] hover:bg-blue-700"
                     >
                         Daftar
                     </button>
@@ -302,6 +305,17 @@ const CompleteRegister: NextPage = () => {
                 <span className="font-bold text-[#FF2D60] cursor-pointer hover:text-red-600">
                     Kebijakan Privasi Zukses
                 </span>
+            </div>
+            <div className='w-full bg-[#F1F5F9] py-2 md:hidden'>
+                <p className="mt-2 text-[14px] text-center font-medium text-[#444444]">
+                    Sudah punya akun Zukses?{' '}
+                    <span
+                        className="font-bold text-[14px] text-[#FF2D60] cursor-pointer"
+                        onClick={() => router.push('/auth-new/login')}
+                    >
+                        Masuk
+                    </span>
+                </p>
             </div>
         </AuthNewLayout>
     );
