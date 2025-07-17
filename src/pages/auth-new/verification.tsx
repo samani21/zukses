@@ -4,6 +4,7 @@ import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 import { useCallback, useEffect, useState } from 'react';
 import { OtpInput } from 'reactjs-otp-input';
 import { theme } from 'styles/theme';
+
 const VerificationPage: NextPage = () => {
     const [otp, setOtp] = useState('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -11,24 +12,51 @@ const VerificationPage: NextPage = () => {
     const [counter, setCounter] = useState(90);
     const [error, setError] = useState('');
     const [contact, setContact] = useState<string>('');
+    const [type, setType] = useState<string>('');
+
+    const formatContactMasked = (contact: string) => {
+        if (isEmail(contact)) {
+            const [name, domain] = contact.split('@');
+            const maskedName = name.length > 2
+                ? name.slice(0, 2) + '*'.repeat(name.length - 2)
+                : name[0] + '*';
+            return maskedName + '@' + domain;
+        } else {
+            if (contact.length < 3) return contact;
+            const lastThree = contact.slice(-3);
+            return '****_****_*' + lastThree;
+        }
+    };
+
+    const isEmail = (value: string) => value.includes('@');
+
     useEffect(() => {
-        if (router.isReady) {
-            const contactParam = router.query.contact;
+        if (!router.isReady) return;
 
-            if (typeof contactParam === 'string') {
-                setContact(contactParam);
+        const query = { ...router.query };
+        let updated = false;
 
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { contact: _, ...restQuery } = router.query;
-                router.replace(
-                    {
-                        pathname: router.pathname,
-                        query: restQuery,
-                    },
-                    undefined,
-                    { shallow: true }
-                );
-            }
+        if (typeof query.contact === 'string') {
+            setContact(query.contact);
+            delete query.contact;
+            updated = true;
+        }
+
+        if (typeof query.type === 'string') {
+            setType(query.type);
+            delete query.type;
+            updated = true;
+        }
+
+        if (updated) {
+            router.replace(
+                {
+                    pathname: router.pathname,
+                    query,
+                },
+                undefined,
+                { shallow: true }
+            );
         }
     }, [router.isReady]);
 
@@ -47,32 +75,44 @@ const VerificationPage: NextPage = () => {
     };
 
     const handleSubmit = useCallback(async () => {
-        setLoading(true)
-        // Simulate API call
+        setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 500));
 
         if (otp === '123456') {
-            window.location.href = `/auth-new/complete-registration?contact=${contact}`
+            if (type === 'daftar') {
+                window.location.href = `/auth-new/complete-registration?contact=${contact}`;
+            } else {
+                window.location.href = `/auth-new/forget-password?contact=${contact}&type=next`;
+            }
         } else {
-            setError('OTP Salah')
+            setError('OTP Salah');
         }
+
         setLoading(false);
-    }, [otp, router]);
+    }, [otp, contact, type]);
+
     const handleResend = async () => {
-        setLoading(true)
+        setLoading(true);
+        // Simulasi pengiriman ulang
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setCounter(90);
+        setLoading(false);
     };
 
     return (
         <AuthNewLayout>
-            <div >
-                <div className='flex justify-center h-[116px] mb-2' >
-                    <img src='/icon/whatsapp.svg' />
+            <div>
+                <div className='flex justify-center h-[116px] mb-2'>
+                    <img
+                        src={isEmail(contact) ? '/icon/gmail.svg' : '/icon/whatsapp.svg'}
+                        alt={isEmail(contact) ? 'Email Icon' : 'WhatsApp Icon'}
+                    />
                 </div>
                 <div className="text-center">
                     <h2 className="text-[22px] font-bold text-[#444444]">Masukkan Kode Verifikasi</h2>
                     <p className="mt-2 text-[14px] font-medium text-[#444444]">
-                        Kode verifikasi telah dikirim melalui Whatsapp ke
-                        ****_****_*301
+                        Kode verifikasi telah dikirim melalui {isEmail(contact) ? 'Email' : 'WhatsApp'} ke <br />
+                        <span className="font-bold">{formatContactMasked(contact)}</span>
                     </p>
                 </div>
 
@@ -85,8 +125,9 @@ const VerificationPage: NextPage = () => {
                     inputStyle={styles.otpInput}
                     containerStyle={styles.otpContainer}
                 />
+
                 <div className='px-4 pt-8'>
-                    {error && <p className="text-center text-red-500 text-sm mb-4 mt-[-20px] ">{error}</p>}
+                    {error && <p className="text-center text-red-500 text-sm mb-4 mt-[-20px]">{error}</p>}
                     <button
                         onClick={handleSubmit}
                         disabled={otp.length < 6 || loading}
@@ -107,11 +148,17 @@ const VerificationPage: NextPage = () => {
                         Selanjutnya
                     </button>
                 </div>
+
                 <div className='text-center text-[#444444] mt-3' style={{ letterSpacing: "-0.04em" }}>
-                    {!counter
-                        ? <span className='font-[500] text-[14px] cursor-pointer text-[#FF2D60]' onClick={handleResend}>Kirim ulang</span>
-                        : <span className='font-[500] text-[14px]'>Kirim ulang dalam <strong className='text-[17px] font-bold'>{formatTime(counter)}</strong></span>
-                    }
+                    {!counter ? (
+                        <span className='font-[500] text-[14px] cursor-pointer text-[#FF2D60]' onClick={handleResend}>
+                            Kirim ulang
+                        </span>
+                    ) : (
+                        <span className='font-[500] text-[14px]'>
+                            Kirim ulang dalam <strong className='text-[17px] font-bold'>{formatTime(counter)}</strong>
+                        </span>
+                    )}
                     <br />
                     <span className='font-bold text-[14px]'>Gunakan metode verifikasi lain</span>.
                 </div>
@@ -119,7 +166,6 @@ const VerificationPage: NextPage = () => {
         </AuthNewLayout>
     );
 };
-
 
 const styles = {
     otpContainer: {
@@ -136,6 +182,5 @@ const styles = {
         outline: 'none'
     },
 };
-
 
 export default VerificationPage;

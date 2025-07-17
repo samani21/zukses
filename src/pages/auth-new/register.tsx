@@ -133,12 +133,12 @@ const RegisterPage: NextPage = () => {
         if (isPhone) {
             const formattedNumber = formatPhoneNumber(contact);
             if (formattedNumber === DEMO_PHONE) {
-                router.push(`/auth-new/verification?contact=${formattedNumber}`);
+                router.push(`/auth-new/verification?contact=${formattedNumber}&type=daftar`);
                 return; // Hentikan eksekusi lebih lanjut untuk menghindari validasi yang tidak perlu
             }
         } else {
             if (contact === DEMO_EMAIL) {
-                router.push(`/auth-new/verification?contact=${contact}`);
+                router.push(`/auth-new/verification?contact=${contact}&type=daftar`);
                 return; // Hentikan eksekusi lebih lanjut untuk menghindari validasi yang tidak perlu
             }
         }
