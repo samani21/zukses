@@ -1,8 +1,9 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
+import { useState } from 'react';
 // Komponen untuk ikon Google (inline SVG)
 const GoogleIcon = () => (
     <svg className="w-[20px] md:w-[25px] h-[20px] md:h-[25px]" viewBox="0 0 48 48">
@@ -15,6 +16,8 @@ const GoogleIcon = () => (
 
 const LoginPage: NextPage = () => {
     const router = useRouter();
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     return (
         <AuthNewLayout>
             <div className='fixed top-[10px] left-0 md:hidden px-4'>
@@ -41,25 +44,27 @@ const LoginPage: NextPage = () => {
                         name="contact"
                         type="text"
                         required
-                        className="appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[14px] md:text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[14px] md:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                        className="appearance-none rounded-[10px] h-[50px] relative block w-full px-3 py-3 border text-[14px] md:text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[14px] md:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                         placeholder="Masukkan Nomor HP atau E-mail"
+                        autoComplete='off'
                     />
                     <p className="mt-1 text-[12px] ml-4 font-[500] text-[#888888]">Contoh: 0123456789</p>
                 </div>
 
-                {/* Input PIN */}
-                <div>
-                    <label htmlFor="pin" className="sr-only">
-                        PIN
-                    </label>
+                <div className="w-full relative mt-[-10px]">
                     <input
-                        id="pin"
-                        name="pin"
-                        type="password"
-                        required
-                        className="appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[14px] md:text-[16px] border-[#AAAAAA] placeholder:text-[#999999] placeholder:text-[14px] md:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                        placeholder="Masukkan PIN"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Masukkan Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="w-full border-[#AAAAAA] mt-2 h-[50px] border outline-none rounded-[10px] px-3 pr-10 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                     />
+                    <div
+                        className="absolute top-[35px] right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </div>
                     <p className="text-[12px] text-[#555555] font-bold ml-4 mt-1 cursor-pointer" onClick={(() => window.location.href = '/auth-new/forget-password')}>
                         Lupa Password?
                     </p>
