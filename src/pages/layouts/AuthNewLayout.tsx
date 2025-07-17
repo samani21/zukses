@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'lucide-react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -19,8 +20,13 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <main className="flex flex-col items-center justify-center min-h-screen bg-[#F1F5F9] font-sans p-4" style={{ letterSpacing: "-0.04em" }}>
-                <div className={`${router?.pathname === '/auth-new/complete-registration' ? "w-[919px]" : "w-[419px]"}  bg-white rounded-lg py-4`} style={{ boxShadow: "1px 1px 11px rgba(0, 0, 0, 0.1)" }}>
+            <main className="flex flex-col items-center justify-center md:min-h-screen bg-[#F1F5F9] font-sans md:p-4 " style={{ letterSpacing: "-0.04em" }}>
+                <div
+                    className={`w-full max-w-[419px] bg-white rounded-lg py-4 bg-red-500 md:shadow-[1px_1px_11px_rgba(0,0,0,0.1)]`}
+                >
+                    <div className='md:hidden px-4'>
+                        <ArrowLeft className='w-[25px] h-[25px]' onClick={() => router.push('/')} />
+                    </div>
                     <div className={`p-8 space-y-6 ${hiddeLogo ? 'pb-2' : ''}`}>
                         {/* {
                             !hiddeLogo &&

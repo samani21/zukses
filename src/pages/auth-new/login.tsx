@@ -1,4 +1,5 @@
 import type { NextPage } from 'next';
+
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 // Komponen untuk ikon Google (inline SVG)
 const GoogleIcon = () => (
@@ -15,7 +16,7 @@ const LoginPage: NextPage = () => {
         <AuthNewLayout>
             <div className="text-center">
                 <h2 className="text-[22px] font-bold text-[#444444]">Masuk ke Zukses</h2>
-                <p className="mt-2 text-[14px] font-medium text-[#444444]">
+                <p className="fixed bottom-0 left-0 w-full bg-[#F1F5F9] py-2 md:py-0 md:bg-white md:relative mt-2 text-[14px] font-medium text-[#444444]">
                     Belum punya Akun Zukses?{' '}
                     <span className="font-bold text-[14px] text-[#FF2D60] cursor-pointer" onClick={() => window.location.href = '/auth-new/register'}>
                         Daftar
