@@ -162,7 +162,7 @@ const RegisterPage: NextPage = () => {
             <div className='fixed top-[10px] left-0 md:hidden px-4'>
                 <ArrowLeft className='w-[25px] h-[25px]' onClick={() => router.push('/')} />
             </div>
-            <div className="text-center mt-10">
+            <div className="text-center">
                 <h2 className="text-[22px] font-bold text-[#444444]">Daftar Sekarang</h2>
                 <p className="fixed bottom-0 left-0 w-full bg-[#F1F5F9] py-2 md:py-0 md:bg-white md:relative mt-2 text-[14px] font-medium text-[#444444]">
                     Sudah punya akun Zukses?{' '}

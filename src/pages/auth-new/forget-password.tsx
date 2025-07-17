@@ -211,10 +211,10 @@ const ForgetPasswordPage: NextPage = () => {
                             <label htmlFor="contact" className="sr-only">
                                 Nomor HP atau E-mail
                             </label>
-                            <div className="relative">
+                            <div className="relative bg-[#EEEEEE]">
                                 {isPhone && (
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <span className="text-gray-500 sm:text-sm">(+62)</span>
+                                        <span className="sm:text-sm">(+62)</span>
                                     </div>
                                 )}
                                 <input
@@ -226,7 +226,7 @@ const ForgetPasswordPage: NextPage = () => {
                                     onChange={handleInputChange}
                                     onKeyDown={handleKeyDown}
                                     readOnly
-                                    className={`appearance-none rounded-[10px] bg-[#EEEEEE] relative block w-full px-3 py-3 border text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                                    className={`appearance-none rounded-[10px]  relative block w-full px-3  py-3 border text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[16px] text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
                                     placeholder="Masukkan Nomor HP atau E-mail"
                                 />
                             </div>

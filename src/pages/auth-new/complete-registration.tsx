@@ -296,7 +296,7 @@ const CompleteRegister: NextPage = () => {
                 </div>
             </form>
 
-            <div className="mt-6 text-center text-[14px] font-medium text-[#444444]">
+            <div className="mt-6 text-center text-[14px] font-medium text-[#444444] pb-4 sm:pb-4">
                 <p>Dengan mendaftar, saya menyetujui</p>
                 <span className="font-bold text-[#FF2D60] cursor-pointer hover:text-red-600">
                     Syarat & Ketentuan
