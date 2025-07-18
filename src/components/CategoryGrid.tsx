@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 const ChevronRightIcon = () => (
-    <svg className="w-5 h-5 text-gray-400 hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg className="w-[20px] h-[20px] text-white hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
     </svg>
 );
 
 const ChevronLeftIcon = () => (
-    <svg className="w-5 h-5 text-gray-400 hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <svg className="w-[20px] h-[20px] text-white hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
     </svg>
 );
@@ -57,7 +57,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: -scrollByAmount, behavior: 'smooth' });
                         }}
-                        className="absolute top-1/3 left-0 transform -translate-y-1/2 bg-white p-1  border hover:bg-gray-100 hidden md:flex items-center justify-center z-10"
+                        className="absolute top-[60px] left-4 transform -translate-y-1/2 bg-black/40 rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
                     >
                         <ChevronLeftIcon />
                     </button>
@@ -77,7 +77,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                                 <button
                                     onClick={() => onCategorySelect(category.name)}
                                     key={category.name}
-                                    className="w-[80px] md:w-[136px] h-[80px] md:h-[136px] rounded-[10px] flex flex-col items-center justify-start w-24 text-center group"
+                                    className="w-[80px] md:w-[120px] h-[80px] md:h-[120px] rounded-[10px] flex flex-col items-center justify-start w-24 text-center group"
                                     style={{ backgroundColor: bgColor }}
                                 >
                                     <img
@@ -88,7 +88,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                                             (e.target as HTMLImageElement).src = 'https://placehold.co/64x64/eee/ccc?text=?';
                                         }}
                                     />
-                                    <span className="text-[10px] md:text-[16px] md:font-semibold text-[#222222] leading-[99%] tracking-[-0.02em] mt-2">{category.name}</span>
+                                    <span className="text-[10px] md:text-[14px]  text-[#222222] leading-[99%] tracking-[-0.02em] mt-2">{category.name}</span>
                                 </button>
                             );
                         })}
@@ -98,11 +98,12 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
 
                 {/* Tombol kanan */}
                 {canScrollRight && (
+
                     <button
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: scrollByAmount, behavior: 'smooth' });
                         }}
-                        className="absolute top-1/3 right-0 transform -translate-y-1/2 bg-white rounded-full p-1 shadow-md border hover:bg-gray-100 hidden md:flex items-center justify-center"
+                        className="absolute top-[60px] right-4 transform -translate-y-1/2 bg-black/40 rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
                     >
                         <ChevronRightIcon />
                     </button>
