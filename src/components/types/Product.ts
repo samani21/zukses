@@ -9,6 +9,8 @@ export type variant = {
     combination_label: string;
     image: string;
     price: number
+    discount_price: number
+    discount_percent: number
 };
 
 export interface SellerStats {

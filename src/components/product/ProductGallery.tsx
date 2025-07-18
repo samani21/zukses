@@ -71,7 +71,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
 
     return (
         <div className="lg:col-span-2">
-            <div className="mb-4 relative group overflow-hidden rounded-lg">
+            <div className="mb-4 relative group overflow-hidden w-[450px]">
                 <div
                     onClick={() => {
                         window.location.href = '/'
@@ -98,13 +98,13 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                                 <video
                                     src={media.url}
                                     controls
-                                    className="w-full h-auto object-cover shadow-sm select-none"
+                                    className=" w-[450px] h-[450px] object-cover shadow-sm select-none"
                                 />
                             ) : (
                                 <img
                                     src={media.url}
                                     alt={media.alt}
-                                    className="w-full h-auto object-cover shadow-sm select-none"
+                                    className=" w-[450px] h-[450px] object-cover shadow-sm select-none"
                                     onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
                                 />
                             )}
