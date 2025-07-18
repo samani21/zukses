@@ -12,6 +12,7 @@ import { Product } from 'components/types/Product';
 import Loading from 'components/my-store/addProduct/Loading';
 import Payment from 'components/Payment';
 import Delivery from 'components/Delivery';
+import Welcome from 'components/Welcome';
 interface Banner {
   id: number;
   src: string;
@@ -119,6 +120,9 @@ const Home: React.FC<HomeLayoutProps> = () => {
       <div className='hidden md:block lg:px-0'>
         <main className="md:mx-auto w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
+        </main>
+        <main className="md:mx-auto w-[1200px] px-[0px] mt-4">
+          <Welcome />
         </main>
         <div className='md:hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
