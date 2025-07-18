@@ -77,8 +77,8 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 ))}
             </div>
             <div className='mt-10 flex justify-center items-center'>
-                <div className='bg-[#F6E9F0] border border-[#563D7C]  w-[383px] h-[50px] flex justify-center items-center rounded-[10px] cursor-pointer'>
-                    <p className='text-[14px] text-dark font-semibold'>Muat lebih Banyak</p>
+                <div className='bg-[#238744] text-white w-[383px] h-[50px] flex justify-center items-center rounded-[20px] cursor-pointer'>
+                    <p className='text-[16px] font-semibold'>Muat lebih Banyak</p>
                 </div>
             </div>
         </div >
