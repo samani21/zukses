@@ -11,7 +11,7 @@ const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => 
     </svg>
 );
 
-const StarIcon = ({ className = "w-3.5 h-3.5 text-blue-400" }: { className?: string }) => (
+const StarIcon = ({ className = "w-3.5 h-3.5 text-yellow-400" }: { className?: string }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 20 20">
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
     </svg>
@@ -115,6 +115,36 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
         };
     }, [product?.variants]);
+    const priceDiscountRange = useMemo(() => {
+        if (!product?.variants || product.variants.length === 0) {
+            return null; // Tidak ada varian, tidak ada rentang harga
+        }
+
+        const prices = product.variants.map(v => v.discount_price);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+
+        return {
+            min: minPrice,
+            max: maxPrice,
+            isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
+        };
+    }, [product?.variants]);
+    const DiscountRange = useMemo(() => {
+        if (!product?.variants || product.variants.length === 0) {
+            return null; // Tidak ada varian, tidak ada rentang harga
+        }
+
+        const prices = product.variants.map(v => v.discount_percent);
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+
+        return {
+            min: minPrice,
+            max: maxPrice,
+            isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
+        };
+    }, [product?.variants]);
 
 
     useEffect(() => {
@@ -160,7 +190,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     const renderPriceDisplay = () => {
         if (activeVariant) {
-            return formatRupiah(activeVariant.price);
+            return formatRupiah(activeVariant.discount_price);
         }
         if (priceRange) {
             if (priceRange.isRange) {
@@ -171,11 +201,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
         return formatRupiah(product?.price);
     };
+    const renderPriceDiscountDisplay = () => {
+        if (activeVariant) {
+            return formatRupiah(activeVariant.price);
+        }
+        if (priceDiscountRange) {
+            if (priceDiscountRange.isRange) {
+                return `${formatRupiah(priceDiscountRange.min)} - ${formatRupiah(priceDiscountRange.max)}`;
+            }
+            return formatRupiah(priceDiscountRange.min);
+        }
+
+        return formatRupiah(product?.price);
+    };
 
 
     return (
         <>
-            <div className="bg-white rounded-lg p-0 sm:p-0 sm:mb-0 text-sm">
+            <div className="bg-white rounded-lg p-4 text-sm">
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <ProductGallery
                         images={allImages}
@@ -183,20 +226,24 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         setActiveIndex={setActiveImageIndex}
                         onImageClick={handleImageClick}
                     />
-                    <div className="lg:col-span-3">
-                        <h1 className="text-base sm:text-lg font-semibold text-gray-800">{product?.name}</h1>
-                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
-                            <div className="flex items-center">
-                                <span className="text-blue-500 font-medium mr-1">{product?.rating?.toFixed(1)}</span>
-                                <div className="flex">{Array.from({ length: 5 }).map((_, i) => <StarIcon key={i} />)}</div>
+                    <div className="lg:col-span-3 mt-2">
+                        <h1 className="text-base text-[22px] font-[500] text-gray-800">{product?.name}</h1>
+                        <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
+                            <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
+                                <div className=" flex items-center">
+                                    <span className="text-blue-500 font-medium mr-1">{product?.rating?.toFixed(1)}</span>
+                                    <div className="flex items-center"><span className='text-[16px] font-bold text-white mr-2'>4.9</span>{Array.from({ length: 5 }).map((_, i) => <StarIcon key={i} />)}</div>
+                                </div>
+                                <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.reviewsCount || '1.8Rb'}</span> Penilaian</span>
+                                <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
                             </div>
-                            <span className="font-medium">{product?.reviewsCount || '5'} Penilaian</span>
-                            <span className="text-gray-500">{product?.soldCount || '1jt'} Terjual</span>
                         </div>
                         <div className="bg-gray-50 p-3 rounded-md my-3">
-                            <div className="flex items-baseline space-x-2">
+                            <div className="flex items-center space-x-4 ">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
-                                <span className="text-blue-600 text-xl font-semibold">{renderPriceDisplay()}</span>
+                                <div className="text-dark text-[30px] font-[500]">{renderPriceDiscountDisplay()}</div>
+                                <div className="text-[#888888] text-[16px] font-[500] line-through">{renderPriceDisplay()}</div>
+                                <p className='text-[16px] font-[500] text-[#FF0000]'>{DiscountRange?.max}%</p>
                             </div>
                         </div>
                         <div className="space-y-3">

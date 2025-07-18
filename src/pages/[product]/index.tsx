@@ -36,10 +36,10 @@ const ProductPage = () => {
                 </div>
                 <div className="container mx-auto p-2 sm:p-4 md:px-0 w-[1200px] px-[0px]">
                     <nav className="hidden md:block text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-                        <ol className="list-none p-0 inline-flex space-x-2">
-                            <li className="flex items-center"><a href="#" className="text-blue-600 hover:underline" onClick={() => window.location.href = '/'}>Zuksess</a></li>
+                        <ol className="list-none p-0 inline-flex space-x-2 text-[16px] text-[#555555]">
+                            <li className="flex items-center"><a href="#" className="hover:underline" onClick={() => window.location.href = '/'}>Zuksess</a></li>
                             <li className="flex items-center"><span className="mx-2">›</span><a href="#" className="hover:underline">{detailProduct?.category?.split(" > ")[0]}</a></li>
-                            <li className="flex items-center"><span className="mx-2">›</span><span className="text-gray-700">{detailProduct?.name}</span></li>
+                            <li className="flex items-center"><span className="mx-2">›</span>{detailProduct?.name}</li>
                         </ol>
                     </nav>
 
