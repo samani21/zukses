@@ -116,7 +116,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
   }, []);
   return (
     <MainLayout>
-      <div className='lg:px-0'>
+      <div className='hidden md:block lg:px-0'>
         <main className="md:mx-auto w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
@@ -133,7 +133,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
           }
         </main>
       </div>
-      <div className='border-t border-[#BBBBBB] bg-white'>
+      <div className='hidden md:block border-t border-[#BBBBBB] bg-white'>
         <div className='border-b border-[#BBBBBB] py-10'>
           <div className='container mx-auto flex justify-between itmes-center w-[1200px] px-[0px] '>
             <div>
