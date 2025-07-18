@@ -16,14 +16,33 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
         ? products
         : products.filter(p => p.category === selectedCategory);
 
+    const list = [
+        'Produk Terbaru', 'Terpopuler', 'Brand'
+    ]
+
     return (
-        <div className="container mx-auto p-0">
-            <h2 className="text-[16px] text-dark mb-[10px] mt-[10px] text-[#333333] font-semibold">Rekomendasi untuk Anda</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+        <div className="container mx-auto px-0">
+            <h2 className="hidden md:block text-[16px] text-dark mb-[10px] mt-[10px] text-[#333333] font-semibold">Rekomendasi untuk Anda</h2>
+            <div className="md:hidden flex overflow-x-auto scroll-smooth scrollbar-hide pl-2">
+                <div className='flex flex-row md:grid md:grid-rows-1 md:grid-flow-col gap-2 px-2 md:px-0'>
+                    <h2 className="w-full text-[13px] mb-[10px] mt-[10px] text-[#DE4A53] font-bold whitespace-nowrap">
+                        Rekomendasi Untukmu
+                    </h2>
+                    {
+                        list?.map((l, index) => (
+
+                            <h2 key={index} className="w-full text-[13px] mb-[10px] mt-[10px] text-[#111111] font-[500] whitespace-nowrap">
+                                {l}
+                            </h2>
+                        ))
+                    }
+                </div>
+            </div>
+            <div className="px-4 md:px-0 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {filteredProducts?.map(product => (
                     <a
                         key={product.id}
-                        className="bg-white overflow-hidden group w-[190px] h-[342px] border border-[#DDDDDD]"
+                        className="bg-white w-full h-full overflow-hidden group md:w-[190px] md:h-[342px] border border-[#DDDDDD]"
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
@@ -41,16 +60,16 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         }}
                     >
 
-                        <img src={product.image} alt={product.name} className="w-[190px] h-[190px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
+                        <img src={product.image} alt={product.name} className="md:w-[190px] md:h-[190px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-2 ">
                             <p
-                                className="text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]"
+                                className="text-[12px] md:text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]"
                                 style={{ lineHeight: '17px' }}
                             >
                                 {product.name}
                             </p>
 
-                            <p className="text-[16px] font-semibold mt-1 text-[#CD0030]">{formatRupiah(product.price)}</p>
+                            <p className="text-[14px] md:text-[16px] font-semibold mt-1 text-[#CD0030]">{formatRupiah(product.price)}</p>
                             <div className='flex justify-left items-center mt-1 gap-2'>
                                 {product.is_cod_enabled ? <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
                                     <p className="text-[12px] text-white font-bold">
@@ -76,7 +95,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                     </a>
                 ))}
             </div>
-            <div className='mt-10 flex justify-center items-center'>
+            <div className='px-4 md:px-0 mt-10 flex justify-center items-center'>
                 <div className='bg-[#238744] text-white w-[383px] h-[50px] flex justify-center items-center rounded-[20px] cursor-pointer'>
                     <p className='text-[16px] font-semibold'>Muat lebih Banyak</p>
                 </div>
