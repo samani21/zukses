@@ -23,7 +23,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 {filteredProducts?.map(product => (
                     <a
                         key={product.id}
-                        className="bg-white overflow-hidden group w-[186px] border border-[#DDDDDD]"
+                        className="bg-white overflow-hidden group w-[190px] h-[342px] border border-[#DDDDDD]"
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
@@ -36,33 +36,40 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                             window.location.href = `/${slug}`;
                             localStorage.setItem('product', JSON.stringify(product));
                         }}
+                        style={{
+                            letterSpacing: "-0.03em"
+                        }}
                     >
 
-                        <img src={product.image} alt={product.name} className="w-[188px] h-[188px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
+                        <img src={product.image} alt={product.name} className="w-[190px] h-[190px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-2 ">
                             <p
-                                className="text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#333333]"
+                                className="text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]"
                                 style={{ lineHeight: '17px' }}
                             >
                                 {product.name}
                             </p>
 
-                            <p className="text-[16px] font-bold mt-1 text-[#333333]">{formatRupiah(product.price)}</p>
-                            <div className='flex justify-left items-center gap-2'>
-                                {product.is_cod_enabled ? <div className="mt-1 w-[50px] h-[24px] bg-[#FBC207] flex justify-center items-center rounded-[10px]">
-                                    <p className="text-[12px] text-dark">
+                            <p className="text-[16px] font-semibold mt-1 text-[#CD0030]">{formatRupiah(product.price)}</p>
+                            <div className='flex justify-left items-center mt-1 gap-2'>
+                                {product.is_cod_enabled ? <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
+                                    <p className="text-[12px] text-white font-bold">
                                         COD
                                     </p>
                                 </div> : ''}
-                                <div className="mt-1 w-[50px] h-[24px] bg-[#E36100] flex justify-center items-center rounded-[10px]">
-                                    <p className="text-[12px] text-white">
+                                <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
+                                    <p className="text-[12px] text-white font-bold">
                                         -31%
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center text-xs text-gray-500 mt-2">
+                            <div className="flex items-center text-xs text-gray-500 mt-1"
+                                style={{
+                                    letterSpacing: "-0.04em",
+                                    lineHeight: "22px"
+                                }}>
                                 <StarIcon className="w-5 h-5 text-yellow-400" />
-                                <span className='text-[12px] font-semibold text-[#333333] ml-1'>{product.rating || 4.9}</span> <span className='ml-2 text-[12px] mt-[-1px] text-[#555555]'>{product.sold || " 1000"}+ terjual</span>
+                                <span className='text-[12px] font-semibold text-[#555555]'>{product.rating || 4.9}</span> <span className='ml-2 text-[12px] mt-[-1px] text-[#555555]'>{product.sold || " 1000"}+ terjual</span>
                             </div>
                             <p className="text-[12px] text-[#333333] ">Kota Makassar</p>
                         </div>
