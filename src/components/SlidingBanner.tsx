@@ -30,22 +30,6 @@ const ChevronLeftIcon = () => (
 interface Banner { id: number; src: string; alt: string; }
 interface SlidingBannerProps { banners: Banner[]; autoPlayInterval?: number; }
 
-const useMediaQuery = (query: string) => {
-    const [matches, setMatches] = useState<boolean>(() =>
-        typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
-    );
-
-    useEffect(() => {
-        const m = window.matchMedia(query);
-        const listener = () => setMatches(m.matches);
-        listener();
-        m.addEventListener('change', listener);
-        return () => m.removeEventListener('change', listener);
-    }, [query]);
-
-    return matches;
-};
-
 const SlidingBanner: FC<SlidingBannerProps> = ({
     banners,
     autoPlayInterval = 5000,
