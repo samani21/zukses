@@ -30,27 +30,12 @@ const ChevronLeftIcon = () => (
 interface Banner { id: number; src: string; alt: string; }
 interface SlidingBannerProps { banners: Banner[]; autoPlayInterval?: number; }
 
-const useMediaQuery = (query: string) => {
-    const [matches, setMatches] = useState<boolean>(() =>
-        typeof window !== 'undefined' ? window.matchMedia(query).matches : false,
-    );
-
-    useEffect(() => {
-        const m = window.matchMedia(query);
-        const listener = () => setMatches(m.matches);
-        listener();
-        m.addEventListener('change', listener);
-        return () => m.removeEventListener('change', listener);
-    }, [query]);
-
-    return matches;
-};
-
 const SlidingBanner: FC<SlidingBannerProps> = ({
     banners,
     autoPlayInterval = 5000,
 }) => {
-    const isMobile = useMediaQuery('(max-width: 767px)');
+    const [isMobile, setIsMobile] = useState(false);
+
     const visibleCount = isMobile ? 1 : 3;
     const slideWidthPct = 100 / visibleCount;
 
@@ -101,6 +86,14 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
         }
     }, [disableTransition]);
 
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 767);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     const start = (x: number) => {
         resetTimeout();
         isDraggingRef.current = true;
