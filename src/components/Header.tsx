@@ -296,13 +296,13 @@ const Header = () => {
                         </div>
                         <div className='flex items-center justify-end gap-2'>
                             <button onClick={() => setProvinceModalOpen(true)} className="p-1" title="Filter Provinsi">
-                                <img src='/icon/filter-dark.svg' className='w-[24px] h-[24px]' />
+                                <img src='/icon/filter-dark.svg' className='w-[30px] h-[30px]' />
                             </button>
                             <div className="relative inline-block">
                                 <button className="p-1">
-                                    <img src='/icon/shopping-cart.svg' className='w-[24px] h-[24px]' />
+                                    <img src='/icon/shopping-cart.svg' className='w-[30px] h-[30px]' />
                                 </button>
-                                <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white">123</span>
+                                <span className="absolute top-0 right-0 -mt-0 mr-0 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white px-2">123</span>
                             </div>
                         </div>
                     </div>
