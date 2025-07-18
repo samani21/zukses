@@ -200,24 +200,24 @@ const Header = () => {
 
     return (
         <>
-            <header className="h-[60px] md:h-[120px] text-white sticky top-0 z-40 bg-white md:border-b border-[#EEEEEE]">
+            <header className="h-[60px] md:h-[104px] text-white sticky top-0 z-40 bg-white md:border-b border-[#EEEEEE]">
                 {/* ... Tampilan Desktop tidak berubah ... */}
                 <div>
                     <div className="hidden md:flex flex-col">
-                        <div className="items-center text-xs mb-3 bg-[#F7A200] py-[5px] h-[30px]">
+                        <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[30px]">
                             <div className="container mx-auto w-[1200px] px-[0px] flex justify-between" style={{ letterSpacing: "-2%" }}>
-                                <a onClick={() => router.push('/')} className="text-[14px] font-[500] text-[#333333] hover:underline">Download aplikasinya di Playstore</a>
+                                <a onClick={() => router.push('/')} className="text-[14px] font-[500] text-[#555555] hover:underline">Download aplikasinya di Playstore</a>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
-                                            <a onClick={() => router.push('/my-store')} className="font-[500] hover:underline cursor-pointer text-[14px] text-[#333333] ">Toko Saya</a>
-                                            <a onClick={() => router.push('/user-profile')} className="font-[500] text-[14px] text-[#333333]  hover:underline cursor-pointer text-right">{userName}</a>
+                                            <a onClick={() => router.push('/my-store')} className="font-[500] hover:underline cursor-pointer text-[14px] text-[#555555] ">Toko Saya</a>
+                                            <a onClick={() => router.push('/user-profile')} className="font-[500] text-[14px] text-[#555555]  hover:underline cursor-pointer text-right">{userName}</a>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
-                                            <a onClick={() => router.push('/auth/register')} className="hover:underline cursor-pointer text-[14px] text-[#333333] font-[500]">Daftar</a>
+                                            <a onClick={() => router.push('/auth/register')} className="hover:underline cursor-pointer text-[14px] text-[#555555] font-[500]">Daftar</a>
                                             <div className="h-3 w-px bg-indigo-400"></div>
-                                            <a onClick={() => router.push('/auth/login')} className="hover:underline cursor-pointer text-[14px] text-[#333333] font-[500]">Masuk</a>
+                                            <a onClick={() => router.push('/auth/login')} className="hover:underline cursor-pointer text-[14px] text-[#555555] font-[500]">Masuk</a>
                                         </div>
                                     )}
                                 </div>
@@ -225,11 +225,11 @@ const Header = () => {
                         </div>
 
                         <div className="flex items-center gap-8 container mx-auto w-[1200px] px-[0px] mt-[-3px] justify-between">
-                            <h1 className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[-20px] mr-7" onClick={() => window.location.href = '/'} style={{
+                            <h1 className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[0px] mr-7" onClick={() => window.location.href = '/'} style={{
                                 letterSpacing: "-0.05em"
                             }}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
-                                <div className='flex items-center justify-between gap-9 mt-2'>
+                                <div className='flex items-center justify-between gap-9 mt-1.5'>
                                     <div className="flex items-start justify-between gap-3 w-full">
                                         <div className="w-full">
                                             <div className='relative flex-grow border border-[0.5px] border-[#555555] rounded-[5px]'>
@@ -246,11 +246,11 @@ const Header = () => {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className='px-[0px] flex justify-between' style={{ letterSpacing: "-0.02em" }}>
+                                            {/* <div className='px-[0px] flex justify-between' style={{ letterSpacing: "-0.02em" }}>
                                                 <div className="mt-1 text-[#333333] text-[14px] font-[500]">
                                                     Klik disini untuk melihat history pencarian Anda
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
 
                                         <div className='flex items-center w-[400px] justify-between gap-4'>
@@ -302,7 +302,7 @@ const Header = () => {
                                 <button className="p-1">
                                     <img src='/icon/shopping-cart.svg' className='w-[24px] h-[24px]' />
                                 </button>
-                                <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-full text-white">3</span>
+                                <span className="absolute top-0 right-0 -mt-1 -mr-1 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white">123</span>
                             </div>
                         </div>
                     </div>
