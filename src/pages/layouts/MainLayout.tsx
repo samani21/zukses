@@ -9,7 +9,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
             <Header />
             <main className="md:block container mx-auto">
-                <div className="rounded-lg shadow">
+                <div className="rounded-lg">
                     {children}
                 </div>
             </main>

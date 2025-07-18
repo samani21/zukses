@@ -82,20 +82,43 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { id: 6, src: '/icon/delivery/anteraja 1.svg', alt: 'Anteraja' },
   ];
   const categoryData = [
-    { name: "Pc & Laptop", icon: "/icon/categories/laptop_utama 2.svg" },
-    { name: "Handphone", icon: "/icon/categories/mobile 2.svg" },
-    { name: "Jam Tangan", icon: "/icon/categories/watch_690411 1.svg" },
-    { name: "Pakaian Pria", icon: "/icon/categories/pakaian2 2.svg" },
-    { name: "Sepatu", icon: "/icon/categories/sepatu1 1.svg" },
-    { name: "Perlengkapan Rumah", icon: "/icon/categories/machine_14852593 1.svg" },
-    { name: "Elektronik", icon: "/icon/categories/electronic 2.svg" },
+    { name: "Pc & Laptop", icon: "/icon/categories/laptop_utama.svg" },
+    { name: "Handphone", icon: "/icon/categories/hp.svg" },
+    { name: "Elektronik", icon: "/icon/categories/elektronik.svg" },
+    { name: "Pakaian", icon: "/icon/categories/pakaian.svg" },
+    { name: "Sepatu", icon: "/icon/categories/sepatu.svg" },
+    { name: "Perlengkapan Rumah", icon: "/icon/categories/peralatan.svg" },
+    { name: "Jam Tangan", icon: "/icon/categories/jam_tangan.svg" },
+    { name: "Makanan & Minuman", icon: "/icon/categories/makanan.svg" },
     { name: "Mainan Anak", icon: "/icon/categories/mainan_anak 3.svg" },
     { name: "Tas Wanita", icon: "/icon/categories/bag_9442444 1.svg" },
-    { name: "Makanan & Minuman", icon: "/icon/categories/fast-food_2819194 1.svg" },
     { name: "Motor", icon: "/icon/categories/motorcycle_1804617 1.svg" },
     { name: "Buku", icon: "/icon/categories/book 1.svg" },
   ];
 
+
+  // const categoryData = [
+  //   { name: "Elektronik", icon: "/icon/Elektronik.png" },
+  //   { name: "Komputer & Aksesoris", icon: "/icon/komputer.png" },
+  //   { name: "Handphone & Aksesoris", icon: "/icon/Handphone.png" },
+  //   { name: "Pakaian Pria", icon: "/icon/pakaian_pria.png" },
+  //   { name: "Sepatu Pria", icon: "/icon/shoes.png" },
+  //   { name: "Tas Pria", icon: "/icon/tas_pria.png" },
+  //   { name: "Aksesoris Fashion", icon: "/icon/" },
+  //   { name: "Jam Tangan", icon: "/icon/jam_tangan.png" },
+  //   { name: "Kesehatan", icon: "/icon/health.png" },
+  //   { name: "Hobi & Koleksi", icon: "/icon/" },
+  //   { name: "Makanan & Minuman", icon: "/icon/Makanan.png" },
+  //   { name: "Perawatan & Kecantikan", icon: "/icon/" },
+  //   { name: "Perlengkapan Rumah", icon: "/icon/rumah.png" },
+  //   { name: "Pakaian Wanita", icon: "/icon/" },
+  //   { name: "Fashion Muslim", icon: "/icon/moslem.png" },
+  //   { name: "Fashion Bayi & Anak", icon: "/icon/fashion_bayi.png" },
+  //   { name: "Ibu & Bayi", icon: "/icon/ibudanbayi.png" },
+  //   { name: "Sepatu Wanita", icon: "/icon/shoes2.png" },
+  //   { name: "Tas Wanita", icon: "/icon/tas_wanita.png" },
+  //   { name: "Otomotif", icon: "/icon/otomotif.png" }
+  // ];
 
   const getProduct = async () => {
     setLoading(true);
@@ -117,17 +140,17 @@ const Home: React.FC<HomeLayoutProps> = () => {
   }, []);
   return (
     <MainLayout>
-      <div className='hidden md:block lg:px-0'>
-        <main className="md:mx-auto w-[1200px] px-[0px]">
+      <div className='md:block lg:px-0'>
+        <main className="hidden md:block md:mx-auto w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
-        <main className="md:mx-auto w-[1200px] px-[0px] mt-4">
+        <main className="hidden md:block md:mx-auto w-[1200px] px-[0px] mt-4">
           <Welcome />
         </main>
-        <div className='md:hidden'>
+        <div className='hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>
-        <main className='md:mx-auto  w-[1200px] px-[0px]'>
+        <main className='md:mx-auto  md:w-[1200px] px-[0px] mt-4'>
           <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
         </main>
         <main className="container mx-auto pb-24 md: w-[1200px] px-[0px]">
