@@ -35,7 +35,7 @@
           animation: ping-custom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
         } 
 body {
-  background: var(--background);
+  background: #F1F5F9;
   color: var(--foreground);
   font-family: "Inter", sans-serif;
   -webkit-user-select: text;
@@ -45,6 +45,13 @@ body {
     margin: 0px;
     letter-spacing: -0.04em;
     line-height: 121%;
+}
+@media (max-width: 768px) {
+  body {
+    background: #ffffff;
+    color: var(--foreground); /* opsional kalau ingin ganti warna teks juga */
+    line-height: 121%; /* sesuaikan kalau perlu */
+  }
 }
 select {
   scroll-behavior: smooth;

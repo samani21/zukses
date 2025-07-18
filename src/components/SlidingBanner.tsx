@@ -50,7 +50,8 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
     banners,
     autoPlayInterval = 5000,
 }) => {
-    const isMobile = useMediaQuery('(max-width: 767px)');
+    const [isMobile, setIsMobile] = useState(false);
+
     const visibleCount = isMobile ? 1 : 3;
     const slideWidthPct = 100 / visibleCount;
 
@@ -101,6 +102,14 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
         }
     }, [disableTransition]);
 
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth <= 767);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     const start = (x: number) => {
         resetTimeout();
         isDraggingRef.current = true;
