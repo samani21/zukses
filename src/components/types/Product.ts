@@ -2,6 +2,7 @@ export interface Thumbnail {
     id: number;
     url: string;
     alt: string;
+    type: string;
 }
 
 export type variant = {
@@ -54,6 +55,15 @@ export interface Review {
 export interface Media {
     id: number;
     url: string;
+    type: string;
+}
+
+
+
+export interface VariantPrices {
+    id: number;
+    variant: string;
+    options: [];
 }
 
 export type Product = {
@@ -70,6 +80,7 @@ export type Product = {
     originalPrice: number;
     discountedPrice: number;
     is_cod_enabled: number;
+    is_used: number;
     sold: number;
     vouchers: string[];
     thumbnails: Thumbnail[];
@@ -78,5 +89,6 @@ export type Product = {
     specifications: Specification;
     reviews: Review[];
     media: Media[];
+    variant_prices: VariantPrices[];
 };
 

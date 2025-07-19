@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
 import { Product, Thumbnail, variant } from 'components/types/Product';
+import { Check } from 'lucide-react';
 
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -44,7 +45,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [quantity, setQuantity] = useState<number>(1);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
-
+    const [activeSelections, setActiveSelections] = useState<Record<number, string>>({});
     const allImages = useMemo(() => {
         // ... (logika `allImages` tidak berubah)
         const imageMap = new Map<string, Thumbnail>();
@@ -55,19 +56,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 id: -1,
                 url: product.image,
                 alt: 'Gambar utama produk',
+                type: 'image'
             });
         }
 
-        // 2. Tambahkan media video (jika ada)
-        product?.media?.forEach((m, i) => {
-            if (/\.(mp4|webm|ogg)$/i.test(m.url)) {
-                imageMap.set(m.url, {
-                    id: m.id ?? 1000 + i,
-                    url: m.url,
-                    alt: 'Video produk',
-                });
-            }
-        });
+        // // 2. Tambahkan media video (jika ada)
+        // product?.media?.forEach((m, i) => {
+        //     if (/\.(mp4|webm|ogg)$/i.test(m.url)) {
+        //         imageMap.set(m.url, {
+        //             id: m.id ?? 1000 + i,
+        //             url: m.url,
+        //             alt: 'Video produk',
+        //             type: 'video'
+        //         });
+        //     }
+        // });
 
         // 3. Tambahkan dari variants
         product?.variants?.forEach((v, i) => {
@@ -76,6 +79,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     id: v?.id + i,
                     url: v.image,
                     alt: v.combination_label,
+                    type: 'image',
                 });
             }
         });
@@ -92,12 +96,33 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     id: m.id ?? 2000 + i,
                     url: m.url,
                     alt: m.url,
+                    type: m.type,
                 });
             }
         });
 
         return Array.from(imageMap.values());
     }, [product?.image, product?.variants, product?.thumbnails, product?.media]);
+    const videoProduct = useMemo(() => {
+        // ... (logika `allImages` tidak berubah)
+        const video = new Map<string, Thumbnail>();
+
+        // // 2. Tambahkan media video (jika ada)
+        product?.media?.forEach((m, i) => {
+            if (/\.(mp4|webm|ogg)$/i.test(m.url)) {
+                video.set(m.url, {
+                    id: m.id ?? 1000 + i,
+                    url: m.url,
+                    alt: 'Video produk',
+                    type: 'video'
+                });
+            }
+        });
+
+
+        return Array.from(video.values());
+    }, [product?.media]);
+
 
     // ✨ BARU: Hitung rentang harga dari varian
     const priceRange = useMemo(() => {
@@ -222,6 +247,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <ProductGallery
                         images={allImages}
+                        videoProduct={videoProduct}
                         activeIndex={activeImageIndex}
                         setActiveIndex={setActiveImageIndex}
                         onImageClick={handleImageClick}
@@ -238,7 +264,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
                             </div>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-md my-3">
+                        <div className="bg-gray-50 rounded-md my-3">
                             <div className="flex items-center space-x-4 ">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
                                 <div className="text-dark text-[30px] font-[500]">{renderPriceDiscountDisplay()}</div>
@@ -246,31 +272,63 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <p className='text-[16px] font-[500] text-[#FF0000]'>{DiscountRange?.max}%</p>
                             </div>
                         </div>
+                        <div className="flex gap-12 mb-2">
+                            <span className="text-[#555555] text-[16px]  font-medium">Kondisi</span>
+                            <span className="text-[#4A52B2] text-[16px] font-bold">{product?.is_used ? "Bekas dipakai" : "Baru"}</span>
+                        </div>
                         <div className="space-y-3">
-                            {
-                                product?.vouchers?.length > 0 &&
-                                <div className="grid md:flex items-start">
-                                    <span className="w-24 text-gray-500">Voucher</span>
-                                    <div className="flex flex-wrap gap-1 mt-2 md:mt-0">
-                                        {product?.vouchers?.map(v => (
-                                            <span key={v} className="bg-blue-100 text-blue-600 text-xs px-2 py-[2px] rounded">{v}</span>
-                                        ))}
+                            {product?.variant_prices.map((group) =>
+                                <div key={group.id}>
+                                    <span className="text-[#555555] text-[16px] font-medium">
+                                        Pilih <span className="text-[#4A52B2] font-bold ml-3">{group.variant}</span>
+                                    </span>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {group?.options.map((option, idx) => {
+                                            return (
+                                                option !== "" && (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            setActiveSelections((prev) => ({
+                                                                ...prev,
+                                                                [group.id]: option
+                                                            }));
+
+                                                            // Jika ini varian pertama, update gambar
+                                                            if (product?.variant_prices?.[0]?.id === group.id) {
+                                                                const matchedVariant = product.variants?.find((v) =>
+                                                                    v.combination_label?.includes(option)
+                                                                );
+                                                                if (matchedVariant) {
+                                                                    handleVariantSelect(matchedVariant);
+                                                                }
+                                                            }
+                                                        }}
+
+                                                        className={` bg-[#FFFFFF] border border-[#BBBBBB] text-[14px] font-[500] flex items-center gap-1 ${activeSelections[group.id] === option
+                                                            ? 'border-orange-500 bg-orange-500 text-white py-0.5 pr-[3px] pl-[3px]'
+                                                            : 'border-gray-400 bg-white text-black py-1 px-4'}`}
+                                                        style={{
+                                                            letterSpacing: "-0.04em"
+                                                        }}
+                                                    >
+                                                        {activeSelections[group.id] === option ? <Check className='h-20px w-20px' /> : option}
+                                                        {activeSelections[group.id] === option &&
+                                                            <div className='bg-white text-[#333333] font-bold text-[14px] p-4 py-1'>
+                                                                {option}
+                                                            </div>}
+                                                    </button>
+                                                )
+                                            );
+                                        })}
+
                                     </div>
-                                </div>
-                            }
-                            {
-                                product?.variants?.length > 0 &&
-                                <div className="grid md:flex items-start">
-                                    <span className="w-24 text-gray-500">Pilihan</span>
-                                    <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
-                                        {product?.variants?.map(v => (
-                                            <button key={v?.id} onClick={() => handleVariantSelect(v)} className={`px-3 py-1 rounded text-xs border ${activeVariant?.id === v?.id ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-300'}`}>
-                                                {v?.combination_label}
-                                            </button>
-                                        ))}
+                                    <div className="mt-1 text-end">
+                                        <button className="text-blue-700 text-xs font-medium text-right">Lihat Lebih Banyak</button>
                                     </div>
-                                </div>
-                            }
+                                </div>)}
+
+
                             <div className="grid md:flex items-center">
                                 <span className="w-24 text-gray-500">Kuantitas</span>
                                 <div className="flex items-center border border-gray-300 rounded overflow-hidden w-fit">

@@ -34,7 +34,7 @@ const SearchSuggestions = ({ suggestions, searchTerm, onSuggestionClick }: { sug
     const filteredSuggestions = searchTerm ? suggestions.filter(s => s.text.toLowerCase().includes(searchTerm.toLowerCase())) : suggestions;
     if (filteredSuggestions.length === 0) { return null; }
     return (
-        <div className="absolute top-full left-0 right-0 mt-1 md:-mt-5 bg-white md:border border-gray-200 md:rounded-md md:shadow-lg z-10 md:w-[72%]">
+        <div className="absolute top-full left-0 right-0 mt-1 md:-mt-0 bg-white md:border border-gray-200 md:rounded-md md:shadow-lg z-10 md:w-[72%]">
             <ul>
                 {filteredSuggestions.map((suggestion, index) => (
                     <li key={index} onClick={() => onSuggestionClick(suggestion)} className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer">
@@ -187,6 +187,15 @@ const Header = () => {
         updateHistoryState(newHistory);
         setSearchTerm(suggestion.text);
         setIsSearchFocused(false);
+        const slug = suggestion.text
+            .toLowerCase()
+            // ganti spasi ATAU karakter “/” dengan "-"
+            .replace(/[\s/]+/g, '-')
+            // hapus tanda minus ganda di tengah/tengah akhir, opsional
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');        // buang minus di awal/akhir
+
+        window.location.href = `/search/${slug}`;
     };
 
     const handleMobileSearchSubmit = (submittedTerm: string) => {
@@ -194,6 +203,15 @@ const Header = () => {
         const newHistory = saveSearchTerm(submittedTerm);
         updateHistoryState(newHistory);
         setIsMobileSearchOpen(false);
+        const slug = submittedTerm
+            .toLowerCase()
+            // ganti spasi ATAU karakter “/” dengan "-"
+            .replace(/[\s/]+/g, '-')
+            // hapus tanda minus ganda di tengah/tengah akhir, opsional
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');        // buang minus di awal/akhir
+
+        window.location.href = `/search/${slug}`;
     };
 
     const suggestionsForDropdown = dropdownMode === 'history' ? searchHistory : searchSuggestions;
@@ -203,7 +221,7 @@ const Header = () => {
             <header className="h-[60px] md:h-[104px] text-white sticky top-0 z-40 bg-white md:border-b border-[#EEEEEE]">
                 {/* ... Tampilan Desktop tidak berubah ... */}
                 <div>
-                    <div className="hidden md:flex flex-col">
+                    <div className="hidden md:flex flex-col ">
                         <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[30px]">
                             <div className="container mx-auto w-[1200px] px-[0px] flex justify-between" style={{ letterSpacing: "-2%" }}>
                                 <a onClick={() => router.push('/')} className="text-[14px] font-[500] text-[#555555] hover:underline">Download aplikasinya di Playstore</a>
