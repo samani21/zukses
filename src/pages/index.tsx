@@ -140,29 +140,29 @@ const Home: React.FC<HomeLayoutProps> = () => {
   }, []);
   return (
     <MainLayout>
-      <div className='md:block md:px-4 lg:px-0'>
-        <main className="hidden md:block md:mx-auto px-[0px]">
+      <div className='md:block md:px-4  lg:px-0'>
+        <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
-        <main className="hidden md:block md:mx-auto px-[0px] mt-[28px]">
+        <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px] mt-[28px]">
           <Welcome />
         </main>
         <div className='hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>
-        <main className='md:mx-auto px-[0px] mt-[28px]'>
+        <main className='md:mx-auto px-[0px] lg:w-[1200px] mt-[28px]'>
           <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
         </main>
-        <main className="container mx-auto pb-24 md: px-[0px] mt-[24px]">
+        <main className="container mx-auto pb-24 lg:w-[1200px] md:px-[0px] mt-[24px]">
           {
             products &&
             <ProductList products={products} selectedCategory={selectedCategory} />
           }
         </main>
       </div>
-      <div className='hidden md:block border-t border-[#BBBBBB] bg-white'>
-        <div className='border-b border-[#BBBBBB] py-10'>
-          <div className='container mx-auto flex justify-between itmes-center px-4 '>
+      <div className='hidden md:block border-t border-[#BBBBBB]  bg-white'>
+        <div className='border-b border-[#BBBBBB]  py-10'>
+          <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] px-4 '>
             <div>
               <Payment samplePayment={samplePayment} />
             </div>
@@ -171,7 +171,7 @@ const Home: React.FC<HomeLayoutProps> = () => {
             </div>
           </div>
         </div>
-        <main className="container mx-auto md:px-4 lg:px-[0px]">
+        <main className="container mx-auto md:px-4 lg:w-[1200px] lg:px-[0px]">
           <SiteFooter />
         </main>
         <div className="border-t border-[#BBBBBB] py-4 mt-8">
