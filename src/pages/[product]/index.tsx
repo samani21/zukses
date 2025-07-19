@@ -69,7 +69,9 @@ const ProductPage = () => {
                         detailProduct &&
                         <div className='space-y-4'>
                             <ProductDetail product={detailProduct} />
-                            <SellerInfo seller={detailProduct?.seller} />
+                            <div className='hidden md:block'>
+                                <SellerInfo seller={detailProduct?.seller} />
+                            </div>
                             <ProductSpecification specifications={detailProduct.specifications} />
                             <ProductDescription description={detailProduct.desc} />
 
