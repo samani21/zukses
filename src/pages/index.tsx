@@ -144,16 +144,16 @@ const Home: React.FC<HomeLayoutProps> = () => {
         <main className="hidden md:block md:mx-auto w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
-        <main className="hidden md:block md:mx-auto w-[1200px] px-[0px] mt-4">
+        <main className="hidden md:block md:mx-auto w-[1200px] px-[0px] mt-[28px]">
           <Welcome />
         </main>
         <div className='hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>
-        <main className='md:mx-auto  md:w-[1200px] px-[0px] mt-4'>
+        <main className='md:mx-auto  md:w-[1200px] px-[0px] mt-[28px]'>
           <CategoryGrid categories={categoryData} onCategorySelect={setSelectedCategory} />
         </main>
-        <main className="container mx-auto pb-24 md: w-[1200px] px-[0px]">
+        <main className="container mx-auto pb-24 md: w-[1200px] px-[0px] mt-[24px]">
           {
             products &&
             <ProductList products={products} selectedCategory={selectedCategory} />
