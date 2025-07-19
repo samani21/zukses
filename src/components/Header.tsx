@@ -307,12 +307,12 @@ const Header = () => {
 
                     </div>
                     {/* Tampilan Mobile */}
-                    <div className='md:hidden h-full p-2 flex items-center justify-between gap-2'>
+                    <div className='md:hidden h-full p-2 flex items-center justify-between gap-2 pr-8'>
                         <div className='relative h-[40px] flex items-center gap-2 px-3 border border-[#555555] rounded-[5px] w-full' onClick={() => setIsMobileSearchOpen(true)}>
                             <SearchIcon className='w-[14px] h-[14px] text-[#888888]' />
                             <p className='text-[#555555] text-sm'>{searchTerm || "Cari di Zukses"}</p>
                         </div>
-                        <div className='flex items-center justify-end gap-2'>
+                        <div className='flex items-center justify-left gap-2 w-1/3'>
                             <button onClick={() => setProvinceModalOpen(true)} className="p-1" title="Filter Provinsi">
                                 <img src='/icon/filter-dark.svg' className='w-[30px] h-[30px]' />
                             </button>
@@ -320,7 +320,7 @@ const Header = () => {
                                 <button className="p-1">
                                     <img src='/icon/shopping-cart.svg' className='w-[30px] h-[30px]' />
                                 </button>
-                                <span className="absolute top-0 right-0 -mt-0 mr-0 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white px-2">123</span>
+                                <span className="absolute top-0 -right-3npm run d -mt-0 mr-0 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white px-4">123</span>
                             </div>
                         </div>
                     </div>

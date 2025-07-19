@@ -1,3 +1,4 @@
+import { Image, Video } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
 const ChevronLeftIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -26,16 +27,13 @@ interface ProductGalleryProps {
     videoProduct: Thumbnail[];
 }
 
-// const isVideo = (url: string): boolean => {
-//     return url.match(/\.(mp4|webm|ogg)$/i) !== null;
-// };
-
 const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, setActiveIndex, onImageClick, videoProduct }) => {
     const thumbnailContainerRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState(0);
     const [dragOffset, setDragOffset] = useState(0);
-    const [previewVideo, setPreviewVideo] = useState<boolean>(false)
+    const [previewVideo, setPreviewVideo] = useState<boolean>(false);
+
     const handleNext = () => {
         setActiveIndex((activeIndex + 1) % images.length);
     };
@@ -71,17 +69,8 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     };
 
     return (
-        <div className="lg:col-span-2">
-            <div className="mb-4 relative group overflow-hidden w-[450px]">
-                <div
-                    onClick={() => {
-                        window.location.href = '/'
-                        localStorage.removeItem('product')
-                    }}
-                    className="flex items-center justify-center w-10 h-10 absolute top-2 left-2 z-20 bg-white/80 hover:bg-white text-gray-800 rounded-full shadow md:hidden"
-                >
-                    <ChevronLeftIcon />
-                </div>
+        <div className="lg:col-span-2 w-full md:px-0">
+            <div className="mb-2 relative group overflow-hidden w-full max-w-[450px] mx-auto">
                 <div
                     className="flex transition-transform duration-300 ease-in-out"
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -93,13 +82,12 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                     onMouseLeave={handleDragEnd}
                     onTouchEnd={handleDragEnd}
                 >
-
                     {previewVideo ? videoProduct.map((media, index) => (
                         <div key={index} className="flex-shrink-0 w-full" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
                             <video
                                 src={media.url}
                                 controls
-                                className=" w-[450px] h-[450px] object-cover shadow-sm select-none"
+                                className="w-full md:w-[450px] h-full md:h-[450px] object-cover shadow-sm select-none max-h-[450px]"
                             />
                         </div>
                     )) : images.map((media, index) => (
@@ -107,7 +95,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                             <img
                                 src={media.url}
                                 alt={media.alt}
-                                className=" w-[450px] h-[450px] object-cover shadow-sm select-none"
+                                className="w-full md:w-[450px] h-full md:h-[450px] object-cover shadow-sm select-none"
                                 onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
                             />
                         </div>
@@ -124,19 +112,16 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
             </div>
 
             <div className="relative">
-                <button onClick={() => thumbnailContainerRef.current?.scrollBy({ left: -100, behavior: 'smooth' })} className="md:hidden absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 z-10 shadow-md">
-                    <ChevronLeftIcon className="w-6 h-6 text-gray-700" />
-                </button>
-                <div ref={thumbnailContainerRef} className="flex space-x-2 overflow-x-auto p-1 scroll-smooth no-scrollbar">
+                <div ref={thumbnailContainerRef} className="flex space-x-1 overflow-x-auto p-1 scroll-smooth no-scrollbar">
                     {previewVideo ? videoProduct.map((thumb, index) => (
                         <button
                             key={thumb.id}
                             onClick={() => setActiveIndex(index)}
-                            className={`flex-shrink-0 w-1/5 rounded-md border-2 p-1 transition-colors ${activeIndex === index ? 'border-blue-500' : 'border-transparent'}`}
+                            className={`flex-shrink-0 w-[20%] border-2  transition-colors ${activeIndex === index ? 'border-[#F77000]' : 'border-transparent'}`}
                         >
                             <video
                                 src={thumb.url}
-                                className="w-full h-auto rounded object-cover"
+                                className="w-full h-auto object-cover"
                                 muted
                                 playsInline
                             />
@@ -145,45 +130,35 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         <button
                             key={thumb.id}
                             onClick={() => setActiveIndex(index)}
-                            className={`flex-shrink-0 w-1/5 rounded-md border-2 p-1 transition-colors ${activeIndex === index ? 'border-blue-500' : 'border-transparent'}`}
+                            className={`flex-shrink-0 w-[20%] border-2  transition-colors ${activeIndex === index ? 'border-[#F77000]' : 'border-transparent'}`}
                         >
                             <img
                                 src={thumb.url.replace('600x400', '100x100')}
                                 alt={thumb.alt}
-                                className="w-full h-auto rounded"
+                                className="w-full h-auto"
                             />
                         </button>
                     ))}
                 </div>
-                {previewVideo ?
-                    <div className="text-center mt-2">
-                        <button
-                            onClick={() => setPreviewVideo(false)}
-                            className="bg-purple-100 h-[40px] w-full border border-1 border-[#563D7C]/50 bg-[#F6E9F0] text-[14px] font-semibold text-[#563D7C] px-4 py-2  hover:bg-purple-200 transition"
-                        >
-                            Lihat Video
-                        </button>
-                    </div>
-                    : <div className="text-center mt-2">
-                        <button
-                            onClick={() => setPreviewVideo(true)}
-                            className="bg-purple-100 h-[40px]  w-full border border-1 border-[#563D7C]/50 bg-[#F6E9F0] text-[14px] font-semibold text-[#563D7C] px-4 py-2  hover:bg-purple-200 transition"
-                        >
-                            Lihat Video
-                        </button>
-                    </div>}
-                <div className='flex items-center justify-between mt-4'>
-                    <div className='text-[#4A52B2] text-[14px] font-bold'>
-                        Bagikan Link
-                    </div>
-                    <div className='text-[#4A52B2] text-[15px] font-bold flex items-center justify-end gap-2'>
-                        <img src='/icon/favorit.svg' width={30} height={28} />
-                        Tambahkan ke Favorit (27)
+
+                <div className="text-center mt-2 px-2 md:px-0">
+                    <button
+                        onClick={() => setPreviewVideo(!previewVideo)}
+                        className="bg-[#4A52B2] h-[30px] text-white md:h-[40px] w-full border border-[#563D7C]/50 md:bg-[#F6E9F0] text-[10px] rounded-[12px] md:rounded-none md:text-[14px] font-semibold md:text-[#563D7C] px-4 py-2 hover:bg-purple-200 transition flex items-center justify-center gap-2"
+                    >
+
+                        {previewVideo ? <Image className='w-[15px] h-[15px] md:hidden' /> : <Video className='w-[15px] h-[15px] md:hidden' />}
+                        <span>{previewVideo ? "Lihat Gambar" : "Lihat Video"}</span>
+                    </button>
+                </div>
+
+                <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-4 text-[#4A52B2]">
+                    <div className="text-[14px] font-bold text-center sm:text-left">Bagikan Link</div>
+                    <div className="text-[15px] font-bold flex items-center justify-center sm:justify-end gap-2">
+                        <img src="/icon/favorit.svg" width={30} height={28} alt="favorit" />
+                        <span>Tambahkan ke Favorit (27)</span>
                     </div>
                 </div>
-                <button onClick={() => thumbnailContainerRef.current?.scrollBy({ left: 100, behavior: 'smooth' })} className="md:hidden absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-1 z-10 shadow-md">
-                    <ChevronRightIcon className="w-6 h-6 text-gray-700" />
-                </button>
             </div>
         </div>
     );
