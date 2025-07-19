@@ -242,17 +242,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     };
     const renderPriceDiscountDisplayMobile = () => {
         if (activeVariant) {
-            return formatRupiahNoRP(activeVariant.discount_price);
+            return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(activeVariant.discount_price)}</span></p>;
         }
         if (priceDiscountRange) {
             if (priceDiscountRange.isRange) {
                 return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span> - Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.max)}</span></p>
-                return ``;
             }
-            return formatRupiahNoRP(priceDiscountRange.min);
+            return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span></p>;
         }
 
-        return formatRupiahNoRP(product?.price);
+        return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(product?.price)}</span></p>;
     };
 
 
@@ -395,6 +394,65 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <span className='text-[#555555] text-[10px] font-semibold'>4.9</span>
                             </div>
                             <span className="text-[10px] text-[#555555]"><span className='text-[10px] text-[#555555]'>{product?.soldCount || '1000+'}</span> Terjual</span>
+                        </div>
+                        <div className='space-y-4'>
+                            {product?.variant_prices.map((group) =>
+                                <div key={group.id}>
+                                    <div className='flex justify-between items-center'>
+                                        <p className="text-[#555555] text-[12px] font-medium">
+                                            Pilih <span className="text-[#4A52B2] font-bold ml-3">{group.variant}</span>
+                                        </p>
+                                        <div className='flex items-center gap-2 text-[#555555] text-[12px]'>
+                                            selengkapnya
+                                            <img src='/icon/right-dark.svg' />
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                        {group?.options.map((option, idx) => {
+                                            return (
+                                                option !== "" && (
+                                                    <button
+                                                        key={idx}
+                                                        onClick={() => {
+                                                            setActiveSelections((prev) => ({
+                                                                ...prev,
+                                                                [group.id]: option
+                                                            }));
+
+                                                            // Jika ini varian pertama, update gambar
+                                                            if (product?.variant_prices?.[0]?.id === group.id) {
+                                                                const matchedVariant = product.variants?.find((v) =>
+                                                                    v.combination_label?.includes(option)
+                                                                );
+                                                                if (matchedVariant) {
+                                                                    handleVariantSelect(matchedVariant);
+                                                                }
+                                                            }
+                                                        }}
+
+                                                        className={` bg-[#FFFFFF] border border-[#BBBBBB] text-[12px] font-[500] flex items-center gap-1 ${activeSelections[group.id] === option
+                                                            ? 'border-orange-500 bg-orange-500 text-white py-0.5 pr-[3px] pl-[3px]'
+                                                            : 'border-gray-400 bg-white text-black py-1 px-4'}`}
+                                                        style={{
+                                                            letterSpacing: "-0.04em"
+                                                        }}
+                                                    >
+                                                        {activeSelections[group.id] === option ? <Check className='h-20px w-20px' /> : option}
+                                                        {activeSelections[group.id] === option &&
+                                                            <div className='bg-white text-[#333333] font-bold text-[12px] p-4 py-1'>
+                                                                {option}
+                                                            </div>}
+                                                    </button>
+                                                )
+                                            );
+                                        })}
+
+                                    </div>
+                                </div>)}
+                        </div>
+                        <div className='text-[12px] font-bold text-[#DE4A53] flex gap-2 items-center mt-5'>
+                            Panduan Ukuran
+                            <img src='/icon/right.svg' />
                         </div>
                     </div>
                 </div>
