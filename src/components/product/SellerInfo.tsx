@@ -1,122 +1,76 @@
+import React from 'react';
 import { Seller } from 'components/types/Product';
-import React from 'react'
 
-const StarIcon = ({ className = "w-4 h-4 text-blue-400" }: { className?: string }) => (
+const StarIcon = ({ className = "w-5 h-5 text-yellow-400" }: { className?: string }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 20 20">
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-    </svg>
-);
-const ChatBubbleIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.195-.883.078-1.707-.126-2.427-.465a4.903 4.903 0 0 1-1.574-1.296c-.443-.534-.928-1.035-1.428-1.49a4.897 4.897 0 0 0-2.12.14c-1.018.41-2.13.256-3.005-.442a4.897 4.897 0 0 1-1.427-1.49c-.443-.534-.928-1.035-1.428-1.49a4.897 4.897 0 0 0-2.12.14c-1.018.41-2.13.256-3.005-.442a4.903 4.903 0 0 1-1.574-1.296C.847 15.1 0 14.136 0 13v-4.286c0-.97.616-1.813 1.5-2.097C3.426 6.166 5.208 6 7 6h10c1.792 0 3.574.166 5.25.511Z" />
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
     </svg>
 );
 
-const StoreIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.25m11.25 0h8.25m-11.25 0V11.25a.75.75 0 0 0-.75-.75H9.75a.75.75 0 0 0-.75.75V21m-4.5 0H2.25m9 0V3.75a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0h.008v.008H11.25v-.008Z" />
-    </svg>
-);
 interface SellerInfoProps {
     seller: Seller;
 }
 
 const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
     return (
-        <div className="bg-white rounded-lg shadow-md mt-4">
-            {/* Mobile View */}
-            <div className="p-4 sm:hidden">
-                <div className="flex justify-between items-start gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="relative flex-shrink-0">
-                            <img src={seller?.avatarUrl} alt={seller?.name} className="w-14 h-14 rounded-full border" />
-                            <div className="absolute -bottom-1 -right-1 block bg-red-600 text-white text-[10px] font-bold px-1 rounded-sm">
-                                Star+
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-gray-800 text-base">{seller.name}</h3>
-                            <p className="text-xs text-gray-500">Aktif {seller.lastActive}</p>
-                            <p className="text-xs text-gray-500">{seller.location}</p>
-                        </div>
-                    </div>
-                    <button className="flex-shrink-0 text-sm text-blue-600 border border-blue-600 rounded px-4 py-1.5 hover:bg-blue-50 transition">
-                        Kunjungi
-                    </button>
-                </div>
-                <div className="flex justify-around text-center mt-4 pt-4 border-t border-gray-200">
-                    <div className="flex-1">
-                        <p className="font-bold text-sm">{seller.stats.rating}</p>
-                        <p className="text-xs text-gray-500">Penilaian</p>
-                    </div>
-                    <div className="w-px bg-gray-200"></div>
-                    <div className="flex-1">
-                        <p className="font-bold text-sm">{seller.stats.products}</p>
-                        <p className="text-xs text-gray-500">Produk</p>
-                    </div>
-                    <div className="w-px bg-gray-200"></div>
-                    <div className="flex-1">
-                        <p className="font-bold text-sm text-blue-600">{seller.stats.chatResponseRate}</p>
-                        <p className="text-xs text-gray-500">Chat Dibalas</p>
+        <div className="bg-white shadow-[1px_1px_10px_rgba(0,0,0,0.08)] p-6 flex items-center gap-6">
+            {/* Kiri - Avatar & Tombol */}
+            <div className="flex items-center gap-4 w-1/2">
+                {/* <div className="w-14 h-14 rounded-full border flex items-center justify-center text-indigo-700 font-bold text-xl bg-white">
+               
+                </div> */}
+                <img src={seller?.avatarUrl} className='w-[94px] h-[94px] border border-[#BBBBBB] rounded-full' />
+                <div >
+                    <p className="text-[20px] font-bold text-[#333333] mb-2">{seller.name}</p>
+                    <div className="flex gap-2 mt-4">
+                        <button className="text-[14px] text-[#563D7C] font-semibold h-[40px] text-[#7f56d9] border border-[#563D7C80]/50 bg-[#F6E9F0] px-3 py-1 hover:bg-[#e8dbfc]">
+                            Chat Sekarang
+                        </button>
+                        <button className="text-[14px] font-semibold h-[40px] bg-[#4A52B2] text-white px-3 py-1 hover:bg-[#4338ca]">
+                            Kunjungi Toko
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Desktop View */}
-            <div className="hidden sm:flex flex-col sm:flex-row items-start gap-4 p-6">
-                <div className="flex items-center gap-4 flex-shrink-0">
-                    <div className="relative">
-                        <img src={seller.avatarUrl} alt={seller.name} className="w-20 h-20 rounded-full border" />
-                        <span className="absolute bottom-0 right-0 block bg-blue-500 border-2 border-white rounded-full p-0.5">
-                            <StarIcon className="w-3 h-3 text-white" />
-                        </span>
+            {/* Tengah - Rating */}
+            <div className="flex items-start gap-2 px-6 py-1 w-1/3 border-l border-[#DDDDDD]">
+                <div className="text-sm text-gray-700">
+                    <div className='flex items-center'>
+                        <StarIcon className='w-[40px] h-[40px] text-[#F7A200]' />
+                        <p className="text-[28px] font-bold text-[#333333]">
+                            {seller.stats.rating} <span className="text-[#333333] text-[20px] font-[400]">/ 5</span>
+                        </p>
                     </div>
-                    <div>
-                        <h3 className="font-bold text-gray-800">{seller.name}</h3>
-                        <p className="text-sm text-gray-500">Aktif {seller.lastActive}</p>
-                        <div className="mt-2 flex space-x-2">
-                            <button className="flex items-center gap-1 text-sm text-blue-600 border border-blue-600 rounded px-3 py-1 hover:bg-blue-50 transition">
-                                <ChatBubbleIcon className="w-4 h-4" />
-                                <span>Chat Sekarang</span>
-                            </button>
-                            <button className="flex items-center gap-1 text-sm text-gray-700 border border-gray-300 rounded px-3 py-1 hover:bg-gray-100 transition">
-                                <StoreIcon />
-                                <span>Kunjungi Toko</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div className="w-full sm:w-px sm:h-16 h-px bg-gray-200 sm:mx-6 my-4 sm:my-0"></div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 text-sm w-full">
-                    <div className="flex sm:flex-col gap-1">
-                        <span className="text-gray-500 w-32 sm:w-auto">Penilaian</span>
-                        <span className="text-blue-600 font-semibold">{seller.stats.reviewsCount}</span>
-                    </div>
-                    <div className="flex sm:flex-col gap-1">
-                        <span className="text-gray-500 w-32 sm:w-auto">Persentase Chat Dibalas</span>
-                        <span className="text-blue-600 font-semibold">{seller.stats.chatResponseRate}</span>
-                    </div>
-                    <div className="flex sm:flex-col gap-1">
-                        <span className="text-gray-500 w-32 sm:w-auto">Bergabung</span>
-                        <span className="text-blue-600 font-semibold">{seller.stats.joined}</span>
-                    </div>
-                    <div className="flex sm:flex-col gap-1">
-                        <span className="text-gray-500 w-32 sm:w-auto">Produk</span>
-                        <span className="text-blue-600 font-semibold">{seller.stats.products}</span>
-                    </div>
-                    <div className="flex sm:flex-col gap-1">
-                        <span className="text-gray-500 w-32 sm:w-auto">Waktu Chat Dibalas</span>
-                        <span className="text-blue-600 font-semibold">{seller.stats.chatResponseTime}</span>
-                    </div>
-                    <div className="flex sm:flex-col gap-1">
-                        <span className="text-gray-500 w-32 sm:w-auto">Pengikut</span>
-                        <span className="text-blue-600 font-semibold">{seller.stats.followers}</span>
-                    </div>
+                    <p className="text-[16px] text-[#333333] ml-2">90% pembeli merasa puas</p>
+                    <p className="text-[16px] text-[#333333] ml-2">
+                        673 rating • 398 ulasan
+                    </p>
                 </div>
             </div>
-        </div>
+
+            {/* Kanan - Info toko */}
+            <div className="text-sm space-y-1 h-[100px] min-w-[160px] w-1/3 border-l border-[#DDDDDD] px-6 flex items-center">
+                <table className='w-full'>
+                    <tr>
+                        <td className='text-[#333333] text-[16px] '>Produk</td>
+                        <td></td>
+                        <td className='text-[#333333] text-[16px] font-bold'>{seller.stats.products}</td>
+                    </tr>
+                    <tr>
+                        <td className='text-[#333333] text-[16px] '>Penilaian</td>
+                        <td></td>
+                        <td className='text-[#333333] text-[16px] font-bold'>{seller.stats.reviewsCount}</td>
+                    </tr>
+                    <tr>
+                        <td className='text-[#333333] text-[16px] '>Performa Toko</td>
+                        <td></td>
+                        <td className='text-[#333333] text-[16px] font-bold'>Sangat Baik</td>
+                    </tr>
+                </table>
+            </div>
+        </div >
     );
 };
 
-
-export default SellerInfo
+export default SellerInfo;

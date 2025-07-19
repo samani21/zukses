@@ -3,6 +3,7 @@ import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
 import { Product, Thumbnail, variant } from 'components/types/Product';
 import { Check } from 'lucide-react';
+import { formatRupiahNoRP } from 'components/Rupiah';
 
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -215,7 +216,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     const renderPriceDisplay = () => {
         if (activeVariant) {
-            return formatRupiah(activeVariant.discount_price);
+            return formatRupiah(activeVariant.price);
         }
         if (priceRange) {
             if (priceRange.isRange) {
@@ -228,7 +229,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     };
     const renderPriceDiscountDisplay = () => {
         if (activeVariant) {
-            return formatRupiah(activeVariant.price);
+            return formatRupiah(activeVariant.discount_price);
         }
         if (priceDiscountRange) {
             if (priceDiscountRange.isRange) {
@@ -238,6 +239,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         }
 
         return formatRupiah(product?.price);
+    };
+    const renderPriceDiscountDisplayMobile = () => {
+        if (activeVariant) {
+            return formatRupiahNoRP(activeVariant.discount_price);
+        }
+        if (priceDiscountRange) {
+            if (priceDiscountRange.isRange) {
+                return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span> - Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.max)}</span></p>
+                return ``;
+            }
+            return formatRupiahNoRP(priceDiscountRange.min);
+        }
+
+        return formatRupiahNoRP(product?.price);
     };
 
 
@@ -252,7 +267,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         setActiveIndex={setActiveImageIndex}
                         onImageClick={handleImageClick}
                     />
-                    <div className="lg:col-span-3 mt-2">
+                    <div className="hidden md:block lg:col-span-3 mt-2">
                         <h1 className="text-base text-[22px] font-[500] text-gray-800">{product?.name}</h1>
                         <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
                             <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
@@ -276,7 +291,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             <span className="text-[#555555] text-[16px]  font-medium">Kondisi</span>
                             <span className="text-[#4A52B2] text-[16px] font-bold">{product?.is_used ? "Bekas dipakai" : "Baru"}</span>
                         </div>
-                        <div className="space-y-3">
+                        <div className="space-y-3 w-1/2">
                             {product?.variant_prices.map((group) =>
                                 <div key={group.id}>
                                     <span className="text-[#555555] text-[16px] font-medium">
@@ -324,40 +339,62 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
                                     </div>
                                     <div className="mt-1 text-end">
-                                        <button className="text-blue-700 text-xs font-medium text-right">Lihat Lebih Banyak</button>
+                                        <button className="text-[#4A52B2] text-[16px] font-bold text-right">Lihat Lebih Banyak</button>
                                     </div>
                                 </div>)}
 
-
-                            <div className="grid md:flex items-center">
-                                <span className="w-24 text-gray-500">Kuantitas</span>
-                                <div className="flex items-center border border-gray-300 rounded overflow-hidden w-fit">
+                            <div className='text-[16px] font-bold text-[#DE4A53] flex gap-2 items-center'>
+                                Panduan Ukuran
+                                <img src='/icon/right.svg' />
+                            </div>
+                            <div className="grid md:flex items-center gap-4">
+                                <span className="text-[16px] font-[500] text-[#555555]">Kuantitas</span>
+                                <div className="flex items-center border border-[#BBBBBB] w-[157px] rounded overflow-hidden justify-between">
                                     <button
                                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                                        className="px-3 py-1 text-sm sm:text-base text-gray-600 hover:bg-gray-100"
+                                        className="px-4 py-1 text-sm sm:text-base text-gray-600 hover:bg-gray-100"
                                     >
                                         -
                                     </button>
                                     <input
                                         value={quantity}
                                         readOnly
-                                        className="w-8 sm:w-10 text-center border-l border-r border-gray-300 text-xs sm:text-sm"
+                                        className="w-full text-center border-l border-r border-gray-300 text-xs sm:text-sm"
                                     />
                                     <button
                                         onClick={() => setQuantity(q => q + 1)}
-                                        className="px-3 py-1 text-sm sm:text-base text-gray-600 hover:bg-gray-100"
+                                        className="px-4 py-1 text-sm sm:text-base text-gray-600 hover:bg-gray-100"
                                     >
                                         +
                                     </button>
                                 </div>
+                                <span className="text-[16px] font-[500] text-[#555555]">Tersedia 2</span>
                             </div>
                         </div>
-                        <div className="mt-6 hidden sm:grid grid-cols-2 gap-3">
-                            <button className="w-full py-2 px-3 rounded bg-blue-100 text-blue-600 border border-blue-500 hover:bg-blue-200 flex items-center justify-center gap-1 text-sm">
-                                <ShoppingCartIcon />
+                        <div className="mt-6 hidden sm:grid grid-cols-2 gap-3 w-1/2" style={{
+                            lineHeight: "22px",
+                            letterSpacing: "-0.04em"
+                        }}>
+                            <button className="w-full bg-[#F6E9F0] border border-[#563D7C]/50 py-2 px-3 text-[#563D7C] text-[16px] font-semibold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
+                                <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                 <span>Keranjang</span>
                             </button>
-                            <button className="w-full py-2 px-3 rounded bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium">Beli Sekarang</button>
+                            <button className="w-full bg-[#DE4A53] py-2 px-3 text-white text-[16px] font-semibold flex items-center justify-center gap-2 hover:bg-[#6e1017]/80">
+                                <span>Beli Sekarang</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div className='md:hidden px-4 space-y-2'>
+                        <div className='text-[#CD0030] text-[12px] font-[500]'>
+                            {renderPriceDiscountDisplayMobile()}
+                        </div>
+                        <h1 className="text-[14px] text-[#111111]">{product?.name}</h1>
+                        <div className='flex items-center gap-4'>
+                            <div className='flex items-end'>
+                                <StarIcon className='w-[20px] h-[20px] text-[#F7A200]' />
+                                <span className='text-[#555555] text-[10px] font-semibold'>4.9</span>
+                            </div>
+                            <span className="text-[10px] text-[#555555]"><span className='text-[10px] text-[#555555]'>{product?.soldCount || '1000+'}</span> Terjual</span>
                         </div>
                     </div>
                 </div>

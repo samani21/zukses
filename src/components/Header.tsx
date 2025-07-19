@@ -320,7 +320,7 @@ const Header = () => {
                                 <button className="p-1">
                                     <img src='/icon/shopping-cart.svg' className='w-[30px] h-[30px]' />
                                 </button>
-                                <span className="absolute top-0 -right-3npm run d -mt-0 mr-0 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white px-4">123</span>
+                                <span className="absolute top-0 -right-3 -mt-0 mr-0 flex h-4 w-4 items-center justify-center text-[10px] bg-red-500 rounded-[5px] text-white px-4">123</span>
                             </div>
                         </div>
                     </div>
