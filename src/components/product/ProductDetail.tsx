@@ -3,6 +3,7 @@ import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
 import { Product, Thumbnail, variant } from 'components/types/Product';
 import { Check } from 'lucide-react';
+import { formatRupiahNoRP } from 'components/Rupiah';
 
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -215,7 +216,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     const renderPriceDisplay = () => {
         if (activeVariant) {
-            return formatRupiah(activeVariant.discount_price);
+            return formatRupiah(activeVariant.price);
         }
         if (priceRange) {
             if (priceRange.isRange) {
@@ -228,7 +229,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     };
     const renderPriceDiscountDisplay = () => {
         if (activeVariant) {
-            return formatRupiah(activeVariant.price);
+            return formatRupiah(activeVariant.discount_price);
         }
         if (priceDiscountRange) {
             if (priceDiscountRange.isRange) {
@@ -238,6 +239,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         }
 
         return formatRupiah(product?.price);
+    };
+    const renderPriceDiscountDisplayMobile = () => {
+        if (activeVariant) {
+            return formatRupiahNoRP(activeVariant.discount_price);
+        }
+        if (priceDiscountRange) {
+            if (priceDiscountRange.isRange) {
+                return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span> - Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.max)}</span></p>
+                return ``;
+            }
+            return formatRupiahNoRP(priceDiscountRange.min);
+        }
+
+        return formatRupiahNoRP(product?.price);
     };
 
 
@@ -367,6 +382,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             <button className="w-full bg-[#DE4A53] py-2 px-3 text-white text-[16px] font-semibold flex items-center justify-center gap-2 hover:bg-[#6e1017]/80">
                                 <span>Beli Sekarang</span>
                             </button>
+                        </div>
+                    </div>
+                    <div className='md:hidden px-4 space-y-2'>
+                        <div className='text-[#CD0030] text-[12px] font-[500]'>
+                            {renderPriceDiscountDisplayMobile()}
+                        </div>
+                        <h1 className="text-[14px] text-[#111111]">{product?.name}</h1>
+                        <div className='flex items-center gap-4'>
+                            <div className='flex items-end'>
+                                <StarIcon className='w-[20px] h-[20px] text-[#F7A200]' />
+                                <span className='text-[#555555] text-[10px] font-semibold'>4.9</span>
+                            </div>
+                            <span className="text-[10px] text-[#555555]"><span className='text-[10px] text-[#555555]'>{product?.soldCount || '1000+'}</span> Terjual</span>
                         </div>
                     </div>
                 </div>

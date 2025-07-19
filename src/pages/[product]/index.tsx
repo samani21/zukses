@@ -67,14 +67,14 @@ const ProductPage = () => {
 
                     {
                         detailProduct &&
-                        <>
+                        <div className='space-y-4'>
                             <ProductDetail product={detailProduct} />
                             <SellerInfo seller={detailProduct?.seller} />
                             <ProductSpecification specifications={detailProduct.specifications} />
                             <ProductDescription description={detailProduct.desc} />
 
                             <ProductReviews reviews={detailProduct.reviews} productRating={detailProduct.rating} />
-                        </>
+                        </div>
                     }
                 </div>
             </main>
