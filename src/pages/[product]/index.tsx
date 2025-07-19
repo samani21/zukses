@@ -72,7 +72,9 @@ const ProductPage = () => {
                             <div className='hidden md:block'>
                                 <SellerInfo seller={detailProduct?.seller} />
                             </div>
-                            <ProductSpecification specifications={detailProduct.specifications} />
+                            <div className='hidden'>
+                                <ProductSpecification specifications={detailProduct.specifications} />
+                            </div>
                             <ProductDescription description={detailProduct.desc} />
 
                             <ProductReviews reviews={detailProduct.reviews} productRating={detailProduct.rating} />
