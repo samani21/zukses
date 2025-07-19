@@ -32,7 +32,7 @@ const Loading = () => {
     return (
         <LoadingContainer>
             <LoadingContent>
-                <ImageLoading src='/loading/fade-stagger-circles.svg' />
+                <ImageLoading src='/loading/bouncing-circles.svg' />
             </LoadingContent>
         </LoadingContainer>
     )
