@@ -139,7 +139,7 @@ export default function App() {
 
     return (
         <MainLayout>
-            <div className="bg-gray-50 min-h-screen font-sans px-40">
+            <div className="bg-gray-50 min-h-screen font-sans px-2 mb-24 md:mb-0 md:px-40">
                 <div className="container mx-auto px-0 py-8">
                     {/* Header */}
                     <div className="mb-6 flex justify-between items-center">
