@@ -22,7 +22,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ reviews, productRating 
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-[1px_1px_10px_rgba(0,0,0,0.08)] mt-4 p-4 sm:p-6 mb-24">
+        <div className="bg-white rounded-lg shadow-[1px_1px_10px_rgba(0,0,0,0.08)] mt-4 p-4 sm:p-6">
             <div className='flex items-center gap-4'>
                 <div className='w-1/6'>
                     <h2 className="text-[20px] font-semibold text-[#333333] mb-4">Penilaian Produk</h2>
