@@ -18,26 +18,10 @@ const StarIcon = ({ className = "w-3.5 h-3.5 text-yellow-400" }: { className?: s
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
     </svg>
 );
-
-const ChatBubbleIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.195-.883.078-1.707-.126-2.427-.465a4.903 4.903 0 0 1-1.574-1.296c-.443-.534-.928-1.035-1.428-1.49a4.897 4.897 0 0 0-2.12.14c-1.018.41-2.13.256-3.005-.442a4.897 4.897 0 0 1-1.427-1.49c-.443-.534-.928-1.035-1.428-1.49a4.897 4.897 0 0 0-2.12.14c-1.018.41-2.13.256-3.005-.442a4.903 4.903 0 0 1-1.574-1.296C.847 15.1 0 14.136 0 13v-4.286c0-.97.616-1.813 1.5-2.097C3.426 6.166 5.208 6 7 6h10c1.792 0 3.574.166 5.25.511Z" />
-    </svg>
-);
-
 interface ProductDetailProps {
     product: Product;
 }
 
-const MobileActionFooter: React.FC = () => (
-    <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white shadow p-2 flex items-center space-x-2 z-20 text-sm">
-        <button className="p-1 border border-gray-300 rounded-md">
-            <ChatBubbleIcon />
-        </button>
-        <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
-        <button className="flex-1 py-2 px-3 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-medium">+ Keranjang</button>
-    </div>
-);
 
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
@@ -458,7 +442,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                 </div>
             </div>
 
-            <MobileActionFooter />
 
             <ImageLightbox
                 isOpen={isLightboxOpen}

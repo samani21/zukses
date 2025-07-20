@@ -82,6 +82,7 @@ export type Product = {
     is_cod_enabled: number;
     is_used: number;
     sold: number;
+    seller_id: number;
     vouchers: string[];
     thumbnails: Thumbnail[];
     variants: variant[];

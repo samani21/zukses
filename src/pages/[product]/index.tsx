@@ -7,11 +7,19 @@ import ProductDescription from 'components/product/ProductDescription';
 import ProductReviews from 'components/product/ProductReviews';
 import { Product } from 'components/types/Product';
 import { ArrowLeft, Search, Share2 } from 'lucide-react';
+import Get from 'services/api/Get';
+import { Response } from 'services/api/types';
+
+import Loading from 'components/Loading';
+import OtherProduct from 'components/OtherProduct';
+import ProductWithCategories from 'components/ProductWithCategories';
 
 
 
 const ProductPage = () => {
-
+    const [otherProducts, setOtherProducts] = useState<Product[] | null>(null);
+    const [productsWithCategorie, setProductsWithCategorie] = useState<Product[] | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
     const [detailProduct, setDetailProduct] = useState<Product | null>(null);
     useEffect(() => {
         const dataString = localStorage.getItem('product');
@@ -20,6 +28,33 @@ const ProductPage = () => {
             setDetailProduct(parsedData)
         }
     }, [])
+    const getOtherProduct = async () => {
+        const res = await Get<Response>('zukses', `product?seller_id=${detailProduct?.seller_id}`);
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res?.data as Product[];
+            setOtherProducts(data);
+        } else {
+            console.warn('Produk tidak ditemukan atau gagal diambil');
+
+        }
+    };
+    const getProductIsCategorie = async () => {
+        const res = await Get<Response>('zukses', `product?categorie_id=${detailProduct?.category_id}`);
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res?.data as Product[];
+            setProductsWithCategorie(data);
+        } else {
+            console.warn('Produk tidak ditemukan atau gagal diambil');
+
+        }
+    };
+
+    useEffect(() => {
+        setLoading(true);
+        getOtherProduct();
+        getProductIsCategorie();
+        setLoading(false);
+    }, [detailProduct]);
     return (
         <div>
             <main className="bg-white-100 min-h-screen">
@@ -57,14 +92,37 @@ const ProductPage = () => {
                     </div>
                 </div>
                 <div className="container mx-auto md:p-2 md:p-4 md:px-0 w-[1200px] px-[0px]">
-                    <nav className="hidden md:block text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-                        <ol className="list-none p-0 inline-flex space-x-2 text-[16px] text-[#555555]">
-                            <li className="flex items-center"><a href="#" className="hover:underline" onClick={() => window.location.href = '/'}>Zuksess</a></li>
-                            <li className="flex items-center"><span className="mx-2">›</span><a href="#" className="hover:underline">{detailProduct?.category?.split(" > ")[0]}</a></li>
-                            <li className="flex items-center"><span className="mx-2">›</span>{detailProduct?.name}</li>
+                    <nav
+                        className="hidden md:block text-sm text-gray-500 mb-4"
+                        aria-label="Breadcrumb"
+                    >
+                        <ol className="list-none p-0 inline-flex space-x-2 text-[16px] text-[#555555] max-w-full overflow-hidden">
+                            <li className="flex items-center max-w-[150px] truncate">
+                                <a
+                                    href="#"
+                                    className="hover:underline truncate"
+                                    onClick={() => (window.location.href = '/')}
+                                >
+                                    Zuksess
+                                </a>
+                            </li>
+                            {detailProduct?.category?.split(' > ').map((cat, index) => (
+                                <li
+                                    key={index}
+                                    className="flex items-center max-w-[150px] truncate whitespace-nowrap"
+                                >
+                                    <span className="mx-2">›</span>
+                                    <a href="#" className="hover:underline truncate block">
+                                        {cat}
+                                    </a>
+                                </li>
+                            ))}
+                            <li className="flex items-center max-w-[200px] truncate whitespace-nowrap">
+                                <span className="mx-2">›</span>
+                                <span className="truncate block">{detailProduct?.name}</span>
+                            </li>
                         </ol>
                     </nav>
-
                     {
                         detailProduct &&
                         <div className='space-y-4'>
@@ -79,10 +137,36 @@ const ProductPage = () => {
                             <div className='hidden md:block'>
                                 <ProductReviews reviews={detailProduct.reviews} productRating={detailProduct.rating} />
                             </div>
+                            {
+                                otherProducts &&
+                                <OtherProduct products={otherProducts} />
+                            }
+                            {
+                                productsWithCategorie &&
+                                <ProductWithCategories products={productsWithCategorie} />
+                            }
                         </div>
                     }
                 </div>
             </main>
+            {
+                loading && <Loading />
+            }
+            <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white shadow p-2 flex items-center space-x-2 z-20 text-sm px-4" style={{
+                letterSpacing: "-0.04em"
+            }}>
+                <button className="p-1 h-[34px] bg-[#7BAD42] text-white text-[13px] font-bold w-1/4">
+                    Chat
+                </button>
+                <button className="p-1 h-[34px] bg-[#5E00CF] text-white text-[13px] font-bold w-1/2">
+                    + Keranjang
+                </button>
+                <button className="p-1 h-[34px] bg-[#DE4A53] text-white text-[13px] font-bold w-1/2">
+                    Beli Langsung
+                </button>
+                {/* <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
+                <button className="flex-1 py-2 px-3 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-medium">+ Keranjang</button> */}
+            </div>
         </div>
     );
 };
