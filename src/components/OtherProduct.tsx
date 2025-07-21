@@ -8,15 +8,20 @@ const StarIcon = ({ className }: { className: string }) => (
 
 interface OtherProductProps {
     products: Product[];
+    idProduct?: number
 }
 
-function OtherProduct({ products }: OtherProductProps) {
+function OtherProduct({ products, idProduct }: OtherProductProps) {
     return (
         <div className="container mx-auto md:px-0">
-            <h2 className="text-[16px] text-dark mb-[10px] mt-[10px] text-[#333333] font-semibold px-4 md:px-0">Produk lain dari toko ini</h2>
+            {
+                products?.length > 0 && products?.some(product => product.id != idProduct) &&
+                <h2 className="text-[16px] text-dark mb-[10px] mt-[10px] text-[#333333] font-semibold px-4 md:px-0">Produk lain dari toko ini</h2>
+            }
             <div className="overflow-x-auto scroll-smooth scrollbar-hide">
                 <div className="flex gap-4 px-4 md:px-0 w-max">
                     {products?.map(product => (
+                        product.id != idProduct &&
                         <a
                             key={product.id}
                             className="bg-white cursor-pointer w-[160px] md:w-[190px] h-full overflow-hidden group border border-[#DDDDDD] flex-shrink-0"

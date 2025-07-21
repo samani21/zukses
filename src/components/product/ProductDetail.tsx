@@ -211,6 +211,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
         return formatRupiah(product?.price);
     };
+    const renderPriceDisplayMobile = () => {
+        if (activeVariant) {
+            return <p>Rp {formatRupiah(activeVariant.price)}</p>;
+        }
+        if (priceRange) {
+            if (priceRange.isRange) {
+                return <p>Rp {formatRupiahNoRP(priceRange.max)}</p>
+            }
+            return <p>Rp {formatRupiahNoRP(priceRange.max)}</p>;
+        }
+
+        return <p>Rp {formatRupiahNoRP(product?.price)}</p>;
+
+    };
     const renderPriceDiscountDisplay = () => {
         if (activeVariant) {
             return formatRupiah(activeVariant.discount_price);
@@ -226,16 +240,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     };
     const renderPriceDiscountDisplayMobile = () => {
         if (activeVariant) {
-            return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(activeVariant.discount_price)}</span></p>;
+            return <p>Rp <span className='text-[27px]'>{formatRupiahNoRP(activeVariant.discount_price)}</span></p>;
         }
         if (priceDiscountRange) {
             if (priceDiscountRange.isRange) {
-                return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span> - Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.max)}</span></p>
+                return <p>Rp <span className='text-[27px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span> </p>
             }
-            return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span></p>;
+            return <p>Rp <span className='text-[27px]'>{formatRupiahNoRP(priceDiscountRange.min)}</span></p>;
         }
 
-        return <p>Rp <span className='text-[19px]'>{formatRupiahNoRP(product?.price)}</span></p>;
+        return <p>Rp <span className='text-[27px]'>{formatRupiahNoRP(product?.price)}</span></p>;
     };
 
 
@@ -368,8 +382,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         </div>
                     </div>
                     <div className='md:hidden px-4 space-y-2'>
-                        <div className='text-[#CD0030] text-[12px] font-[500]'>
-                            {renderPriceDiscountDisplayMobile()}
+                        <div className='flex items-center gap-4'>
+                            <div className='text-[#CD0030] text-[20px] font-[500]'>
+                                {renderPriceDiscountDisplayMobile()}
+                            </div>
+                            <div className="text-[#888888] text-[19px] font-[500] line-through">
+                                {renderPriceDisplayMobile()}
+                            </div>
                         </div>
                         <h1 className="text-[14px] text-[#111111]">{product?.name}</h1>
                         <div className='flex items-center gap-4'>

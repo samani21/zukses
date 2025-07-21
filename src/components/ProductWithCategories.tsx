@@ -8,15 +8,19 @@ const StarIcon = ({ className }: { className: string }) => (
 
 interface ProductWithCategoriesProps {
     products: Product[];
+    idProduct?: number;
 }
 
-function ProductWithCategories({ products }: ProductWithCategoriesProps) {
+function ProductWithCategories({ products, idProduct }: ProductWithCategoriesProps) {
     return (
         <div className="container mx-auto px-0 mb-24">
-            <h2 className="text-[#111111] text-[13px] md:text-[16px] text-dark mb-[10px] mt-[10px] md:text-[#333333] font-semibold px-4 md:px-0">Produk Sejenis</h2>
+            {products?.length > 0 && products?.some(product => product.id != idProduct) &&
+                <h2 className="text-[#111111] text-[13px] md:text-[16px] text-dark mb-[10px] mt-[10px] md:text-[#333333] font-semibold px-4 md:px-0">Produk Sejenis</h2>
+            }
 
             <div className="px-4 md:px-0 grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {products?.map(product => (
+                    product.id != idProduct &&
                     <a
                         key={product.id}
                         className="bg-white cursor-pointer w-full h-full overflow-hidden group lg:w-[190px] lg:h-[342px] border border-[#DDDDDD]"
