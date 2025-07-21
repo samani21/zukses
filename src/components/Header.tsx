@@ -27,7 +27,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.25 }}
-                className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4"
+                className="absolute top-full -right-10 mt-1 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4"
             >
                 <p className="text-center text-gray-500">Keranjang Anda kosong.</p>
             </motion.div>
@@ -40,7 +40,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="absolute top-full right-0 mt-1 w-[470px] bg-white border border-gray-200 rounded-md shadow-lg z-50"
+            className="absolute top-full -right-10 mt-1 w-[470px] bg-white border border-gray-200 rounded-md shadow-lg z-50"
         >
             <div className="p-4 border-b">
                 <div className="flex justify-between items-start">
@@ -297,6 +297,8 @@ const Header = () => {
                                                     <span className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white">
                                                         {totalCartItems}
                                                     </span>
+
+                                                    {/* Popup Cart & Overlay di dalam wrapper ini */}
                                                     {isCartPopupVisible && (
                                                         <AnimatePresence>
                                                             <CartPopup items={mockCartItems} totalItems={totalCartItems} />
