@@ -165,8 +165,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         return Array.from(video.values());
     }, [product?.media]);
 
-
-    // ✨ BARU: Hitung rentang harga dari varian
     const priceRange = useMemo(() => {
         if (!product?.variants || product.variants.length === 0) {
             return null; // Tidak ada varian, tidak ada rentang harga
