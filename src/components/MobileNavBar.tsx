@@ -34,7 +34,7 @@ function MobileNavBar() {
     const currentPath = router.pathname;
 
     const navItems = [
-        { name: 'Halam Utama', icon: TocoIcon, href: '/', match: (path: string) => path === '/' },
+        { name: 'Halaman Utama', icon: TocoIcon, href: '/', match: (path: string) => path === '/' },
         { name: 'Transaksi', icon: TransaksiIcon, href: '/transaction', match: (path: string) => path.startsWith('/transaction') },
         { name: 'Video', icon: ClassifiedIcon, href: '/videos', match: (path: string) => path.startsWith('/videos') },
         {
