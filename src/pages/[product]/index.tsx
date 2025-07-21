@@ -158,13 +158,13 @@ const ProductPage = () => {
             <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white shadow p-2 flex items-center space-x-2 z-20 text-sm px-4" style={{
                 letterSpacing: "-0.04em"
             }}>
-                <button className="h-[40px] rounded-[5px] bg-[#7BAD42] text-white text-[14px]  w-1/4">
+                <button className="h-[40px] rounded-[10px] bg-[#ffffff] text-[#444444]  border border-[#CFCFCF] font-bold text-[14px]  w-1/4">
                     Chat
                 </button>
-                <button className="h-[40px] rounded-[5px] bg-[#4A52B2] text-white text-[14px]  w-1/2" onClick={() => setIsModalOpen(true)}>
+                <button className="h-[40px] rounded-[10px] bg-[#ffffff] text-[#444444] border border-[#CFCFCF]  font-bold text-[14px]  w-1/2" onClick={() => setIsModalOpen(true)}>
                     + Keranjang
                 </button>
-                <button className="h-[40px] rounded-[5px] bg-[#DE4A53] text-white text-[14px]  w-1/2" onClick={() => setIsModalOpen(true)}>
+                <button className="h-[40px] rounded-[10px] bg-[#DE4A53] text-white text-[14px]  font-bold  w-1/2" onClick={() => setIsModalOpen(true)}>
                     Beli Langsung
                 </button>
                 {/* <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
