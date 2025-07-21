@@ -4,6 +4,8 @@ import Header from "components/Header";
 import MobileNavBar from "components/MobileNavBar";
 import Payment from "components/Payment";
 import SiteFooter from "components/SiteFooter";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 interface Payments {
     id: number;
@@ -16,7 +18,9 @@ interface Deliverys {
     alt: string;
 }
 export default function MainLayout({ children }: { children: React.ReactNode }) {
-
+    const [isDisableHeader, setIsDisableHeader] = useState<boolean>(false);
+    const [isDisableNavbar, setIsDisableNavbar] = useState<boolean>(false);
+    const router = useRouter()
 
     const samplePayment: Payments[] = [
         { id: 1, src: '/icon/payment/bri 1.svg', alt: 'BRI' },
@@ -41,16 +45,32 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         { id: 5, src: '/icon/delivery/gosend 1.svg', alt: 'Gosend' },
         { id: 6, src: '/icon/delivery/anteraja 1.svg', alt: 'Anteraja' },
     ];
+
+    useEffect(() => {
+        if (router?.pathname == '/cart') {
+            setIsDisableHeader(true)
+            setIsDisableNavbar(true)
+        }
+    }, [router]);
     return (
         <div className="font-sans">
 
-            <Header />
+            {
+                !isDisableHeader ?
+                    <Header /> :
+                    <div className="hidden md:block">
+                        <Header />
+                    </div>
+            }
             <main className="md:block container mx-auto mb-4">
                 <div className="rounded-lg">
                     {children}
                 </div>
             </main>
-            <MobileNavBar />
+            {
+                !isDisableNavbar &&
+                <MobileNavBar />
+            }
             <div className='hidden md:block border-t border-[#BBBBBB]  bg-white'>
                 <div className='border-b border-[#BBBBBB]  py-10'>
                     <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] px-4 '>

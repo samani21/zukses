@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 // Impor komponen UI kustom telah dihapus
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, ArrowLeft, Heart } from 'lucide-react';
 import MainLayout from 'pages/layouts/MainLayout';
 
 // --- INTERFACES & TIPE DATA ---
@@ -188,9 +188,20 @@ const ShoppingCartPage: React.FC = () => {
     // --- RENDER KOMPONEN ---
     return (
         <MainLayout>
-            <div className="min-h-screen px-2 mb-24 md:mb-0 md:px-40">
+            <div className="md:hidden h-[50px] p-4 bg-white flex items-center justify-between gap-4">
+                <div className='flex items-center gap-4'>
+                    <ArrowLeft className='w-[12px]' />
+                    <p className='text-[#333333] text-[12px] font-bold' style={{
+                        letterSpacing: "-0.03em"
+                    }}>
+                        Keranjang Saya (123)
+                    </p>
+                </div>
+                <Heart className='w-[15px] text-[#333333]' />
+            </div>
+            <div className=" md:relative min-h-screen px-2 mb-24 md:mb-0 md:px-40">
                 <div className="container mx-auto mt-4">
-                    <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC] mb-4'>
+                    <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC] mb-4 hidden md:block'>
                         <p className='text-[#7952B3] text-[20px] font-bold p-6 border-b border-[#DDDDDD]'>Keranjang Belanjar</p>
                         <div className="hidden md:grid grid-cols-12 gap-4 items-center bg-white p-6 text-[#333333] text-[16px] font-semibold">
                             <div className="col-span-5 flex items-center gap-4">
@@ -203,9 +214,9 @@ const ShoppingCartPage: React.FC = () => {
                                 <span>Produk</span>
                             </div>
                             <div className="col-span-2">Harga Satuan</div>
-                            <div className="col-span-2">Kuantitas</div>
+                            <div className="col-span-2 text-center mr-5">Kuantitas</div>
                             <div className="col-span-2">Total Harga</div>
-                            <div className="col-span-1">Aksi</div>
+                            <div className="col-span-1 text-end">Aksi</div>
                         </div>
                     </div>
 
@@ -214,16 +225,19 @@ const ShoppingCartPage: React.FC = () => {
                         {stores.map(store => (
                             <div key={store.id} className="bg-white rounded-lg shadow-sm overflow-hidden rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC]">
                                 {/* Header Toko */}
-                                <div className="p-6 border-b border-gray-200">
+                                <div className="p-6 border-b border-gray-200 flex justify-between md:block">
                                     <div className="flex items-center gap-4">
                                         <input
                                             type="checkbox"
-                                            className="h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
+                                            className="h-[18px] w-[18px] md:h-5 md:w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
                                             checked={store.selected}
                                             onChange={(e) => handleStoreSelect(store.id, e.target.checked)}
                                         />
-                                        <span className="font-semibold text-[#333333] text-[16px]">{store.name}</span>
+                                        <span className="font-semibold text-[#333333] text-[11px] md:text-[16px]">{store.name}</span>
                                     </div>
+                                    <p className='md:hidden text-[#333333] text-[10px]'>
+                                        ubah
+                                    </p>
                                 </div>
 
                                 {/* Produk dalam Toko */}
@@ -234,7 +248,7 @@ const ShoppingCartPage: React.FC = () => {
                                             <div className="col-span-12 md:col-span-5 flex items-start md:items-center gap-4">
                                                 <input
                                                     type="checkbox"
-                                                    className="h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
+                                                    className="h-[18px] w-[18px] md:h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
                                                     checked={product.selected}
                                                     onChange={(e) => handleProductSelect(store.id, product.id, e.target.checked)}
                                                 />
@@ -253,10 +267,8 @@ const ShoppingCartPage: React.FC = () => {
                                             {/* Harga Satuan */}
                                             <div className="col-span-6 md:col-span-2">
                                                 <span className="md:hidden text-gray-500 text-sm">Harga: </span>
-                                                <div className="flex items-center gap-4">
-                                                    <span className="text-[#666666] line-through text-[16px]" style={{ lineHeight: "108%" }}>{formatCurrency(product.originalPrice)}</span>
-                                                    <span className="text-[#333333] text-[16px]" style={{ lineHeight: "108%" }}>{formatCurrency(product.discountedPrice)}</span>
-                                                </div>
+                                                <p className="text-[#333333] text-[16px] text-right mr-10" style={{ lineHeight: "108%" }}>{formatCurrency(product.discountedPrice)}</p>
+                                                <p className="text-[#666666] line-through text-[14px] text-right mr-10" style={{ lineHeight: "108%" }}>{formatCurrency(product.originalPrice)}</p>
                                             </div>
 
                                             {/* Kuantitas */}
@@ -280,7 +292,7 @@ const ShoppingCartPage: React.FC = () => {
 
                                             {/* Aksi */}
                                             <div className="col-span-6 md:col-span-1 flex justify-end">
-                                                <button className="text-[#E33947] text-[16px] font-semibold hover:text-red-600 hover:underline transition-colors" onClick={() => handleDeleteProduct(store.id, product.id)} style={{ lineHeight: "108%" }}>
+                                                <button className="text-[#E33947] text-[15px] font-semibold hover:text-red-600 hover:underline transition-colors" onClick={() => handleDeleteProduct(store.id, product.id)} style={{ lineHeight: "108%" }}>
                                                     Hapus
                                                 </button>
                                             </div>
@@ -298,7 +310,7 @@ const ShoppingCartPage: React.FC = () => {
                                 <input
                                     id="selectAllFooter"
                                     type="checkbox"
-                                    className="h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
+                                    className="h-[18px] w-[18px] md:h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
                                     checked={cartSummary.allSelected}
                                     onChange={(e) => handleSelectAll(e.target.checked)}
                                 />
