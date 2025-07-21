@@ -88,6 +88,63 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
         return Array.from(imageMap.values());
     }, [product?.image, product?.variants, product?.thumbnails, product?.media]);
+    const allMedia = useMemo(() => {
+        // ... (logika `allImages` tidak berubah)
+        const imageMap = new Map<string, Thumbnail>();
+
+        // 1. Gambar utama dari product.image (jika ada)
+        if (product?.image) {
+            imageMap.set(product.image, {
+                id: -1,
+                url: product.image,
+                alt: 'Gambar utama produk',
+                type: 'image'
+            });
+        }
+
+        // // 2. Tambahkan media video (jika ada)
+        product?.media?.forEach((m, i) => {
+            if (/\.(mp4|webm|ogg)$/i.test(m.url)) {
+                imageMap.set(m.url, {
+                    id: m.id ?? 1000 + i,
+                    url: m.url,
+                    alt: 'Video produk',
+                    type: 'video'
+                });
+            }
+        });
+
+        // 3. Tambahkan dari variants
+        product?.variants?.forEach((v, i) => {
+            if (v.image) {
+                imageMap.set(v.image, {
+                    id: v?.id + i,
+                    url: v.image,
+                    alt: v.combination_label,
+                    type: 'image',
+                });
+            }
+        });
+
+        // 4. Tambahkan dari thumbnails
+        product?.thumbnails?.forEach((t) => {
+            imageMap.set(t.url, t);
+        });
+
+        // 5. Tambahkan media gambar (non-video)
+        product?.media?.forEach((m, i) => {
+            if (!/\.(mp4|webm|ogg)$/i.test(m.url)) {
+                imageMap.set(m.url, {
+                    id: m.id ?? 2000 + i,
+                    url: m.url,
+                    alt: m.url,
+                    type: m.type,
+                });
+            }
+        });
+
+        return Array.from(imageMap.values());
+    }, [product?.image, product?.variants, product?.thumbnails, product?.media]);
     const videoProduct = useMemo(() => {
         // ... (logika `allImages` tidak berubah)
         const video = new Map<string, Thumbnail>();
@@ -250,6 +307,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
         }
 
         return <p>Rp <span className='text-[27px]'>{formatRupiahNoRP(product?.price)}</span></p>;
+    };
+
+    // Letakkan ini di dalam komponen ProductDetail, setelah blok useMemo
+    const handleViewVideo = () => {
+        // Pastikan ada video sebelum mencoba membukanya
+        if (videoProduct && videoProduct.length > 0) {
+            const videoUrl = videoProduct[0].url; // Ambil video pertama
+            console.log("Membuka video:", videoUrl);
+            window.open(videoUrl, '_blank'); // Buka video di tab baru
+        } else {
+            console.warn("Tidak ada video yang bisa ditampilkan.");
+        }
     };
 
 
@@ -465,8 +534,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             <ImageLightbox
                 isOpen={isLightboxOpen}
                 onClose={() => setIsLightboxOpen(false)}
-                images={allImages}
+                images={allMedia}
+                productName={product?.name || "Detail Produk"} // 👈 Tambahkan nama produk
                 initialIndex={lightboxInitialIndex}
+                // 👇 Hubungkan fungsi handleViewVideo, hanya jika ada video
+                onViewVideo={videoProduct.length > 0 ? handleViewVideo : undefined}
             />
         </>
     );
