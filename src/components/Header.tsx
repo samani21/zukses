@@ -44,7 +44,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
         >
             <div className="p-4 border-b">
                 <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-[17px] text-gray-800">Keranjang ({totalItems})</h3>
+                    <h3 className="font-bold text-[17px] text-black">Keranjang ({totalItems})</h3>
                     <div className="cursor-pointer text-[17px] font-bold text-[#0075C9]">Lihat semua</div>
                 </div>
             </div>
