@@ -101,7 +101,7 @@ const VariantModal: React.FC<VariantModalProps> = ({ product, setIsModalOpen }) 
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-end justify-center z-50 sm:items-center">
-            <div className="bg-white w-full rounded-t-lg sm:rounded-lg sm:max-w-md space-y-4">
+            <div className="bg-white w-full h-[603px] rounded-t-lg sm:rounded-lg sm:max-w-md space-y-4">
                 {/* Tombol Close */}
                 <div className="flex justify-start items-center gap-2 p-2 text-[#555555] border-b border-[#DFDFDF]">
                     <X size={24} onClick={() => setIsModalOpen(false)} />
@@ -206,16 +206,16 @@ const VariantModal: React.FC<VariantModalProps> = ({ product, setIsModalOpen }) 
                     </div>
                 </div>
 
-                <div className="flex items-center space-x-2 z-20 text-sm px-4 mb-2" style={{
+                <div className="fixed w-full bottom-0 flex items-center space-x-2 z-20 text-sm px-4 mb-2" style={{
                     letterSpacing: "-0.04em"
                 }}>
-                    <button className="h-[40px] rounded-[5px] bg-[#7BAD42] text-white text-[14px]  w-1/4">
+                    <button className="h-[40px] rounded-[10px] bg-[#ffffff] text-[#444444]  border border-[#CFCFCF] font-bold text-[14px]  w-1/4">
                         Chat
                     </button>
-                    <button className="h-[40px] rounded-[5px] bg-[#4A52B2] text-white text-[14px]  w-1/2" onClick={() => setIsModalOpen(false)}>
+                    <button className="h-[40px] rounded-[10px] bg-[#ffffff] text-[#444444] border border-[#CFCFCF]  font-bold text-[14px]  w-1/2" onClick={() => setIsModalOpen(false)}>
                         + Keranjang
                     </button>
-                    <button className="h-[40px] rounded-[5px] bg-[#DE4A53] text-white text-[14px]  w-1/2" onClick={() => setIsModalOpen(false)}>
+                    <button className="h-[40px] rounded-[10px] bg-[#DE4A53] text-white text-[14px]  font-bold  w-1/2" onClick={() => setIsModalOpen(false)}>
                         Beli Langsung
                     </button>
                     {/* <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
