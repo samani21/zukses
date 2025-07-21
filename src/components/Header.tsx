@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ProvinceModal from './ProvinceModal';
 import { useRouter } from 'next/router';
-
+import { motion, AnimatePresence } from "framer-motion";
 // --- Komponen Ikon (Tidak ada perubahan) ---
 const SearchIcon = ({ className }: { className?: string }) => (
     <svg className={className || "w-5 h-5 text-gray-500"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -22,16 +22,26 @@ interface CartItem { id: number; name: string; variant: string; price: string; o
 const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: number }) => {
     if (!items || items.length === 0) {
         return (
-            // Mengurangi margin atas (mt-1) agar tidak ada celah
-            <div className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4">
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25 }}
+                className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4"
+            >
                 <p className="text-center text-gray-500">Keranjang Anda kosong.</p>
-            </div>
+            </motion.div>
         );
     }
 
     return (
-        // Mengurangi margin atas (mt-1) agar tidak ada celah antara ikon dan popup
-        <div className="absolute top-full right-0 mt-1 w-[470px] bg-white border border-gray-200 rounded-md shadow-lg z-50">
+        <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.25 }}
+            className="absolute top-full right-0 mt-1 w-[470px] bg-white border border-gray-200 rounded-md shadow-lg z-50"
+        >
             <div className="p-4 border-b">
                 <div className="flex justify-between items-start">
                     <h3 className="font-bold text-[17px] text-gray-800">Keranjang ({totalItems})</h3>
@@ -55,7 +65,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
                     </li>
                 ))}
             </ul>
-        </div>
+        </motion.div>
     );
 };
 
@@ -158,6 +168,21 @@ const Header = () => {
         { id: 4, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
     ];
     const totalCartItems = 123;
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const handleMouseEnter = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        setCartPopupVisible(true);
+    };
+
+    const handleMouseLeave = () => {
+        timeoutRef.current = setTimeout(() => {
+            setCartPopupVisible(false);
+        }, 200); // Delay 200ms
+    };
+
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userString = localStorage.getItem('user');
@@ -262,8 +287,8 @@ const Header = () => {
                                                 {/* ================================================================== */}
                                                 <div
                                                     className="relative inline-block z-50"
-                                                    onMouseEnter={() => setCartPopupVisible(true)}
-                                                    onMouseLeave={() => setCartPopupVisible(false)}
+                                                    onMouseEnter={handleMouseEnter}
+                                                    onMouseLeave={handleMouseLeave}
                                                 >
                                                     {/* Tombol Icon Keranjang */}
                                                     <button className="p-2 rounded-md pr-0" onClick={() => router.push('/cart')}>
@@ -272,14 +297,11 @@ const Header = () => {
                                                     <span className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white">
                                                         {totalCartItems}
                                                     </span>
-
-                                                    {/* Popup Cart & Overlay di dalam wrapper ini */}
-                                                    <div
-                                                        className={`absolute top-full left-1/2 mt-2 z-50 transform -translate-x-1/2 transition-all duration-300 ease-out ${isCartPopupVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'}`}
-                                                    >
-                                                        <CartPopup items={mockCartItems} totalItems={totalCartItems} />
-                                                    </div>
-
+                                                    {isCartPopupVisible && (
+                                                        <AnimatePresence>
+                                                            <CartPopup items={mockCartItems} totalItems={totalCartItems} />
+                                                        </AnimatePresence>
+                                                    )}
                                                 </div>
 
 
