@@ -202,7 +202,7 @@ const ShoppingCartPage: React.FC = () => {
             <div className=" md:relative min-h-screen px-2 mb-24 md:mb-0 md:px-40">
                 <div className="container mx-auto mt-4">
                     <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC] mb-4 hidden md:block'>
-                        <p className='text-[#7952B3] text-[20px] font-bold p-6 border-b border-[#DDDDDD]'>Keranjang Belanjar</p>
+                        <p className='text-[#7952B3] text-[20px] font-bold p-6 border-b border-[#DDDDDD]'>Keranjang Belanja</p>
                         <div className="hidden md:grid grid-cols-12 gap-4 items-center bg-white p-6 text-[#333333] text-[16px] font-semibold">
                             <div className="col-span-5 flex items-center gap-4">
                                 <input
@@ -213,7 +213,7 @@ const ShoppingCartPage: React.FC = () => {
                                 />
                                 <span>Produk</span>
                             </div>
-                            <div className="col-span-2">Harga Satuan</div>
+                            <div className="col-span-2 text-right mr-10">Harga Satuan</div>
                             <div className="col-span-2 text-center mr-5">Kuantitas</div>
                             <div className="col-span-2">Total Harga</div>
                             <div className="col-span-1 text-end">Aksi</div>
@@ -292,7 +292,7 @@ const ShoppingCartPage: React.FC = () => {
 
                                             {/* Aksi */}
                                             <div className="col-span-6 md:col-span-1 flex justify-end">
-                                                <button className="text-[#E33947] text-[15px] font-semibold hover:text-red-600 hover:underline transition-colors" onClick={() => handleDeleteProduct(store.id, product.id)} style={{ lineHeight: "108%" }}>
+                                                <button className="text-[#E33947] text-[14px] font-semibold hover:text-red-600 hover:underline transition-colors" onClick={() => handleDeleteProduct(store.id, product.id)} style={{ lineHeight: "108%" }}>
                                                     Hapus
                                                 </button>
                                             </div>
