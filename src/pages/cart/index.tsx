@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 // Impor komponen UI kustom telah dihapus
-import { Trash2, Plus, Minus } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import MainLayout from 'pages/layouts/MainLayout';
 
 // --- INTERFACES & TIPE DATA ---
@@ -169,7 +169,7 @@ const ShoppingCartPage: React.FC = () => {
         let totalItems = 0;
         let totalPrice = 0;
         let totalSavings = 0;
-        let allSelected = stores.length > 0 && stores.every(s => s.selected);
+        const allSelected = stores.length > 0 && stores.every(s => s.selected);
 
         stores.forEach(store => {
             store.products.forEach(product => {
@@ -325,7 +325,7 @@ const ShoppingCartPage: React.FC = () => {
                                     )}
                                 </div>
                                 <button className="bg-[#563D7C] text-[16px] hover:bg-purple-700 text-white font-bold w-full md:w-48 py-3 rounded-[5px] transition-colors" style={{
-                                    letterSpacing:"-0.04em"
+                                    letterSpacing: "-0.04em"
                                 }}>
                                     Check Out
                                 </button>
