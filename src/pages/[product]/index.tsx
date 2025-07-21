@@ -13,6 +13,7 @@ import { Response } from 'services/api/types';
 import Loading from 'components/Loading';
 import OtherProduct from 'components/OtherProduct';
 import ProductWithCategories from 'components/ProductWithCategories';
+import VariantModal from 'components/product/VariantModal';
 
 
 
@@ -21,6 +22,7 @@ const ProductPage = () => {
     const [productsWithCategorie, setProductsWithCategorie] = useState<Product[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [detailProduct, setDetailProduct] = useState<Product | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     useEffect(() => {
         const dataString = localStorage.getItem('product');
         if (dataString) {
@@ -123,6 +125,7 @@ const ProductPage = () => {
                             </li>
                         </ol>
                     </nav>
+
                     {
                         detailProduct &&
                         <div className='space-y-4'>
@@ -158,15 +161,19 @@ const ProductPage = () => {
                 <button className="h-[40px] rounded-[5px] bg-[#7BAD42] text-white text-[14px]  w-1/4">
                     Chat
                 </button>
-                <button className="h-[40px] rounded-[5px] bg-[#5E00CF] text-white text-[14px]  w-1/2">
+                <button className="h-[40px] rounded-[5px] bg-[#4A52B2] text-white text-[14px]  w-1/2" onClick={() => setIsModalOpen(true)}>
                     + Keranjang
                 </button>
-                <button className="h-[40px] rounded-[5px] bg-[#DE4A53] text-white text-[14px]  w-1/2">
+                <button className="h-[40px] rounded-[5px] bg-[#DE4A53] text-white text-[14px]  w-1/2" onClick={() => setIsModalOpen(true)}>
                     Beli Langsung
                 </button>
                 {/* <button className="flex-1 py-2 px-3 rounded-md text-blue-600 border border-blue-600 hover:bg-blue-50 font-medium">Beli</button>
                 <button className="flex-1 py-2 px-3 rounded-md bg-blue-600 text-white hover:bg-blue-700 font-medium">+ Keranjang</button> */}
             </div>
+            {
+                isModalOpen && detailProduct &&
+                <VariantModal product={detailProduct} setIsModalOpen={setIsModalOpen} />
+            }
         </div>
     );
 };
