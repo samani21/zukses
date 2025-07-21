@@ -49,7 +49,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
                         <div className="text-right flex-shrink-0 ml-2">
                             <p className="text-[13px] font-bold text-[#333333]">1 x {item.price}</p>
                             <p className="text-[11px] text-[#555555] line-through" style={{
-                                lineHeight:'99%'
+                                lineHeight: '99%'
                             }}>{item.originalPrice}</p>
                         </div>
                     </li>
@@ -158,6 +158,7 @@ const Header = () => {
         { id: 4, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
     ];
     const totalCartItems = 123;
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -262,19 +263,27 @@ const Header = () => {
                                                 {/* == KUNCI UTAMA: Event handler diletakkan di DIV PEMBUNGKUS ini == */}
                                                 {/* ================================================================== */}
                                                 <div
-                                                    className="relative inline-block"
+                                                    className="relative inline-block z-50"
                                                     onMouseEnter={() => setCartPopupVisible(true)}
                                                     onMouseLeave={() => setCartPopupVisible(false)}
                                                 >
-                                                    {/* Ikon Keranjang ada DI DALAM div pembungkus */}
+                                                    {/* Tombol Icon Keranjang */}
                                                     <button className="p-2 rounded-md pr-0" onClick={() => router.push('/cart')}>
-                                                        <img src='/icon/shopping-cart.svg' width={25} />
+                                                        <img src="/icon/shopping-cart.svg" width={25} />
                                                     </button>
-                                                    <span className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white">{totalCartItems}</span>
+                                                    <span className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white">
+                                                        {totalCartItems}
+                                                    </span>
 
-                                                    {/* Popup juga ada DI DALAM div pembungkus */}
-                                                    {isCartPopupVisible && <CartPopup items={mockCartItems} totalItems={totalCartItems} />}
+                                                    {/* Popup Cart & Overlay di dalam wrapper ini */}
+                                                    <div
+                                                        className={`absolute top-full left-1/2 mt-2 z-50 transform -translate-x-1/2 transition-all duration-300 ease-out ${isCartPopupVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-3 pointer-events-none'}`}
+                                                    >
+                                                        <CartPopup items={mockCartItems} totalItems={totalCartItems} />
+                                                    </div>
+
                                                 </div>
+
 
                                             </div>
                                             <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya">Akun Saya</button>
@@ -304,7 +313,9 @@ const Header = () => {
                     </div>
                 </div>
             </header >
-
+            {isCartPopupVisible && (
+                <div className='fixed w-full h-full z-10 bg-black/30' />
+            )}
             <ProvinceModal isOpen={isProvinceModalOpen} onClose={() => setProvinceModalOpen(false)} provinces={provinces} selectedProvinces={selectedProvinces} onApply={setSelectedProvinces} />
             {isMobileSearchOpen && <MobileSearch onClose={() => setIsMobileSearchOpen(false)} suggestions={searchSuggestions} searchHistory={searchHistory} onSearchSubmit={handleMobileSearchSubmit} />}
         </>

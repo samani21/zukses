@@ -144,10 +144,10 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                 <div className="text-center mt-2 px-2 md:px-0">
                     <button
                         onClick={() => setPreviewVideo(!previewVideo)}
-                        className="bg-[#4A52B2] h-[30px] text-white md:h-[40px] w-full border border-[#563D7C]/50 md:bg-[#F6E9F0] text-[10px] rounded-[12px] md:rounded-none md:text-[14px] font-semibold md:text-[#563D7C] px-4 py-2 hover:bg-purple-200 transition flex items-center justify-center gap-2"
+                        className="bg-[#4A52B2] h-[50px] text-white md:h-[40px] w-full border border-[#563D7C]/50 md:bg-[#F6E9F0] text-[16px] md:text-[14px] font-semibold md:text-[#563D7C] px-4 py-2 hover:bg-purple-200 transition flex items-center justify-center gap-2"
                     >
 
-                        {previewVideo ? <Image className='w-[15px] h-[15px] md:hidden' /> : <Video className='w-[15px] h-[15px] md:hidden' />}
+                        {previewVideo ? <Image className='w-[20px]  md:hidden' /> : <Video className='w-[20px]  md:hidden' />}
                         <span>{previewVideo ? "Lihat Gambar" : "Lihat Video"}</span>
                     </button>
                 </div>
