@@ -45,7 +45,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
             <div className="p-4 border-b">
                 <div className="flex justify-between items-start">
                     <h3 className="font-bold text-[17px] text-black">Keranjang ({totalItems})</h3>
-                    <div className="cursor-pointer text-[17px] font-bold text-[#0075C9]">Lihat semua</div>
+                    <div className="cursor-pointer text-[17px] font-bold text-[#0075C9]" onClick={() => window.location.href = '/cart'}>Lihat semua</div>
                 </div>
             </div>
             <ul className="p-2 max-h-80 overflow-y-auto">

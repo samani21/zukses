@@ -35,7 +35,7 @@
           animation: ping-custom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
         } 
 body {
-  background: #F1F5F9;
+   background: #ffffff;
   color: var(--foreground);
   font-family: "Inter", sans-serif;
   -webkit-user-select: text;
