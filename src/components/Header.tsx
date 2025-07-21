@@ -158,8 +158,6 @@ const Header = () => {
         { id: 4, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
     ];
     const totalCartItems = 123;
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
     useEffect(() => {
         const token = localStorage.getItem('token');
         const userString = localStorage.getItem('user');
