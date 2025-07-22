@@ -46,13 +46,6 @@ body {
     letter-spacing: -0.04em;
     line-height: 121%;
 }
-@media (max-width: 768px) {
-  body {
-    background: #ffffff;
-    color: var(--foreground); /* opsional kalau ingin ganti warna teks juga */
-    line-height: 121%; /* sesuaikan kalau perlu */
-  }
-}
 select {
   scroll-behavior: smooth;
 }
@@ -220,6 +213,8 @@ select {
 
 @media (hover: none) and (pointer: coarse) {
   body {
+      letter-spacing: -0.04em;
+    line-height: 121%;
     user-select: none;
   }
 

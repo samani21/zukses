@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-// Impor komponen UI kustom telah dihapus
-import { Plus, Minus, ArrowLeft, Heart } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import MainLayout from 'pages/layouts/MainLayout';
 
 // --- INTERFACES & TIPE DATA ---
+// Menambahkan properti baru untuk tag diskon dan info lainnya
 interface Product {
     id: number;
     name: string;
@@ -13,6 +13,10 @@ interface Product {
     discountedPrice: number;
     quantity: number;
     selected: boolean;
+    codAvailable?: boolean;
+    diskonTerpakai?: string;
+    gratisOngkir?: string;
+    voucherToko?: string;
 }
 
 interface Store {
@@ -23,6 +27,7 @@ interface Store {
 }
 
 // --- DATA CONTOH (MOCK DATA) ---
+// Menambahkan data baru sesuai gambar
 const initialCartData: Store[] = [
     {
         id: 'toko-abc',
@@ -38,6 +43,24 @@ const initialCartData: Store[] = [
                 discountedPrice: 290000,
                 quantity: 1,
                 selected: true,
+                codAvailable: true,
+                diskonTerpakai: '20%',
+                gratisOngkir: 'Rp10.000',
+                voucherToko: 'Rp.20.000',
+            },
+            {
+                id: 2,
+                name: 'Rak Bumbu Dapur Multifungsi 2 susun Multifungsi',
+                variant: 'Warna Putih Ukuran Sedang',
+                imageUrl: '/image/image 13.png',
+                originalPrice: 380000,
+                discountedPrice: 290000,
+                quantity: 1,
+                selected: true,
+                codAvailable: true,
+                diskonTerpakai: '20%',
+                gratisOngkir: 'Rp10.000',
+                voucherToko: 'Rp.20.000',
             },
         ],
     },
@@ -47,7 +70,21 @@ const initialCartData: Store[] = [
         selected: true,
         products: [
             {
-                id: 2,
+                id: 3,
+                name: 'Rak Bumbu Dapur Multifungsi 2 susun Multifungsi ',
+                variant: 'Warna Putih Ukuran Sedang',
+                imageUrl: '/image/image 13.png',
+                originalPrice: 350000,
+                discountedPrice: 290000,
+                quantity: 1,
+                selected: true,
+                codAvailable: true,
+                diskonTerpakai: '20%',
+                gratisOngkir: 'Rp10.000',
+                voucherToko: 'Rp.20.000',
+            },
+            {
+                id: 4,
                 name: 'Rak Bumbu Dapur Multifungsi 2 susun Multifungsi',
                 variant: 'Warna Putih Ukuran Sedang',
                 imageUrl: '/image/image 13.png',
@@ -55,25 +92,20 @@ const initialCartData: Store[] = [
                 discountedPrice: 290000,
                 quantity: 1,
                 selected: true,
-            },
-            {
-                id: 3,
-                name: 'Rak Bumbu Dapur Multifungsi 2 susun Multifungsi',
-                variant: 'Warna Putih Ukuran Sedang',
-                imageUrl: '/image/image 13.png',
-                originalPrice: 350000,
-                discountedPrice: 280000,
-                quantity: 2,
-                selected: true,
+                codAvailable: true,
+                diskonTerpakai: '20%',
+                gratisOngkir: 'Rp10.000',
+                voucherToko: 'Rp.20.000',
             },
         ],
     },
 ];
 
+// Komponen utama halaman keranjang belanja
 const ShoppingCartPage: React.FC = () => {
     const [stores, setStores] = useState<Store[]>(initialCartData);
 
-    // --- FUNGSI-FUNGSI LOGIKA ---
+    // --- FUNGSI-FUNGSI LOGIKA (Tidak diubah) ---
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('id-ID', {
@@ -149,7 +181,7 @@ const ShoppingCartPage: React.FC = () => {
                     };
                 }
                 return store;
-            }).filter(store => store.products.length > 0); // Hapus toko jika tidak ada produk lagi
+            }).filter(store => store.products.length > 0);
             return newStores;
         });
     };
@@ -160,16 +192,22 @@ const ShoppingCartPage: React.FC = () => {
                 ...store,
                 products: store.products.filter(p => !p.selected)
             })).filter(store => store.products.length > 0);
+            // After deleting, uncheck "select all"
+            const allStillSelected = newStores.length > 0 && newStores.every(s => s.selected && s.products.every(p => p.selected));
+            if (!allStillSelected) {
+                handleSelectAll(false);
+            }
             return newStores;
         });
     };
+
 
     // --- KALKULASI TOTAL ---
     const cartSummary = useMemo(() => {
         let totalItems = 0;
         let totalPrice = 0;
         let totalSavings = 0;
-        const allSelected = stores.length > 0 && stores.every(s => s.selected);
+        let selectedProductsCount = 0;
 
         stores.forEach(store => {
             store.products.forEach(product => {
@@ -177,178 +215,189 @@ const ShoppingCartPage: React.FC = () => {
                     totalItems += product.quantity;
                     totalPrice += product.discountedPrice * product.quantity;
                     totalSavings += (product.originalPrice - product.discountedPrice) * product.quantity;
+                    selectedProductsCount++;
                 }
             });
         });
 
-        return { totalItems, totalPrice, totalSavings, allSelected };
+        const allSelected = stores.length > 0 && stores.every(s => s.selected);
+
+        return { totalItems, totalPrice, totalSavings, allSelected, selectedProductsCount };
     }, [stores]);
 
 
     // --- RENDER KOMPONEN ---
     return (
         <MainLayout>
-            <div className="md:hidden h-[50px] p-4 bg-white flex items-center justify-between gap-4">
-                <div className='flex items-center gap-4'>
-                    <ArrowLeft className='w-[12px]' />
-                    <p className='text-[#333333] text-[12px] font-bold' style={{
-                        letterSpacing: "-0.03em"
-                    }}>
-                        Keranjang Saya (123)
-                    </p>
-                </div>
-                <Heart className='w-[15px] text-[#333333]' />
-            </div>
-            <div className=" md:relative min-h-screen px-2 mb-24 container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
-                <div className="container mx-auto mt-4">
-                    <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC] mb-4 hidden md:block'>
-                        <p className='text-[#7952B3] text-[20px] font-bold p-6 border-b border-[#DDDDDD]'>Keranjang Belanja</p>
-                        <div className="hidden md:grid grid-cols-12 gap-4 items-center bg-white p-6 text-[#333333] text-[16px] font-semibold">
-                            <div className="col-span-5 flex items-center gap-4">
-                                <input
-                                    type="checkbox"
-                                    className="h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
-                                    checked={cartSummary.allSelected}
-                                    onChange={(e) => handleSelectAll(e.target.checked)}
-                                />
-                                <span>Produk</span>
-                            </div>
-                            <div className="col-span-2 text-right mr-10">Harga Satuan</div>
-                            <div className="col-span-2 text-center mr-5">Kuantitas</div>
-                            <div className="col-span-2">Total Harga</div>
-                            <div className="col-span-1 text-end">Aksi</div>
-                        </div>
-                    </div>
+            <div className="container mx-auto py-8 lg:w-[1200px] space-y-4">
 
-                    {/* Daftar Produk */}
-                    <div className="space-y-4">
-                        {stores.map(store => (
-                            <div key={store.id} className="bg-white rounded-lg shadow-sm overflow-hidden rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC]">
-                                {/* Header Toko */}
-                                <div className="p-6 border-b border-gray-200 flex justify-between md:block">
-                                    <div className="flex items-center gap-4">
-                                        <input
-                                            type="checkbox"
-                                            className="h-[18px] w-[18px] md:h-5 md:w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
-                                            checked={store.selected}
-                                            onChange={(e) => handleStoreSelect(store.id, e.target.checked)}
-                                        />
-                                        <span className="font-semibold text-[#333333] text-[11px] md:text-[16px]">{store.name}</span>
-                                    </div>
-                                    <p className='md:hidden text-[#333333] text-[10px]'>
-                                        ubah
-                                    </p>
+                <h1 className="text-[#7952B3] text-[25px] font-bold">Keranjang Belanja</h1>
+
+                <div className="space-y-4 mt-8">
+                    {stores.map(store => (
+                        <div key={store.id} className="bg-white rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC] overflow-hidden">
+                            {/* Header Toko */}
+                            <div className="p-4 border-b border-gray-200 grid grid-cols-12 gap-4 items-center">
+                                <div className='col-span-12 md:col-span-5 flex items-start gap-4'>
+                                    <input
+                                        type="checkbox"
+                                        className="h-[21px] w-[21px] rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
+                                        checked={store.selected}
+                                        onChange={(e) => handleStoreSelect(store.id, e.target.checked)}
+                                    />
+                                    <span className="font-semibold text-gray-800">{store.name}</span>
                                 </div>
+                                <div className="col-span-6 md:col-span-2 text-center text-[16px] text-right font-semibold text-[#333333]">
+                                    Harga Satuan
+                                </div>
+                                <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333]">
+                                    Kuantitas
+                                </div>
+                                <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333]">
+                                    Total Harga
+                                </div>
+                                <div className="col-span-6 md:col-span-1 text-center text-[16px] font-semibold text-[#333333]">
+                                    Aksi
+                                </div>
+                            </div>
 
-                                {/* Produk dalam Toko */}
-                                <div className="divide-y divide-gray-200">
-                                    {store.products.map(product => (
-                                        <div key={product.id} className="p-6 grid grid-cols-12 gap-4 items-center">
-                                            {/* Info Produk */}
-                                            <div className="col-span-12 md:col-span-5 flex items-start md:items-center gap-4">
-                                                <input
-                                                    type="checkbox"
-                                                    className="h-[18px] w-[18px] md:h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
-                                                    checked={product.selected}
-                                                    onChange={(e) => handleProductSelect(store.id, product.id, e.target.checked)}
-                                                />
-                                                <img src={product.imageUrl} alt={product.name} className="w-[80px] h-[80px] md:w-20 md:h-20 object-cover rounded-md" />
-                                                <div className="flex-1">
-                                                    <p className="text-[#333333] text-[16px]" style={{
-                                                        letterSpacing: "-0.03em",
-                                                        lineHeight: "108%"
-                                                    }}>{product.name}</p>
-                                                    <p className="text-[#333333] text-[13px]" style={{
-                                                        letterSpacing: "-0.04em"
-                                                    }}>{product.variant}</p>
+                            {/* Produk dalam Toko */}
+                            <div className="divide-y divide-gray-200">
+                                {store.products.map(product => (
+                                    <div key={product.id} className="p-4 grid grid-cols-12 gap-4 items-center">
+                                        {/* Info Produk */}
+                                        <div className="col-span-12 md:col-span-5 flex items-start gap-4">
+                                            <input
+                                                type="checkbox"
+                                                className="h-[21px] w-[21px] rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer mt-1"
+                                                checked={product.selected}
+                                                onChange={(e) => handleProductSelect(store.id, product.id, e.target.checked)}
+                                            />
+                                            <img src={product.imageUrl} alt={product.name} className="w-[100px] h-[100px] object-cover border border-[#AAAAAA]" />
+                                            <div className="flex-1 space-y-2">
+                                                <p className="text-[#333333] text-[16px] line-clamp-1 w-full" style={{
+                                                    lineHeight: "108%",
+                                                    letterSpacing: "-0.03em"
+                                                }}>{product.name}</p>
+                                                <p className="text-[#333333] text-[13px] line-clamp-1 w-full" style={{
+                                                    lineHeight: "108%",
+                                                    letterSpacing: "-0.04em"
+                                                }}>{product.variant}</p>
+                                                {/* Tags */}
+                                                <span className="text-[#F77000] text-[14px] font-bold" style={{
+                                                    letterSpacing: "-0.04em",
+                                                    lineHeight: "121%"
+                                                }}>COD (Bayar ditempat)</span>
+                                                <div className="flex flex-wrap gap-2 mt-2" style={{
+                                                    letterSpacing: "-0.04em",
+                                                    lineHeight: "121%"
+                                                }}>
+                                                    <span className="text-[12px] text-white font-semibold bg-[#F74F4F] rounded-[5px] px-2 py-2">Diskon Terpakai {product.diskonTerpakai}</span>
+                                                    <span className="text-[12px] text-black font-semibold bg-[#F7C800] rounded-[5px] px-2 py-2">Gratis Ongkir {product.gratisOngkir}</span>
+                                                    <span className="text-[12px] text-white font-semibold bg-[#3EA65A] rounded-[5px] px-2 py-2">Voucher Toko {product.voucherToko}</span>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            {/* Harga Satuan */}
-                                            <div className="col-span-6 md:col-span-2">
-                                                <span className="md:hidden text-gray-500 text-sm">Harga: </span>
-                                                <p className="text-[#333333] text-[16px] text-right mr-10" style={{ lineHeight: "108%" }}>{formatCurrency(product.discountedPrice)}</p>
-                                                <p className="text-[#666666] line-through text-[14px] text-right mr-10" style={{ lineHeight: "108%" }}>{formatCurrency(product.originalPrice)}</p>
-                                            </div>
+                                        {/* Harga Satuan */}
+                                        <div className="col-span-6 md:col-span-2 text-center" style={{
+                                            lineHeight: "108%",
+                                            letterSpacing: "-0.02em"
+                                        }}>
+                                            <p className="text-[#333333] font-bold text-right text-[16px]">{formatCurrency(product.discountedPrice)}</p>
+                                            <p className="text-[#333333] text-right line-through text-[14px]">{formatCurrency(product.originalPrice)}</p>
+                                        </div>
 
-                                            {/* Kuantitas */}
-                                            <div className="col-span-6 md:col-span-2 flex items-center justify-end md:justify-start">
-                                                <div className="flex items-center border border-[#BBBBBB]">
-                                                    <button className="h-8 w-8 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors border-r border-[#BBBBBB]" onClick={() => handleQuantityChange(store.id, product.id, product.quantity - 1)}>
-                                                        <Minus className="h-4 w-4" />
-                                                    </button>
-                                                    <span className="px-4 text-center w-12 font-medium">{product.quantity}</span>
-                                                    <button className="h-8 w-8 flex items-center justify-center text-gray-700 hover:bg-gray-100 transition-colors  border-l border-[#BBBBBB]" onClick={() => handleQuantityChange(store.id, product.id, product.quantity + 1)}>
-                                                        <Plus className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Total Harga Produk */}
-                                            <div className="col-span-6 md:col-span-2">
-                                                <span className="md:hidden text-gray-500 text-sm">Total: </span>
-                                                <span className="text-[#E33947] text-[16px]" style={{ lineHeight: "108%" }}>{formatCurrency(product.discountedPrice * product.quantity)}</span>
-                                            </div>
-
-                                            {/* Aksi */}
-                                            <div className="col-span-6 md:col-span-1 flex justify-end">
-                                                <button className="text-[#E33947] text-[14px] font-semibold hover:text-red-600 hover:underline transition-colors" onClick={() => handleDeleteProduct(store.id, product.id)} style={{ lineHeight: "108%" }}>
-                                                    Hapus
+                                        {/* Kuantitas */}
+                                        <div className="col-span-6 md:col-span-2 flex items-center justify-center">
+                                            <div className="flex items-center border border-[#3EA65A] overflow-hidden">
+                                                <button className="h-8 w-8 flex items-center justify-center text-white bg-[#3EA65A] hover:bg-green-700 transition-colors" onClick={() => handleQuantityChange(store.id, product.id, product.quantity - 1)}>
+                                                    <Minus className="h-4 w-4" />
+                                                </button>
+                                                <span className="px-4 text-center w-12 font-medium bg-white">{product.quantity}</span>
+                                                <button className="h-8 w-8 flex items-center justify-center text-white bg-[#3EA65A] hover:bg-green-700 transition-colors" onClick={() => handleQuantityChange(store.id, product.id, product.quantity + 1)}>
+                                                    <Plus className="h-4 w-4" />
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
 
-                    {/* Footer Checkout */}
-                    <div className="sticky bottom-0 mt-8 rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] p-6 bg-white border border-[#DCDCDC]">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="flex items-center gap-4 self-start md:self-center">
-                                <input
-                                    id="selectAllFooter"
-                                    type="checkbox"
-                                    className="h-[18px] w-[18px] md:h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
-                                    checked={cartSummary.allSelected}
-                                    onChange={(e) => handleSelectAll(e.target.checked)}
-                                />
-                                <label htmlFor="selectAllFooter" className="cursor-pointer text-[#333333] text-[16px] font-semibold" style={{ letterSpacing: "-0.03em" }}>
-                                    Pilih Semua {cartSummary.totalItems} item
-                                </label>
-                                <button className="text-[#E33947] text-[16px] font-semibold hover:text-red-600 hover:underline transition-colors" onClick={handleDeleteSelected} style={{ lineHeight: "108%" }}>
-                                    Hapus
-                                </button>
-                            </div>
+                                        {/* Total Harga Produk */}
+                                        <div className="col-span-6 md:col-span-2 text-center" style={{
+                                            lineHeight: '108%',
+                                            letterSpacing: "-0.02em"
+                                        }}>
+                                            <span className="text-[#E33947] text-[18px] text-right font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
+                                        </div>
 
-                            <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
-                                <div className="text-right">
-                                    <p className="text-[#333333] text-[16px] font-bold mb-2">
-                                        Total ({cartSummary.totalItems} Produk) <span className="font-bold text-[25px] text-[#E75864] ml-4" style={{
-                                            letterSpacing: "-0.04em",
-                                            lineHeight: "108%"
-                                        }}>{formatCurrency(cartSummary.totalPrice)}</span>
-                                    </p>
-                                    {cartSummary.totalSavings > 0 && (
-                                        <p className="text-[16px] text-[#333333]" style={{
-                                            letterSpacing: "-0.04em"
-                                        }}>Hemat {formatCurrency(cartSummary.totalSavings)}</p>
-                                    )}
-                                </div>
-                                <button className="bg-[#563D7C] text-[16px] hover:bg-purple-700 text-white font-bold w-full md:w-48 py-3 rounded-[5px] transition-colors" style={{
-                                    letterSpacing: "-0.04em"
-                                }}>
-                                    Check Out
-                                </button>
+                                        {/* Aksi */}
+                                        <div className="col-span-6 md:col-span-1 flex justify-center" style={{
+                                            lineHeight: '108%',
+                                            letterSpacing: "-0.02em"
+                                        }}>
+                                            <button className="text-[#E33947] text-[14px] font-semibold hover:underline" onClick={() => handleDeleteProduct(store.id, product.id)}>
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                    </div>
-
+                    ))}
                 </div>
+
+                {/* Footer Checkout */}
+                <div className="sticky bottom-0 mt-6">
+                    <div className="bg-white rounded-md shadow-sm p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-4 self-start md:self-center">
+                            <input
+                                id="selectAllFooter"
+                                type="checkbox"
+                                className="h-[21px] w-[21px] rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
+                                checked={cartSummary.allSelected}
+                                onChange={(e) => handleSelectAll(e.target.checked)}
+                            />
+                            <label htmlFor="selectAllFooter" className="cursor-pointer text-[#333333] text-[16px] font-semibold" style={{
+                                letterSpacing: "-0.03em",
+                                lineHeight: '121%'
+                            }}>
+                                Pilih Semua ({cartSummary.totalItems} item)
+                            </label>
+                            <button className="text-[#E33947] text-[16px] font-semibold hover:underline" style={{
+                                lineHeight: '108%',
+                                letterSpacing: "-0.02em"
+                            }} onClick={handleDeleteSelected}>
+                                Hapus
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
+                            <div className="text-right">
+                                <div className="text-[#333333] text-[16px] font-semibold flex items-center gap-2" style={{
+                                    letterSpacing: "-0.03em",
+                                    lineHeight: '121%'
+                                }}>
+                                    Total ({cartSummary.selectedProductsCount} Produk): <p className="text-[#E75864] text-[25px] font-bold ml-2" style={{
+                                        letterSpacing: "-0.04em",
+                                        lineHeight: '108%'
+                                    }}>{formatCurrency(cartSummary.totalPrice)}</p>
+                                </div>
+                                {cartSummary.totalSavings > 0 && (
+                                    <p className="text-[16px] text-[#333333] mt-1" style={{
+                                        lineHeight: '121%',
+                                        letterSpacing: "-0.04em"
+                                    }}>Hemat {formatCurrency(cartSummary.totalSavings)}</p>
+                                )}
+                            </div>
+                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors">
+                                Beli ({cartSummary.selectedProductsCount})
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </MainLayout>
     );
 };
 
-export default ShoppingCartPage
+export default ShoppingCartPage;
