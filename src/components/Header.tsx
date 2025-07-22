@@ -54,7 +54,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
                         <img src={item.image} alt={item.name} className="w-[47px] h-[47px] object-cover mr-0" />
                         <div className="flex-grow">
                             <p className="text-[12px] font-[500] text-[#111111] line-clamp-2" title={item.name} style={{
-                                lineHeight: "99%"
+                                lineHeight: "121%"
                             }}>{item.name}</p>
                             <p className="text-[12px] text-[#333333] mt-0.5">{item.variant}</p>
                         </div>
