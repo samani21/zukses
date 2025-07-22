@@ -13,7 +13,7 @@ interface SellerInfoProps {
 
 const SellerInfo: React.FC<SellerInfoProps> = ({ seller }) => {
     return (
-        <div className="bg-white shadow-[1px_1px_10px_rgba(0,0,0,0.08)] p-6 flex items-center gap-6">
+        <div className="bg-white border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] rounded-[5px] p-6 flex items-center gap-6">
             {/* Kiri - Avatar & Tombol */}
             <div className="flex items-center gap-4 w-1/2">
                 {/* <div className="w-14 h-14 rounded-full border flex items-center justify-center text-indigo-700 font-bold text-xl bg-white">

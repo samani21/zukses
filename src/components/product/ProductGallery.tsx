@@ -33,7 +33,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     const [dragStart, setDragStart] = useState(0);
     const [dragOffset, setDragOffset] = useState(0);
     const [previewVideo, setPreviewVideo] = useState<boolean>(false);
-
+    console.log(videoProduct)
     const handleNext = () => {
         setActiveIndex((activeIndex + 1) % images.length);
     };
@@ -140,17 +140,23 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         </button>
                     ))}
                 </div>
+                {
+                    videoProduct?.length > 0 &&
+                    <div className="text-center mt-2 px-2 md:px-0">
+                        <button
+                            onClick={() => {
+                                setPreviewVideo(!previewVideo)
+                                setActiveIndex(0)
+                            }}
+                            className="bg-[#4A52B2] h-[50px] text-white md:h-[40px] w-full border border-[#563D7C]/50 md:bg-[#F6E9F0] text-[16px] md:text-[14px] font-semibold md:text-[#563D7C] px-4 py-2 hover:bg-purple-200 transition flex items-center justify-center gap-2"
+                        >
 
-                <div className="text-center mt-2 px-2 md:px-0">
-                    <button
-                        onClick={() => setPreviewVideo(!previewVideo)}
-                        className="bg-[#4A52B2] h-[50px] text-white md:h-[40px] w-full border border-[#563D7C]/50 md:bg-[#F6E9F0] text-[16px] md:text-[14px] font-semibold md:text-[#563D7C] px-4 py-2 hover:bg-purple-200 transition flex items-center justify-center gap-2"
-                    >
+                            {previewVideo ? <Image className='w-[20px]  md:hidden' /> : <Video className='w-[20px]  md:hidden' />}
+                            <span>{previewVideo ? "Lihat Gambar" : "Lihat Video"}</span>
+                        </button>
+                    </div>
+                }
 
-                        {previewVideo ? <Image className='w-[20px]  md:hidden' /> : <Video className='w-[20px]  md:hidden' />}
-                        <span>{previewVideo ? "Lihat Gambar" : "Lihat Video"}</span>
-                    </button>
-                </div>
 
                 <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-4 text-[#4A52B2]">
                     <div className="text-[14px] font-bold text-center sm:text-left">Bagikan Link</div>
