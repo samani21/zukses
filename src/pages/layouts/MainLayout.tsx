@@ -3,9 +3,10 @@ import Delivery from "components/Delivery";
 import Header from "components/Header";
 import MobileNavBar from "components/MobileNavBar";
 import Payment from "components/Payment";
-import SiteFooter from "components/SiteFooter";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import CategoryFooter from "components/CategoryFooter";
+import InfoZukses from "components/InfoZukses";
 
 interface Payments {
     id: number;
@@ -71,9 +72,14 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 !isDisableNavbar &&
                 <MobileNavBar />
             }
-            <div className='hidden md:block border-t border-[#BBBBBB]  bg-white'>
-                <div className='border-b border-[#BBBBBB]  py-10'>
-                    <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] px-4 '>
+            <div className='hidden md:block border-t border-[#238744]  bg-white'>
+                <div className='border-b border-[#238744] py-4'>
+                    <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] '>
+                        <InfoZukses />
+                    </div>
+                </div>
+                <div className='py-4'>
+                    <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] '>
                         <div>
                             <Payment samplePayment={samplePayment} />
                         </div>
@@ -82,11 +88,17 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         </div>
                     </div>
                 </div>
-                <main className="container mx-auto md:px-4 lg:w-[1200px] lg:px-[0px]">
-                    <SiteFooter />
-                </main>
-                <div className="border-t border-[#BBBBBB] py-4 mt-8">
-                    <p className="text-center text-[15px] text-dark-500 font-semibold">
+                <div className='py-4 bg-[#E4FFE0]'>
+                    <main className="container mx-auto md:px-4 lg:w-[1200px] lg:px-[0px] bg-[#E4FFE0]">
+                        <CategoryFooter />
+                    </main>
+
+                </div>
+                <div className="border-t border-[#238744] py-4 bg-[#238744] text-white">
+                    <p className="text-center text-[15px] font-semibold" style={{
+                        lineHeight:"22px",
+                        letterSpacing:"-0.04em"
+                    }}>
                         @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
                     </p>
                 </div>
