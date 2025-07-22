@@ -1,6 +1,6 @@
 import { MapPin, ChevronDown, CheckCircle2 } from 'lucide-react';
-import type { FC } from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import type { FC, ReactNode, RefObject } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 
 // --- INTERFACES & TYPE DEFINITIONS ---
 interface Address {
@@ -21,11 +21,19 @@ interface Product {
     originalPrice: number;
     discountedPrice: number;
     quantity: number;
+    codAvailable?: boolean;
+    vouchers?: string[];
 }
 
+type ShippingRange = 'Reguler' | 'Next Day' | 'Same Day';
+
 interface ShippingOption {
-    name: string;
+    id: string; // Unique ID for each option
+    courierName: string; // e.g., 'SiCepat'
+    serviceName: string; // e.g., 'SIUNTUNG'
     price: number;
+    range: ShippingRange;
+    logoUrl: string;
 }
 
 interface Store {
@@ -66,29 +74,49 @@ const initialUserAddress: Address = {
     isPrimary: true,
 };
 
+const allShippingOptions: ShippingOption[] = [
+    { id: 'sicepat-reg', courierName: 'SiCepat', serviceName: 'SIUNTUNG', price: 47000, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/S/sicepat-ekspres-logo-F2520A3446-seeklogo.com.png' },
+    { id: 'jne-reg', courierName: 'JNE', serviceName: 'REG', price: 56000, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/J/jne-logo-157D232141-seeklogo.com.png' },
+    { id: 'jnt-reg', courierName: 'J&T', serviceName: 'Regular', price: 47000, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/J/j-t-express-logo-5352A7B318-seeklogo.com.png' },
+    { id: 'pos-reg', courierName: 'POS', serviceName: 'Regular', price: 52500, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/P/pos-indonesia-logo-4E932356D4-seeklogo.com.png' },
+    { id: 'jne-nd', courierName: 'JNE', serviceName: 'YES', price: 89000, range: 'Next Day', logoUrl: 'https://seeklogo.com/images/J/jne-logo-157D232141-seeklogo.com.png' },
+];
+
 const initialStores: Store[] = [
     {
         id: 'store-abc',
         name: 'Toko ABC',
         products: [
-            { id: 1, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/150x150/f0f0f0/333?text=Rak+Bambu', originalPrice: 350000, discountedPrice: 290000, quantity: 1 },
-            { id: 2, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/150x150/f0f0f0/333?text=Rak+Bambu', originalPrice: 350000, discountedPrice: 290000, quantity: 1 },
+            { id: 1, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/80x80/e2e8f0/333?text=Produk', originalPrice: 350000, discountedPrice: 290000, quantity: 1, codAvailable: true, vouchers: ['Diskon Terpakai 25%', 'Gratis Ongkir Rp10.000'] },
+            { id: 2, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/80x80/e2e8f0/333?text=Produk', originalPrice: 350000, discountedPrice: 290000, quantity: 1, codAvailable: true, vouchers: ['Voucher Toko Rp.20.000'] },
         ],
-        shippingOptions: [{ name: 'JNE REG', price: 58000 }, { name: 'J&T Express', price: 55000 }],
-        selectedShipping: { name: 'JNE REG', price: 58000 }
+        shippingOptions: allShippingOptions,
+        selectedShipping: allShippingOptions[0]
     },
     {
         id: 'store-cde',
         name: 'Toko CDE',
         products: [
-            { id: 3, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/150x150/333/f0f0f0?text=Rak+Bambu', originalPrice: 150000, discountedPrice: 100000, quantity: 1 },
+            { id: 3, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/80x80/333/f0f0f0?text=Produk', originalPrice: 150000, discountedPrice: 120000, quantity: 1, codAvailable: true, vouchers: ['Gratis Ongkir Rp10.000'] },
         ],
-        shippingOptions: [{ name: 'JNE REG', price: 30000 }, { name: 'SiCepat', price: 28000 }],
-        selectedShipping: { name: 'JNE REG', price: 30000 }
+        shippingOptions: allShippingOptions.filter(opt => opt.courierName !== 'POS'), // Example of a store with fewer options
+        selectedShipping: allShippingOptions[0]
     }
 ];
 
-// --- UI COMPONENTS ---
+const useOutsideClick = (ref: RefObject<HTMLElement>, callback: () => void) => {
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (ref.current && !ref.current.contains(event.target as Node)) {
+                callback();
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [ref, callback]);
+};
 
 const CheckoutAddressCard: FC<{ address: Address }> = ({ address }) => (
     <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 w-full">
@@ -111,56 +139,106 @@ const CheckoutAddressCard: FC<{ address: Address }> = ({ address }) => (
     </div>
 );
 
-const CheckoutProductHeader: FC = () => (
-    <div className="bg-white rounded-xl shadow-md w-full">
-        <div className="p-4 sm:p-6 border-b border-gray-200">
-            <h2 className="text-lg font-bold text-gray-800">Produk Dipesan</h2>
-        </div>
-        <div className="flex items-center text-center text-sm font-semibold text-gray-600 p-4 sm:px-6">
-            <div className="flex-1 text-left">Produk</div>
-            <div className="w-1/5 hidden md:block">Harga Satuan</div>
-            <div className="w-1/5 hidden sm:block">Kuantitas</div>
-            <div className="w-1/4 text-right sm:text-center">Total Harga</div>
-            <div className="w-16 text-right">Aksi</div>
-        </div>
-    </div>
-);
-
 const QuantityStepper: FC<{ quantity: number; onUpdate: (newQuantity: number) => void; }> = ({ quantity, onUpdate }) => {
     return (
-        <div className="flex items-center">
-            <button onClick={() => quantity > 1 && onUpdate(quantity - 1)} className="px-2 py-1 border border-gray-300 rounded-l-md hover:bg-gray-100 disabled:opacity-50" disabled={quantity <= 1}>-</button>
-            <span className="px-4 py-1 border-t border-b border-gray-300 text-center">{quantity}</span>
-            <button onClick={() => onUpdate(quantity + 1)} className="px-2 py-1 border border-gray-300 rounded-r-md hover:bg-gray-100">+</button>
+        <div className="flex items-center rounded-md overflow-hidden border border-gray-300">
+            <button onClick={() => quantity > 1 && onUpdate(quantity - 1)} className="w-7 h-7 flex items-center justify-center text-lg bg-green-500 text-white hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed" disabled={quantity <= 1}>-</button>
+            <span className="w-10 h-7 flex items-center justify-center bg-white text-center text-sm font-medium">{quantity}</span>
+            <button onClick={() => onUpdate(quantity + 1)} className="w-7 h-7 flex items-center justify-center text-lg bg-green-500 text-white hover:bg-green-600">+</button>
         </div>
     );
 };
 
 const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product) => void; onRemove: (productId: number) => void; }> = ({ product, onUpdate, onRemove }) => {
     return (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center py-4">
-            <div className="flex items-center flex-1 mb-4 sm:mb-0">
-                <img src={product.imageUrl} alt={product.name} className="w-16 h-16 object-cover rounded-md mr-4" onError={(e) => { e.currentTarget.src = 'https://placehold.co/64x64/e2e8f0/e2e8f0?text=Img'; }} />
+        <div className="flex flex-col md:flex-row md:items-center py-4 space-y-4 md:space-y-0">
+            <div className="w-full md:w-5/12 flex items-start space-x-4">
+                <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded-md flex-shrink-0" onError={(e) => { e.currentTarget.src = 'https://placehold.co/80x80/e2e8f0/e2e8f0?text=Img'; }} />
+                <div className="flex-grow">
+                    <p className="font-semibold text-gray-800 text-sm leading-tight">{product.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{product.variant}</p>
+                    {product.codAvailable && <p className="text-xs text-orange-500 font-semibold mt-2">COD (Bayar ditempat)</p>}
+                    <div className="flex flex-wrap gap-1 mt-2">
+                        {product.vouchers?.map((voucher, index) => {
+                            const isVoucherToko = voucher.toLowerCase().includes('toko');
+                            const isGratisOngkir = voucher.toLowerCase().includes('ongkir');
+                            const bgColor = isVoucherToko ? 'bg-green-100' : isGratisOngkir ? 'bg-yellow-100' : 'bg-red-100';
+                            const textColor = isVoucherToko ? 'text-green-600' : isGratisOngkir ? 'text-yellow-700' : 'text-red-600';
+                            return (
+                                <span key={index} className={`text-xs font-semibold px-2 py-0.5 rounded ${bgColor} ${textColor}`}>
+                                    {voucher}
+                                </span>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+            <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center text-center">
+                <span className="md:hidden font-medium text-gray-600">Harga Satuan</span>
                 <div>
-                    <p className="font-semibold text-gray-800">{product.name}</p>
-                    <p className="text-sm text-gray-500">{product.variant}</p>
+                    <p className="text-gray-800 font-semibold">{formatCurrency(product.discountedPrice)}</p>
+                    <p className="line-through text-gray-400 text-xs">{formatCurrency(product.originalPrice)}</p>
                 </div>
             </div>
-            <div className="w-full sm:w-1/5 text-left sm:text-center mb-2 sm:mb-0">
-                <span className="line-through text-gray-400 text-sm mr-2">{formatCurrency(product.originalPrice)}</span>
-                <span className="text-gray-800 font-semibold">{formatCurrency(product.discountedPrice)}</span>
+            <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center">
+                <span className="md:hidden font-medium text-gray-600">Kuantitas</span>
+                <QuantityStepper quantity={product.quantity} onUpdate={(newQuantity) => onUpdate({ ...product, quantity: newQuantity })} />
             </div>
-            <div className="flex justify-between items-center w-full sm:w-auto">
-                <div className="sm:w-28 flex justify-center mr-4">
-                    <QuantityStepper quantity={product.quantity} onUpdate={(newQuantity) => onUpdate({ ...product, quantity: newQuantity })} />
-                </div>
-                <div className="sm:w-28 text-right sm:text-center">
-                    <span className="text-red-500 font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
-                </div>
-                <div className="sm:w-20 text-right ml-4">
-                    <button onClick={() => onRemove(product.id)} className="text-red-500 hover:text-red-700 text-sm">Hapus</button>
-                </div>
+            <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center text-center">
+                <span className="md:hidden font-medium text-gray-600">Total Harga</span>
+                <span className="text-red-500 font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
             </div>
+            <div className="w-full md:w-1/12 flex justify-end">
+                <button onClick={() => onRemove(product.id)} className="text-red-500 hover:text-red-700 text-sm">Hapus</button>
+            </div>
+        </div>
+    );
+};
+
+const CustomCourierSelect: FC<{
+    options: ShippingOption[];
+    selected: ShippingOption;
+    onSelect: (option: ShippingOption) => void;
+    placeholder?: string;
+}> = ({ options, selected, onSelect, placeholder = "Pilih Kurir" }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    useOutsideClick(dropdownRef as RefObject<HTMLElement>, () => setIsOpen(false));
+
+    const handleSelect = (option: ShippingOption) => {
+        onSelect(option);
+        setIsOpen(false);
+    };
+
+    return (
+        <div className="relative w-full" ref={dropdownRef}>
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-md py-2 px-4 text-left">
+                {selected ? (
+                    <div className="flex items-center space-x-3">
+                        <img src={selected.logoUrl} alt={selected.courierName} className="h-5 w-auto object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                        <span className="text-sm">{selected.courierName} {selected.serviceName}</span>
+                    </div>
+                ) : (
+                    <span className="text-sm text-gray-500">{placeholder}</span>
+                )}
+                <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isOpen && (
+                <div className="absolute z-10 top-full mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                    {options.length > 0 ? options.map(option => (
+                        <div key={option.id} onClick={() => handleSelect(option)} className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer">
+                            <div className="flex items-center space-x-3">
+                                <img src={option.logoUrl} alt={option.courierName} className="h-6 w-12 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                                <span className="text-sm">{option.courierName} {option.serviceName}</span>
+                            </div>
+                            <span className="text-sm font-semibold">{formatCurrency(option.price)}</span>
+                        </div>
+                    )) : (
+                        <div className="p-3 text-sm text-gray-500 text-center">Tidak ada opsi tersedia.</div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
@@ -169,34 +247,68 @@ const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: num
     const productSubtotal = storeData.products.reduce((acc, p) => acc + (p.discountedPrice * p.quantity), 0);
     const totalProducts = storeData.products.reduce((acc, p) => acc + p.quantity, 0);
 
+    const [selectedRange, setSelectedRange] = useState<ShippingRange>(storeData.selectedShipping.range);
+
+    const availableRanges = useMemo(() => {
+        const ranges = storeData.shippingOptions.map(opt => opt.range);
+        return [...new Set(ranges)];
+    }, [storeData.shippingOptions]);
+
+    const filteredOptions = useMemo(() => {
+        return storeData.shippingOptions.filter(opt => opt.range === selectedRange);
+    }, [selectedRange, storeData.shippingOptions]);
+
+    // ✅ FIX 2: Added direct event handler and removed problematic useEffect
+    const handleRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newRange = e.target.value as ShippingRange;
+        setSelectedRange(newRange);
+
+        // Directly update selected courier to the first option of the new range
+        const newOptionsForRange = storeData.shippingOptions.filter(opt => opt.range === newRange);
+        if (newOptionsForRange.length > 0) {
+            onShippingChange(newOptionsForRange[0]);
+        }
+    };
+
     return (
-        <div className="bg-white rounded-xl shadow-md w-full">
-            <div className="p-4 sm:p-6 border-b border-gray-200"><h3 className="font-bold text-gray-800">{storeData.name}</h3></div>
-            <div className="p-4 sm:p-6 divide-y divide-gray-200">
-                {storeData.products.map(product => <ProductItemRow key={product.id} product={product} onUpdate={(p) => onProductUpdate(product.id, p)} onRemove={onProductRemove} />)}
+        <div className="bg-white rounded-xl shadow-md w-full overflow-hidden">
+            <div className="p-4 sm:px-6 border-b border-gray-200">
+                <h3 className="font-bold text-gray-800">{storeData.name}</h3>
             </div>
-            <div className="p-4 sm:p-6 bg-gray-50 rounded-b-xl">
-                <div className="flex justify-between items-center mb-4">
-                    <h4 className="font-semibold text-gray-800">Pengiriman</h4>
-                    <div className="text-right">
-                        <p className="text-sm text-gray-600">Total ({totalProducts} Produk)</p>
-                        <p className="font-bold text-red-500">{formatCurrency(productSubtotal)}</p>
-                    </div>
+            <div className="px-4 sm:px-6">
+                <div className="hidden md:flex items-center text-center text-sm font-semibold text-gray-500 pt-4 pb-2 border-b border-gray-200">
+                    <div className="w-5/12 text-left">Produk</div>
+                    <div className="w-2/12">Harga Satuan</div>
+                    <div className="w-2/12">Kuantitas</div>
+                    <div className="w-2/12">Total Harga</div>
+                    <div className="w-1/12 text-right">Aksi</div>
                 </div>
-                <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0">
-                    <div className="relative flex-1">
-                        <select className="w-full appearance-none bg-white border border-gray-300 rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"><option>Reguler (1-4 hari)</option></select>
-                        <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    </div>
-                    <div className="relative flex-1">
-                        <select value={storeData.selectedShipping.name} onChange={(e) => { const opt = storeData.shippingOptions.find(o => o.name === e.target.value); if (opt) onShippingChange(opt); }} className="w-full appearance-none bg-white border border-gray-300 rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            {storeData.shippingOptions.map(opt => <option key={opt.name} value={opt.name}>{opt.name} {formatCurrency(opt.price)}</option>)}
+                <div className="divide-y divide-gray-200">
+                    {storeData.products.map(product => <ProductItemRow key={product.id} product={product} onUpdate={(p) => onProductUpdate(product.id, p)} onRemove={onProductRemove} />)}
+                </div>
+            </div>
+            <div className="flex justify-end items-center space-x-4 p-4 sm:px-6 border-t border-gray-200">
+                <p className="text-sm text-gray-600">Total ({totalProducts} Produk)</p>
+                <p className="font-bold text-xl text-red-500">{formatCurrency(productSubtotal)}</p>
+            </div>
+            <div className="p-4 sm:p-6 bg-gray-50/70 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    <div className="relative md:col-span-1">
+                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Pilih Rentang Pengiriman</label>
+                        <select
+                            value={selectedRange}
+                            onChange={handleRangeChange} // Use the new handler
+                            className="w-full appearance-none bg-white border border-gray-300 rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
+                            {availableRanges.map(range => <option key={range} value={range}>{range} ({range === 'Reguler' ? '1-3 hari' : range === 'Next Day' ? '1 hari' : 'Beberapa jam'})</option>)}
                         </select>
-                        <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 bottom-2.5 pointer-events-none" />
                     </div>
-                    <p className="md:w-32 text-left md:text-right font-semibold text-gray-800">{formatCurrency(storeData.selectedShipping.price)}</p>
+                    <div className="relative md:col-span-2">
+                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Pilih Kurir</label>
+                        <CustomCourierSelect options={filteredOptions} selected={storeData.selectedShipping} onSelect={onShippingChange} />
+                    </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-6">
                     <label htmlFor={`note-${storeData.id}`} className="text-sm font-medium text-gray-700 mb-1 block">Tambah Catatan Pesanan</label>
                     <input type="text" id={`note-${storeData.id}`} className="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Contoh: Packing lebih aman" />
                 </div>
@@ -266,7 +378,7 @@ const PaymentAndSummaryCard: FC<{ productSubtotal: number; shippingSubtotal: num
 };
 
 const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => void; }> = ({ orderDetails, onBack }) => {
-    const [timeLeft, setTimeLeft] = useState(24 * 60 * 60); // 24 hours in seconds
+    const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
     const [copied, setCopied] = useState(false);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
@@ -290,7 +402,7 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const AccordionItem: FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+    const AccordionItem: FC<{ title: string; children: ReactNode }> = ({ title, children }) => (
         <div className="border-b border-gray-200">
             <button onClick={() => setExpandedSection(expandedSection === title ? null : title)} className="w-full flex justify-between items-center py-4 text-left font-semibold text-gray-700">
                 <span>{title}</span>
@@ -363,7 +475,7 @@ export default function CheckoutPage() {
             store.id === storeId
                 ? { ...store, products: store.products.filter(p => p.id !== productId) }
                 : store
-        ));
+        ).filter(store => store.products.length > 0));
     };
 
     const handleShippingChange = (storeId: string, newShipping: ShippingOption) => {
@@ -380,7 +492,6 @@ export default function CheckoutPage() {
     };
 
     const handleBackToHome = () => {
-        // Reset state and go back to checkout view
         setStores(initialStores);
         setView('checkout');
         setFinalOrder(null);
@@ -391,7 +502,9 @@ export default function CheckoutPage() {
         let shippingSubtotal = 0;
         stores.forEach(store => {
             productSubtotal += store.products.reduce((acc, p) => acc + p.discountedPrice * p.quantity, 0);
-            shippingSubtotal += store.selectedShipping.price;
+            if (store.products.length > 0) {
+                shippingSubtotal += store.selectedShipping.price;
+            }
         });
         return { productSubtotal, shippingSubtotal };
     }, [stores]);
@@ -404,7 +517,7 @@ export default function CheckoutPage() {
                         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Checkout</h1>
                         <div className="space-y-6">
                             <CheckoutAddressCard address={initialUserAddress} />
-                            <CheckoutProductHeader />
+
                             {stores.map(store => (
                                 <StoreCheckoutCard
                                     key={store.id}
@@ -414,11 +527,19 @@ export default function CheckoutPage() {
                                     onShippingChange={(s) => handleShippingChange(store.id, s)}
                                 />
                             ))}
-                            <PaymentAndSummaryCard
-                                productSubtotal={productSubtotal}
-                                shippingSubtotal={shippingSubtotal}
-                                onCreateOrder={handleCreateOrder}
-                            />
+
+                            {stores.length > 0 ? (
+                                <PaymentAndSummaryCard
+                                    productSubtotal={productSubtotal}
+                                    shippingSubtotal={shippingSubtotal}
+                                    onCreateOrder={handleCreateOrder}
+                                />
+                            ) : (
+                                <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
+                                    <h3 className="text-lg font-semibold">Keranjang Anda kosong</h3>
+                                    <p className="mt-2">Silakan tambahkan produk untuk melanjutkan.</p>
+                                </div>
+                            )}
                         </div>
                     </>
                 ) : finalOrder && (

@@ -224,7 +224,7 @@ export default function App() {
     }, []);
     return (
         <MainLayout>
-            <div className="bg-gray-50 min-h-screen font-sans container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
+            <div className="min-h-screen font-sans container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
                 <div className="container mx-auto px-0 ">
                     <div className="mb-6 flex justify-between items-center">
                         {/* <h1 className="text-xl md:text-2xl text-gray-800">

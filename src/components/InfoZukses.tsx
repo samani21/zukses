@@ -7,7 +7,7 @@ const InfoZukses: FC = () => {
     <footer className="bg-white py-4 text-gray-800">
       <div className="container mx-auto">
 
-        <section className="">
+        <section className="text-justify">
           <h3 className="font-semibold text-[15px] mb-2">
             Nikmati Mudahnya Jual Beli di Zukses
           </h3>
@@ -24,8 +24,8 @@ const InfoZukses: FC = () => {
             mendapatkan update produk terbaru secara langsung. Nikmati kemudahan
             berbagi produk melalui media sosial hanya dengan satu klik—baik
             untuk promosi barang jualanmu maupun membagikan temuan menarik
-            kepada teman. <br />
-            Berbelanja di Zukses lebih aman dan nyaman. <br />
+            kepada teman.
+            Berbelanja di Zukses lebih aman dan nyaman.
             Cek rating dan ulasan toko secara transparan untuk menemukan penjual
             terpercaya. Kami berkomitmen untuk selalu menjaga keamanan setiap
             transaksi demi kenyamanan seluruh pengguna.
