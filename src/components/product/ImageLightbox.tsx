@@ -84,16 +84,6 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
     const handleThumbnailClick = (index: number) => {
         setCurrentIndex(index);
     };
-    useEffect(() => {
-        const activeThumbnail = thumbnailRefs.current[currentIndex];
-        if (activeThumbnail) {
-            // Perintahkan browser untuk scroll agar thumbnail ini terlihat
-            activeThumbnail.scrollIntoView({
-                behavior: 'smooth', // Membuat animasi scroll menjadi halus
-                block: 'nearest',   // Scroll secukupnya agar elemen terlihat
-            });
-        }
-    }, [currentIndex]);
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full" onClick={onClose}>
             <div
