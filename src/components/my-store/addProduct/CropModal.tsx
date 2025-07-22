@@ -42,37 +42,62 @@ const CropModal: React.FC<CropModalProps> = ({ imageSrc, onClose, onCropComplete
     };
 
     const getCroppedImg = async (): Promise<File | undefined> => {
-        if (!completedCrop || !imgRef.current) return;
+        // Pastikan crop dan ref gambar sudah ada
+        if (!completedCrop || !imgRef.current) {
+            console.error("Crop atau referensi gambar tidak ditemukan.");
+            return;
+        }
 
+        const image = imgRef.current;
         const canvas = document.createElement('canvas');
-        const scaleX = imgRef.current.naturalWidth / imgRef.current.width;
-        const scaleY = imgRef.current.naturalHeight / imgRef.current.height;
 
-        canvas.width = completedCrop.width;
-        canvas.height = completedCrop.height;
+        // Hitung skala antara ukuran asli gambar dan ukuran tampilannya
+        const scaleX = image.naturalWidth / image.width;
+        const scaleY = image.naturalHeight / image.height;
+
+        // --- PERUBAHAN UTAMA 1: Ukuran Canvas ---
+        // Atur ukuran canvas sesuai dengan ukuran crop pada gambar asli, bukan ukuran tampilan.
+        canvas.width = completedCrop.width * scaleX;
+        canvas.height = completedCrop.height * scaleY;
 
         const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        if (!ctx) {
+            console.error("Gagal mendapatkan konteks 2D dari canvas.");
+            return;
+        }
 
+        // Mengatur kualitas render gambar menjadi lebih baik
+        ctx.imageSmoothingQuality = 'high';
+
+        // --- PERUBAHAN UTAMA 2: Parameter drawImage ---
+        // Gambar bagian yang di-crop dari gambar asli ke canvas
         ctx.drawImage(
-            imgRef.current,
+            image,
             completedCrop.x * scaleX,
             completedCrop.y * scaleY,
             completedCrop.width * scaleX,
             completedCrop.height * scaleY,
             0,
             0,
-            completedCrop.width,
-            completedCrop.height
+            canvas.width, // Gambar ke seluruh area canvas
+            canvas.height
         );
 
-        return new Promise((resolve) => {
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const file = new File([blob], 'cropped.jpg', { type: 'image/jpeg' });
+        // --- PERUBAHAN UTAMA 3: Kualitas Blob ---
+        return new Promise((resolve, reject) => {
+            // Konversi canvas ke Blob dengan kualitas yang ditentukan
+            canvas.toBlob(
+                (blob) => {
+                    if (!blob) {
+                        reject(new Error('Gagal membuat Blob dari canvas.'));
+                        return;
+                    }
+                    const file = new File([blob], 'cropped-image.jpeg', { type: 'image/jpeg' });
                     resolve(file);
-                }
-            }, 'image/jpeg');
+                },
+                'image/jpeg',
+                0.95 // Atur kualitas di sini (0.95 = 95% quality). Angka 1 untuk kualitas maksimal.
+            );
         });
     };
 

@@ -195,22 +195,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
         };
     }, [product?.variants]);
-    const DiscountRange = useMemo(() => {
-        if (!product?.variants || product.variants.length === 0) {
-            return null; // Tidak ada varian, tidak ada rentang harga
-        }
-
-        const prices = product.variants.map(v => v.discount_percent);
-        const minPrice = Math.min(...prices);
-        const maxPrice = Math.max(...prices);
-
-        return {
-            min: minPrice,
-            max: maxPrice,
-            isRange: minPrice !== maxPrice // Tentukan apakah perlu ditampilkan sebagai rentang
-        };
-    }, [product?.variants]);
-
 
     useEffect(() => {
         if (!product?.variants || product.variants.length === 0) return;
@@ -322,7 +306,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     return (
         <>
-            <div className="bg-white rounded-lg md:p-4 text-sm">
+            <div className="bg-white rounded-[5px] md:p-4 text-sm border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <ProductGallery
                         images={allImages}
@@ -343,12 +327,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
                             </div>
                         </div>
-                        <div className="bg-gray-50 rounded-md my-3">
+                        <div className="bg-gray-50 rounded-md my-3 space-y-2">
                             <div className="flex items-center space-x-4 ">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
                                 <div className="text-dark text-[30px] font-[500]">{renderPriceDiscountDisplay()}</div>
-                                <div className="text-[#888888] text-[16px] font-[500] line-through">{renderPriceDisplay()}</div>
-                                <p className='text-[16px] font-[500] text-[#FF0000]'>{DiscountRange?.max}%</p>
+                                <div className="text-[#888888] text-[21px] font-[500] line-through">{renderPriceDisplay()}</div>
+                                {/* <p className='text-[16px] font-[500] text-[#FF0000]'>{DiscountRange?.max}%</p> */}
+                            </div>
+                            <div className='space-y-1' style={{
+                                letterSpacing: "-0.04em"
+                            }}>
+                                <p className='text-[#F77000] text-[14px] font-bold'>COD (Bayar ditempat)</p>
+                                <div className='flex text-[#222222] items-center font-semibold text-[12px] gap-2'>
+                                    <div className='bg-[#CFE3BE] rounded-[5px] p-2'>
+                                        Diskon Terpakai 20%
+                                    </div>
+                                    <div className='bg-[#F0E65F] rounded-[5px] p-2'>
+                                        Gratis Ongkir Rp10.000
+                                    </div>
+                                    <div className='bg-[#D7FFEB] rounded-[5px] p-2'>
+                                        Voucher Toko Rp.20.000
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div className="flex gap-12 mb-2">

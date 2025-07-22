@@ -51,10 +51,12 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
             <ul className="p-2 max-h-80 overflow-y-auto">
                 {items.slice(0, 4).map((item) => (
                     <li key={item.id} className="flex items-start gap-4 p-2 hover:bg-gray-50 rounded-md">
-                        <img src={item.image} alt={item.name} className="w-[47px] h-[47px] object-cover mr-3" />
+                        <img src={item.image} alt={item.name} className="w-[47px] h-[47px] object-cover mr-0" />
                         <div className="flex-grow">
-                            <p className="text-[12px] font-[500] text-[#111111] line-clamp-2" title={item.name}>{item.name}</p>
-                            <p className="text-[12px] text-[#333333]">{item.variant}</p>
+                            <p className="text-[12px] font-[500] text-[#111111] line-clamp-2" title={item.name} style={{
+                                lineHeight: "99%"
+                            }}>{item.name}</p>
+                            <p className="text-[12px] text-[#333333] mt-0.5">{item.variant}</p>
                         </div>
                         <div className="text-right flex-shrink-0 ml-2">
                             <p className="text-[13px] font-bold text-[#333333]">1 x {item.price}</p>
@@ -162,10 +164,10 @@ const Header = () => {
     const provinces = ["Aceh", "Bali", "Banten", "Bengkulu", "DI Yogyakarta", "DKI Jakarta", "Gorontalo", "Jambi", "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Kalimantan Barat", "Kalimantan Selatan", "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara", "Kepulauan Bangka Belitung", "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara", "Nusa Tenggara Barat", "Nusa Tenggara Timur", "Papua", "Papua Barat", "Riau", "Sulawesi Barat", "Sulawesi Selatan", "Sulawesi Tengah", "Sulawesi Tenggara", "Sulawesi Utara", "Sumatera Barat", "Sumatera Selatan", "Sumatera Utara"];
     const searchSuggestions: Suggestion[] = [{ type: 'protection', text: 'Proteksi Gadget' }, { type: 'suggestion', text: 'laptop second' }, { type: 'store', text: 'Laptop Murah ID', location: 'Jakarta', icon: 'https://placehold.co/24x24/7C3AED/FFFFFF?text=L' }, { type: 'suggestion', text: 'laptop rtx' },];
     const mockCartItems: CartItem[] = [
-        { id: 1, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
-        { id: 2, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
-        { id: 3, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
-        { id: 4, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: 'https://placehold.co/48x48/000000/FFFFFF?text=A', quantity: 1 },
+        { id: 1, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: '/image/image 40.png', quantity: 1 },
+        { id: 2, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: '/image/image 40.png', quantity: 1 },
+        { id: 3, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: '/image/image 40.png', quantity: 1 },
+        { id: 4, name: 'Tsurayya - (Abaya Saja) Abaya Basic Bahan Mazen Anti UV by Sultan...', variant: 'Warna Merah Ukuran XL', price: 'Rp285.000', originalPrice: 'Rp500.000', image: '/image/image 40.png', quantity: 1 },
     ];
     const totalCartItems = 123;
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -294,7 +296,7 @@ const Header = () => {
                                                     <button className="p-2 rounded-md pr-0" onClick={() => router.push('/cart')}>
                                                         <img src="/icon/shopping-cart.svg" width={25} />
                                                     </button>
-                                                    <span className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white">
+                                                    <span onClick={() => router.push('/cart')} className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white font-semibold cursor-pointer">
                                                         {totalCartItems}
                                                     </span>
 

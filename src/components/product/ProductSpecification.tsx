@@ -9,7 +9,7 @@ interface ProductSpecificationProps {
 
 const ProductSpecification: React.FC<ProductSpecificationProps> = ({ specifications }) => {
     return (
-        <div className="bg-white rounded-lg shadow-md mt-4 p-4 sm:p-6">
+        <div className="bg-white border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] rounded-[5px] mt-4 p-4 sm:p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Spesifikasi Produk</h2>
             <div className="space-y-3">
                 {Object.entries(specifications).map(([key, value]) => (

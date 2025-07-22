@@ -59,8 +59,19 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                             letterSpacing: "-0.03em"
                         }}
                     >
-
-                        <img src={product.image} alt={product.name} className="md:w-[190px] md:h-[190px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
+                        <div className='absolute p-2 flex flex-col space-y-1'>
+                            <button className='bg-[#F0E65F] rounded-[5px] p-1 text-[10px] text-black' style={{
+                                letterSpacing: "-0.04em"
+                            }}>
+                                Gratis Ongkir
+                            </button>
+                            <button className='bg-[#CFE3BE] rounded-[5px] p-1 text-[10px] text-black' style={{
+                                letterSpacing: "-0.04em"
+                            }}>
+                                Voucher Toko
+                            </button>
+                        </div>
+                        <img src={product.image} alt={product.name} className="md:w-[190px] md:h-[190px] " onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
                         <div className="p-2 ">
                             <p
                                 className="text-[12px] md:text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]"
