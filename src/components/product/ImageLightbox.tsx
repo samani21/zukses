@@ -170,7 +170,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                         ))}
                     </div>
 
-                    <div className="mt-auto pt-4 flex gap-3">
+                    <div className="mt-auto pt-4 flex">
                         {onViewVideo && (
                             <button
                                 onClick={onViewVideo}
