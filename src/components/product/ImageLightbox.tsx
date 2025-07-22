@@ -34,6 +34,16 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
     const thumbnailContainerRef = useRef<HTMLDivElement>(null);
     const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
     useEffect(() => {
+        const activeThumbnail = thumbnailRefs.current[currentIndex];
+        if (activeThumbnail) {
+            // Perintahkan browser untuk scroll agar thumbnail ini terlihat
+            activeThumbnail.scrollIntoView({
+                behavior: 'smooth', // Membuat animasi scroll menjadi halus
+                block: 'nearest',   // Scroll secukupnya agar elemen terlihat
+            });
+        }
+    }, [currentIndex]);
+    useEffect(() => {
         setCurrentIndex(initialIndex);
     }, [initialIndex, isOpen]);
 
