@@ -72,8 +72,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 !isDisableNavbar &&
                 <MobileNavBar />
             }
-            <div className='hidden md:block border-t border-[#238744]  bg-white'>
-                <div className='border-b border-[#238744] py-4'>
+            <div className='hidden md:block border-t border-[#dddddd]  bg-white'>
+                <div className='border-b border-[#dddddd] py-4'>
                     <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] '>
                         <InfoZukses />
                     </div>
@@ -94,7 +94,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                     </main>
 
                 </div>
-                <div className="border-t border-[#238744] py-4 bg-[#238744] text-white">
+                <div className="border-t border-[#ddddddd] py-4 bg-[#238744] text-white">
                     <p className="text-center text-[15px] font-semibold" style={{
                         lineHeight:"22px",
                         letterSpacing:"-0.04em"
