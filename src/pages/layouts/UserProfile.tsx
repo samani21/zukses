@@ -2,7 +2,7 @@
 import Delivery from "components/Delivery";
 import Header from "components/Header";
 import Payment from "components/Payment";
-import SiteFooter from "components/SiteFooter";
+import SiteFooter from "components/CategoryFooter";
 import DesktopSidebar from "components/userProfile/DesktopSidebar";
 interface Payments {
     id: number;
