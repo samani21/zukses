@@ -241,7 +241,6 @@ const Header = () => {
     return (
         <>
             <header className="h-[60px] md:h-[104px] text-white sticky top-0 z-40 bg-white md:border-b border-[#EEEEEE]">
-                {/* --- Tampilan Desktop --- */}
                 <div className="hidden md:block">
                     <div className="flex flex-col">
                         <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[30px]">
@@ -284,23 +283,17 @@ const Header = () => {
                                                 <div className="relative inline-block"><button className="p-2 rounded-md pr-0"><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
                                                 <div className="relative inline-block"><button className="p-2 rounded-md pr-0"><img src='/icon/message.svg' width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
 
-                                                {/* ================================================================== */}
-                                                {/* == KUNCI UTAMA: Event handler diletakkan di DIV PEMBUNGKUS ini == */}
-                                                {/* ================================================================== */}
                                                 <div
                                                     className="relative inline-block z-50"
                                                     onMouseEnter={handleMouseEnter}
                                                     onMouseLeave={handleMouseLeave}
                                                 >
-                                                    {/* Tombol Icon Keranjang */}
                                                     <button className="p-2 rounded-md pr-0" onClick={() => router.push('/cart')}>
                                                         <img src="/icon/shopping-cart.svg" width={25} />
                                                     </button>
                                                     <span onClick={() => router.push('/cart')} className="absolute bottom-5 left-4 bg-red-500 px-2 text-[14px] rounded-[10px] border border-white font-semibold cursor-pointer">
                                                         {totalCartItems}
                                                     </span>
-
-                                                    {/* Popup Cart & Overlay di dalam wrapper ini */}
                                                     {isCartPopupVisible && (
                                                         <AnimatePresence>
                                                             <CartPopup items={mockCartItems} totalItems={totalCartItems} />

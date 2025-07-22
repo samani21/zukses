@@ -199,7 +199,7 @@ const ShoppingCartPage: React.FC = () => {
                 </div>
                 <Heart className='w-[15px] text-[#333333]' />
             </div>
-            <div className=" md:relative min-h-screen px-2 mb-24 md:mb-0 md:px-40">
+            <div className=" md:relative min-h-screen px-2 mb-24 container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
                 <div className="container mx-auto mt-4">
                     <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.1)] border border-[#DCDCDC] mb-4 hidden md:block'>
                         <p className='text-[#7952B3] text-[20px] font-bold p-6 border-b border-[#DDDDDD]'>Keranjang Belanja</p>

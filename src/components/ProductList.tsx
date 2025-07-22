@@ -60,12 +60,12 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         }}
                     >
                         <div className='absolute p-2 flex flex-col space-y-1'>
-                            <button className='bg-[#F0E65F] rounded-[5px] p-1 text-[10px] text-black' style={{
+                            <button className='bg-[#F7C800] rounded-[5px] p-1 text-[10px] font-semibold text-black' style={{
                                 letterSpacing: "-0.04em"
                             }}>
                                 Gratis Ongkir
                             </button>
-                            <button className='bg-[#CFE3BE] rounded-[5px] p-1 text-[10px] text-black' style={{
+                            <button className='bg-[#3EA65A] rounded-[5px] p-1 text-[10px] text-white font-semibold' style={{
                                 letterSpacing: "-0.04em"
                             }}>
                                 Voucher Toko
