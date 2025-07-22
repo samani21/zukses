@@ -54,7 +54,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
                         <img src={item.image} alt={item.name} className="w-[47px] h-[47px] object-cover mr-0" />
                         <div className="flex-grow">
                             <p className="text-[12px] font-[500] text-[#111111] line-clamp-2" title={item.name} style={{
-                                lineHeight: "121%"
+                                lineHeight: "123%"
                             }}>{item.name}</p>
                             <p className="text-[12px] text-[#333333] mt-0.5">{item.variant}</p>
                         </div>
@@ -296,7 +296,7 @@ const Header = () => {
                                                     <button className="p-2 rounded-md pr-0" onClick={() => router.push('/cart')}>
                                                         <img src="/icon/shopping-cart.svg" width={25} />
                                                     </button>
-                                                    <span onClick={() => router.push('/cart')} className="absolute bottom-5 left-5 bg-red-500 px-1 text-[10px] rounded-[5px] border border-white font-semibold cursor-pointer">
+                                                    <span onClick={() => router.push('/cart')} className="absolute bottom-5 left-4 bg-red-500 px-2 text-[14px] rounded-[10px] border border-white font-semibold cursor-pointer">
                                                         {totalCartItems}
                                                     </span>
 
