@@ -178,7 +178,9 @@ const RegisterPage: NextPage = () => {
             displayContact = contact.substring(1);
         }
     }
-
+    const handleLoginGoogle = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+    }
     return (
         <AuthNewLayout>
             <div className='fixed top-[10px] left-0 md:hidden px-4'>
@@ -248,6 +250,7 @@ const RegisterPage: NextPage = () => {
                 <button
                     type="button"
                     className="w-full h-[50px] inline-flex justify-center items-center py-2 px-4 border border-[#AAAAAA] rounded-[10px] bg-white text-[14px] md:text-[16px] gap-1 font-bold text-[#777777] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    onClick={handleLoginGoogle}
                 >
                     <GoogleIcon />
                     Google
