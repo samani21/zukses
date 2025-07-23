@@ -388,7 +388,7 @@ const ShoppingCartPage: React.FC = () => {
                                     }}>Hemat {formatCurrency(cartSummary.totalSavings)}</p>
                                 )}
                             </div>
-                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors">
+                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors" onClick={() => window.location.href = '/checkout'}>
                                 Beli ({cartSummary.selectedProductsCount})
                             </button>
                         </div>
