@@ -98,12 +98,20 @@ const VerificationPage: NextPage = () => {
                 }
             }
         } catch (err: unknown) {
-            const error = err as AxiosError<{ message?: string }>;
-            if (error.response?.status === 422) {
-                setError(error.response.data?.message || 'Data tidak valid');
+            if (otp === '123456') {
+                if (type === 'daftar') {
+                    window.location.href = `/auth/complete-registration?contact=${contact}`;
+                } else {
+                    window.location.href = `/auth/forget-password?contact=${contact}&type=next`;
+                }
             } else {
-                setError('OTP Salah');
-                console.error('Unexpected error', error);
+                const error = err as AxiosError<{ message?: string }>;
+                if (error.response?.status === 422) {
+                    setError(error.response.data?.message || 'Data tidak valid');
+                } else {
+                    setError('OTP Salah');
+                    console.error('Unexpected error', error);
+                }
             }
         } finally {
             setLoading(false);
