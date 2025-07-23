@@ -1,9 +1,11 @@
-import { MapPin, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { MapPin, ChevronDown, CheckCircle2, Minus, Plus, X } from 'lucide-react';
+import MainLayout from 'pages/layouts/MainLayout';
 import type { FC, ReactNode, RefObject } from 'react';
 import { useState, useMemo, useEffect, useRef } from 'react';
 
 // --- INTERFACES & TYPE DEFINITIONS ---
 interface Address {
+    id: string;
     name: string;
     phone: string;
     street: string;
@@ -64,22 +66,44 @@ const formatCurrency = (amount: number) => {
 
 
 // --- MOCK DATA ---
-const initialUserAddress: Address = {
-    name: "Andi Gustisari",
-    phone: "(+62) 81292651600",
-    street: "Jl. rajawali 1 lorong 10 ( samping masjid Nurul Ilham lette belok kiri mentok)",
-    city: "KOTA MAKASSAR - MARISO",
-    province: "SULAWESI SELATAN",
-    postalCode: "90123",
-    isPrimary: true,
-};
+const allUserAddresses: Address[] = [
+    {
+        id: 'addr1',
+        name: "Andi Gustisari",
+        phone: "(+62) 812 1234 1600",
+        street: "Jl. rajawali 1 lorong 10 ( samping masjid Nurul Ilham lette belok kiri mentok)",
+        city: "MARISO",
+        province: "KOTA MAKASSAR, SULAWESI SELATAN",
+        postalCode: "90123",
+        isPrimary: true,
+    },
+    {
+        id: 'addr2',
+        name: "Andi Astutisari",
+        phone: "(+62) 812 2345 2121",
+        street: "Jalan bajiminasa 2 dalam No.71 (belakang masjid Nurul iman Tamarunang)",
+        city: "MARISO",
+        province: "KOTA MAKASSAR, SULAWESI SELATAN",
+        postalCode: "90126",
+        isPrimary: false,
+    },
+    {
+        id: 'addr3',
+        name: "Sulastri",
+        phone: "(+62) 812 2222 2344",
+        street: "Bumi Harapan, Jalan Jend Sudirman, Bumi Harapan, Bacukiki Barat (Belakang BOR PDAM)",
+        city: "BACUKIKI BARAT",
+        province: "KOTA PAREPARE, SULAWESI SELATAN",
+        postalCode: "91123",
+        isPrimary: false,
+    }
+];
 
 const allShippingOptions: ShippingOption[] = [
-    { id: 'sicepat-reg', courierName: 'SiCepat', serviceName: 'SIUNTUNG', price: 47000, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/S/sicepat-ekspres-logo-F2520A3446-seeklogo.com.png' },
-    { id: 'jne-reg', courierName: 'JNE', serviceName: 'REG', price: 56000, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/J/jne-logo-157D232141-seeklogo.com.png' },
-    { id: 'jnt-reg', courierName: 'J&T', serviceName: 'Regular', price: 47000, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/J/j-t-express-logo-5352A7B318-seeklogo.com.png' },
-    { id: 'pos-reg', courierName: 'POS', serviceName: 'Regular', price: 52500, range: 'Reguler', logoUrl: 'https://seeklogo.com/images/P/pos-indonesia-logo-4E932356D4-seeklogo.com.png' },
-    { id: 'jne-nd', courierName: 'JNE', serviceName: 'YES', price: 89000, range: 'Next Day', logoUrl: 'https://seeklogo.com/images/J/jne-logo-157D232141-seeklogo.com.png' },
+    { id: 'sicepat-reg', courierName: 'SiCepat', serviceName: 'SIUNTUNG', price: 47000, range: 'Reguler', logoUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnQ_u7_qEjguu0ZqqKrXJKRfi4PHRc5fLw0aCXnYwf-yygcnoXw0yDcIo8A-J_wwQyFH1cSZX9TnLcqOKsjCnKiKmBxkoXvznGOYsY-y6qvVHQSgKKA2qSGraF6x1xRFlP12sqb3ZvUDXUNmV1rSZvePdhXUp98t_uBBBogyC8efTM-KIX-zqNtgdO/s320/GKL5_SiCepat%20Express%20-%20Koleksilogo.com.jpg' },
+    { id: 'jne-reg', courierName: 'JNE', serviceName: 'REG', price: 56000, range: 'Reguler', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/92/New_Logo_JNE.png' },
+    { id: 'jnt-reg', courierName: 'J&T', serviceName: 'Regular', price: 47000, range: 'Reguler', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/J%26T_Express_logo.svg/972px-J%26T_Express_logo.svg.png' },
+    { id: 'pos-reg', courierName: 'POS', serviceName: 'Regular', price: 52500, range: 'Reguler', logoUrl: 'https://www.posindonesia.co.id/_next/image?url=https%3A%2F%2Fadmin-piol.posindonesia.co.id%2Fmedia%2Fpages-pos-reguler.png&w=1920&q=75   ' },
 ];
 
 const initialStores: Store[] = [
@@ -87,8 +111,18 @@ const initialStores: Store[] = [
         id: 'store-abc',
         name: 'Toko ABC',
         products: [
-            { id: 1, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/80x80/e2e8f0/333?text=Produk', originalPrice: 350000, discountedPrice: 290000, quantity: 1, codAvailable: true, vouchers: ['Diskon Terpakai 25%', 'Gratis Ongkir Rp10.000'] },
-            { id: 2, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/80x80/e2e8f0/333?text=Produk', originalPrice: 350000, discountedPrice: 290000, quantity: 1, codAvailable: true, vouchers: ['Voucher Toko Rp.20.000'] },
+            {
+                id: 1,
+                name: 'Rak Bambu Dapur Multifungsi 2 susun',
+                variant: 'Warna Putih Ukuran Sedang',
+                imageUrl: '/image/image 13.png',
+                originalPrice: 350000,
+                discountedPrice: 290000,
+                quantity: 1,
+                codAvailable: true,
+                vouchers: ['Diskon Terpakai 25%', 'Gratis Ongkir Rp10.000']
+            },
+            { id: 2, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: '/image/image 13.png', originalPrice: 350000, discountedPrice: 290000, quantity: 1, codAvailable: true, vouchers: ['Voucher Toko Rp.20.000'] },
         ],
         shippingOptions: allShippingOptions,
         selectedShipping: allShippingOptions[0]
@@ -97,12 +131,93 @@ const initialStores: Store[] = [
         id: 'store-cde',
         name: 'Toko CDE',
         products: [
-            { id: 3, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: 'https://placehold.co/80x80/333/f0f0f0?text=Produk', originalPrice: 150000, discountedPrice: 120000, quantity: 1, codAvailable: true, vouchers: ['Gratis Ongkir Rp10.000'] },
+            { id: 3, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: '/image/image 13.png', originalPrice: 150000, discountedPrice: 120000, quantity: 1, codAvailable: true, vouchers: ['Gratis Ongkir Rp10.000'] },
+            { id: 4, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: '/image/image 13.png', originalPrice: 150000, discountedPrice: 120000, quantity: 1, codAvailable: true, vouchers: ['Gratis Ongkir Rp10.000'] },
         ],
         shippingOptions: allShippingOptions.filter(opt => opt.courierName !== 'POS'), // Example of a store with fewer options
         selectedShipping: allShippingOptions[0]
     }
 ];
+interface AddressModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onApply: (selectedAddress: Address) => void;
+    addresses: Address[];
+    currentAddressId: string;
+}
+
+const AddressModal: FC<AddressModalProps> = ({ isOpen, onClose, onApply, addresses, currentAddressId }) => {
+    const [selectedId, setSelectedId] = useState(currentAddressId);
+
+    if (!isOpen) return null;
+
+    const handleApplyClick = () => {
+        const newAddress = addresses.find(addr => addr.id === selectedId);
+        if (newAddress) {
+            onApply(newAddress);
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-white shadow-xl w-full max-w-2xl">
+                {/* Header Modal */}
+                <div className="flex justify-between items-center p-6">
+                    <h3 className="text-[20px] text-[#333333] font-bold">Ubah Alamat</h3>
+                    <button onClick={onClose} className="text-[#555555] hover:text-gray-800">
+                        <X size={20} />
+                    </button>
+                </div>
+
+                {/* Body Modal */}
+                <div className="space-y-3 max-h-[60vh] overflow-y-auto no-scrollbar">
+                    <div className='flex justify-end px-4'>
+                        <button className="text-center bg-[#238744] py-3 px-4 text-[14px] font-semibold text-white font-bold rounded-[10px] hover:bg-green-500 transition">
+                            Tambah Alamat
+                        </button>
+                    </div>
+                    {addresses.map(address => (
+                        <div key={address.id} className="border-b border-[#BBBBBB] p-6">
+                            <label className="flex items-start cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="address"
+                                    className="mt-1 mr-4 accent-[#660077] w-[20px] h-[20px]"
+                                    checked={selectedId === address.id}
+                                    onChange={() => setSelectedId(address.id)}
+                                />
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <div className='flex'>
+                                            <p className="font-bold text-[#333333] text-[15xpx] line-clamp-1 w-[140px]">
+                                                {address.name}</p>
+                                            <p className=''>{address.phone}</p>
+                                        </div>
+                                        <a href="#" className="text-[#F77000]  w-1/8 font-bold text-[15px] text-end text-sm hover:underline">Ubah</a>
+                                    </div>
+                                    <p className="text-[#333333] text-[15px] mt-1" style={{
+                                        letterSpacing: "-0.04em",
+                                        lineHeight: '121%'
+                                    }}>{address.street}, {address.city}, {address.province}, ID {address.postalCode}</p>
+                                </div>
+                            </label>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Footer Modal */}
+                <div className="flex justify-end items-center p-4 space-x-3">
+                    <button onClick={onClose} className="px-6 py-2 text-[#333333] text-[14px] font-semibold rounded-[10px] border border-[#AAAAAA] hover:bg-gray-100">
+                        Batalkan
+                    </button>
+                    <button onClick={handleApplyClick} className="px-6 py-2 bg-[#4A52B2] text-[14px] font-semibold  text-white rounded-md hover:bg-purple-700">
+                        Terapkan
+                    </button>
+                </div>
+            </div >
+        </div >
+    );
+};
 
 const useOutsideClick = (ref: RefObject<HTMLElement>, callback: () => void) => {
     useEffect(() => {
@@ -118,22 +233,30 @@ const useOutsideClick = (ref: RefObject<HTMLElement>, callback: () => void) => {
     }, [ref, callback]);
 };
 
-const CheckoutAddressCard: FC<{ address: Address }> = ({ address }) => (
-    <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 w-full">
+// Tambahkan onOpenModal ke props
+const CheckoutAddressCard: FC<{ address: Address; onOpenModal: () => void; }> = ({ address, onOpenModal }) => (
+    <div className="bg-white rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] p-4 sm:p-6 w-full border border-[#DCDCDC]">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
             <div className="flex-grow">
-                <div className="flex items-center mb-3">
-                    <MapPin className="w-5 h-5 text-purple-600 mr-3 flex-shrink-0" />
-                    <h2 className="text-lg font-bold text-gray-800">Alamat Pengiriman</h2>
+                <div className="flex items-center mb-3 gap-2">
+                    <MapPin className="w-[24px] h-[24px] text-purple-600 flex-shrink-0" />
+                    <h2 className="text-[20px] font-semibold text-[#7952B3]">Alamat Pengiriman</h2>
                 </div>
-                <div className="pl-8">
-                    <p className="font-semibold text-gray-700">{address.name} ({address.phone})</p>
-                    <p className="text-gray-500 text-sm mt-1">{address.street}, {address.city}, {address.province}, ID {address.postalCode}</p>
-                    {address.isPrimary && <span className="mt-2 inline-block bg-purple-100 text-purple-700 text-xs font-medium px-2.5 py-1 rounded-md">Alamat Utama</span>}
+                <div className="pl-2">
+                    <div className='flex justify-between items-start'>
+                        <div className='flex items-start gap-10'>
+                            <p className="font-semibold text-[#333333] text-[16px]">{address.name} {address.phone}</p>
+                            <div className='w-1/2'>
+                                <p className="text-[#333333] text-[16px]">{address.street}, {address.city}, {address.province}, ID {address.postalCode}</p>
+                                {address.isPrimary && <span className="mt-2 inline-block text-[#7952B3] text-[16px] font-bold">Alamat Utama</span>}
+                            </div>
+                        </div>
+                        {/* Ubah menjadi button dan tambahkan onClick */}
+                        <button onClick={onOpenModal} className='text-[16px] font-bold text-[#7952B3] hover:underline'>
+                            Ubah
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div className="pl-8 sm:pl-4 mt-4 sm:mt-0 flex-shrink-0">
-                <button className="text-purple-600 font-semibold hover:text-purple-800 transition-colors duration-200">Ubah</button>
             </div>
         </div>
     </div>
@@ -141,31 +264,97 @@ const CheckoutAddressCard: FC<{ address: Address }> = ({ address }) => (
 
 const QuantityStepper: FC<{ quantity: number; onUpdate: (newQuantity: number) => void; }> = ({ quantity, onUpdate }) => {
     return (
-        <div className="flex items-center rounded-md overflow-hidden border border-gray-300">
-            <button onClick={() => quantity > 1 && onUpdate(quantity - 1)} className="w-7 h-7 flex items-center justify-center text-lg bg-green-500 text-white hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed" disabled={quantity <= 1}>-</button>
-            <span className="w-10 h-7 flex items-center justify-center bg-white text-center text-sm font-medium">{quantity}</span>
-            <button onClick={() => onUpdate(quantity + 1)} className="w-7 h-7 flex items-center justify-center text-lg bg-green-500 text-white hover:bg-green-600">+</button>
+        // <div className="flex items-center rounded-md overflow-hidden border border-gray-300">
+        //     <button onClick={() => quantity > 1 && onUpdate(quantity - 1)} className="w-7 h-7 flex items-center justify-center text-lg bg-green-500 text-white hover:bg-green-600 disabled:bg-green-300 disabled:cursor-not-allowed" disabled={quantity <= 1}>-</button>
+        //     <span className="w-10 h-7 flex items-center justify-center bg-white text-center text-sm font-medium">{quantity}</span>
+        //     <button onClick={() => onUpdate(quantity + 1)} className="w-7 h-7 flex items-center justify-center text-lg bg-green-500 text-white hover:bg-green-600">+</button>
+        // </div>
+        <div className="col-span-6 md:col-span-2 flex items-center justify-center">
+            <div className="flex items-center border border-[#3EA65A] overflow-hidden">
+                <button className="h-8 w-8 flex items-center justify-center text-white bg-[#3EA65A] hover:bg-green-700 transition-colors" onClick={() => quantity > 1 && onUpdate(quantity - 1)}>
+                    <Minus className="h-4 w-4" />
+                </button>
+                <span className="px-4 text-center w-12 font-medium bg-white">{quantity}</span>
+                <button className="h-8 w-8 flex items-center justify-center text-white bg-[#3EA65A] hover:bg-green-700 transition-colors" onClick={() => onUpdate(quantity + 1)}>
+                    <Plus className="h-4 w-4" />
+                </button>
+            </div>
         </div>
     );
 };
 
 const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product) => void; onRemove: (productId: number) => void; }> = ({ product, onUpdate, onRemove }) => {
     return (
-        <div className="flex flex-col md:flex-row md:items-center py-4 space-y-4 md:space-y-0">
-            <div className="w-full md:w-5/12 flex items-start space-x-4">
-                <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded-md flex-shrink-0" onError={(e) => { e.currentTarget.src = 'https://placehold.co/80x80/e2e8f0/e2e8f0?text=Img'; }} />
-                <div className="flex-grow">
-                    <p className="font-semibold text-gray-800 text-sm leading-tight">{product.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{product.variant}</p>
-                    {product.codAvailable && <p className="text-xs text-orange-500 font-semibold mt-2">COD (Bayar ditempat)</p>}
-                    <div className="flex flex-wrap gap-1 mt-2">
+        // <div className="flex flex-col md:flex-row md:items-center py-4 space-y-4 md:space-y-0">
+        //     <div className="w-full md:w-5/12 flex items-start space-x-4">
+        //         <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded-md flex-shrink-0" onError={(e) => { e.currentTarget.src = 'https://placehold.co/80x80/e2e8f0/e2e8f0?text=Img'; }} />
+        //         <div className="flex-grow">
+        //             <p className="font-semibold text-gray-800 text-sm leading-tight">{product.name}</p>
+        //             <p className="text-xs text-gray-500 mt-1">{product.variant}</p>
+        //             {product.codAvailable && <p className="text-xs text-orange-500 font-semibold mt-2">COD (Bayar ditempat)</p>}
+        //             <div className="flex flex-wrap gap-1 mt-2">
+        //                 {product.vouchers?.map((voucher, index) => {
+        //                     const isVoucherToko = voucher.toLowerCase().includes('toko');
+        //                     const isGratisOngkir = voucher.toLowerCase().includes('ongkir');
+        //                     const bgColor = isVoucherToko ? 'bg-green-100' : isGratisOngkir ? 'bg-yellow-100' : 'bg-red-100';
+        //                     const textColor = isVoucherToko ? 'text-green-600' : isGratisOngkir ? 'text-yellow-700' : 'text-red-600';
+        //                     return (
+        //                         <span key={index} className={`text-xs font-semibold px-2 py-0.5 rounded ${bgColor} ${textColor}`}>
+        //                             {voucher}
+        //                         </span>
+        //                     );
+        //                 })}
+        //             </div>
+        //         </div>
+        //     </div>
+        //     <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center text-center">
+        //         <span className="md:hidden font-medium text-gray-600">Harga Satuan</span>
+        //         <div>
+        //             <p className="text-gray-800 font-semibold">{formatCurrency(product.discountedPrice)}</p>
+        //             <p className="line-through text-gray-400 text-xs">{formatCurrency(product.originalPrice)}</p>
+        //         </div>
+        //     </div>
+        //     <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center">
+        //         <span className="md:hidden font-medium text-gray-600">Kuantitas</span>
+        //         <QuantityStepper quantity={product.quantity} onUpdate={(newQuantity) => onUpdate({ ...product, quantity: newQuantity })} />
+        //     </div>
+        //     <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center text-center">
+        //         <span className="md:hidden font-medium text-gray-600">Total Harga</span>
+        //         <span className="text-red-500 font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
+        //     </div>
+        //     <div className="w-full md:w-1/12 flex justify-end">
+        //         <button onClick={() => onRemove(product.id)} className="text-red-500 hover:text-red-700 text-sm">Hapus</button>
+        //     </div>
+        // </div>
+        <div className="p-4 grid grid-cols-12 gap-4 items-center">
+            {/* Info Produk */}
+            <div className="col-span-12 md:col-span-5 flex items-start gap-4">
+                <img src={product.imageUrl} alt={product.name} className="w-[100px] h-[100px] object-cover border border-[#AAAAAA]" />
+                <div className="flex-1 space-y-2">
+                    <p className="text-[#333333] text-[16px] line-clamp-1 w-full" style={{
+                        lineHeight: "108%",
+                        letterSpacing: "-0.03em"
+                    }}>{product.name}</p>
+                    <p className="text-[#333333] text-[13px] line-clamp-1 w-full" style={{
+                        lineHeight: "108%",
+                        letterSpacing: "-0.04em"
+                    }}>{product.variant}</p>
+                    {/* Tags */}
+                    <span className="text-[#F77000] text-[14px] font-bold" style={{
+                        letterSpacing: "-0.04em",
+                        lineHeight: "121%"
+                    }}>COD (Bayar ditempat)</span>
+                    <div className="flex flex-wrap gap-2 mt-2" style={{
+                        letterSpacing: "-0.04em",
+                        lineHeight: "121%"
+                    }}>
                         {product.vouchers?.map((voucher, index) => {
                             const isVoucherToko = voucher.toLowerCase().includes('toko');
                             const isGratisOngkir = voucher.toLowerCase().includes('ongkir');
-                            const bgColor = isVoucherToko ? 'bg-green-100' : isGratisOngkir ? 'bg-yellow-100' : 'bg-red-100';
-                            const textColor = isVoucherToko ? 'text-green-600' : isGratisOngkir ? 'text-yellow-700' : 'text-red-600';
+                            const bgColor = isVoucherToko ? 'bg-[#3EA65A]' : isGratisOngkir ? 'bg-[#F7C800]' : 'bg-[#F74F4F]';
+                            const textColor = isVoucherToko ? 'text-white' : isGratisOngkir ? 'text-balck' : 'text-white';
                             return (
-                                <span key={index} className={`text-xs font-semibold px-2 py-0.5 rounded ${bgColor} ${textColor}`}>
+                                <span key={index} className={`text-[12px] font-semibold px-2 py-2 rounded ${bgColor} ${textColor}`}>
                                     {voucher}
                                 </span>
                             );
@@ -173,23 +362,37 @@ const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product)
                     </div>
                 </div>
             </div>
-            <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center text-center">
-                <span className="md:hidden font-medium text-gray-600">Harga Satuan</span>
-                <div>
-                    <p className="text-gray-800 font-semibold">{formatCurrency(product.discountedPrice)}</p>
-                    <p className="line-through text-gray-400 text-xs">{formatCurrency(product.originalPrice)}</p>
-                </div>
+
+            {/* Harga Satuan */}
+            <div className="col-span-6 md:col-span-2 text-center" style={{
+                lineHeight: "108%",
+                letterSpacing: "-0.02em"
+            }}>
+                <p className="text-[#333333] font-bold text-right text-[16px]">{formatCurrency(product.discountedPrice)}</p>
+                <p className="text-[#333333] text-right line-through text-[14px]">{formatCurrency(product.originalPrice)}</p>
             </div>
-            <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center">
-                <span className="md:hidden font-medium text-gray-600">Kuantitas</span>
+
+            {/* Kuantitas */}
+            <div className="col-span-6 md:col-span-2 flex items-center justify-center">
                 <QuantityStepper quantity={product.quantity} onUpdate={(newQuantity) => onUpdate({ ...product, quantity: newQuantity })} />
             </div>
-            <div className="w-full md:w-2/12 flex justify-between md:justify-center items-center text-center">
-                <span className="md:hidden font-medium text-gray-600">Total Harga</span>
-                <span className="text-red-500 font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
+
+            {/* Total Harga Produk */}
+            <div className="col-span-6 md:col-span-2 text-center" style={{
+                lineHeight: '108%',
+                letterSpacing: "-0.02em"
+            }}>
+                <span className="text-[#E33947] text-[18px] text-right font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
             </div>
-            <div className="w-full md:w-1/12 flex justify-end">
-                <button onClick={() => onRemove(product.id)} className="text-red-500 hover:text-red-700 text-sm">Hapus</button>
+
+            {/* Aksi */}
+            <div className="col-span-6 md:col-span-1 flex justify-center" style={{
+                lineHeight: '108%',
+                letterSpacing: "-0.02em"
+            }}>
+                <button className="text-[#E33947] text-[14px] font-semibold hover:underline" onClick={() => onRemove(product.id)}>
+                    Hapus
+                </button>
             </div>
         </div>
     );
@@ -200,19 +403,22 @@ const CustomCourierSelect: FC<{
     selected: ShippingOption;
     onSelect: (option: ShippingOption) => void;
     placeholder?: string;
-}> = ({ options, selected, onSelect, placeholder = "Pilih Kurir" }) => {
+    setPriceShipping: (value: number) => void;
+}> = ({ options, selected, onSelect, placeholder = "Pilih Kurir", setPriceShipping }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     useOutsideClick(dropdownRef as RefObject<HTMLElement>, () => setIsOpen(false));
 
     const handleSelect = (option: ShippingOption) => {
         onSelect(option);
+        setPriceShipping(option?.price)
         setIsOpen(false);
     };
 
     return (
-        <div className="relative w-full" ref={dropdownRef}>
-            <button onClick={() => setIsOpen(!isOpen)} className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-md py-2 px-4 text-left">
+        // ✅ FIX: Tambahkan z-index di sini untuk mengangkat stacking context komponen
+        <div className="relative w-full z-20" ref={dropdownRef}>
+            <button onClick={() => setIsOpen(!isOpen)} className="w-full h-[50px] flex items-center justify-between bg-white border border-gray-300 rounded-md py-2 px-4 text-left">
                 {selected ? (
                     <div className="flex items-center space-x-3">
                         <img src={selected.logoUrl} alt={selected.courierName} className="h-5 w-auto object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
@@ -225,6 +431,7 @@ const CustomCourierSelect: FC<{
             </button>
 
             {isOpen && (
+                // z-index di sini memastikan menu berada di atas tombol dalam komponen yang sama
                 <div className="absolute z-10 top-full mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                     {options.length > 0 ? options.map(option => (
                         <div key={option.id} onClick={() => handleSelect(option)} className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer">
@@ -246,7 +453,7 @@ const CustomCourierSelect: FC<{
 const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: number, updatedProduct: Product) => void; onProductRemove: (productId: number) => void; onShippingChange: (newShipping: ShippingOption) => void; }> = ({ storeData, onProductUpdate, onProductRemove, onShippingChange }) => {
     const productSubtotal = storeData.products.reduce((acc, p) => acc + (p.discountedPrice * p.quantity), 0);
     const totalProducts = storeData.products.reduce((acc, p) => acc + p.quantity, 0);
-
+    const [priceShipping, setPriceShipping] = useState<number>(0)
     const [selectedRange, setSelectedRange] = useState<ShippingRange>(storeData.selectedShipping.range);
 
     const availableRanges = useMemo(() => {
@@ -258,12 +465,10 @@ const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: num
         return storeData.shippingOptions.filter(opt => opt.range === selectedRange);
     }, [selectedRange, storeData.shippingOptions]);
 
-    // ✅ FIX 2: Added direct event handler and removed problematic useEffect
     const handleRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newRange = e.target.value as ShippingRange;
         setSelectedRange(newRange);
 
-        // Directly update selected courier to the first option of the new range
         const newOptionsForRange = storeData.shippingOptions.filter(opt => opt.range === newRange);
         if (newOptionsForRange.length > 0) {
             onShippingChange(newOptionsForRange[0]);
@@ -271,46 +476,69 @@ const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: num
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-md w-full overflow-hidden">
-            <div className="p-4 sm:px-6 border-b border-gray-200">
-                <h3 className="font-bold text-gray-800">{storeData.name}</h3>
-            </div>
-            <div className="px-4 sm:px-6">
-                <div className="hidden md:flex items-center text-center text-sm font-semibold text-gray-500 pt-4 pb-2 border-b border-gray-200">
-                    <div className="w-5/12 text-left">Produk</div>
-                    <div className="w-2/12">Harga Satuan</div>
-                    <div className="w-2/12">Kuantitas</div>
-                    <div className="w-2/12">Total Harga</div>
-                    <div className="w-1/12 text-right">Aksi</div>
+        // ✅ FIX: Kelas `overflow-hidden` telah dihapus dari div ini
+        <div className="w-full">
+            {/* ✅ FIX: Kelas `overflow-hidden` juga dihapus dari div pembungkus ini */}
+            <div className="">
+                {/* Header Toko */}
+                <div className="p-4 border-b border-gray-200 grid grid-cols-12 gap-4 items-center">
+                    <div className='col-span-12 md:col-span-5 flex items-start gap-4'>
+                        <span className="font-semibold text-gray-800">{storeData.name}</span>
+                    </div>
+                    <div className="col-span-6 md:col-span-2 text-center text-[16px] text-right font-semibold text-[#333333]">
+                        Harga Satuan
+                    </div>
+                    <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333]">
+                        Kuantitas
+                    </div>
+                    <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333]">
+                        Total Harga
+                    </div>
+                    <div className="col-span-6 md:col-span-1 text-center text-[16px] font-semibold text-[#333333]">
+                        Aksi
+                    </div>
                 </div>
+
+                {/* Produk dalam Toko */}
                 <div className="divide-y divide-gray-200">
                     {storeData.products.map(product => <ProductItemRow key={product.id} product={product} onUpdate={(p) => onProductUpdate(product.id, p)} onRemove={onProductRemove} />)}
                 </div>
             </div>
             <div className="flex justify-end items-center space-x-4 p-4 sm:px-6 border-t border-gray-200">
-                <p className="text-sm text-gray-600">Total ({totalProducts} Produk)</p>
-                <p className="font-bold text-xl text-red-500">{formatCurrency(productSubtotal)}</p>
+                <p className="text-[16px] font-bold text-[#333333]">Total ({totalProducts} Produk)</p>
+                <p className="font-bold text-[25px] text-[#E75864]" style={{
+                    lineHeight: "108%",
+                    letterSpacing: "-0.04em"
+                }}>{formatCurrency(productSubtotal)}</p>
             </div>
-            <div className="p-4 sm:p-6 bg-gray-50/70 border-t border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                    <div className="relative md:col-span-1">
-                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Pilih Rentang Pengiriman</label>
-                        <select
-                            value={selectedRange}
-                            onChange={handleRangeChange} // Use the new handler
-                            className="w-full appearance-none bg-white border border-gray-300 rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
-                            {availableRanges.map(range => <option key={range} value={range}>{range} ({range === 'Reguler' ? '1-3 hari' : range === 'Next Day' ? '1 hari' : 'Beberapa jam'})</option>)}
-                        </select>
-                        <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 bottom-2.5 pointer-events-none" />
+            <div className='flex bg-gray-50/70 border-t border-gray-200'>
+                <div className="p-4 sm:p-6 w-full">
+                    <div className='font-bold text-[#7952B3] text-[20px]'>Pengiriman</div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center mt-4">
+                        <div className="relative md:col-span-1">
+                            <label className="text-[16px] font-bold text-[#333333] mb-2 block">Pilih Pengiriman :</label>
+                            <select
+                                value={selectedRange}
+                                onChange={handleRangeChange}
+                                className="w-full h-[50px] appearance-none bg-white border border-gray-300 rounded-md py-2 px-4 pr-8 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
+                                {availableRanges.map(range => <option key={range} value={range}>{range} ({range === 'Reguler' ? '1-3 hari' : range === 'Next Day' ? '1 hari' : 'Beberapa jam'})</option>)}
+                            </select>
+                            <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 bottom-2.5 pointer-events-none" />
+                        </div>
+                        <div className="relative md:col-span-2">
+                            {/* ✅ FIX: Div wrapper yang tidak perlu sudah dihapus dari sini */}
+                            <div className='mt-7'>
+                                <CustomCourierSelect options={filteredOptions} selected={storeData.selectedShipping} onSelect={onShippingChange} setPriceShipping={setPriceShipping} />
+                            </div>
+                        </div>
                     </div>
-                    <div className="relative md:col-span-2">
-                        <label className="text-sm font-semibold text-gray-700 mb-2 block">Pilih Kurir</label>
-                        <CustomCourierSelect options={filteredOptions} selected={storeData.selectedShipping} onSelect={onShippingChange} />
+                    <div className="mt-6">
+                        <label htmlFor={`note-${storeData.id}`} className="text-[16px] font-bold text-[#333333] mb-2 block">Tambah Catatan Pesanan</label>
+                        <input type="text" id={`note-${storeData.id}`} className="w-full h-[50px] border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Contoh: Packing lebih aman" />
                     </div>
                 </div>
-                <div className="mt-6">
-                    <label htmlFor={`note-${storeData.id}`} className="text-sm font-medium text-gray-700 mb-1 block">Tambah Catatan Pesanan</label>
-                    <input type="text" id={`note-${storeData.id}`} className="w-full border border-gray-300 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Contoh: Packing lebih aman" />
+                <div className='py-22 w-1/4 text-right px-8 text-[22px] font-bold text-[#333333]'>
+                    {priceShipping > 0 ? formatCurrency(priceShipping) : ""}
                 </div>
             </div>
         </div>
@@ -462,6 +690,17 @@ export default function CheckoutPage() {
     const [stores, setStores] = useState<Store[]>(initialStores);
     const [finalOrder, setFinalOrder] = useState<OrderDetails | null>(null);
 
+    // --- STATE UNTUK ALAMAT & MODAL ---
+    const initialUserAddress = allUserAddresses.find(addr => addr.isPrimary) || allUserAddresses[0];
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [currentAddress, setCurrentAddress] = useState<Address>(initialUserAddress);
+    // --- ---
+
+    const handleAddressChange = (newAddress: Address) => {
+        setCurrentAddress(newAddress);
+        setIsAddressModalOpen(false); // Tutup modal setelah menerapkan
+    };
+
     const handleProductUpdate = (storeId: string, productId: number, updatedProduct: Product) => {
         setStores(currentStores => currentStores.map(store =>
             store.id === storeId
@@ -510,42 +749,58 @@ export default function CheckoutPage() {
     }, [stores]);
 
     return (
-        <div className="bg-gray-50 min-h-screen font-sans p-4 sm:p-6 lg:p-8">
-            <div className="max-w-4xl mx-auto">
-                {view === 'checkout' ? (
-                    <>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">Checkout</h1>
-                        <div className="space-y-6">
-                            <CheckoutAddressCard address={initialUserAddress} />
-
-                            {stores.map(store => (
-                                <StoreCheckoutCard
-                                    key={store.id}
-                                    storeData={store}
-                                    onProductUpdate={(productId, p) => handleProductUpdate(store.id, productId, p)}
-                                    onProductRemove={(productId) => handleProductRemove(store.id, productId)}
-                                    onShippingChange={(s) => handleShippingChange(store.id, s)}
+        <MainLayout>
+            <div className="container mx-auto py-8 lg:w-[1200px] space-y-4">
+                <div className=" mx-auto">
+                    {view === 'checkout' ? (
+                        <>
+                            <h1 className="text-[#7952B3] sm:text-3xl font-bold text-[25px] mb-6">Checkout</h1>
+                            <div className="space-y-6 ">
+                                <CheckoutAddressCard
+                                    address={currentAddress}
+                                    onOpenModal={() => setIsAddressModalOpen(true)}
                                 />
-                            ))}
 
-                            {stores.length > 0 ? (
-                                <PaymentAndSummaryCard
-                                    productSubtotal={productSubtotal}
-                                    shippingSubtotal={shippingSubtotal}
-                                    onCreateOrder={handleCreateOrder}
-                                />
-                            ) : (
-                                <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
-                                    <h3 className="text-lg font-semibold">Keranjang Anda kosong</h3>
-                                    <p className="mt-2">Silakan tambahkan produk untuk melanjutkan.</p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                ) : finalOrder && (
-                    <PaymentConfirmationPage orderDetails={finalOrder} onBack={handleBackToHome} />
-                )}
+                                {stores.map(store => (
+                                    <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
+                                        <StoreCheckoutCard
+                                            key={store.id}
+                                            storeData={store}
+                                            onProductUpdate={(productId, p) => handleProductUpdate(store.id, productId, p)}
+                                            onProductRemove={(productId) => handleProductRemove(store.id, productId)}
+                                            onShippingChange={(s) => handleShippingChange(store.id, s)}
+                                        />
+                                    </div>
+                                ))}
+
+                                {stores.length > 0 ? (
+                                    <PaymentAndSummaryCard
+                                        productSubtotal={productSubtotal}
+                                        shippingSubtotal={shippingSubtotal}
+                                        onCreateOrder={handleCreateOrder}
+                                    />
+                                ) : (
+                                    <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
+                                        <h3 className="text-lg font-semibold">Keranjang Anda kosong</h3>
+                                        <p className="mt-2">Silakan tambahkan produk untuk melanjutkan.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    ) : finalOrder && (
+                        <PaymentConfirmationPage orderDetails={finalOrder} onBack={handleBackToHome} />
+                    )}
+                </div>
             </div>
-        </div>
+
+            {/* --- RENDER MODAL DI SINI --- */}
+            <AddressModal
+                isOpen={isAddressModalOpen}
+                onClose={() => setIsAddressModalOpen(false)}
+                onApply={handleAddressChange}
+                addresses={allUserAddresses}
+                currentAddressId={currentAddress.id}
+            />
+        </MainLayout>
     );
 }
