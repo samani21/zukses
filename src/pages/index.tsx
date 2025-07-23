@@ -10,6 +10,7 @@ import { Response } from 'services/api/types';
 import { Product } from 'components/types/Product';
 import Loading from 'components/my-store/addProduct/Loading';
 import Welcome from 'components/Welcome';
+import { useRouter } from 'next/router';
 interface Banner {
   id: number;
   src: string;
@@ -27,6 +28,43 @@ const Home: React.FC<HomeLayoutProps> = () => {
   const [selectedCategory, setSelectedCategory] = useState('Semua');
   const [products, setProducts] = useState<Product[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const { query, isReady } = router;
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    if (query.token) {
+      const email = query.email as string;
+      const name = query.name as string;
+      const username = query.username as string;
+      const whatsapp = query.whatsapp as string;
+      const image = query.image as string;
+      const is_active = parseInt(query.is_active as string);
+      const role = query.role as string;
+      const id = parseInt(query.id as string);
+      const token = query.token as string;
+
+      const data = {
+        name,
+        username,
+        email,
+        role,
+        id,
+        whatsapp,
+        is_active,
+        image
+      };
+
+      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('token', token ?? '');
+
+      // Optional redirect to clean URL
+      router.replace('/', undefined, { shallow: true }).then(() => {
+        window.location.reload(); // ⬅️ ini yang bikin halaman refresh
+      });
+    }
+  }, [isReady, query, router]);
   useEffect(() => {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
@@ -35,7 +73,6 @@ const Home: React.FC<HomeLayoutProps> = () => {
     const fetchedUser = getUserInfo();
     setUser(fetchedUser);
   }, []);
-
   const sampleBanners: Banner[] = [
     { id: 1, src: '/image/banner1.webp', alt: 'Banner 1' },
     { id: 2, src: '/image/banner2.jpg', alt: 'Banner 2' },

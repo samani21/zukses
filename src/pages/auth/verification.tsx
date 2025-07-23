@@ -1,8 +1,11 @@
+import { AxiosError } from 'axios';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 import { useCallback, useEffect, useState } from 'react';
 import { OtpInput } from 'reactjs-otp-input';
+import Post from 'services/api/Post';
+import { RegisterResponse } from 'services/api/types';
 import { theme } from 'styles/theme';
 
 const VerificationPage: NextPage = () => {
@@ -77,26 +80,63 @@ const VerificationPage: NextPage = () => {
     const handleSubmit = useCallback(async () => {
         setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            setLoading(true);
 
-        if (otp === '123456') {
-            if (type === 'daftar') {
-                window.location.href = `/auth-new/complete-registration?contact=${contact}`;
-            } else {
-                window.location.href = `/auth-new/forget-password?contact=${contact}&type=next`;
+            const formData = {
+                contact,
+                otp,
+            };
+
+            const res = await Post<RegisterResponse>('zukses', 'otp-verify', formData);
+
+            if (res?.data?.status === 'success') {
+                if (type === 'daftar') {
+                    window.location.href = `/auth/complete-registration?contact=${contact}`;
+                } else {
+                    window.location.href = `/auth/forget-password?contact=${contact}&type=next`;
+                }
             }
-        } else {
-            setError('OTP Salah');
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
+            } else {
+                setError('OTP Salah');
+                console.error('Unexpected error', error);
+            }
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     }, [otp, contact, type]);
 
     const handleResend = async () => {
         setLoading(true);
-        // Simulasi pengiriman ulang
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setCounter(90);
-        setLoading(false);
+        try {
+            setLoading(true);
+
+            const formData = {
+                contact,
+            };
+
+            const res = await Post<RegisterResponse>('zukses', 'auth/check-account', formData);
+
+            if (res?.data?.status === 'success') {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                setCounter(90);
+                setLoading(false);
+            }
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
+            } else {
+                console.error('Unexpected error', error);
+            }
+        } finally {
+            setLoading(false);
+        }
+
     };
 
     return (

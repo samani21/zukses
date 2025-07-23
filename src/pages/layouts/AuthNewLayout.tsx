@@ -7,7 +7,7 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
     const router = useRouter();
     const [hiddeLogo, setHiddenLogo] = useState<boolean>(false);
     useEffect(() => {
-        if (router.pathname === '/auth-new/login' || router.pathname === '/auth-new/register') {
+        if (router.pathname === '/auth/login' || router.pathname === '/auth/register') {
             setHiddenLogo(true)
         }
     }, [router])
@@ -23,7 +23,7 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
                 <div
                     className='bg-white rounded-lg pt-2 bg-red-500 md:shadow-[1px_1px_11px_rgba(0,0,0,0.1)] md:py-8 md:px-8'
                 >
-                    <div className={`${router?.pathname === '/auth-new/complete-registration' ? 'px-0 pt-10 md:px-3 md:pt-0' : 'px-3 py-8 pt-10 md:px-0 md:py-0 md:pt-0 '}`}>
+                    <div className={`${router?.pathname === '/auth/complete-registration' ? 'px-0 pt-10 md:px-3 md:pt-0' : 'px-3 py-8 pt-10 md:px-0 md:py-0 md:pt-0 '}`}>
                         {/* {
                             !hiddeLogo &&
                             <h1 className="text-[40px] font-semibold text-[#4A52B2] mb-8 text-center">

@@ -1,11 +1,13 @@
+import { AxiosError } from 'axios';
+import Loading from 'components/Loading';
 import { Eye, EyeOff } from 'lucide-react';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 import { useEffect, useState } from 'react';
+import Post from 'services/api/Post';
+import { RegisterResponse } from 'services/api/types';
 
-const DEMO_EMAIL = 'demo@example.com';
-const DEMO_PHONE = '6281234567890';
 type FormErrors = {
     password?: string;
     confirmPassword?: string;
@@ -16,6 +18,7 @@ const ForgetPasswordPage: NextPage = () => {
     const [error, setError] = useState('');
     const [isPhone, setIsPhone] = useState(false);
     const [NexSteps, setNexytSteps] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -124,7 +127,7 @@ const ForgetPasswordPage: NextPage = () => {
         return number;
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const isValid = runValidation(contact);
 
@@ -137,22 +140,41 @@ const ForgetPasswordPage: NextPage = () => {
             return;
         }
 
-        if (isPhone) {
-            const formatted = formatPhoneNumber(contact);
-            if (formatted === DEMO_PHONE) {
-                router.push(`/auth-new/verification?contact=${formatted}&type=lupa`);
-                return;
-            }
-        } else {
-            if (contact === DEMO_EMAIL) {
-                router.push(`/auth-new/verification?contact=${contact}&type=lupa`);
-                return;
-            }
-        }
 
+        try {
+            setLoading(true);
+
+            const formattedNumber = formatPhoneNumber(contact);
+            const formData = {
+                contact: formattedNumber,
+            };
+
+            const res = await Post<RegisterResponse>('zukses', 'auth/check-account-password ', formData);
+
+            if (res?.data?.status === 'success') {
+                if (isPhone) {
+                    const formatted = formatPhoneNumber(contact);
+                    router.push(`/auth/verification?contact=${formatted}&type=lupa`);
+                    return;
+                } else {
+                    router.push(`/auth/verification?contact=${contact}&type=lupa`);
+                    return;
+                }
+
+            }
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
+            } else {
+                console.error('Unexpected error', error);
+            }
+        } finally {
+            setLoading(false);
+        }
         setError("Akun tidak ditemukan");
     };
-    const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const newErrors: FormErrors = {};
         if (!password) {
@@ -179,7 +201,31 @@ const ForgetPasswordPage: NextPage = () => {
             password,
             confirmPassword,
         });
-        router.push('/')
+        try {
+            setLoading(true);
+
+            const formData = {
+                contact,
+                password,
+            };
+
+            const res = await Post<RegisterResponse>('zukses', 'auth/forget-password', formData);
+
+            if (res?.data?.status === 'success') {
+                localStorage.setItem('user', JSON.stringify(res?.data?.data));
+                localStorage.setItem('token', res?.data?.token || '');
+                router.push('/');
+            }
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
+            } else {
+                console.error('Unexpected error', error);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     let displayContact = contact;
@@ -197,7 +243,7 @@ const ForgetPasswordPage: NextPage = () => {
                     Belum punya Akun Zukses?{' '}
                     <span
                         className="font-bold text-[14px] text-[#FF2D60] cursor-pointer"
-                        onClick={() => router.push('/auth-new/register')}
+                        onClick={() => router.push('/auth/register')}
                     >
                         Daftar
                     </span>
@@ -336,6 +382,9 @@ const ForgetPasswordPage: NextPage = () => {
                     Kebijakan Privasi Zukses
                 </span>
             </div>
+            {
+                loading && <Loading />
+            }
         </AuthNewLayout>
     );
 };
