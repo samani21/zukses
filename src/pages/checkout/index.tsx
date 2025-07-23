@@ -1,4 +1,4 @@
-import { MapPin, ChevronDown, CheckCircle2, Minus, Plus, X, Check } from 'lucide-react';
+import { MapPin, ChevronDown, Minus, Plus, X, Check, DownloadIcon } from 'lucide-react';
 import MainLayout from 'pages/layouts/MainLayout';
 import type { FC, ReactNode, RefObject } from 'react';
 import { useState, useMemo, useEffect, useRef } from 'react';
@@ -46,10 +46,12 @@ interface Store {
     selectedShipping: ShippingOption;
 }
 
+interface PaymentOption { name: string; logoUrl: string; }
 interface OrderDetails {
     totalAmount: number;
-    paymentMethod: string;
+    paymentMethod: PaymentOption | null;
     virtualAccount: string;
+    imagePayment: string
 }
 
 type PaymentMethod = 'COD' | 'Transfer Bank' | 'QRIS' | 'E-Wallet';
@@ -437,9 +439,8 @@ const PaymentAndSummaryCard: FC<{
     onCreateOrder
 }) => {
         const [activeTab, setActiveTab] = useState<PaymentMethod>('Transfer Bank');
-        const [selectedPayment, setSelectedPayment] = useState('BCA Virtual Account');
+        const [selectedPayment, setSelectedPayment] = useState<PaymentOption | null>(null);
 
-        interface PaymentOption { name: string; logoUrl: string; }
         const paymentTabs: PaymentMethod[] = ['COD', 'Transfer Bank', 'QRIS', 'E-Wallet'];
 
         const paymentOptions: { [K in PaymentMethod]?: PaymentOption[] } = {
@@ -459,12 +460,13 @@ const PaymentAndSummaryCard: FC<{
         const biayaTransfer = 4000;
         const totalDiskon = itemDiscount + shippingDiscount + storeVoucherDiscount;
         const totalPembayaran = originalProductTotal + shippingSubtotal + biayaLayanan + biayaTransfer - totalDiskon;
-
+        console.log('selectedPayment', selectedPayment)
         const handleCreateOrder = () => {
             onCreateOrder({
                 totalAmount: totalPembayaran,
                 paymentMethod: selectedPayment,
-                virtualAccount: '1234 4578 1234 5678'
+                virtualAccount: '1234 4578 1234 5678',
+                imagePayment: "s"
             });
         };
 
@@ -489,8 +491,8 @@ const PaymentAndSummaryCard: FC<{
                             </div>
                         )}
                         {paymentOptions[activeTab]?.map(option => (
-                            <div key={option.name} className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedPayment(option.name)}>
-                                <input type="radio" id={option.name} name="payment" value={option.name} checked={selectedPayment === option.name} onChange={() => setSelectedPayment(option.name)} className="accent-[#660077] w-5 h-5" />
+                            <div key={option.name} className="flex items-center p-3 rounded-lg hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedPayment(option)}>
+                                <input type="radio" id={option.name} name="payment" value={option.name} checked={selectedPayment?.name === option.name} onChange={() => setSelectedPayment(option)} className="accent-[#660077] w-5 h-5" />
                                 <img src={option.logoUrl} alt={`${option.name} logo`} className="h-8 w-10 mx-4 object-contain" />
                                 <label htmlFor={option.name} className="block text-sm font-medium text-gray-700 cursor-pointer">{option.name}</label>
                             </div>
@@ -540,7 +542,7 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
     const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
     const [copied, setCopied] = useState(false);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
-
+    console.log('orderDetails', orderDetails)
     useEffect(() => {
         if (timeLeft === 0) return;
         const timerId = setInterval(() => setTimeLeft(timeLeft - 1), 1000);
@@ -559,8 +561,8 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
     };
 
     const AccordionItem: FC<{ title: string; children: ReactNode }> = ({ title, children }) => (
-        <div className="border-b border-gray-200">
-            <button onClick={() => setExpandedSection(expandedSection === title ? null : title)} className="w-full flex justify-between items-center py-4 text-left font-semibold text-gray-700">
+        <div className="border-b border-[#333333]">
+            <button onClick={() => setExpandedSection(expandedSection === title ? null : title)} className="w-full flex justify-between items-center py-4 text-left font-[500] text-[18px] text-[#333333]">
                 <span>{title}</span>
                 <ChevronDown className={`w-5 h-5 transition-transform ${expandedSection === title ? 'rotate-180' : ''}`} />
             </button>
@@ -569,42 +571,83 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
     );
 
     return (
-        <div className="">
-            <h2 className="text-xl font-bold text-gray-800 mb-6 text-center">Selesaikan Pembayaran</h2>
-            <div className="space-y-4 border-b border-gray-200 pb-6">
-                <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Total Pembayaran</span>
-                    <span className="font-bold text-lg text-red-500">{formatCurrency(orderDetails.totalAmount)}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Bayar dalam</span>
-                    <div className="text-right">
-                        <span className="font-bold text-red-500">{`${hours} jam ${minutes} menit ${seconds} detik`}</span>
-                        <p className="text-xs text-gray-500">Jatuh tempo {dueDate}</p>
+        <div className="p-6">
+            <h2 className="text-[25px] font-bold text-[#7952B3] mb-6 text-start">Pembayaran</h2>
+            <div className='flex justify-center'>
+                <div className='w-[75%]'>
+                    <div className="space-y-4 border-b border-gray-200">
+                        <div className="flex justify-between items-center border-b border-[#CCCCCC] p-6">
+                            <span className="text-[#333333] font-semibold text-[20px]">Total Pembayaran</span>
+                            <span className="text-[#333333] font-semibold text-[20px] text-end">{formatCurrency(orderDetails.totalAmount)}</span>
+                        </div>
+                        <div className="flex justify-between items-center border-b border-[#CCCCCC] p-6">
+                            <span className="text-[#333333] font-[500] text-[20px]">Bayar dalam</span>
+                            <div className="text-right">
+                                <span className="font-semibold text-[#E30800] text-[20px]">{`${hours} jam ${minutes} menit ${seconds} detik`}</span>
+                                <p className="text-[16px] mt-1   text-[#333333]">Jatuh tempo {dueDate}</p>
+                            </div>
+                        </div>
                     </div>
+                    {
+                        orderDetails.paymentMethod?.name === 'QRIS' ? <div className='flex justify-center space-y-4 mt-8'>
+                            <div>
+                                <div className='text-[#333333] text-center w-[415px] px-8'>
+                                    Scan QR Code dengan aplikasi e-wallet atau mobile banking yang kamu punya:
+                                </div>
+                                <div className='flex justify-center'>
+                                    <img src='/image/qr 1.svg' />
+                                </div>
+                                <div className='flex justify-center'>
+                                    <img src='/image/qris 2.svg' />
+                                </div>
+                                <div className='flex justify-center items-center gap-4'>
+                                    <DownloadIcon className='h-[24px] w-[24px]' />
+                                    <p className='text-[20px] text-[#333333] font-[500px]'>Download QR Code</p>
+                                </div>
+                                <div className='flex justify-center'>
+                                    <button onClick={onBack} className="bg-[#DE4A53] h-[50px] w-[214px] text-white font-semibold text-[16px] py-3 px-4 rounded-[10px]  mt-6 hover:bg-red-700 transition-colors" style={{
+                                        lineHeight: "22px",
+                                        letterSpacing: "-0.04em"
+                                    }}>Cek Status Bayar</button>
+                                </div>
+                            </div>
+                        </div> :
+                            <div className='flex justify-center'>
+                                <div className='flex items-start p-6 gap-10'>
+                                    <img src={orderDetails.paymentMethod?.logoUrl} width={126} />
+                                    <div>
+                                        <div className="">
+                                            <p className="font-[500] text-[20px] text-[#333333] mb-1">{orderDetails.paymentMethod?.name}</p>
+                                            <p className="font-[500] text-[16px] text-[#333333]">No. Rekening Virtual Account</p>
+                                            <div className="flex items-center mt-4">
+                                                <p className="text-[23px] font-[500] text-[#E30800] tracking-wider">{orderDetails.virtualAccount}</p>
+                                                <button onClick={handleCopy} className="ml-4 text-purple-600 font-semibold text-sm">{copied ? 'Tersalin' : 'SALIN'}</button>
+                                            </div>
+                                            <p className="text-[16px] text-[#7952B3] mt-3">Proses verifikasi kurang dari 10 menit setelah pembayaran berhasil</p>
+                                        </div>
+                                        <div className="py-4">
+                                            <AccordionItem title="Petunjuk Transfer mBanking">
+                                                <p>1. Login ke m-BCA. <br /> 2. Pilih menu m-Transfer &gt; BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
+                                            </AccordionItem>
+                                            <AccordionItem title="Petunjuk Transfer iBanking">
+                                                <p>1. Login ke KlikBCA. <br /> 2. Pilih menu Transfer Dana &gt; Transfer ke BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
+                                            </AccordionItem>
+                                            <AccordionItem title="Petunjuk Transfer ATM">
+                                                <p>1. Masukkan kartu ATM dan PIN. <br /> 2. Pilih menu Transaksi Lainnya &gt; Transfer &gt; Ke Rek BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
+                                            </AccordionItem>
+                                        </div>
+                                        <div className='flex justify-center'>
+                                            <button onClick={onBack} className="bg-[#DE4A53] h-[50px] w-[140px] text-white font-semibold text-[16px] py-3 px-4 rounded-[10px]  mt-6 hover:bg-red-700 transition-colors" style={{
+                                                lineHeight: "22px",
+                                                letterSpacing: "-0.04em"
+                                            }}>Ok</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    }
                 </div>
             </div>
-            <div className="py-6 border-b border-gray-200">
-                <p className="font-semibold text-gray-800 mb-1">{orderDetails.paymentMethod}</p>
-                <p className="text-sm text-gray-500 mb-3">No. Rekening Virtual Account</p>
-                <div className="flex items-center">
-                    <p className="text-2xl font-bold text-gray-800 tracking-wider">{orderDetails.virtualAccount}</p>
-                    <button onClick={handleCopy} className="ml-4 text-purple-600 font-semibold text-sm">{copied ? 'Tersalin' : 'SALIN'}</button>
-                </div>
-                <p className="text-xs text-green-600 mt-3">Proses verifikasi kurang dari 10 menit setelah pembayaran berhasil</p>
-            </div>
-            <div className="py-4">
-                <AccordionItem title="Petunjuk Transfer mBanking">
-                    <p>1. Login ke m-BCA. <br /> 2. Pilih menu m-Transfer &gt; BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
-                </AccordionItem>
-                <AccordionItem title="Petunjuk Transfer iBanking">
-                    <p>1. Login ke KlikBCA. <br /> 2. Pilih menu Transfer Dana &gt; Transfer ke BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
-                </AccordionItem>
-                <AccordionItem title="Petunjuk Transfer ATM">
-                    <p>1. Masukkan kartu ATM dan PIN. <br /> 2. Pilih menu Transaksi Lainnya &gt; Transfer &gt; Ke Rek BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
-                </AccordionItem>
-            </div>
-            <button onClick={onBack} className="w-full bg-gray-600 text-white font-bold py-3 px-4 rounded-lg mt-6 hover:bg-gray-700 transition-colors">Kembali ke Checkout</button>
         </div>
     );
 };
@@ -714,8 +757,8 @@ export default function CheckoutPage() {
                                 onOpenModal={() => setIsAddressModalOpen(true)}
                             />
 
-                            {stores.map(store => (
-                                <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
+                            {stores.map((store, index) => (
+                                <div key={index} className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
                                     <StoreCheckoutCard
                                         storeData={store}
                                         onProductUpdate={(productId, p) => handleProductUpdate(store.id, productId, p)}
@@ -745,7 +788,9 @@ export default function CheckoutPage() {
                         </div>
                     </>
                 ) : finalOrder && (
-                    <PaymentConfirmationPage orderDetails={finalOrder} onBack={handleBackToCheckout} />
+                    <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
+                        <PaymentConfirmationPage orderDetails={finalOrder} onBack={handleBackToCheckout} />
+                    </div>
                 )}
             </div>
 
