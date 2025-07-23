@@ -460,7 +460,6 @@ const PaymentAndSummaryCard: FC<{
         const biayaTransfer = 4000;
         const totalDiskon = itemDiscount + shippingDiscount + storeVoucherDiscount;
         const totalPembayaran = originalProductTotal + shippingSubtotal + biayaLayanan + biayaTransfer - totalDiskon;
-        console.log('selectedPayment', selectedPayment)
         const handleCreateOrder = () => {
             onCreateOrder({
                 totalAmount: totalPembayaran,
@@ -530,9 +529,12 @@ const PaymentAndSummaryCard: FC<{
                             letterSpacing: "-0.04em"
                         }}>{formatCurrency(totalPembayaran)}</span>
                     </div>
-                    <div className='flex justify-end'>
-                        <button onClick={handleCreateOrder} className="w-[297px] bg-[#563D7C] text-white font-semibold text-[18px] py-3 px-4 mt-6 hover:bg-purple-700 transition-colors">Buat Pesanan</button>
-                    </div>
+                    {
+                        selectedPayment &&
+                        <div className='flex justify-end'>
+                            <button onClick={handleCreateOrder} className="w-[297px] bg-[#563D7C] text-white font-semibold text-[18px] py-3 px-4 mt-6 hover:bg-purple-700 transition-colors">Buat Pesanan</button>
+                        </div>
+                    }
                 </div>
             </div>
         );
