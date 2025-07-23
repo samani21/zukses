@@ -5,6 +5,11 @@ import AuthNewLayout from 'pages/layouts/AuthNewLayout';
 import { useEffect, useState } from 'react';
 import { Listbox } from '@headlessui/react'
 import { ChevronDown } from 'lucide-react'
+import Loading from 'components/Loading';
+import Post from 'services/api/Post';
+import { RegisterResponse } from 'services/api/types';
+import { AxiosError } from 'axios';
+import { AlertLogin, IconInModal } from 'components/Auth';
 
 const days = Array.from({ length: 31 }, (_, i) => String(i + 1).padStart(2, '0'))
 const months = [
@@ -34,14 +39,15 @@ const CompleteRegister: NextPage = () => {
     const router = useRouter();
     const [contact, setContact] = useState<string>('');
     const [fullName, setFullName] = useState('');
-    const [gender, setGender] = useState<'Laki-Laki' | 'Perempuan'>('Laki-Laki');
+    const [gender, setGender] = useState<'Laki-laki' | 'Perempuan'>('Laki-laki');
     const [birthDate, setBirthDate] = useState({ day: '', month: '', year: '' });
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
+    const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<FormErrors>({});
+    const [error, setError] = useState<string | null>(null)
     useEffect(() => {
         if (router.isReady) {
             const contactParam = router.query.contact;
@@ -102,7 +108,7 @@ const CompleteRegister: NextPage = () => {
         );
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         const newErrors: FormErrors = {};
@@ -141,24 +147,46 @@ const CompleteRegister: NextPage = () => {
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length > 0) return;
+        const formattedBirthDate = `${birthDate.year}-${birthDate.month.padStart(2, '0')}-${birthDate.day.padStart(2, '0')}`;
 
-        // jika semua valid, kirim data
-        console.log({
-            contact,
-            fullName,
-            gender,
-            birthDate,
-            password,
-            confirmPassword,
-        });
-        router.push('/')
+        try {
+            setLoading(true);
+
+            const formData = {
+                contact,
+                fullName,
+                gender,
+                birthDate: formattedBirthDate,
+                password,
+                confirmPassword,
+                role: 'user'
+            };
+
+            const res = await Post<RegisterResponse>('zukses', 'auth/register', formData);
+
+            if (res?.data?.status === 'success') {
+                localStorage.removeItem('contact')
+                localStorage.setItem('user', JSON.stringify(res?.data?.data));
+                localStorage.setItem('token', res?.data?.token || '');
+                router.push('/');
+            }
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
+            } else {
+                console.error('Unexpected error', error);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
 
     return (
         <AuthNewLayout>
             <div className='fixed top-0 py-1 left-0 md:hidden px-4 bg-white w-full'>
-                <ArrowLeft className='w-[25px] h-[25px]' onClick={() => router.push('/auth-new/register')} />
+                <ArrowLeft className='w-[25px] h-[25px]' onClick={() => router.push('/auth/register')} />
             </div>
             <div className="text-left pr-4 pl-4 md:pr-0 md:pl-0">
                 <h2 className="text-[22px] font-bold text-[#444444]">Lengkapi Pendaftaran</h2>
@@ -166,7 +194,7 @@ const CompleteRegister: NextPage = () => {
                     Sudah punya akun Zukses?{' '}
                     <span
                         className="font-bold text-[14px] text-[#FF2D60] cursor-pointer"
-                        onClick={() => router.push('/auth-new/login')}
+                        onClick={() => router.push('/auth/login')}
                     >
                         Masuk
                     </span>
@@ -174,6 +202,12 @@ const CompleteRegister: NextPage = () => {
             </div>
 
             <form className="mt-4 space-y-4 pr-4 pl-4 md:pr-0 md:pl-0" onSubmit={handleSubmit} noValidate style={{ letterSpacing: "-0.04em" }}>
+                {error && (
+                    <AlertLogin>
+                        <IconInModal src='/icon-old/alert-error.svg' width={15} />
+                        {error}
+                    </AlertLogin>
+                )}
                 <div className="md:flex gap-4 ">
                     <div className="w-full mb-4">
                         <label className='text-[#555555] font-bold text-[14px] md:text-[16px]'>Nomor HP / Email</label>
@@ -207,22 +241,22 @@ const CompleteRegister: NextPage = () => {
                             <label className="flex items-center space-x-2 cursor-pointer">
                                 <input
                                     type="radio"
-                                    value="Laki-Laki"
-                                    checked={gender === 'Laki-Laki'}
-                                    onChange={() => setGender('Laki-Laki')}
+                                    value="Laki-laki"
+                                    checked={gender === 'Laki-laki'}
+                                    onChange={() => setGender('Laki-laki')}
                                     className="hidden"
                                 />
                                 <div
                                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
-                ${gender === 'Laki-Laki' ? 'border-[#660077]' : 'border-gray-400'}`}
+                ${gender === 'Laki-laki' ? 'border-[#660077]' : 'border-gray-400'}`}
                                 >
-                                    {gender === 'Laki-Laki' && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
+                                    {gender === 'Laki-laki' && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
                                 </div>
                                 <span
-                                    className={`text-[14px] text-[#333333] ${gender === 'Laki-Laki' ? 'font-bold' : 'font-normal'
+                                    className={`text-[14px] text-[#333333] ${gender === 'Laki-laki' ? 'font-bold' : 'font-normal'
                                         }`}
                                 >
-                                    Laki-Laki
+                                    Laki-laki
                                 </span>
                             </label>
                             <label className="flex items-center space-x-2 cursor-pointer">
@@ -405,12 +439,15 @@ const CompleteRegister: NextPage = () => {
                     Sudah punya akun Zukses?{' '}
                     <span
                         className="font-bold text-[14px] text-[#FF2D60] cursor-pointer"
-                        onClick={() => router.push('/auth-new/login')}
+                        onClick={() => router.push('/auth/login')}
                     >
                         Masuk
                     </span>
                 </p>
             </div>
+            {
+                loading && <Loading />
+            }
         </AuthNewLayout>
     );
 };

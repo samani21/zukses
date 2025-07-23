@@ -1,220 +1,295 @@
-'use client'
 import { AxiosError } from 'axios';
-import { CenteredText, Divider, ErrorMessage, IconAuth, StyledLink, Terms, Title } from 'components/layouts/auth'
-import { ButtonNext, HelpText, LoginOption } from 'components/layouts/Login';
-import Loading from 'components/Loading';
-import { Modal } from 'components/Modal';
+import { AlertLogin, IconInModal } from 'components/Auth';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import AuthLayout from 'pages/layouts/AuthLayout';
-import React, { useEffect, useState } from 'react'
+import AuthNewLayout from 'pages/layouts/AuthNewLayout';
+import { useEffect, useState } from 'react';
 import Post from 'services/api/Post';
-import { Response } from 'services/api/types';
-const isValidEmail = (value: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+import { RegisterResponse } from 'services/api/types';
 
-const isValidPhone = (value: string) =>
-    /^(\+62|62|0)8[1-9][0-9]{7,12}$/.test(value);
-// Convert local phone numbers to 628 format
-const formatPhoneNumberTo62 = (phone: string) => {
-    const trimmed = phone.trim();
-    if (trimmed.startsWith("+62")) return trimmed.replace("+", "");
-    if (trimmed.startsWith("62")) return trimmed;
-    if (trimmed.startsWith("0")) return "62" + trimmed.slice(1);
-    return trimmed;
-};
+const GoogleIcon = () => (
+    <svg className="w-[20px] md:w-[25px] h-[20px] md:h-[25px]" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+        <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+        <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+        <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+    </svg>
+);
 
-type PayloadType = 'email' | 'whatsapp' | 'unknown';
-
-
-function getPayloadType(input: string): PayloadType {
-    const trimmedInput = input.trim();
-
-    if (trimmedInput.includes('@') && /\S+@\S+\.\S+/.test(trimmedInput)) {
-        return 'email';
-    } else if (/^\d+$/.test(trimmedInput)) {
-        return 'whatsapp';
-    }
-
-    return 'unknown';
-}
-
-const Login = () => {
-    const [input, setInput] = useState<string>("");
-    const [typeLogin, setTypeLogin] = useState<string>("");
-    const [isValid, setIsValid] = useState<boolean>(false);
-    const [showError, setShowError] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
+const LoginPage: NextPage = () => {
     const router = useRouter();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalType, setModalType] = useState<'exists' | 'not-found' | null>(null);
-    const { register } = router.query as {
-        register?: string;
-    };
-    useEffect(() => {
-        const trimmed = input.trim();
-        if (trimmed === "") {
-            setIsValid(false);
-            setShowError(false);
-        } else if (isValidEmail(trimmed) || isValidPhone(trimmed)) {
-            setIsValid(true);
-            setShowError(false);
-        } else {
-            setIsValid(false);
-            setShowError(true);
+
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [errors, setErrors] = useState<{ contact?: string; password?: string }>({});
+    const [error, setError] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false);
+    const [contact, setContact] = useState(''); // State untuk menyimpan nilai input mentah
+    const [isPhone, setIsPhone] = useState(false);
+    const runValidation = (value: string): boolean => {
+        setError('');
+
+        if (!value) {
+            setIsPhone(false);
+            return true;
         }
-    }, [input]);
+
+        // Cek apakah input adalah email
+        if (value.includes('@') || /[^0-9+]/.test(value)) {
+            setIsPhone(false);
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (value.includes('@') && !emailRegex.test(value)) {
+                setError('Format E-mail salah.');
+                return false;
+            }
+            return true;
+        }
+
+        // Jika bukan email, cek apakah itu nomor HP
+        const phoneValidationRegex = /^(08|62|\+62)\d*$/;
+        if (phoneValidationRegex.test(value)) {
+            setIsPhone(true);
+            return true;
+        }
+
+        // Jika format awal tidak cocok, tampilkan error
+        setIsPhone(false);
+        setError('Nomor HP harus diawali dengan 08, 62, atau +62.');
+        return false;
+    };
+
+    // --- MODIFIED useEffect ---
+    // Debounce validasi dan Cek kredensial demo
     useEffect(() => {
-        setInput(register ?? '')
-    }, [register]);
-    const handleLoginGoogle = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`
-    }
+        // Lanjutkan dengan validasi debounce jika bukan kredensial demo
+        const handler = setTimeout(() => {
+            runValidation(contact);
+        }, 500); // Tunggu 500ms setelah user berhenti mengetik
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [contact, router]); // Tambahkan router ke dependency array
+
+    // Handler untuk tombol Backspace pada input yang sudah kosong (untuk menghapus prefix)
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && e.currentTarget.value === '') {
+            setContact('');
+            setIsPhone(false);
+        }
+    };
+
+    // Handler untuk perubahan input
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const displayedValue = e.target.value;
+
+        if (displayedValue === '') {
+            setContact('');
+            setIsPhone(false);
+            return;
+        }
+
+        if (isPhone) {
+            if (contact.startsWith('+62')) {
+                setContact('+62' + displayedValue);
+            } else if (contact.startsWith('62')) {
+                setContact('62' + displayedValue);
+            } else if (contact.startsWith('08')) {
+                setContact('0' + displayedValue);
+            } else {
+                setContact(displayedValue);
+            }
+        } else {
+            setContact(displayedValue);
+        }
+    };
+
+    // Fungsi untuk memformat nomor HP ke format '62...' untuk backend
+    const formatPhoneNumber = (number: string) => {
+        if (number.startsWith('+62')) {
+            return '62' + number.substring(3);
+        }
+        if (number.startsWith('62')) {
+            return number;
+        }
+        if (number.startsWith('08')) {
+            return '62' + number.substring(1);
+        }
+        return number;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); // Mencegah form dari me-refresh halaman
-        if (!isValid) return;
+        e.preventDefault();
+        const newErrors: { contact?: string; password?: string } = {};
+
+        if (!contact.trim()) {
+            newErrors.contact = 'Nomor HP atau Email wajib diisi';
+        }
+
+        if (!password.trim()) {
+            newErrors.password = 'Password wajib diisi';
+        }
+
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
 
         try {
-            setLoading(true)
-            const trimmed = input.trim();
-            const isPhone = isValidPhone(trimmed);
-            const payload = isPhone ? formatPhoneNumberTo62(trimmed) : trimmed;
+            setLoading(true);
 
-            const type = getPayloadType(payload);
-            setTypeLogin(type)
-            const formData = new FormData();
-            formData.append('email_whatsapp', payload);
-            formData.append('type', type);
+            const formattedNumber = formatPhoneNumber(contact);
 
-            const res = await Post<Response>('zukses', 'auth/login-otp', formData);
-            console.log('res', res)
+            const formData = {
+                contact: formattedNumber,
+                password,
+            };
+
+            const res = await Post<RegisterResponse>('zukses', 'auth/login', formData);
+
             if (res?.data?.status === 'success') {
-                setLoading(false)
-                router.push(`/auth/verification-account?${type}=${payload}&type=${type}&user_id=${res?.data?.data}`);
-            } else {
-                setLoading(false)
-                setShowError(true);
+                localStorage.setItem('user', JSON.stringify(res?.data?.data));
+                localStorage.setItem('token', res?.data?.token || '');
+                router.push('/');
             }
-        } catch (error) {
-            // Tangani error 422 secara spesifik
-            const err = error as AxiosError<Response>;
-            console.log('res', err)
-            if (err?.response?.status === 422) {
-                const msg = err.response?.data?.message || 'Data tidak valid.';
-                console.warn("Validasi gagal:", msg);
-                setModalType('not-found');
-                setIsModalOpen(true);
-                setLoading(false)
-                // Bisa simpan pesan error ke state jika perlu
-                // setErrorMessage(msg);
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
             } else {
-                console.error("Terjadi kesalahan lain:", err);
-                setShowError(true);
-                setLoading(false)
+                console.error('Unexpected error', error);
             }
+        } finally {
+            setLoading(false);
         }
     };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
-        // Reset tipe modal setelah ditutup agar tidak muncul lagi saat dibuka
-        setTimeout(() => setModalType(null), 300);
+    let displayContact = contact;
+    if (isPhone) {
+        if (contact.startsWith('+62')) {
+            displayContact = contact.substring(3);
+        } else if (contact.startsWith('62')) {
+            displayContact = contact.substring(2);
+        } else if (contact.startsWith('08')) {
+            displayContact = contact.substring(1);
+        }
     }
 
-
-    // Komponen kecil untuk konten modal "Akun Tidak Ditemukan"
-    const AccountNotFoundModalContent = () => (
-
-        <div>
-            <p className="mb-6">
-                Akun belum terdaftar. Apakah Anda ingin membuat akun baru dengan {typeLogin === 'email' ? 'email' : 'whatsapp'} ini?
-            </p>
-            <div className="space-y-3">
-                <button className="w-full py-3 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer" onClick={() => router.push(`/auth/register?login=${input}`)}>
-                    Ya, Daftar Sekarang
-                </button>
-                <button
-                    onClick={closeModal}
-                    className="w-full py-3 font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
-                    Batal
-                </button>
-            </div>
-        </div>
-    );
-
+    const handleLoginGoogle = () => {
+        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+    }
 
     return (
-        <AuthLayout>
-            <Title>Login</Title>
+        <AuthNewLayout>
+            <div className="fixed top-[10px] left-0 md:hidden px-4">
+                <ArrowLeft className="w-[25px] h-[25px]" onClick={() => router.push('/')} />
+            </div>
 
-            <CenteredText>
-                Belum punya akun Zukses?{" "}
-                <StyledLink onClick={() => router.push('/auth/register')}>Daftar</StyledLink>
-            </CenteredText>
+            <div className="text-center">
+                <h2 className="text-[22px] font-bold text-[#444444]">Masuk ke Zukses</h2>
+                <p className="fixed bottom-0 left-0 w-full bg-[#F1F5F9] py-2 md:py-0 md:bg-white md:relative mt-2 text-[14px] font-medium text-[#444444]">
+                    Belum punya Akun Zukses?{' '}
+                    <span className="font-bold text-[#FF2D60] cursor-pointer" onClick={() => router.push('/auth/register')}>
+                        Daftar
+                    </span>
+                </p>
+            </div>
 
-            <form onSubmit={handleSubmit}>
-                <div className="relative mt-4">
-                    <input
-                        id="phoneOrEmail" // Tambahkan ID ini agar label bisa mengaktifkan input saat diklik
-                        type="text"
-                        placeholder=""
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        className={`block w-full px-3 py-3 text-gray-900 bg-transparent border rounded-lg appearance-none focus:outline-none focus:ring-2 peer ${showError ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                            }`}
-                    />
-                    <label
-                        htmlFor="phoneOrEmail"
-                        className={`absolute text-sm duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2
-                        ${showError ? 'text-red-500' : 'text-gray-500 peer-focus:text-blue-600'}
-                        peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1`}
-                    >
-                        Nomor HP atau E-mail
-                    </label>
+            <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+                {error && (
+                    <AlertLogin>
+                        <IconInModal src='/icon-old/alert-error.svg' width={15} />
+                        {error}
+                    </AlertLogin>
+                )}
+                <div>
+                    <div className="relative">
+                        {isPhone && (
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span className="text-gray-500 sm:text-sm">(+62)</span>
+                            </div>
+                        )}
+                        <input
+                            id="contact"
+                            name="contact"
+                            type="text"
+                            required
+                            value={displayContact}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                            className={`appearance-none rounded-[10px] relative block w-full px-3 py-3 border text-[14px] md:text-[16px] ${isPhone ? 'pl-14' : ''} ${error ? 'border-red-500' : 'border-[#AAAAAA]'} placeholder:text-[#999999] placeholder:text-[14px] md:text-[16px] palceholder:text-[#999999] focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                            placeholder="Masukkan Nomor HP atau E-mail"
+                            autoComplete='off'
+                        />
+                    </div>
+                    <p className="mt-1 text-[12px] ml-4 font-[500] text-[#888888]">Contoh: 08123456789</p>
+                    {errors.contact && <p className="text-red-500 text-[12px] ml-1 mt-1">{errors.contact}</p>}
                 </div>
 
-                <p className="text-xs text-gray-500 mt-2 ml-1">
-                    Contoh: 08123456789
-                </p>
+                <div className="w-full relative mt-[-10px]">
+                    <input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Masukkan Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={`w-full border ${errors.password ? 'border-red-500' : 'border-[#AAAAAA]'
+                            } mt-2 h-[50px] outline-none rounded-[10px] px-3 pr-10 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
+                    />
+                    <div
+                        className="absolute top-[35px] right-3 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </div>
+                    {errors.password && <p className="text-red-500 text-[12px] ml-1 mt-1">{errors.password}</p>}
+                    <p
+                        className="text-[12px] text-[#555555] font-bold ml-4 mt-1 cursor-pointer"
+                        onClick={() => router.push('/auth/forget-password')}
+                    >
+                        Lupa Password?
+                    </p>
+                </div>
 
-                {showError && (
-                    <ErrorMessage>
-                        Masukkan nomor HP atau email yang valid
-                    </ErrorMessage>
-                )}
-                <HelpText>Butuh bantuan?</HelpText>
-
-                <ButtonNext disabled={!isValid}>Selanjutnya</ButtonNext>
+                <div>
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className={`group h-[50px] relative w-full flex justify-center py-3 px-4 border border-transparent font-bold text-[16px] md:text-[18px] rounded-[10px] text-white ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#0075C9] hover:bg-blue-700'
+                            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                    >
+                        {loading ? 'Memproses...' : 'Masuk'}
+                    </button>
+                </div>
             </form>
-            <Divider>
-                <span>atau masuk dengan</span>
-            </Divider>
-            <LoginOption onClick={handleLoginGoogle}>
-                <IconAuth
-                    src="https://img.icons8.com/color/48/000000/google-logo.png"
-                    alt="Google"
-                />
-                <span>Google</span>
-            </LoginOption>
-            <Terms>
-                Dengan masuk di sini, kamu menyetujui{" "}
-                <a href="#">Syarat & Ketentuan</a> serta{" "}
-                <a href="#">Kebijakan Privasi</a> Zukses.
-            </Terms>
-            {/* Implementasi Komponen Modal dengan Konten Dinamis */}
-            <Modal
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                title={modalType === 'exists' ? 'Akun Ditemukan' : 'Akun Belum Terdaftar'}
-            >
-                {/* Render konten modal berdasarkan state `modalType` */}
-                {modalType === 'not-found' && <AccountNotFoundModalContent />}
-            </Modal>
-            {
-                loading && <Loading />
-            }
-        </AuthLayout>
+
+            <div className="my-6 flex items-center justify-center">
+                <div className="flex-grow w-[81px] border-t border-[#CCCCCC]"></div>
+                <span className="mx-4 text-[12px] md:text-[14px] font-[500] text-[#666666]">atau masuk dengan</span>
+                <div className="flex-grow w-[81px] border-t border-[#CCCCCC]"></div>
+            </div>
+
+            <div>
+                <button
+                    type="button"
+                    className="w-full h-[50px] inline-flex justify-center items-center py-2 px-4 border border-[#AAAAAA] rounded-[10px] bg-white text-[14px] md:text-[16px] gap-1 font-bold text-[#777777] hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    onClick={handleLoginGoogle}
+                >
+                    <GoogleIcon />
+                    Google
+                </button>
+            </div>
+
+            <div className="mt-6 text-center text-[14px] font-medium text-[#444444]">
+                <p>Dengan masuk disini, kamu menyetujui</p>
+                <span className="font-bold cursor-pointer text-[#FF2D60] hover:text-red-600">
+                    Syarat & Ketentuan
+                </span>{' '}
+                serta{' '}
+                <span className="font-bold cursor-pointer text-[#FF2D60] hover:text-red-600">
+                    Kebijakan Privasi Zukses
+                </span>
+            </div>
+        </AuthNewLayout>
     );
 };
 
-export default Login;
+export default LoginPage;
