@@ -161,16 +161,6 @@ const ShoppingCartPage: React.FC = () => {
         );
     };
 
-    const handleSelectAll = (isSelected: boolean) => {
-        setStores(prevStores =>
-            prevStores.map(store => ({
-                ...store,
-                selected: isSelected,
-                products: store.products.map(p => ({ ...p, selected: isSelected }))
-            }))
-        );
-    };
-
     const handleDeleteProduct = (storeId: string, productId: number) => {
         setStores(prevStores => {
             const newStores = prevStores.map(store => {
