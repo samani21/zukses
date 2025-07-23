@@ -280,7 +280,7 @@ const Header = () => {
                                         <div className='flex items-center w-[400px] justify-between gap-4'>
                                             <div className='flex items-center jutify-left gap-3'>
                                                 <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md pr-0" title="Filter Provinsi"><img src='/icon/filter-dark.svg' width={25} /></button>
-                                                <div className="relative inline-block"><button className="p-2 rounded-md pr-0"><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
+                                                <div className="relative inline-block"><button className="p-2 rounded-md pr-0" onClick={() => router.push('/favorite')}><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
                                                 <div className="relative inline-block"><button className="p-2 rounded-md pr-0"><img src='/icon/message.svg' width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
 
                                                 <div
