@@ -1,28 +1,6 @@
-import React, { FC } from 'react';
-
-// Data untuk daftar kategori dan tautan
-// Data ini diatur dalam array objek untuk struktur yang lebih baik
-const categoryColumns = [
-  {
-    title: "Kategori",
-    items: [
-      "Pakaian Wanita", "Pakaian Pria", "Elektronik", "Perawatan & Kecantikan",
-      "Handphone & Aksesoris", "Fashion Muslim", "Perlengkapan Rumah", "Sepatu Pria", "Sepatu Wanita",
-    ]
-  },
-  {
-    items: [
-      "Alat Tulis", "Buku & Majalah", "Komputer & Aksesoris", "Mobil", "Sepeda Motor",
-      "Tas Wanita", "Tas Pria", "Jam Tangan",
-    ]
-  },
-  {
-    items: [
-      "Ibu & Bayi", "Fashion Bayi & Anak", "Olahraga & Outdoor", "Makanan & Minuman", "Audio",
-      "Koper & Tas Travel", "Aksesoris Fashion", "Hewan Peliharaan", "Kamera & Drone", "Kesehatan",
-    ]
-  }
-];
+import React, { FC, useEffect, useState } from 'react';
+import Get from 'services/api/Get';
+import { Response } from 'services/api/types';
 
 const zuksesLinks = [
   "Tentang Kami", "Edukasi", "Artikel", "Kebijakan Privaxy",
@@ -34,6 +12,7 @@ interface ListColumnProps {
   title?: string; // Judul bersifat opsional
   items: string[];
 }
+
 
 // Komponen untuk setiap kolom list, sekarang lebih fleksibel
 const ListColumn: FC<ListColumnProps> = ({ title, items }) => (
@@ -54,6 +33,25 @@ const ListColumn: FC<ListColumnProps> = ({ title, items }) => (
 
 // Komponen Footer Utama
 const CategoryFooter: FC = () => {
+  const [category, setCategory] = useState<ListColumnProps[]>([]);
+  console.log('category', category)
+  const getCategory = async () => {
+    // setLoading(true);
+    const res = await Get<Response>('zukses', `category/list-array`);
+    if (res?.status === 'success' && Array.isArray(res.data)) {
+      const data = res?.data as ListColumnProps[];
+      // setProducts(data);
+      setCategory(data);
+    } else {
+      console.warn('Produk tidak ditemukan atau gagal diambil');
+
+    }
+    // setLoading(false);
+  };
+
+  useEffect(() => {
+    getCategory();
+  }, []);
   return (
     // Pastikan Tailwind CSS sudah terpasang di proyek Anda
     <div className="">
@@ -62,7 +60,7 @@ const CategoryFooter: FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-1">
 
             {/* Render kolom kategori secara dinamis */}
-            {categoryColumns.map((col, index) => (
+            {category.map((col, index) => (
               <ListColumn key={index} title={col.title} items={col.items} />
             ))}
 

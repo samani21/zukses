@@ -76,22 +76,24 @@ function ProvinceModal({
             style={{ background: '#00000022' }}
         >
             <div
-                className="relative w-[640px] h-[615px] bg-white shadow-2xl m-4"
+                className="relative w-[620px]  bg-white shadow-2xl m-4"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="p-4 bg-[#227D53] flex justify-between h-[60px]">
+                <div className="p-5 bg-white flex justify-between" style={{
+                    letterSpacing: "-0.05em"
+                }}>
                     <h2
                         id="modal-title"
-                        className="text-[20px] font-semibold text-center text-white"
+                        className="text-[20px] font-bold text-center text-[#333333]"
                     >
-                        Pilih Provinsi Lokasi Pencarian
+                        Ubah Lokasi Pencarian
                     </h2>
-                    <X className="text-white cursor-pointer" onClick={onClose} />
+                    <X className="text-[#333333] cursor-pointer" onClick={onClose} />
                 </div>
 
                 {/* Body */}
-                <div className="p-6 max-h-119 overflow-y-auto">
+                <div className="p-6 overflow-y-auto">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-6">
                         {provinces.map(province => {
                             const checked = tempSelected.includes(province);
@@ -124,7 +126,7 @@ function ProvinceModal({
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-between items-center p-4 py-5 gap-4  bg-[#EEEEEE]">
+                <div className="flex justify-between items-center p-4  gap-4">
                     <div className='text-[14px]'>
                         Maksimal 3 Lokasi Pencarian
                     </div>

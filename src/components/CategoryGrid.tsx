@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-
 const ChevronRightIcon = () => (
     <svg className="w-[20px] h-[20px] text-white hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
@@ -28,6 +27,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
+    // const [category, setCategory] = useState<Category[]>([]);
     const updateScrollButtons = () => {
         const container = scrollContainerRef.current;
         if (container) {
@@ -35,7 +35,23 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
             setCanScrollRight(container.scrollLeft + container.offsetWidth < container.scrollWidth);
         }
     };
+    // const getCategory = async () => {
+    //     // setLoading(true);
+    //     const res = await Get<Response>('zukses', `category/list`);
+    //     if (res?.status === 'success' && Array.isArray(res.data)) {
+    //         const data = res?.data as Category[];
+    //         // setProducts(data);
+    //         setCategory(data);
+    //     } else {
+    //         console.warn('Produk tidak ditemukan atau gagal diambil');
 
+    //     }
+    //     // setLoading(false);
+    // };
+
+    // useEffect(() => {
+    //     getCategory();
+    // }, []);
     useEffect(() => {
         updateScrollButtons();
         const container = scrollContainerRef.current;

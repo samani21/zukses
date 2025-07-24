@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/router';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
+
+// Interface untuk data Pengguna
 interface User {
     name?: string
     email?: string
@@ -10,52 +12,59 @@ interface User {
     image?: string
     role?: string
 }
+
+// Interface untuk item Navigasi, ditambahkan 'children' opsional untuk item bersarang
 interface NavItem {
     name: string;
-    // icon: JSX.Element;
     url: string;
+    children?: NavItem[]; // Untuk sub-menu
 }
 
-export const navItems: NavItem[] = [
+// --- Data Navigasi dipecah menjadi grup sesuai gambar ---
+
+// Grup Profil
+const profileItems: NavItem[] = [
     {
-        name: 'Dashboard',
-        // icon: <HomeIcon className="w-5 h-5" />,   // ← tag ditutup
-        url: '/user-profile',
-    },
-    {
-        name: 'Profil Saya',
-        // icon: <ProfilIcon className="w-5 h-5" />,
+        name: 'Profil saya',
         url: '/user-profile/profil',
     },
     {
-        name: 'Alamat',
-        // icon: <PinIcon className="w-5 h-5" />,
+        name: 'Alamat Pengiriman',
         url: '/user-profile/address',
     },
     {
         name: 'Rekening Bank',
-        // icon: <CardIcon className="w-5 h-5" />,
         url: '/user-profile/bank',
     },
-    {
-        name: 'Pesanan Saya',
-        // icon: <CartIcon className="w-5 h-5" />,
-        url: '/user-profile/my-order',
-    },
-    {
-        name: 'Menunggu Pembayaran',
-        // icon: <CartIcon className="w-5 h-5" />,
-        url: '/user-profile/payment',
-    },
-    {
-        name: 'Keranjang Belanja',
-        // icon: <CartIcon className="w-5 h-5" />,
-        url: '/user-profile/cart',
-    },
 ];
+
+// Grup Pesanan (dengan struktur bersarang)
+const orderItems: NavItem = {
+    name: 'Pesanan Saya',
+    url: '/user-profile/my-order',
+    children: [
+        { name: 'Belum Bayar', url: '/user-profile/orders/pending' },
+        { name: 'Sedang Dikemas', url: '/user-profile/orders/packing' },
+        { name: 'Dikirim', url: '/user-profile/orders/shipped' },
+        { name: 'Selesai', url: '/user-profile/orders/completed' },
+        { name: 'Dibatalkan', url: '/user-profile/orders/cancelled' },
+        { name: 'Pengembalian', url: '/user-profile/orders/refund' },
+    ]
+};
+
+// Grup Aktivitas Lainnya
+const activityItems: NavItem[] = [
+    { name: 'Keranjang Belanja', url: '/user-profile/cart' },
+    { name: 'Produk Favorit', url: '/user-profile/favorites' },
+    { name: 'Terakhir Dilihat', url: '/user-profile/history' },
+    { name: 'Saldo zukses', url: '/user-profile/balance' },
+    { name: 'Chat', url: '/user-profile/chat' },
+    { name: 'Lacak Pengiriman', url: '/user-profile/track' },
+];
+
+
 const DesktopSidebar = () => {
     const router = useRouter();
-    console.log(router.pathname)
     const [user, setUser] = useState<User | null>(null);
 
     const handleLogout = useCallback(() => {
@@ -71,52 +80,82 @@ const DesktopSidebar = () => {
             setUser(currentUser)
         }
     }, [])
+
+    // Fungsi untuk me-render setiap item navigasi
+    const renderNavItem = (item: NavItem, isSubItem: boolean = false) => (
+        <li key={item.name}>
+            <button
+                onClick={() => router.push(item.url)}
+                className={`w-full flex items-center text-left py-1.5 px-6 transition-colors text-[15px] font-[500] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
+                    } ${router.pathname === item.url
+                        ? 'bg-[#F2F4F7] text-[#333333] font-bold' // Contoh styling untuk item aktif
+                        : 'text-[#222222] hover:bg-gray-100'
+                    }`}
+            >
+                <span>{item.name}</span>
+            </button>
+        </li>
+    );
+
     return (
-        <aside
-            className="w-[243px] mr-[40px] hidden md:flex flex-col rounded-[5px] bg-white border border-[#eeeeee]"
-            style={{ boxShadow: '1px 1px 30px rgba(0, 0, 0, 0.1)' }}
-
-        >
-            <p className='font-bold text-[16px] text-[#333333] text-center py-5 border-b border-[#eeeeee]' style={{ letterSpacing: "-1px", lineHeight: '121%' }}>Akun Saya</p>
-            <div className="flex items-center justify-center gap-3 p-3 border-b border-[#eeeeee]">
-                <div className='mt-2 mb-2'>
-                    <div className='flex justify-center items-center'>
-                        <img src={user?.image ?? "https://placehold.co/40x40/e2e8f0/333?text=Z"} alt="User Avatar" className="w-[55px] h-[55px] rounded-full" />
+        <aside className="w-[243px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden border border-[#DCDCDC] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+            {/* Header Profil dengan Latar Belakang Hijau */}
+            <div className="flex items-center gap-3 p-4 bg-[#00AA5B] h-[60px] text-white">
+                {
+                    user?.image ? <img src={user?.image} className='w-[40px] h-[40px] rounded-full' /> : <div className='w-[40px] h-[40px] rounded-full border border-[#BBBBBB] bg-[#F2F4F7] text-[#4A52B2] flex items-center justify-center font-bold text-[17px]'>
+                        {/* Mengambil inisial nama, contoh: "Irvan Mamala" -> "IM" */}
+                        {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}
                     </div>
-                    <h4 className="text-[16px] text-[#444444] font-[500] mt-[6px] text-center">{user?.name ?? "Nama Anda"}</h4>
-                </div>
+                }
+                <h4 className="text-[16px] font-bold">{user?.name ?? "Zukses"}</h4>
             </div>
-            <nav className="flex-grow p-4">
-                <ul>
-                    {navItems.map(item => (
-                        <li key={item.name}>
-                            <button
-                                onClick={() => router.push(item?.url)}
-                                className={`w-[209px] h-[32px] leading-[121%] flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors  text-[14px] font-[500] ${router.pathname === item.url
-                                    ? 'text-white  bg-[#7952B3]'
-                                    : 'text-[#444444]'
-                                    }`}
-                                style={
-                                    router.pathname === item.url
-                                        ? { boxShadow: '0 2px 10px rgba(0, 0, 0, 0.39)', zIndex: 10 }
-                                        : undefined
-                                }
 
-                            >
-                                <span>{item.name}</span>
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </nav>
-            <div className="mt-10 px-4 py-5 mb-[5px]">
-                {/* <button className="w-full flex items-center gap-3 text-left py-2 px-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-100 text-red-600" onClick={handleLogout}>
-                    <LogoutIcon className="w-5 h-5" />
-                    <span>Logout</span>
-                </button> */}
-                <div className='flex justify-center itmes-center'>
-                    <button className="w-full border border-[#AAAAAA] p-2 rounded-[10px]" onClick={handleLogout}>
-                        <span className='font-semibold text-[14px]'>Logout</span>
+            {/* Kontainer untuk semua menu item */}
+            <div className='flex flex-col flex-grow mt-4'>
+                <nav className="flex-grow">
+                    {/* Grup Profil */}
+                    <div className='mb-2'>
+                        <ul>
+                            {profileItems.map(item => renderNavItem(item))}
+                        </ul>
+                    </div>
+                    <div className='h-1  border-t border-[#BBBBBBCC]' />
+                    {/* Grup Pesanan */}
+                    <div className='mb-2'>
+                        <ul>
+                            {renderNavItem(orderItems)}
+                            {/* Render sub-item jika ada */}
+                            {orderItems.children && (
+                                <ul>
+                                    {orderItems.children.map(child => renderNavItem(child, true))}
+                                </ul>
+                            )}
+                        </ul>
+                    </div>
+
+                    <div className='h-1  border-t border-[#BBBBBBCC]' />
+
+                    {/* Grup Aktivitas */}
+                    <div className='mb-2'>
+                        <ul>
+                            {activityItems.map(item => renderNavItem(item))}
+                        </ul>
+                    </div>
+                </nav>
+
+                {/* Tombol Aksi di Bagian Bawah */}
+                <div className="mt-auto p-2 space-y-2">
+                    <button
+                        onClick={() => router.push('/my-shop')}
+                        className="w-full bg-[#F78900] h-[40px] text-white font-semibold text-[14px] p-2 rounded-[5px] hover:bg-orange-600 transition-colors"
+                    >
+                        Toko Saya
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        className="w-full bg-[#F6E9F0] text-[#563D7C] border border-[#563D7C]  h-[40px] font-semibold text-[14px] p-2 rounded-[5px] hover:bg-gray-200 transition-colors"
+                    >
+                        Logout
                     </button>
                 </div>
             </div>
@@ -124,4 +163,4 @@ const DesktopSidebar = () => {
     );
 };
 
-export default DesktopSidebar
+export default DesktopSidebar;
