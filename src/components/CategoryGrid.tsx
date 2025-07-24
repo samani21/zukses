@@ -1,7 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react';
-import Get from 'services/api/Get';
-import { Response } from 'services/api/types';
-
 const ChevronRightIcon = () => (
     <svg className="w-[20px] h-[20px] text-white hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
@@ -30,8 +27,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(false);
 
-    const [category, setCategory] = useState<Category[]>([]);
-    console.log('category', category)
+    // const [category, setCategory] = useState<Category[]>([]);
     const updateScrollButtons = () => {
         const container = scrollContainerRef.current;
         if (container) {
@@ -64,7 +60,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
         const handleScroll = () => updateScrollButtons();
         container.addEventListener('scroll', handleScroll);
         return () => container.removeEventListener('scroll', handleScroll);
-    }, [category]);
+    }, []);
 
     const scrollByAmount = 300;
 
