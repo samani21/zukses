@@ -240,7 +240,7 @@ const ProfileForm = () => {
                 const res = await Post<RegisterResponse>('zukses', 'auth/forget-password', formData);
 
                 if (res?.data?.status === 'success') {
-                    showCustomAlert('Data berhasil diperbarui!');
+                    showCustomAlert('Password berhasil diperbarui!');
                     finalData = { password: tempData.newPassword };
                 }
             } catch (err: unknown) {
@@ -685,8 +685,8 @@ const ProfileForm = () => {
                         }}>Kamu hanya dapat mengubah tanggal lahir 1 kali. Pastikan tanggal lahir sudah benar.</p>
                         <div className="grid grid-cols-3 gap-3">
                             <SelectMenu placeholder="Tanggal" options={days} selected={tempData.day} onChange={(val) => setTempData(p => ({ ...p, day: val }))} />
-                            <SelectMenu placeholder="Bulan" options={months} selected={tempData.month} onChange={(val) => setTempData(p => ({ ...p, day: null, month: val }))} />
-                            <SelectMenu placeholder="Tahun" options={years} selected={tempData.year} onChange={(val) => setTempData(p => ({ ...p, day: null, year: val }))} />
+                            <SelectMenu placeholder="Bulan" options={months} selected={tempData.month} onChange={(val) => setTempData(p => ({ ...p, month: val }))} />
+                            <SelectMenu placeholder="Tahun" options={years} selected={tempData.year} onChange={(val) => setTempData(p => ({ ...p, year: val }))} />
                         </div>
                         <div className="flex justify-end mt-6">
                             <button onClick={handleModalSave} className="w-full bg-[#24A77B] text-white font-semibold text-[17px] py-2 px-4 rounded-[5px] h-[40px] hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled={!tempData.day || !tempData.month || !tempData.year}>Simpan</button>
@@ -765,6 +765,13 @@ const ProfileForm = () => {
     };
 
 
+    const formatTanggal = (tanggal: string) => {
+        if (!tanggal) return "";
+        const [year, month, day] = tanggal.split("-");
+        return `${day}-${month}-${year}`;
+    };
+
+
     return (
         <div className="bg-white w-full  mx-auto">
             {imageToCrop && (
@@ -839,8 +846,9 @@ const ProfileForm = () => {
                         <div className="mb-5">
                             <label className="font-[500] mb-3 text-[15px] text-[#444444]">Tanggal Lahir</label>
                             <div className="flex items-center">
-                                <input className="mt-2 py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px]" type="text" value={formData.tanggalLahir} disabled />
-                                <button type="button" onClick={() => openModal('tanggalLahir')} className={`mt-2 py-2 px-4  whitespace-nowrap ${isEditable.tanggalLahir ? 'bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed h-[40px]'}`} disabled={!isEditable.tanggalLahir}>Ubah</button>
+                                <input className="mt-2 py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px]" type="text"
+                                    value={formatTanggal(formData.tanggalLahir)} disabled />
+                                <button type="button" onClick={() => openModal('tanggalLahir')} className={`mt-2 py-2 px-4  whitespace-nowrap ${isEditable.tanggalLahir ? 'bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed h-[40px] rounded-r-[5px]'}`} disabled={!isEditable.tanggalLahir}>Ubah</button>
                             </div>
                             {isEditable.tanggalLahir ? <p className='text-[#DE4A53] text-[12px] font-[500]'>Hanya dapat diubah 1 kali</p> : <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>}
                         </div>
