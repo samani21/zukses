@@ -96,8 +96,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                 </div>
                 <div className="border-t border-[#238744] py-4 bg-[#238744] text-white">
                     <p className="text-center text-[15px] font-semibold" style={{
-                        lineHeight:"22px",
-                        letterSpacing:"-0.04em"
+                        lineHeight: "22px",
+                        letterSpacing: "-0.04em"
                     }}>
                         @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
                     </p>
