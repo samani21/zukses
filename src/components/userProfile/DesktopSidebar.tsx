@@ -86,7 +86,7 @@ const DesktopSidebar = () => {
         <li key={item.name}>
             <button
                 onClick={() => router.push(item.url)}
-                className={`w-full flex items-center text-left py-1.5 px-6 transition-colors text-[15px] font-[500] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
+                className={`w-full flex items-center text-left py-1.5 px-6 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
                     } ${router.pathname === item.url
                         ? 'bg-[#F2F4F7] text-[#333333] font-bold' // Contoh styling untuk item aktif
                         : 'text-[#222222] hover:bg-gray-100'
