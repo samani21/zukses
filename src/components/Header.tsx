@@ -303,7 +303,7 @@ const Header = () => {
 
 
                                             </div>
-                                            <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya">Akun Saya</button>
+                                            <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya" onClick={()=>window.location.href='/user-profile/profil'}>Akun Saya</button>
                                         </div>
                                     </div>
                                 </div>
