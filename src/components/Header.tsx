@@ -250,7 +250,7 @@ const Header = () => {
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
                                             <a onClick={() => router.push('/my-store')} className="font-[500] hover:underline cursor-pointer text-[14px] text-[#555555] ">Toko Saya</a>
-                                            <a onClick={() => router.push('/user-profile')} className="font-[500] text-[14px] text-[#555555]  hover:underline cursor-pointer text-right">{userName}</a>
+                                            <a onClick={() => router.push('/user-profile/profil')} className="font-[500] text-[14px] text-[#555555]  hover:underline cursor-pointer text-right">{userName}</a>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">

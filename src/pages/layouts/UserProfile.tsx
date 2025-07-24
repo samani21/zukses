@@ -54,7 +54,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                         className="ml-[-10px] container mx-auto"
                     >
 
-                        <div className="p-6 pt-4">
+                        <div className="p-6 pt-2">
                             <div>
                                 {children}
                             </div>
@@ -62,7 +62,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                     </main>
                 </div>
             </div>
-             <div className='hidden md:block border-t border-[#238744]  bg-white'>
+            <div className='hidden md:block border-t border-[#238744]  bg-white'>
                 <div className='border-b border-[#238744] py-4'>
                     <div className='container mx-auto flex justify-between itmes-center lg:w-[1200px] '>
                         <InfoZukses />
@@ -86,8 +86,8 @@ export default function UserProfile({ children }: { children: React.ReactNode })
                 </div>
                 <div className="border-t border-[#238744] py-4 bg-[#238744] text-white">
                     <p className="text-center text-[15px] font-semibold" style={{
-                        lineHeight:"22px",
-                        letterSpacing:"-0.04em"
+                        lineHeight: "22px",
+                        letterSpacing: "-0.04em"
                     }}>
                         @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
                     </p>
