@@ -100,7 +100,7 @@ const AddressPage = () => {
             setLoading(true);
             const formData = new FormData();
             formData.append('name_receiver', data.name);
-            formData.append('number_receiver', data.phone.replace(/^\+/, ''));
+            formData.append('number_receiver', data.phone);
             formData.append('province_id', String(data.prov || 0));
             formData.append('citie_id', String(data.city || 0));
             formData.append('subdistrict_id', String(data.district || 0));
