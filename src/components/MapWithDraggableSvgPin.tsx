@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { GoogleMap, Marker, OverlayView } from "@react-google-maps/api";
 const containerStyle = {
-    width: "100%",
-    height: "450px",
+    width: "708px",
+    height: "307px",
+    border: "2px solid #888888"
 };
 const containerStyleMobile = {
     width: "100%",
@@ -40,6 +41,26 @@ const MapWithDraggableSvgPin = ({
     const [tempMarkerPos, setTempMarkerPos] = useState(initialPosition);
     const [isDragging, setIsDragging] = useState(false);
 
+    const handleFindMyLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const newLat = position.coords.latitude;
+                    const newLng = position.coords.longitude;
+                    setTempMarkerPos({ lat: newLat, lng: newLng });
+                    setLat(newLat);
+                    setLong(newLng);
+                },
+                (error) => {
+                    console.error("Gagal mendapatkan lokasi:", error);
+                    alert("Gagal mendapatkan lokasi. Pastikan izin lokasi diaktifkan.");
+                }
+            );
+        } else {
+            alert("Geolocation tidak didukung oleh browser Anda.");
+        }
+    };
+
     useEffect(() => {
         if (lat && long) {
             const pos = { lat, lng: long };
@@ -74,6 +95,16 @@ const MapWithDraggableSvgPin = ({
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div className='flex justify-between px-7'>
+                <p className='tracking-[-0.05em] text-[16px] text-[#111111] w-[75%]'>Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.</p>
+                <button
+                    onClick={handleFindMyLocation}
+                    className='text-[14px] font-semibold text-[#FFFFFF] h-[30px] bg-[#563D7C] px-2 rounded'
+                >
+                    Temukan Lokasi Saya
+                </button>
+
+            </div>
             <div className=" md:hidden">
                 <GoogleMap
                     mapContainerStyle={containerStyleMobile}
@@ -163,7 +194,7 @@ const MapWithDraggableSvgPin = ({
                     )}
                 </GoogleMap>
             </div>
-            <div className="hidden md:block p-4 pt-5 pb-0">
+            <div className="hidden md:block p-4 pt-0 pb-0">
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={tempMarkerPos}
@@ -245,15 +276,21 @@ const MapWithDraggableSvgPin = ({
                         </OverlayView>
                     )}
                 </GoogleMap>
-            </div>
+                <div className="flex justify-end items-center gap-4 py-4 px-2">
+                    <button onClick={() => setOpenMaps(false)} className="h-[44px] hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
 
-            <div className="p-4 bg-[#EEEEEE] h-[70px] flex justify-between md:justify-end gap-3">
+                    <button onClick={handleConfirmLocation} className="h-[44px] rounded-[10px] bg-[#563D7C] text-white font-semibold text-[14px] w-[100px]">
+                        Konfirmasi
+                    </button>
+                </div>
+            </div>
+            {/* <div className="p-4 bg-[#EEEEEE] h-[70px] flex justify-between md:justify-end gap-3">
                 <button onClick={() => setOpenMaps(false)} className="hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
 
                 <button onClick={handleConfirmLocation} className="rounded-[10px] bg-[#563D7C] text-white font-semibold text-[14px] w-[100px]">
                     Konfirmasi
                 </button>
-            </div>
+            </div> */}
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { InformationCircleIcon, XMarkIcon } from './Icon';
+import { XMarkIcon } from './Icon';
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
 import { AddLocation, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
@@ -215,11 +215,11 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                         setLong={(val) => handleChange('long', val)}
                         setOpenMaps={setOpenMaps}
                     /> :
-                        <div className="bg-white h-full md:h-50% md:rounded-lg shadow-xl w-full max-w-2xl">
-                            <div className="hidden md:flex text-white justify-between items-center p-3 bg-[#227D53] px-7">
-                                <h2 className="text-[20px] font-semibold">Alamat Baru</h2>
+                        <div className="bg-white h-full md:h-50%  shadow-xl w-full max-w-2xl overflow-y-auto no-scrollbar">
+                            <div className="hidden md:flex text-[#333333] justify-between items-center p-6 px-7">
+                                <h2 className="text-[22px] font-bold tracking-[-5%]" >Alamat Baru</h2>
                                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-                                    <XMarkIcon className="w-6 h-6 text-white" />
+                                    <XMarkIcon className="w-[27px] h-[27px] text-[#333333]" />
                                 </button>
                             </div>
                             <div className=" md:hidden flex justify-left items-center p-4">
@@ -228,8 +228,8 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 </IconButton>
                                 <h2 className="text-lg font-semibold ml-4">Alamat Baru</h2>
                             </div>
-                            <div className="p-6 space-y-4 max-h-[80vh] md:max-h-[70vh] overflow-y-auto">
-                                <WrapperInput>
+                            <div className='flex items-center p-6 gap-4 pt-2'>
+                                <div className='w-full'>
                                     <TextField
                                         fullWidth
                                         variant="outlined"
@@ -239,21 +239,73 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         error={!!errors.name}
                                         helperText={errors.name}
                                         autoComplete="off"
+                                        sx={{
+                                            '& .MuiInputBase-root': {
+                                                height: '50px',
+                                            },
+                                            '& input': {
+                                                padding: '0 14px',
+                                            }
+                                        }}
                                     />
-                                </WrapperInput>
-                                <WrapperInput>
+                                    <p className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>Contoh : Ibu Aisyah</p>
+                                </div>
+                                <div className='w-full'>
                                     <TextField
                                         fullWidth
                                         variant="outlined"
                                         label="Nomor Telepon"
                                         value={formData.phone}
-                                        onChange={(e) => handleChange('phone', e.target.value)}
+                                        onChange={(e) => {
+                                            const input = e.target.value.replace(/\D/g, '');
+                                            // Jika kosong (user benar-benar hapus semuanya)
+                                            if (input === '') {
+                                                handleChange('phone', '');
+                                                return;
+                                            }
+
+                                            // Jika user sedang menghapus awalan +62 → izinkan
+                                            if (!input.startsWith('+62') && !input.startsWith('0') && !input.startsWith('62') && !input.startsWith('8')) {
+                                                handleChange('phone', input);
+                                                return;
+                                            }
+
+                                            // Buat hanya angka (hapus simbol/kosong)
+                                            let raw = input.replace(/\D/g, '');
+
+                                            // Deteksi dan normalisasi ke +62
+                                            if (raw.startsWith('0')) {
+                                                raw = '+62' + raw.slice(1);
+                                            } else if (raw.startsWith('62')) {
+                                                raw = '+62' + raw.slice(2);
+                                            } else if (raw.startsWith('8')) {
+                                                raw = '+62' + raw;
+                                            } else if (!input.startsWith('+62')) {
+                                                raw = '+62' + raw;
+                                            } else {
+                                                raw = input; // biarkan user menghapus manual jika dari +62
+                                            }
+
+                                            handleChange('phone', raw);
+                                        }}
                                         error={!!errors.phone}
                                         helperText={errors.phone}
                                         autoComplete="off"
+                                        sx={{
+                                            '& .MuiInputBase-root': {
+                                                height: '50px',
+                                            },
+                                            '& input': {
+                                                padding: '0 14px',
+                                            }
+                                        }}
                                     />
-                                </WrapperInput>
-                                <WrapperInput className='mt-9'>
+
+                                    <p className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>Contoh : 08123456789</p>
+                                </div>
+                            </div>
+                            <div className='p-6 pt-3'>
+                                <WrapperInput>
                                     <AutocompleteAddress
                                         setFullAddress={(val) => handleChange('fullAddress', val)}
                                         setProv={(val) => handleChange('prov', val)}
@@ -279,70 +331,11 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         <div style={{ color: 'red', fontSize: 12, marginTop: 2 }}>{errors.address}</div>
                                     )}
                                 </WrapperInput>
-                                {/* <WrapperInput>
-                                    <div className='hidden md:block'>
-                                        <AddressAutocompleteStreet
-                                            subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
-                                            setLat={(val) => handleChange('lat', val)}
-                                            setLong={(val) => handleChange('long', val)}
-                                            setFullAddress={(val) => handleChange('fullAddressStreet', val)}
-                                            dataFullAddress={formData.fullAddressStreet}
-                                        />
-                                        {errors.fullAddressStreet && (
-                                            <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.fullAddressStreet}</div>
-                                        )}
-                                    </div>
-                                    <div className='md:hidden'>
-                                        <input
-                                            id="alamat-input"
-                                            type="text"
-                                            placeholder={'Tentukan batas wilayah dulu...'}
-                                            value={formData.fullAddressStreet}
-                                            onClick={() => setOpenAutoCompleteAddress(true)}
-                                            disabled={formData?.fullAddress?.split(',')[2]?.trim() ?? '' ? false : true}
-                                            autoComplete='off'
-                                            className="w-full px-4 py-3 text-base text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
-                                        />
-                                        {errors.detailAddress && (
-                                            <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
-                                        )}
-                                        {
-                                            openAutoCompletAddress && <div style={{ position: "absolute", left: '0', top: '0', width: "100%", height: "100dvh", background: "white", zIndex: 2, padding: "10px" }}>
-                                                <div style={{ marginBottom: "20px" }}>
-                                                    <IconButton edge="start" color="inherit" onClick={() => setOpenAutoCompleteAddress(false)}>
-                                                        <ArrowBackIcon sx={{ color: "black" }} />
-                                                    </IconButton>
-                                                </div>
-                                                <AddressAutocompleteStreet
-                                                    subdistrict={formData?.fullAddress?.split(',')[2]?.trim() ?? ''}
-                                                    setLat={(val) => handleChange('lat', val)}
-                                                    setLong={(val) => handleChange('long', val)}
-                                                    setFullAddress={(val) => handleChange('fullAddressStreet', val)}
-                                                    dataFullAddress={formData.fullAddressStreet}
-                                                />
-                                                <input
-                                                    id="detailAddress"
-                                                    type="text"
-                                                    placeholder="Detail Lainnya (cth: Blok / Unit no., Patokan)"
-                                                    className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-5"
-                                                    autoComplete="off"
-                                                    value={formData.detailAddress}
-                                                    onChange={(e) => handleChange('detailAddress', e.target.value)}
-                                                />
-                                                <div style={{ position: "absolute", bottom: "0px", padding: "10px", width: "100%", left: "0" }}>
-                                                    <div className='w-full rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition p-4 flex justify-center cursor-pointer' onClick={handleSelectAddress}>
-                                                        Selanjutnya
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                    </div>
-                                </WrapperInput> */}
                                 <WrapperInput>
                                     <TextField
                                         fullWidth
                                         variant="outlined"
-                                        label="Nama Jalan, Gedung dll"
+                                        label="Alamat"
                                         value={formData.fullAddressStreet}
                                         onChange={(e) => handleChange('fullAddressStreet', e.target.value)}
                                         error={!!errors.fullAddressStreet}
@@ -351,78 +344,25 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         multiline
                                         rows={4}
                                     />
-                                </WrapperInput>
-                                {/* <WrapperInput>
-                                    <TextField
-                                        fullWidth
-                                        variant="outlined"
-                                        label="Detil lainnya (Cth : Blok / Unit No., Patokan"
-                                        value={formData.detailAddress}
-                                        onChange={(e) => handleChange('detailAddress', e.target.value)}
-                                        error={!!errors.name}
-                                        helperText={errors.name}
-                                        autoComplete="off"
-                                    />
-                                    {errors.detailAddress && (
-                                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
-                                    )}
-                                </WrapperInput> */}
-                                {/* <WrapperInput>
-                                    <input
-                                        id="detailAddress"
-                                        type="text"
-                                        placeholder="Detail Lainnya (cth: Blok / Unit no., Patokan)"
-                                        className="w-full px-4 py-2 text-gray-800 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        autoComplete="off"
-                                        value={formData.detailAddress}
-                                        onChange={(e) => handleChange('detailAddress', e.target.value)}
-                                    />
-                                    {errors.detailAddress && (
-                                        <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.detailAddress}</div>
-                                    )}
-                                </WrapperInput> */}
-                                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                                    <div className="flex">
-                                        <div className="flex-shrink-0">
-                                            <InformationCircleIcon className="h-5 w-5 text-yellow-400" />
-                                        </div>
-                                        <div className="ml-3">
-                                            <p className="text-sm text-yellow-700">
-                                                Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.
-                                            </p>
-                                        </div>
+                                    <div className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>
+                                        <p>Contoh : Jalan Kenangan I Lorong 12 RT 03 RW 02</p>
+                                        <p className='-mt-1'>(Patokan Depan Puskesmas Sehat)</p>
                                     </div>
+                                </WrapperInput>
+                                <p className='tracking-[-0.05em] w-[80%] text-[16px] text-[#111111]'>Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.</p>
+                                <div className='mt-3'>
+                                    {formData.lat && formData.long ? (
+                                        <MapWithDraggableSvgPinDisable
+                                            lat={formData.lat}
+                                            lng={formData.long}
+                                            setOpenMaps={setOpenMaps}
+                                        />
+                                    ) : (
+                                        <LocationContainer>
+                                            <AddLocation>+ Tambah Location</AddLocation>
+                                        </LocationContainer>
+                                    )}
                                 </div>
-                                {formData.lat && formData.long ? (
-                                    <MapWithDraggableSvgPinDisable
-                                        lat={formData.lat}
-                                        lng={formData.long}
-                                        setOpenMaps={setOpenMaps}
-                                    />
-                                ) : (
-                                    <LocationContainer>
-                                        <AddLocation>+ Tambah Location</AddLocation>
-                                    </LocationContainer>
-                                )}
-                                {/* <LabelContainer>
-                                Tandai Sebagai
-                                <WrapperLabel>
-                                    {(['Rumah', 'Kantor'] as const).map((label) => (
-
-                                        <OptionLabel
-                                            key={label}
-                                            className={formData.tag === label ? 'active' : ''}
-                                            onClick={() => handleChange('tag', label)}
-                                        >
-                                            <div className='ceklist'>✓</div>
-                                            <p>{label}</p>
-                                        </OptionLabel>
-                                    ))}
-                                </WrapperLabel>
-                            </LabelContainer>
-                            {errors.tag && (
-                                <div style={{ color: 'red', fontSize: 12, marginTop: 4 }}>{errors.tag}</div>
-                            )} */}
                                 <div className='flex items-center'>
                                     <SwitchContainer>
                                         <Checkbox
@@ -452,37 +392,21 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                     </SwitchContainer>
                                     <p className='text-[16px] font-semibold text-[#333333]'>Tetapkan sebagai alamat utama</p>
                                 </div>
-                                {/* <LabelContainer>
-                                Atur Sebagai Alamat Toko
-                                <SwitchContainer>
-                                    <Checkbox
-                                        checked={formData.isStore}
-                                        onChange={(e) => handleChange('isStore', e.target.checked)}
-                                        sx={{
-                                            color: 'var(--primary-color)',
-                                            '&.Mui-checked': {
-                                                color: 'var(--primary-color)',
-                                            },
-                                        }}
-                                    />
-                                </SwitchContainer>
-                                <SwitchContainer className='mobile'>
-                                    <Switch
-                                        checked={formData.isStore}
-                                        onChange={(e) => handleChange('isStore', e.target.checked)}
-                                        sx={{
-                                            '& .MuiSwitch-switchBase.Mui-checked': {
-                                                color: 'var(--primary-color)',
-                                                '& + .MuiSwitch-track': {
-                                                    backgroundColor: 'var(--primary-color)',
-                                                },
-                                            },
-                                        }}
-                                    />
-                                </SwitchContainer>
-                            </LabelContainer> */}
+                                <div className='flex items-center justify-end gap-2'>
+                                    <button onClick={handleClose} className="h-[44px] hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
+                                    {
+                                        editData &&
+                                        <button onClick={() => {
+                                            setOpenDelete(editData?.id || 0)
+                                            setOpenModalAddAdress(false)
+                                        }} className="h-[44px] md:hidden px-6 py-2 rounded-lg border border-gray-300 text-white hover:bg-gray-100 w-full transition bg-red-600">Hapus</button>
+                                    }
+                                    <button onClick={handleSubmit} className="h-[44px] rounded-[10px] bg-[#563D7C] text-white font-semibold text-[14px] w-[100px]">
+                                        Konfirmasi
+                                    </button>
+                                </div>
                             </div>
-                            <div className="p-4 bg-[#EEEEEE] h-[70px] rounded-b-lg flex justify-between md:justify-end gap-3 mt-[56px]">
+                            {/* <div className="p-4 h-[70px] rounded-b-lg px-6 flex justify-between md:justify-end gap-3 mt-[56px]">
                                 <button onClick={handleClose} className="hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>
                                 {
                                     editData &&
@@ -494,7 +418,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 <button onClick={handleSubmit} className="rounded-[10px] bg-[#563D7C] text-white font-semibold text-[14px] w-[100px]">
                                     Konfirmasi
                                 </button>
-                            </div>
+                            </div> */}
                         </div>
                 }
             </div>

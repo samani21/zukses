@@ -319,6 +319,7 @@ export const LocationContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    border: 2px solid #888888;
 `;
 
 export const AddLocation = styled.div`
@@ -428,10 +429,9 @@ export const ButtonShowMaps = styled.button`
 
 export const ModalMapsContainer = styled.div`
     background: #fff;
-    height: 580px;
-    width: 80%;
+    width: 750px;
     @media (max-width: 1000px) {
-        width: 80%;
+        width: 750px;
     }
     @media (max-width: 650px) {
         width: 100%;

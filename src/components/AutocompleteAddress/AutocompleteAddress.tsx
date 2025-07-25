@@ -4,7 +4,7 @@ import { AppBar, Box, Button, CircularProgress, Dialog, IconButton, InputAdornme
 import Get from 'services/api/Get';
 import { isAutocompleteOption } from './utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { SearchIcon, ShieldCloseIcon } from 'lucide-react';
+import { ChevronDown, SearchIcon, ShieldCloseIcon } from 'lucide-react';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 const AutocompleteAddress = (props: AutocompleteProps) => {
@@ -575,8 +575,19 @@ const AutocompleteAddress = (props: AutocompleteProps) => {
     // Tampilan Desktop (Kode Asli Anda, tidak diubah)
     return (
         <Box sx={{ position: 'relative', marginTop: "-15px" }} ref={containerRef}>
-            <TextField fullWidth variant="outlined" label="Provinsi, Kota, Kecamatan, Kode Pos" value={inputValue} onChange={handleInputChange} onFocus={handleFocus} inputRef={inputRef} autoComplete="off" placeholder={placeholder} />
-            {loading && !debouncedInputValue && isFocused && (<CircularProgress size={20} sx={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }} />)}
+            <div className="relative w-full">
+                <input
+                    type="text"
+                    className="w-full border border-gray-300 h-[50px] rounded-[5px] px-4 py-2 pr-10 outline-none focus:outline-none focus:ring-blue-500 focus:border-blue-700 focus:border-2"
+                    placeholder="Provinsi, Kabupaten/Kota, Kecamatan"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    onFocus={handleFocus}
+                    ref={inputRef}
+                    autoComplete="off"
+                />
+                {loading && !debouncedInputValue && isFocused ? (<CircularProgress size={20} sx={{ position: 'absolute', top: 13, right: 20, zIndex: 1 }} />) : <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5 pointer-events-none" />}
+            </div>
             {isFocused && (
                 <Box sx={{ position: 'absolute', zIndex: 1200, width: '100%', bgcolor: 'background.paper', border: '1px solid #ddd', borderRadius: 1, mt: 1, boxShadow: 3 }}>
                     {!debouncedInputValue && (
