@@ -5,7 +5,7 @@ import React from 'react'
 const ProfilPage = () => {
     return (
         <UserProfile>
-            <h2 className="text-[20px] font-bold text-[#7952B3] mb-2 mt-2">Profil Saya</h2>
+            <h2 className="text-[22px] font-bold text-[#7952B3] mb-2 mt-2">Profil Saya</h2>
             <p className="text-gray-500 mb-3">Pastikan informasi akun kamu selalu up to date untuk digunakan saat berbelanja.</p>
             <div className='bg-white rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
                 <ProfileForm />
