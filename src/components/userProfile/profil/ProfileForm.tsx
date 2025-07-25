@@ -794,7 +794,7 @@ const ProfileForm = () => {
                         <table className="w-full table-auto">
                             <tbody>
                                 <tr className="align-top">
-                                    <td className="py-5 pr-4 w-[160px]">
+                                    <td className="py-5 pr-4 w-[130px]">
                                         <label className="font-bold text-[15px] text-[#444444]">Nama User</label>
                                     </td>
                                     <td className="py-2">
