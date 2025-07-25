@@ -15,12 +15,12 @@ type Props = {
 const ModalMaps = ({ fullAddressStreet, lat, long, setLat, setLong, setOpenMaps }: Props) => {
     return (
         <ModalMapsContainer>
-            <HeaderMaps className="bg-[#227D53] h-[60px]" style={{ justifyContent: "space-between" }}>
+            <HeaderMaps className="bg-#fff] h-[60px]" style={{ justifyContent: "space-between" }}>
                 <InfoMap>
-                    <div className='text-white text-20 font-semibold'>Ubah Lokasi</div>
+                    <div className='text-[#333333] text-[22px] font-bold tracking-[-0.05em]'>Pilih Lokasi</div>
                     {/* <div className='subtitle hidden md:block'>{fullAddressStreet}</div> */}
                 </InfoMap>
-                <X className='h-5 w-5 text-white cursor-pointer' onClick={() => setOpenMaps(false)} />
+                <X className='h-[27px] w-[27px] text-[#333333] cursor-pointer' onClick={() => setOpenMaps(false)} />
             </HeaderMaps>
             {/* <div className='p-4'>
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 ">
