@@ -758,7 +758,7 @@ const ProfileForm = () => {
 
 
     return (
-        <div className="bg-white w-full  mx-auto">
+        <div className="w-full  mx-auto">
             {imageToCrop && (
                 <ImageCropperModal
                     imageSrc={imageToCrop}
@@ -768,95 +768,198 @@ const ProfileForm = () => {
             )}
             {alertMessage && <div className={`fixed top-5 right-5 py-2 px-4 rounded-lg shadow-lg z-[60] ${alertBoxClass}`}>{alertMessage.message}</div>}
             <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 p-8">
-                    <div className='flex items-start justify-center col-span-1'>
-                        <div className=" md:col-span-1 flex flex-col items-center w-45">
-                            <div className="w-45 h-45 bg-gray-200 border border-[#CCCCCC] rounded-[10px] mb-4 flex items-center justify-center overflow-hidden">
-                                {imagePreview ? (
-                                    <img src={imagePreview} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className='text-center text-gray-500'>
-                                        <ImageUp className='w-16 h-16 mx-auto opacity-50' />
-                                        <span className="text-sm">Foto Profil</span>
-                                    </div>
-                                )}
+                <div className='flex'>
+                    <div className='p-8'>
+                        <div className='flex items-start justify-center col-span-1'>
+                            <div className=" md:col-span-1 flex flex-col items-center w-45">
+                                <div className="w-45 h-45 bg-gray-200 border border-[#CCCCCC] rounded-[10px] mb-4 flex items-center justify-center overflow-hidden">
+                                    {imagePreview ? (
+                                        <img src={imagePreview} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className='text-center text-gray-500'>
+                                            <ImageUp className='w-16 h-16 mx-auto opacity-50' />
+                                            <span className="text-sm">Foto Profil</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <label htmlFor="file-upload" className="w-full cursor-pointer bg-[#24A77B] text-white text-[14px] font-bold py-3 px-4 rounded-lg text-center hover:bg-green-600 mb-2">Pilih Foto</label>
+                                <input id="file-upload" type="file" className="hidden" onChange={handleImageChange} accept="image/png, image/jpeg, image/jpg" />
+                                <p className="text-[12px] text-[#333333] mb-3 text-left">Besar file: maksimum 10 MB. Ekstensi file yang diperbolehkan: .JPG, .JPEG, .PNG</p>
+                                <button type="button" onClick={() => openModal('password')} className="w-full bg-white border border-[#563D7C] text-[#563D7C] font-semibold py-2 px-4 rounded-[5px] hover:bg-gray-50" style={{ lineHeight: '22px' }}>Ubah Password</button>
                             </div>
-                            <label htmlFor="file-upload" className="w-full cursor-pointer bg-[#24A77B] text-white text-[14px] font-bold py-3 px-4 rounded-lg text-center hover:bg-green-600 mb-2">Pilih Foto</label>
-                            <input id="file-upload" type="file" className="hidden" onChange={handleImageChange} accept="image/png, image/jpeg, image/jpg" />
-                            <p className="text-[12px] text-[#333333] mb-3 text-left">Besar file: maksimum 10 MB. Ekstensi file yang diperbolehkan: .JPG, .JPEG, .PNG</p>
-                            <button type="button" onClick={() => openModal('password')} className="w-full bg-white border border-[#563D7C] text-[#563D7C] font-semibold py-2 px-4 rounded-[5px] hover:bg-gray-50" style={{ lineHeight: '22px' }}>Ubah Password</button>
                         </div>
                     </div>
-                    <div className="md:col-span-3 space-y-4">
-                        <div className="mb-5">
-                            <label className="font-[500] mb-3 text-[15px] text-[#444444]">Nama User</label>
-                            <input className="mt-2 shadow-sm appearance-none border border-[#CCCCCC] h-[40px] rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500" type="text" value={formData.namaUser} onChange={(e) => setFormData({ ...formData, namaUser: e.target.value })} />
-                        </div>
-                        <div className="mb-5">
-                            <label className="font-[500] mb-3 text-[15px] text-[#444444]">Email</label>
-                            <div className="mt-2 flex items-center space-x-3 border border-[#CCCCCC] rounded-[5px]">
-                                <input
-                                    className="py-2 px-3 text-gray-700 w-full h-[40px]"
-                                    type="text"
-                                    value={maskEmail(formData.email)}
-                                    disabled
-                                    readOnly
-                                />
+                    <div className='border-l border-[#DDDDDD] w-1' />
+                    <div className='p-8 w-full'>
+                        <table className="w-full table-auto">
+                            <tbody>
+                                <tr className="align-top">
+                                    <td className="py-5 pr-4 w-[160px]">
+                                        <label className="font-bold text-[15px] text-[#444444]">Nama User</label>
+                                    </td>
+                                    <td className="py-2">
+                                        <div className="relative w-full">
+                                            <input
+                                                className="shadow-sm border border-[#CCCCCC] h-[40px] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                type="text"
+                                                value={formData.namaUser}
+                                                placeholder="Username Belum Diatur"
+                                                onChange={(e) => setFormData({ ...formData, namaUser: e.target.value })}
+                                                maxLength={50}
+                                            />
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[13px] text-[#888888]">
+                                                {formData.namaUser.length}/50
+                                            </div>
+                                        </div>
 
-                                <button type="button" onClick={() => openModal('email')} className="bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] hover:bg-green-600 whitespace-nowrap">Ubah</button>
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label className="font-[500] mb-3 text-[15px] text-[#444444]">Nomor Telepon</label>
-                            <div className="mt-2 flex items-center space-x-3 border border-[#CCCCCC] rounded-[5px]">
-                                <input
-                                    className="py-2 px-3 text-gray-700 w-full h-[40px]"
-                                    type="text"
-                                    value={maskPhone(formData.telepon)}
-                                    disabled
-                                    readOnly
-                                />
+                                    </td>
+                                </tr>
 
-                                <button type="button" onClick={() => openModal('telepon')} className="bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] hover:bg-green-600 whitespace-nowrap">Ubah</button>
-                            </div>
-                        </div>
-                        <div className="mb-5">
-                            <label className="font-[500] mb-3 text-[15px] text-[#444444]">Jenis Kelamin</label>
-                            <div className="flex items-center">
-                                <input className="mt-2 py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px]" type="text" value={formData.jenisKelamin} disabled />
-                                <button type="button" onClick={() => openModal('jenisKelamin')} className={`mt-2 py-2 px-4 rounded-r-[5px] whitespace-nowrap ${isEditable.jenisKelamin ? 'bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 h-[40px] cursor-not-allowed'}`} disabled={!isEditable.jenisKelamin}>Ubah</button>
-                            </div>
-                            {isEditable.jenisKelamin ? <p className='text-[#DE4A53] text-[12px] font-[500]'>Hanya dapat diubah 1 kali</p> : <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>}
-                        </div>
-                        <div className="mb-5">
-                            <label className="font-[500] mb-3 text-[15px] text-[#444444]">Tanggal Lahir</label>
-                            <div className="flex items-center">
-                                <input className="mt-2 py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px]" type="text"
-                                    value={formatTanggal(formData.tanggalLahir)} disabled />
-                                <button type="button" onClick={() => openModal('tanggalLahir')} className={`mt-2 py-2 px-4  whitespace-nowrap ${isEditable.tanggalLahir ? 'bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed h-[40px] rounded-r-[5px]'}`} disabled={!isEditable.tanggalLahir}>Ubah</button>
-                            </div>
-                            {isEditable.tanggalLahir ? <p className='text-[#DE4A53] text-[12px] font-[500]'>Hanya dapat diubah 1 kali</p> : <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>}
-                        </div>
+                                <tr className="align-top">
+                                    <td className="py-5 pr-4">
+                                        <label className="font-bold text-[15px] text-[#444444]">Email</label>
+                                    </td>
+                                    <td className="py-2">
+                                        <div className="flex items-center space-x-3 border border-[#CCCCCC] rounded-[5px]">
+                                            <input
+                                                className="py-2 px-3 text-gray-700 w-full h-[40px]  palaceholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                type="text"
+                                                value={maskEmail(formData.email)}
+                                                placeholder='Email Belum Diatur'
+                                                disabled
+                                                readOnly
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => openModal('email')}
+                                                className="bg-[#24A77B] text-white font-semibold text-[14px] py-2 px-4 h-[40px] rounded-r-[5px] hover:bg-green-600 whitespace-nowrap"
+                                            >
+                                                Ubah
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr className="align-top">
+                                    <td className="py-5 pr-4">
+                                        <label className="font-bold text-[15px] text-[#444444]">Nomor Telepon</label>
+                                    </td>
+                                    <td className="py-2">
+                                        <div className="flex items-center space-x-3 border border-[#CCCCCC] rounded-[5px]">
+                                            <input
+                                                className="py-2 px-3 text-gray-700 w-full h-[40px] palaceholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                type="text"
+                                                value={maskPhone(formData.telepon)}
+                                                placeholder='081*******012'
+                                                disabled
+                                                readOnly
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => openModal('telepon')}
+                                                className="bg-[#24A77B] text-white font-semibold text-[14px] py-2 px-4 h-[40px] rounded-r-[5px] hover:bg-green-600 whitespace-nowrap"
+                                            >
+                                                Ubah
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr className="align-top">
+                                    <td className="py-5 pr-4">
+                                        <label className="font-bold text-[15px] text-[#444444]">Jenis Kelamin</label>
+                                    </td>
+                                    <td className="py-2">
+                                        <div>
+                                            <div className="flex items-center">
+                                                <input
+                                                    className="py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px] w-full palaceholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                    type="text"
+                                                    value={formData.jenisKelamin}
+                                                    disabled
+                                                    placeholder='Belum Diatur'
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openModal('jenisKelamin')}
+                                                    className={`py-2 px-4 h-[40px] rounded-r-[5px] whitespace-nowrap ${isEditable.jenisKelamin
+                                                        ? 'bg-[#24A77B] text-white hover:bg-green-600'
+                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                        }`}
+                                                    disabled={!isEditable.jenisKelamin}
+                                                >
+                                                    Ubah
+                                                </button>
+                                            </div>
+                                            {isEditable.jenisKelamin ? (
+                                                <p className="text-[#DE4A53] text-[12px] font-[500] mt-1">Hanya dapat diubah 1 kali</p>
+                                            ) : (
+                                                <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr className="align-top">
+                                    <td className="py-5 pr-4">
+                                        <label className="font-bold text-[15px] text-[#444444]">Tanggal Lahir</label>
+                                    </td>
+                                    <td className="py-2">
+                                        <div>
+                                            <div className="flex items-center">
+                                                <input
+                                                    className="py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px] w-full palaceholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                    type="text"
+                                                    value={formatTanggal(formData.tanggalLahir)}
+                                                    disabled
+                                                    placeholder='Belum Diatur'
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openModal('tanggalLahir')}
+                                                    className={`py-2 px-4 h-[40px] rounded-r-[5px] whitespace-nowrap ${isEditable.tanggalLahir
+                                                        ? 'bg-[#24A77B] text-white hover:bg-green-600'
+                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                        }`}
+                                                    disabled={!isEditable.tanggalLahir}
+                                                >
+                                                    Ubah
+                                                </button>
+                                            </div>
+                                            {isEditable.tanggalLahir ? (
+                                                <p className="text-[#DE4A53] text-[12px] font-[500] mt-1">Hanya dapat diubah 1 kali</p>
+                                            ) : (
+                                                <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
-                <div className="flex justify-end mt-8 border-t border-[#DDDDDD] p-6">
-                    <button type="button" className="bg-[#F6E9F0] border border-[#563D7C] text-[#563D7C] text-[14px] font-semibold py-2 px-10 rounded-[5px] hover:bg-gray-300 mr-4">Batal</button>
-                    <button type="submit" className="bg-[#563D7C] text-white text-[14px] font-semibold py-2 px-6 rounded-[5px] hover:bg-purple-800">Simpan </button>
+                <div className='flex justify-end gap-2 p-4 border-t border-[#DDDDDD]'>
+                    <button type="button" className="bg-[#F6E9F0] border border-[#563D7C] text-[#563D7C] text-[14px] font-semibold py-2 px-12 rounded-[5px] hover:bg-gray-300">Batal</button>
+                    <button type="submit" className="bg-[#563D7C] text-white text-[14px] font-semibold py-2 px-12 rounded-[5px] hover:bg-purple-800">Simpan </button>
                 </div>
-            </form>
+
+            </form >
             <Modal isOpen={!!activeModal} onClose={closeModal} title={getModalTitle()}>{renderModalContent()}</Modal>
             {
                 loading && <Loading />
             }
-            {snackbar.isOpen && (
-                <Snackbar
-                    message={snackbar.message}
-                    type={snackbar.type}
-                    isOpen={snackbar.isOpen}
-                    onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
-                />
-            )}
-        </div>
+            {
+                snackbar.isOpen && (
+                    <Snackbar
+                        message={snackbar.message}
+                        type={snackbar.type}
+                        isOpen={snackbar.isOpen}
+                        onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                    />
+                )
+            }
+        </div >
     );
 };
 

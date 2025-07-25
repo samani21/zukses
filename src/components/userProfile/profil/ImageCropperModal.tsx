@@ -147,7 +147,7 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
     }
 
     const handleResizeMove = (deltaX: number, deltaY: number) => {
-        const { startBoxX, startBoxY, startBoxWidth, resizeDirection } = interactionState;
+        const { startBoxX, startBoxY, resizeDirection } = interactionState;
         if (!imageRef.current || !cropBoxRef.current || !resizeDirection) return;
 
         const image = imageRef.current;

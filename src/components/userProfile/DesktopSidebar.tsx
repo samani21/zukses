@@ -83,12 +83,12 @@ const DesktopSidebar = () => {
 
     // Fungsi untuk me-render setiap item navigasi
     const renderNavItem = (item: NavItem, isSubItem: boolean = false) => (
-        <li key={item.name}>
+        <li key={item.name} className='px-4'>
             <button
                 onClick={() => router.push(item.url)}
-                className={`w-full flex items-center text-left py-1.5 px-6 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
+                className={`w-full flex items-center text-left py-3 px-6 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
                     } ${router.pathname === item.url
-                        ? 'bg-[#F2F4F7] text-[#333333] font-bold' // Contoh styling untuk item aktif
+                        ? 'bg-[#7952B3] rounded-[5px] text-[#FFFFFF] font-bold' // Contoh styling untuk item aktif
                         : 'text-[#222222] hover:bg-gray-100'
                     }`}
             >
@@ -142,9 +142,9 @@ const DesktopSidebar = () => {
                         </ul>
                     </div>
                 </nav>
-
+                <div className='w-full h-1 border-t border-[#BBBBBBCC] mb-2'/>
                 {/* Tombol Aksi di Bagian Bawah */}
-                <div className="mt-auto p-2 space-y-2">
+                <div className="mt-auto p-2 px-4  space-y-2">
                     <button
                         onClick={() => router.push('/my-shop')}
                         className="w-full bg-[#F78900] h-[40px] text-white font-semibold text-[14px] p-2 rounded-[5px] hover:bg-orange-600 transition-colors"
