@@ -4,10 +4,11 @@ import { Response } from 'services/api/types';
 import { X } from 'lucide-react';
 import { Checkbox, Switch } from '@mui/material';
 import { SwitchContainer } from 'components/Profile/AddressComponent';
+import BankListbox from './BankListbox';
 
 type Banks = {
-    name_bank?: string;
-    id?: number;
+    name_bank: string;
+    id: number;
 };
 
 type BankAccountData = {
@@ -123,30 +124,25 @@ const AddBankAccountModal = ({ onClose, handleAdd, editBank }: Props) => {
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="w-[748px] bg-white rounded-lg shadow-xl">
-                <div className="flex justify-between items-center p-4 px-7 h-[60px] bg-[#227D53]">
-                    <h2 className="text-[20px] text-white font-semibold">Tambah rekening</h2>
+                <div className="flex justify-between items-center p-4 px-7 h-[60px] bg-[#fff]">
+                    <h2 className="tracking-[-0.05em] text-[#333333] text-[20px] font-bold">Tambah rekening</h2>
                     <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
-                        <X className="w-6 h-6 text-white" />
+                        <X className="w-[25px] h-[25px] text-[333333]" />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="p-6 space-y-4">
                         <div className="relative mb-4.5">
-                            <select
-                                value={selectedBankId}
-                                onChange={(e) => {
-                                    setSelectedBankId(parseInt(e.target.value));
-                                    setAccountHolderName(null);
-                                    setErrors(prev => ({ ...prev, bank: undefined }));
-                                }}
-                                className={`w-full h-[50px] border px-3 pr-10 py-3 focus:outline-none focus:ring-2 ${errors.bank ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}`}
-                            >
-                                <option value="">Nama Bank</option>
-                                {banks?.map((b, i) => (
-                                    <option value={b?.id} key={i}>{b?.name_bank}</option>
-                                ))}
-                            </select>
+                            <BankListbox
+                                banks={banks}
+                                selectedBankId={selectedBankId}
+                                setSelectedBankId={setSelectedBankId}
+                                setAccountHolderName={setAccountHolderName}
+                                errors={errors}
+                                setErrors={setErrors}
+                            />
+
                             {errors.bank && <p className="text-xs text-red-500 mt-1 ml-1">{errors.bank}</p>}
                         </div>
 
@@ -182,11 +178,11 @@ const AddBankAccountModal = ({ onClose, handleAdd, editBank }: Props) => {
                         </div>
                     </div>
 
-                    <div className='flex items-center px-4 mt-[-15px]'>
+                    <div className='flex items-center px-4 mt-[-15px]' onClick={() => setIsPrimary(prev => !prev)}>
                         <SwitchContainer>
                             <Checkbox
                                 checked={isPrimary}
-                                onChange={(e) => setIsPrimary(e.target.checked)}
+                                // onChange={(e) => setIsPrimary(e.target.checked)}
                                 sx={{
                                     color: '#52357B',
                                     '&.Mui-checked': { color: '#52357B' },
@@ -196,7 +192,7 @@ const AddBankAccountModal = ({ onClose, handleAdd, editBank }: Props) => {
                         <SwitchContainer className='mobile'>
                             <Switch
                                 checked={isPrimary}
-                                onChange={(e) => setIsPrimary(e.target.checked)}
+                                // onChange={(e) => setIsPrimary(e.target.checked)}
                                 sx={{
                                     '& .MuiSwitch-switchBase.Mui-checked': {
                                         color: '#52357B',
@@ -205,12 +201,12 @@ const AddBankAccountModal = ({ onClose, handleAdd, editBank }: Props) => {
                                 }}
                             />
                         </SwitchContainer>
-                        <p className='text-[16px] font-semibold text-[#333333]'>Tetapkan sebagai alamat utama</p>
+                        <p className='text-[16px] font-semibold text-[#333333] cursor-pointer'>Tetapkan sebagai alamat utama</p>
                     </div>
 
                     {errors.submit && <p className="text-sm text-red-600 mb-3 text-center">{errors.submit}</p>}
 
-                    <div className="p-4 bg-[#EEEEEE] h-[70px] rounded-b-lg flex justify-between md:justify-end gap-3 mt-[10px]">
+                    <div className="p-4 px-6 h-[70px] rounded-b-lg flex justify-between md:justify-end gap-3">
                         <button
                             type="button"
                             onClick={handleClose}

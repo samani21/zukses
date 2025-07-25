@@ -8,7 +8,7 @@ import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
 import Get from 'services/api/Get';
 import { ModalContainer } from 'components/Profile/ModalContainer';
-import ModalDeleteBank from './ModalDeleteBank';
+import ModalDeleteBank from '../ModalDeleteBank';
 import Delete from 'services/api/Delete';
 
 type BankAccountData = {
