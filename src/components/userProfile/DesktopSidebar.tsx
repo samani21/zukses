@@ -98,7 +98,7 @@ const DesktopSidebar = () => {
     );
 
     return (
-        <aside className="w-[243px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden border border-[#DCDCDC] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+        <aside className="w-[243px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden rounded-[5px] border border-[#DCDCDC] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
             {/* Header Profil dengan Latar Belakang Hijau */}
             <div className="flex items-center gap-3 p-4 bg-[#00AA5B] h-[60px] text-white">
                 {
