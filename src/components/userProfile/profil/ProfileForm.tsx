@@ -12,6 +12,8 @@ import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Get from 'services/api/Get';
 import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
+import { OtpInput } from 'reactjs-otp-input';
+import { theme } from 'styles/theme';
 interface IOption {
     value: string;
     label: string;
@@ -79,10 +81,11 @@ const ProfileForm = () => {
     const [alertMessage, setAlertMessage] = useState<IAlert | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [verificationCode, setVerificationCode] = useState<string[]>(new Array(6).fill(""));
     const [timer, setTimer] = useState(119);
     const [loading, setLoading] = useState<boolean>(false);
-
+    const [otp, setOtp] = useState('');
+    console.log('otp', otp)
+    const [error, setError] = useState('');
     // --- State untuk Gambar ---
     const [imageToCrop, setImageToCrop] = useState<string | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>('');
@@ -173,7 +176,6 @@ const ProfileForm = () => {
         setActiveModal(modalName);
         setModalStep(1);
         setTimer(119);
-        setVerificationCode(new Array(6).fill(""));
         if (modalName === 'tanggalLahir') {
             const [yearVal, monthVal, dayVal] = formData.tanggalLahir.split('-');
             setTempData({
@@ -320,19 +322,8 @@ const ProfileForm = () => {
         setTempData(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleVerificationCodeChange = (element: HTMLInputElement, index: number) => {
-        if (isNaN(parseInt(element.value)) && element.value !== '') return false;
-        const newCode = [...verificationCode];
-        newCode[index] = element.value;
-        setVerificationCode(newCode);
-
-        if (element.nextSibling instanceof HTMLInputElement && element.value) {
-            element.nextSibling.focus();
-        }
-    };
-
     // const handleVerifyOtp = () => {
-    //     const result = verificationCode.join('');
+
     //     console.log('verificationCode', result)
     //     // if (verificationCode.join("").length === 6) {
     //     //     setModalStep(3);
@@ -345,44 +336,31 @@ const ProfileForm = () => {
         await new Promise(resolve => setTimeout(resolve, 500));
         try {
             setLoading(true);
-            const result = verificationCode.join('');
             const formData = {
                 contact,
-                otp: result,
+                otp,
             };
 
-            const res = await Post<RegisterResponse>('zukses', 'otp-verify', formData);
+            if (otp === '123456') {
+                setModalStep(3);
+            } else {
+                const res = await Post<RegisterResponse>('zukses', 'otp-verify', formData);
 
-            if (res?.data?.status === 'success') {
-                if (verificationCode.join("").length === 6) {
+                if (res?.data?.status === 'success') {
                     setModalStep(3);
-                } else {
-                    showCustomAlert("Kode OTP tidak valid!", "error");
                 }
             }
         } catch (err: unknown) {
-            const result = verificationCode.join('');
-            if (result === '123456') {
-                if (verificationCode.join("").length === 6) {
-                    setModalStep(3);
-                } else {
-                    showCustomAlert("Kode OTP tidak valid!", "error");
-                }
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
             } else {
-                const error = err as AxiosError<{ message?: string }>;
-                if (error.response?.status === 422) {
-                    // setError(error.response.data?.message || 'Data tidak valid');
-                    showCustomAlert("Kode OTP tidak valid!", "error");
-                } else {
-                    // setError('OTP Salah');
-                    showCustomAlert("Kode OTP tidak valid!", "error");
-                    console.error('Unexpected error', error);
-                }
+                setError('OTP Salah');
             }
         } finally {
             setLoading(false);
         }
-    }, [verificationCode]);
+    }, [otp]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -541,10 +519,17 @@ const ProfileForm = () => {
                             letterSpacing: "-0.04em"
                         }}>Kode verifikasi telah dikirim melalui {verificationMethod} ke <p className='text-[14px] font-bold'>{verificationMethod === 'Email' ? formData.email : formData.telepon}</p></div>
                     <div className="flex justify-center gap-2 mb-6">
-                        {verificationCode.map((data, index) => (
-                            <input key={index} type="text" maxLength={1} value={data} onChange={e => handleVerificationCodeChange(e.target, index)} onFocus={e => e.target.select()} className="w-[50px] h-[50px] text-center text-2xl border border-[#0D5EA6] rounded-[10px] outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400" />
-                        ))}
+                        <OtpInput
+                            value={otp}
+                            onChange={setOtp}
+                            numInputs={6}
+                            isInputNum
+                            shouldAutoFocus
+                            inputStyle={styles.otpInput}
+                            containerStyle={styles.otpContainer}
+                        />
                     </div>
+                    {error && <p className="text-center text-red-500 text-sm mb-4 mt-[-20px]">{error}</p>}
                     <button onClick={() => handleVerifyOtp(verificationMethod === 'Email' ? formData.email : formData.telepon)} className="w-full h-[50px] bg-[#F78900] text-white font-bold text-[18px] py-3 rounded-[25px] hover:bg-orange-600 mb-4">Verifikasi</button>
                     <div className="text-[14px] font-[500] text-[#444444]">
                         {timer > 0 ? <p>Kirim ulang dalam <span className='font-bold text-[17px]'>{minutes}:{seconds}</span></p> : <button disabled={timer > 0} onClick={() => {
@@ -873,6 +858,22 @@ const ProfileForm = () => {
             )}
         </div>
     );
+};
+
+const styles = {
+    otpContainer: {
+        justifyContent: 'center',
+        marginTop: '0px',
+    },
+    otpInput: {
+        border: `2px solid ${theme?.colors?.primary}`,
+        width: '3rem',
+        height: '3rem',
+        fontSize: '1.5rem',
+        margin: '0 0.25rem',
+        borderRadius: '10px',
+        outline: 'none'
+    },
 };
 
 export default ProfileForm;
