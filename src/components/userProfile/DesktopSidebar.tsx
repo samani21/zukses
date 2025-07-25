@@ -155,7 +155,7 @@ const DesktopSidebar = () => {
                     </button>
                     <button
                         onClick={handleLogout}
-                        className="w-full bg-[#F6E9F0] text-[#563D7C] border border-[#563D7C]  h-[40px] font-semibold text-[14px] p-2 rounded-[5px] hover:bg-gray-200 transition-colors"
+                        className="w-full bg-[#F6E9F0] text-[#563D7C]   h-[40px] font-semibold text-[14px] p-2 rounded-[5px] hover:bg-gray-200 transition-colors"
                     >
                         Logout
                     </button>
