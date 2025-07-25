@@ -363,11 +363,11 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         </LocationContainer>
                                     )}
                                 </div>
-                                <div className='flex items-center'>
+                                <div className='flex items-center' onClick={() => handleChange('isPrivate', !formData.isPrivate)}>
                                     <SwitchContainer>
                                         <Checkbox
                                             checked={formData.isPrivate}
-                                            onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                                            // onChange={(e) => handleChange('isPrivate', e.target.checked)}
                                             sx={{
                                                 color: '#52357B',
                                                 '&.Mui-checked': {
@@ -379,7 +379,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                     <SwitchContainer className='mobile'>
                                         <Switch
                                             checked={formData.isPrivate}
-                                            onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                                            // onChange={(e) => handleChange('isPrivate', e.target.checked)}
                                             sx={{
                                                 '& .MuiSwitch-switchBase.Mui-checked': {
                                                     color: '#52357B',
@@ -390,7 +390,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                             }}
                                         />
                                     </SwitchContainer>
-                                    <p className='text-[16px] font-semibold text-[#333333]'>Tetapkan sebagai alamat utama</p>
+                                    <p className='text-[16px] font-semibold text-[#333333] cursor-pointer'>Tetapkan sebagai alamat utama</p>
                                 </div>
                                 <div className='flex items-center justify-end gap-2'>
                                     <button onClick={handleClose} className="h-[44px] hidden md:block rounded-[10px] text-[#333333] font-semibold text-[16px] bg-white border border-[#AAAAAA] w-[100px]">Nanti Saja</button>

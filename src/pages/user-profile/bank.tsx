@@ -1,4 +1,4 @@
-import BankAccountPage from 'components/userProfile/BankAccountPage'
+import BankAccountPage from 'components/userProfile/bank/BankAccountPage'
 import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
 
