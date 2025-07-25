@@ -215,7 +215,7 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                         setLong={(val) => handleChange('long', val)}
                         setOpenMaps={setOpenMaps}
                     /> :
-                        <div className="bg-white h-full md:h-50%  shadow-xl w-full max-w-2xl overflow-y-auto no-scrollbar">
+                        <div className="bg-white h-full md:h-50%  shadow-xl rounded-[10px] w-full max-w-2xl overflow-y-auto no-scrollbar">
                             <div className="hidden md:flex text-[#333333] justify-between items-center p-6 px-7">
                                 <h2 className="text-[22px] font-bold tracking-[-5%]" >Alamat Baru</h2>
                                 <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
@@ -342,7 +342,17 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                         helperText={errors.fullAddressStreet}
                                         autoComplete="off"
                                         multiline
-                                        rows={4}
+                                        minRows={1} // Minimum height (sekitar 1 baris)
+                                        maxRows={10} // Opsional: tinggi maksimal
+                                        InputProps={{
+                                            sx: {
+                                                minHeight: '50px', // Tinggi minimal 50px
+                                                textarea: {
+                                                    resize: 'none', // Hilangkan resize handle default (opsional)
+                                                    padding: '4px', // Atur padding agar tinggi sesuai
+                                                }
+                                            }
+                                        }}
                                     />
                                     <div className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>
                                         <p>Contoh : Jalan Kenangan I Lorong 12 RT 03 RW 02</p>

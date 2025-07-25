@@ -123,8 +123,8 @@ const AddBankAccountModal = ({ onClose, handleAdd, editBank }: Props) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="w-[748px] bg-white rounded-lg shadow-xl">
-                <div className="flex justify-between items-center p-4 px-7 h-[60px] bg-[#fff]">
+            <div className="w-[748px] bg-white rounded-[10px] shadow-xl">
+                <div className="flex justify-between rounded-[10px] items-center p-4 px-7 h-[60px] bg-[#fff]">
                     <h2 className="tracking-[-0.05em] text-[#333333] text-[20px] font-bold">Tambah rekening</h2>
                     <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                         <X className="w-[25px] h-[25px] text-[333333]" />
