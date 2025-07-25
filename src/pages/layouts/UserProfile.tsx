@@ -45,7 +45,7 @@ export default function UserProfile({ children }: { children: React.ReactNode })
             <div className='hidden md:block'>
                 <Header />
             </div>
-            <div className="min-h-screen font-sans py-[33px] ">
+            <div className="min-h-screen font-sans py-[33px]  pt-[20px]">
                 <div className="container mx-auto p-0 md:p-0 md:px-0 flex rounded-lg  w-[1200px]">
                     <div className="">
                         <DesktopSidebar />

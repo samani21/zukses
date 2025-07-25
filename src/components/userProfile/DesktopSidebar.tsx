@@ -39,18 +39,16 @@ const profileItems: NavItem[] = [
 ];
 
 // Grup Pesanan (dengan struktur bersarang)
-const orderItems: NavItem = {
-    name: 'Pesanan Saya',
-    url: '/user-profile/my-order',
-    children: [
-        { name: 'Belum Bayar', url: '/user-profile/orders/pending' },
-        { name: 'Sedang Dikemas', url: '/user-profile/orders/packing' },
-        { name: 'Dikirim', url: '/user-profile/orders/shipped' },
-        { name: 'Selesai', url: '/user-profile/orders/completed' },
-        { name: 'Dibatalkan', url: '/user-profile/orders/cancelled' },
-        { name: 'Pengembalian', url: '/user-profile/orders/refund' },
-    ]
-};
+const orderItems: NavItem[] = [
+    { name: 'Pesanan Saya', url: '/user-profile/my-order', },
+    { name: 'Belum Bayar', url: '/user-profile/orders/pending', },
+    { name: 'Sedang Dikemas', url: '/user-profile/orders/packing', },
+    { name: 'Dikirim', url: '/user-profile/orders/shipped', },
+    { name: 'Selesai', url: '/user-profile/orders/completed', },
+    { name: 'Dibatalkan', url: '/user-profile/orders/cancelled', },
+    { name: 'Pengembalian', url: '/user-profile/orders/refund', },
+
+];
 
 // Grup Aktivitas Lainnya
 const activityItems: NavItem[] = [
@@ -83,13 +81,13 @@ const DesktopSidebar = () => {
 
     // Fungsi untuk me-render setiap item navigasi
     const renderNavItem = (item: NavItem, isSubItem: boolean = false) => (
-        <li key={item.name} className='px-4'>
+        <li key={item.name} className='px-2.5'>
             <button
                 onClick={() => router.push(item.url)}
-                className={`w-full flex items-center text-left py-3 px-6 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
+                className={` flex items-center text-left mb-[15px] px-4 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
                     } ${router.pathname === item.url
-                        ? 'bg-[#7952B3] rounded-[5px] text-[#FFFFFF]' // Contoh styling untuk item aktif
-                        : 'text-[#222222] hover:bg-gray-100'
+                        ? 'bg-[#00AA5B] w-[209px] rounded-[15px] h-[30px] font-semibold text-[#FFFFFF]' // Contoh styling untuk item aktif
+                        : 'text-[#444444] hover:bg-gray-100 rounded-[15px] h-[30px]'
                     }`}
             >
                 <span className="tracking-[0px]">{item.name}</span>
@@ -98,9 +96,9 @@ const DesktopSidebar = () => {
     );
 
     return (
-        <aside className="w-[243px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden rounded-[5px] border border-[#DCDCDC] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+        <aside className="w-[230px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden rounded-[20px] border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
             {/* Header Profil dengan Latar Belakang Hijau */}
-            <div className="flex items-center gap-3 p-4 bg-[#00AA5B] h-[60px] text-white">
+            <div className="flex items-center gap-3 p-4 bg-[#7952B3] h-[60px] text-white">
                 {
                     user?.image ? <img src={user?.image} className='w-[40px] h-[40px] rounded-full' /> : <div className='w-[40px] h-[40px] rounded-full border border-[#BBBBBB] bg-[#F2F4F7] text-[#4A52B2] flex items-center justify-center font-bold text-[17px]'>
                         {/* Mengambil inisial nama, contoh: "Irvan Mamala" -> "IM" */}
@@ -119,21 +117,15 @@ const DesktopSidebar = () => {
                             {profileItems.map(item => renderNavItem(item))}
                         </ul>
                     </div>
-                    <div className='h-1  border-t border-[#BBBBBBCC]' />
+                    <div className='h-1 mb-[10px]  border-t border-[#DDDDDD]' />
                     {/* Grup Pesanan */}
                     <div className='mb-2'>
                         <ul>
-                            {renderNavItem(orderItems)}
-                            {/* Render sub-item jika ada */}
-                            {orderItems.children && (
-                                <ul>
-                                    {orderItems.children.map(child => renderNavItem(child, true))}
-                                </ul>
-                            )}
+                            {orderItems.map(item => renderNavItem(item))}
                         </ul>
                     </div>
 
-                    <div className='h-1  border-t border-[#BBBBBBCC]' />
+                    <div className='h-1 mb-[10px]  border-t border-[#DDDDDD]' />
 
                     {/* Grup Aktivitas */}
                     <div className='mb-2'>
@@ -142,7 +134,7 @@ const DesktopSidebar = () => {
                         </ul>
                     </div>
                 </nav>
-                <div className='w-full h-1 border-t border-[#BBBBBBCC] mb-2' />
+                <div className='w-full h-1 mb-[10px] border-t border-[#DDDDDD] mb-2' />
                 {/* Tombol Aksi di Bagian Bawah */}
                 <div className="mt-auto p-2 px-4  space-y-2 mb-[20px]">
                     <button
