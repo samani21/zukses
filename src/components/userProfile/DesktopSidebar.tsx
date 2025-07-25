@@ -111,7 +111,9 @@ const DesktopSidebar = () => {
             </div>
 
             {/* Kontainer untuk semua menu item */}
-            <div className='flex flex-col flex-grow mt-4'>
+            <div className='flex flex-col flex-grow mt-4' style={{
+                letterSpacing:"0%"
+            }}>
                 <nav className="flex-grow">
                     {/* Grup Profil */}
                     <div className='mb-2'>
