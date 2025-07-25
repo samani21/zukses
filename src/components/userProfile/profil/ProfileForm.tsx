@@ -811,7 +811,6 @@ const ProfileForm = () => {
                                                 {formData.namaUser.length}/50
                                             </div>
                                         </div>
-
                                     </td>
                                 </tr>
 
@@ -872,30 +871,10 @@ const ProfileForm = () => {
                                     <td className="py-2">
                                         <div>
                                             <div className="flex items-center">
-                                                <input
-                                                    className="py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px] w-full palaceholder:font-[500] placeholder:text-[#888888] text-[15px]"
-                                                    type="text"
-                                                    value={formData.jenisKelamin}
-                                                    disabled
-                                                    placeholder='Belum Diatur'
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openModal('jenisKelamin')}
-                                                    className={`py-2 px-4 h-[40px] rounded-r-[5px] whitespace-nowrap ${isEditable.jenisKelamin
-                                                        ? 'bg-[#24A77B] text-white hover:bg-green-600'
-                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                        }`}
-                                                    disabled={!isEditable.jenisKelamin}
-                                                >
-                                                    Ubah
-                                                </button>
+                                                <input className="mt-2 py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px]" type="text" value={formData.jenisKelamin} disabled />
+                                                <button type="button" onClick={() => openModal('jenisKelamin')} className={`mt-2 py-2 px-4 rounded-r-[5px] whitespace-nowrap ${isEditable.jenisKelamin ? 'bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 h-[40px] cursor-not-allowed'}`} disabled={!isEditable.jenisKelamin}>Ubah</button>
                                             </div>
-                                            {isEditable.jenisKelamin ? (
-                                                <p className="text-[#DE4A53] text-[12px] font-[500] mt-1">Hanya dapat diubah 1 kali</p>
-                                            ) : (
-                                                <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>
-                                            )}
+                                            {isEditable.jenisKelamin ? <p className='text-[#DE4A53] text-[12px] font-[500]'>Hanya dapat diubah 1 kali</p> : <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>}
                                         </div>
                                     </td>
                                 </tr>
@@ -907,30 +886,11 @@ const ProfileForm = () => {
                                     <td className="py-2">
                                         <div>
                                             <div className="flex items-center">
-                                                <input
-                                                    className="py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px] w-full palaceholder:font-[500] placeholder:text-[#888888] text-[15px]"
-                                                    type="text"
-                                                    value={formatTanggal(formData.tanggalLahir)}
-                                                    disabled
-                                                    placeholder='Belum Diatur'
-                                                />
-                                                <button
-                                                    type="button"
-                                                    onClick={() => openModal('tanggalLahir')}
-                                                    className={`py-2 px-4 h-[40px] rounded-r-[5px] whitespace-nowrap ${isEditable.tanggalLahir
-                                                        ? 'bg-[#24A77B] text-white hover:bg-green-600'
-                                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                        }`}
-                                                    disabled={!isEditable.tanggalLahir}
-                                                >
-                                                    Ubah
-                                                </button>
+                                                <input className="mt-2 py-2 px-3 h-[40px] text-gray-700 border border-[#CCCCCC] rounded-l-[5px]" type="text"
+                                                    value={formatTanggal(formData.tanggalLahir)} disabled />
+                                                <button type="button" onClick={() => openModal('tanggalLahir')} className={`mt-2 py-2 px-4  whitespace-nowrap ${isEditable.tanggalLahir ? 'bg-[#24A77B] text-white font-semibold text-[14px] py-2 rounded-r-[5px] px-4 h-[40px] text-white hover:bg-green-600' : 'bg-gray-300 text-gray-500 cursor-not-allowed h-[40px] rounded-r-[5px]'}`} disabled={!isEditable.tanggalLahir}>Ubah</button>
                                             </div>
-                                            {isEditable.tanggalLahir ? (
-                                                <p className="text-[#DE4A53] text-[12px] font-[500] mt-1">Hanya dapat diubah 1 kali</p>
-                                            ) : (
-                                                <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>
-                                            )}
+                                            {isEditable.tanggalLahir ? <p className='text-[#DE4A53] text-[12px] font-[500]'>Hanya dapat diubah 1 kali</p> : <p className="text-green-600 text-xs mt-1">✓ Sudah diubah</p>}
                                         </div>
                                     </td>
                                 </tr>
