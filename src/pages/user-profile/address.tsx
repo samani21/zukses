@@ -173,28 +173,33 @@ const AddressPage = () => {
     return (
         <UserProfile>
             <div className="w-full">
-                <div className="flex justify-between px-3">
-                    <h2 className="text-[20px] font-bold text-[#444444] mb-6 ">Alamat Saya</h2>
-                    <button className="bg-[#563D7C] text-white font-semibold text-[14px] rounded-[5px] px-4 py-2 w-[150px] h-[40px]" onClick={() => {
-                        setOpenModalAddAdress(true)
-                        setIsAdd(true);
-                    }}>
-                        Tambah Alamat
-                    </button>
+                <div className="grid grid-cols-4 mt-2">
+                    <div className='col-span-3'>
+                        <h2 className="text-[22px] font-bold text-[#7952B3] mb-2">Alamat Saya</h2>
+                        <p className='text-[#444444] text-[14px] w-[75%]' style={{ lineHeight: "115%" }}>Tambahkan atau ubah alamat pengiriman serta Pastikan alamat selalu terbaru untuk kelancaran pengiriman dan memastikan pesananmu sampai dengan tepat dan cepat.</p>
+                    </div>
+                    <div className='col-span-1 flex justify-end'>
+                        <button className="bg-[#563D7C] text-white font-semibold text-[14px] rounded-[5px] px-4 py-2 w-[150px] h-[40px]" onClick={() => {
+                            setOpenModalAddAdress(true)
+                            setIsAdd(true);
+                        }}>
+                            Tambah Alamat
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <div className="space-y-4 mt-5">
                         {addresses.map(address => (
-                            <div key={address.id} className="border-t border-[#CCCCCCCC] pt-4 flex flex-col md:flex-row gap-4 px-5">
-                                <div className="flex-grow space-y-1 text-[#333333]">
+                            <div key={address.id} className="bg-[#FFFFFF] border border-[#DCDCDC] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] p-6 flex flex-col md:flex-row gap-4 rounded-[5px]">
+                                <div className="flex-grow text-[#333333]">
                                     <div className="flex items-baseline">
                                         <span className="font-bold text-[16px] mr-1">{address.name_receiver}</span>
                                         <span className='text-[16px]'> | {address.number_receiver}</span>
                                     </div>
                                     <p className='mt-2 text-[14px]'>{address.full_address}</p>
                                     <p className='mt-[-5px] text-[14px]'>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
-                                    <div className="flex gap-2 mt-1">
-                                        {address.is_primary ? <span className="text-[#E67514] font-bold text-[14px] py-0.5 rounded-sm">Alamat Utama</span> : ''}
+                                    <div className="flex gap-">
+                                        {address.is_primary ? <span className="text-[#E67514] font-bold text-[14px] rounded-sm">Alamat Utama</span> : ''}
                                     </div>
                                 </div>
                                 <div className="flex-shrink-0 flex flex-col items-end gap-2">
@@ -207,7 +212,7 @@ const AddressPage = () => {
                                     </div>
                                     {
                                         !address.is_primary &&
-                                        <button className="border border-[#CCCCCC] rounded-[5px] px-4 py-1.5 text-[14px] font-semibold text-[#333333]" onClick={() => handlePrimary(address?.id)}>Atur sebagai utama</button>
+                                        <button className="border border-[#CCCCCC] h-[40px] rounded-[5px] px-4 py-1.5 text-[14px] font-semibold text-[#333333]" onClick={() => handlePrimary(address?.id)}>Atur sebagai utama</button>
                                     }
                                 </div>
                             </div>

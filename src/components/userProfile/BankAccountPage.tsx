@@ -151,26 +151,28 @@ const BankAccountPage = () => {
     console.log('editBank', editBank)
     return (
         <div className="w-full">
-            <div className="md:flex justify-between items-start mb-6">
-                <div>
-                    <p className="text-[20px] font-bold text-[#444444]">Rekening Bank Saya</p>
-                    <p className="text-[16px] text-[#333333]">Maksimal 3 Nomor Rekening</p>
+            <div className="md:grid grid-cols-4 mb-6">
+                <div className='col-span-3'>
+                    <p className="text-[20px] font-bold text-[#7952B3]">Rekening Bank Saya</p>
+                    <p className='text-[#444444] text-[14px] w-[75%] mt-2' style={{ lineHeight: "115%" }}>Simpan dan kelola informasi rekening bank Anda untuk memudahkan proses pengembalian dana dan transaksi lainnya. (Tambahkan Maks. 3 Rekening)</p>
                 </div>
-                {
-                    bankAccount?.length < 3 &&
-                    <button className="bg-[#563D7C] w-[150px] h-[40px] text-white text-[14px] rounded-[5px] font-semibold" onClick={() => setIsModalOpen(true)}>
-                        Tambah Rekening
-                    </button>
-                }
+                <div className='col-span-1 flex justify-end'>
+                    {
+                        bankAccount?.length < 3 &&
+                        <button className="bg-[#563D7C] w-[150px] h-[40px] text-white text-[14px] rounded-[5px] font-semibold" onClick={() => setIsModalOpen(true)}>
+                            Tambah Rekening
+                        </button>
+                    }
+                </div>
             </div>
-            <div className='py-4 mt-[-10px]'>
+            <div className='py-4 mt-[-10px] space-y-4'>
                 {
                     bankAccount?.map((ab, i) => (
-                        <div className="border-t border-[#CCCCCCCC]/80 px-4 pt-4 flex flex-col md:flex-row gap-4 items-start pb-4" key={i}>
+                        <div className="bg-[#FFFFFF] border border-[#DCDCDC] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] p-6  flex flex-col md:flex-row gap-4 items-start" key={i}>
                             <img src={ab?.icon} alt={ab?.name_bank} className="" width={67.5} height={22} />
                             <div className="flex-grow text-[#333333]">
                                 <p className="text-[13px]">{ab?.name_bank}</p>
-                                <p className="text-[16px] font-semibold">{ab?.account_number}</p>
+                                <p className="text-[16px] font-bold">{ab?.account_number}</p>
                                 <p className="text-[15px]">a.n {ab?.account_name}</p>
                                 {
                                     ab?.is_primary ? <p className='text-[#E67514] text-[14px] font-bold'>Rekening Utama</p> : ''
@@ -184,7 +186,7 @@ const BankAccountPage = () => {
                                     }
                                 </div>
                                 {
-                                    ab?.is_primary ? "" : <button className="border border-[#CCCCCC] rounded-[5px] px-4 py-1.5 text-[14px] font-semibold text-[#333333]" onClick={() => handlePrimary(ab?.id)}>Atur sebagai utama</button>
+                                    ab?.is_primary ? "" : <button className="border h-[40px] border-[#CCCCCC] rounded-[5px] px-4 py-1.5 text-[14px] font-semibold text-[#333333]" onClick={() => handlePrimary(ab?.id)}>Atur sebagai utama</button>
                                 }
                             </div>
                         </div>
