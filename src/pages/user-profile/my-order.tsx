@@ -1,201 +1,450 @@
-// pages/MyOrderPage.tsx
-'use client'; // Penting untuk menggunakan React Hooks seperti useState jika UserProfile tidak 'use client'
+'use client';
 
-import React, { useState } from 'react';
+import CancelOrderModal from 'components/userProfile/MyOrder/CancelOrderModal';
+import ReturnOrderModal from 'components/userProfile/MyOrder/ReturnOrderModal';
 import UserProfile from 'pages/layouts/UserProfile';
+import React, { useState } from 'react';
+
+// --- Icon Components (Inline SVG for simplicity) ---
+const SearchIcon = () => (
+    <svg className="w-5 h-5 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+    </svg>
+);
+
+interface variant {
+    variant: string,
+    option: string
+}
+
 // --- Definisi Tipe Data ---
-// Pastikan definisi tipe ini konsisten di seluruh aplikasi Anda
 interface Product {
     id: string;
     name: string;
     image: string;
     price: number;
     quantity: number;
+    variant?: variant[]
 }
 
 interface Order {
     id: string;
     storeName: string;
     status: 'SELESAI' | 'DIBATALKAN' | 'BELUM_BAYAR' | 'SEDANG_DIKEMAS' | 'DIKIRIM' | 'PENGEMBALIAN';
-    deliveryInfo?: string;
     products: Product[];
     totalPrice: number;
+    receiver?: string;
+    arrived?: boolean
 }
 
-// --- Data Mockup (contoh data pesanan) ---
+// --- Data Mockup (Sesuai Gambar) ---
 const mockOrders: Order[] = [
     {
         id: 'ORDER-001',
-        storeName: 'Toko Senang Hati',
+        storeName: 'Toko A',
         status: 'SELESAI',
-        deliveryInfo: 'Paket telah diterima oleh Irvan Mamala',
-        products: [
-            {
-                id: 'PROD-001',
-                name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-                image: 'https://placehold.co/200x200?text=Rak+Bumbu',
-                price: 250000,
-                quantity: 20,
-            },
-            {
-                id: 'PROD-002',
-                name: 'Kemko Pendek Motif/Kemeja Qurta/Pakaian Muslim',
-                image: 'https://placehold.co/200x200?text=Kemko',
-                price: 99000,
-                quantity: 15,
-            },
-        ],
-        totalPrice: 1580000,
+        products: [{
+            id: 'PROD-001',
+            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
+            image: '/image/image 13.png',
+            price: 99000,
+            quantity: 1,
+            variant: [
+                { variant: "Warna", option: "Merah" },
+                { variant: "Ukuran", option: "Besar" },
+
+            ]
+        },
+        {
+            id: 'PROD-002',
+            name: 'Kemko Pendek Motif/Kemeja Qurta/Pakaian Muslim',
+            image: '/image/image 10.svg',
+            price: 1741000,
+            quantity: 1,
+        },],
+        totalPrice: 1840000,
+        receiver: "Irvan Mamala"
     },
     {
         id: 'ORDER-002',
-        storeName: 'Toko Senang Hati',
+        storeName: 'Toko DEF',
         status: 'DIBATALKAN',
-        products: [
-            {
-                id: 'PROD-003', // Pastikan ID produk unik jika ini adalah produk berbeda
-                name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-                image: 'https://placehold.co/200x200?text=Rak+Bumbu',
-                price: 250000,
-                quantity: 20,
-            },
-        ],
+        products: [{
+            id: 'PROD-003',
+            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
+            image: '/image/image 13.png',
+            price: 1580000,
+            quantity: 1,
+            variant: [
+                { variant: "Warna", option: "Merah" },
+                { variant: "Ukuran", option: "Besar" },
+
+            ]
+        },],
         totalPrice: 1580000,
     },
-    // Tambahkan lebih banyak data dummy jika diperlukan
+    {
+        id: 'ORDER-003',
+        storeName: 'Toko GHI',
+        status: 'SEDANG_DIKEMAS',
+        products: [{
+            id: 'PROD-004',
+            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
+            image: '/image/image 13.png',
+            price: 1580000,
+            quantity: 1,
+            variant: [
+                { variant: "Warna", option: "Merah" },
+                { variant: "Ukuran", option: "Besar" },
+
+            ]
+        },],
+        totalPrice: 1580000,
+    },
+    {
+        id: 'ORDER-004',
+        storeName: 'Toko AB',
+        status: 'DIKIRIM',
+        products: [{
+            id: 'PROD-005',
+            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
+            image: '/image/image 13.png',
+            price: 1580000,
+            quantity: 1,
+            variant: [
+                { variant: "Warna", option: "Merah" },
+                { variant: "Ukuran", option: "Besar" },
+
+            ]
+        },],
+        totalPrice: 1580000,
+    },
+    {
+        id: 'ORDER-006',
+        storeName: 'Toko AKJA',
+        status: 'DIKIRIM',
+        products: [{
+            id: 'PROD-006',
+            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
+            image: '/image/image 13.png',
+            price: 3200000,
+            quantity: 1,
+            variant: [
+                { variant: "Warna", option: "Merah" },
+                { variant: "Ukuran", option: "Besar" },
+
+            ]
+        },],
+        arrived: true,
+        totalPrice: 4200000,
+    },
+    {
+        id: 'ORDER-005',
+        storeName: 'Toko ICR',
+        status: 'BELUM_BAYAR',
+        products: [{
+            id: 'PROD-006',
+            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
+            image: '/image/image 13.png',
+            price: 3200000,
+            quantity: 29,
+            variant: [
+                { variant: "Warna", option: "Merah" },
+                { variant: "Ukuran", option: "Besar" },
+
+            ]
+        },],
+        totalPrice: 3200000,
+    },
 ];
 
-const MyOrderPage = () => {
-    const [activeTab, setActiveTab] = useState<'Semua' | 'Belum Bayar' | 'Sedang dikemas' | 'Dikirim' | 'Selesai' | 'Dibatalkan' | 'Pengembalian'>('Semua');
-    const [searchQuery, setSearchQuery] = useState('');
 
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
+// --- Komponen Utama ---
+const MyOrderPage = () => {
+    const [activeTab, setActiveTab] = useState('Semua');
+    const [searchInput, setSearchInput] = useState(''); // State untuk input field
+    const [searchQuery, setSearchQuery] = useState(''); // State untuk filter yang aktif
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
+
+    const [isReturnModalOpen, setReturnModalOpen] = useState(false);
+    const [orderToReturn, setOrderToReturn] = useState<string | null>(null);
+    // Fungsi untuk menjalankan pencarian
+    const performSearch = () => {
+        setSearchQuery(searchInput);
+        // **PERBAIKAN:** Secara otomatis pindah ke tab "Semua" saat mencari
+        // untuk memastikan hasil pencarian tidak terbatas pada tab yang sedang aktif.
+        setActiveTab('Semua');
+        console.log(`Mencari untuk: "${searchInput}" di semua tab`);
     };
 
-    const tabs = ['Semua', 'Belum Bayar', 'Sedang dikemas', 'Dikirim', 'Selesai', 'Dibatalkan', 'Pengembalian'];
+    const handleButtonClick = (action: string, orderId: string) => {
+        if (action === 'batalkan_pesanan') {
+            setOrderToCancel(orderId);
+            setModalOpen(true);
+        } else if (action === 'ajukan_pengembalian') { // NEW: Handle return action
+            setOrderToReturn(orderId);
+            setReturnModalOpen(true);
+        } else {
+            // alert(`Aksi: ${action} untuk Pesanan: ${orderId}\n(Cek console browser untuk detail)`);
+            console.log({ pesan: `Tombol '${action}' ditekan.`, orderId: orderId, timestamp: new Date().toISOString() });
+        }
+    };
+
+    const handleConfirmCancellation = (reason: string) => {
+        // alert(`Pesanan ${orderToCancel} dibatalkan dengan alasan: "${reason}"`);
+        console.log({ pesan: 'Pesanan Dibatalkan', orderId: orderToCancel, alasan: reason, timestamp: new Date().toISOString() });
+        setModalOpen(false);
+        setOrderToCancel(null);
+    };
+    const handleConfirmReturn = (reason: string) => {
+        console.log({ pesan: 'Pengembalian Diajukan', orderId: orderToReturn, alasan: reason, timestamp: new Date().toISOString() });
+        setReturnModalOpen(false);
+        setOrderToReturn(null);
+    };
+
+    const getStatusStyles = (status: Order['status'], arrived: Order['arrived']) => {
+        switch (status) {
+            case 'SELESAI': return {
+                text: 'SELESAI',
+                color: 'text-[#CD0030]',
+                buttons: [{
+                    text: 'Beri Nilai',
+                    style: 'bg-[#FFBB00] border border-[#A48200] hover:bg-yellow-300 text-black',
+                    action: 'beli_lagi'
+                }, {
+                    text: 'Beli Lagi',
+                    style: 'bg-[#F6E9F0] border border-[#563D7C] text-dark hover:bg-purple-100',
+                    action: 'beli_lagi'
+                }, {
+                    text: 'Kunjungi Toko',
+                    style: 'bg-[#563D7C] text-[#FFFFFF] hover:bg-purple-500',
+                    action: 'kunjungi_toko'
+                }, {
+                    text: 'Hubungi Penjual',
+                    style: 'bg-[#227D53] border border-[#0A452A] text-[#FFFFFF] hover:bg-green-500',
+                    action: 'chat'
+                }]
+            };
+            case 'DIBATALKAN': return {
+                text: 'DIBATALKAN',
+                color: 'text-[#CD0030]',
+                buttons: [{
+                    text: 'Beli Lagi',
+                    style: 'bg-[#F6E9F0] border border-[#563D7C] text-dark hover:bg-purple-100',
+                    action: 'beli_lagi'
+                }, {
+                    text: 'Rincian Pembatalan',
+                    style: 'bg-[#563D7C] text-[#FFFFFF] hover:bg-purple-500',
+                    action: 'rincian_pembatalan'
+                }, {
+                    text: 'Hubungi Penjual',
+                    style: 'bg-[#227D53] border border-[#0A452A] text-[#FFFFFF] hover:bg-green-500',
+                    action: 'chat'
+                }]
+            };
+            case 'BELUM_BAYAR': return {
+                text: 'BELUM BAYAR',
+                color: 'text-[#CD0030]',
+                buttons: [{
+                    text: 'Bayar Sekarang',
+                    style: 'bg-[#EE4D2D] text-[#fff] hover:bg-orange-500',
+                    action: 'bayar_sekarang'
+                }, {
+                    text: 'Ubah Metode Pembayran',
+                    style: 'bg-[#563D7C] text-[#FFFFFF] hover:bg-purple-500',
+                    action: 'metode_pembayaran'
+                }, {
+                    text: 'Batalkan Pesanan',
+                    style: 'bg-[#FDFDFD] text-[#333] border border-[#BBBBBB] hover:bg-gray-500',
+                    action: 'batalkan_pesanan'
+                }, {
+                    text: 'Hubungi Penjual',
+                    style: 'bg-[#227D53] border border-[#0A452A] text-[#FFFFFF] hover:bg-green-500',
+                    action: 'chat'
+                }]
+            };
+            case 'SEDANG_DIKEMAS': return {
+                text: 'SEDANG DIKEMAS',
+                color: 'text-[#CD0030]',
+                buttons: [{
+                    text: 'Batalkan Pesanan',
+                    style: 'bg-[#563D7C] text-[#FFFFFF] hover:bg-purple-500',
+                    action: 'batalkan_pesanan'
+                }, {
+                    text: 'Hubungi Penjual',
+                    style: 'bg-[#227D53] border border-[#0A452A] text-[#FFFFFF] hover:bg-green-500',
+                    action: 'chat'
+                }]
+            };
+            case 'DIKIRIM':
+                switch (arrived) {
+                    case true: return {
+                        text: 'DIKIRIM',
+                        color: 'text-[#CD0030]',
+                        buttons: [{
+                            text: 'Pesanan Selesai',
+                            style: 'bg-[#EE4D2D] text-[#fff] hover:bg-orange-500',
+                            disable: true
+                        }, {
+                            text: 'Ajukan pengembalian',
+                            style: 'bg-[#563D7C] text-[#fff] hover:bg-purple-500',
+                            action: 'ajukan_pengembalian'
+                        }, {
+                            text: 'Hubungi Penjual',
+                            style: 'bg-[#227D53] border border-[#0A452A] text-[#FFFFFF] hover:bg-green-500',
+                            action: 'chat'
+                        }]
+                    };
+                    default: return {
+                        text: 'DIKIRIM',
+                        color: 'text-[#CD0030]',
+                        buttons: [{
+                            text: 'Pesanan Selesai',
+                            style: 'bg-[#E5E4E1] text-[#BBBBBB] cursor-not-allowed pointer-events-none',
+                            disable: true
+                        }, {
+                            text: 'Ajukan pengembalian',
+                            style: 'bg-[#E5E4E1] text-[#BBBBBB] cursor-not-allowed pointer-events-none',
+                            disable: true
+                        }, {
+                            text: 'Hubungi Penjual',
+                            style: 'bg-[#227D53] border border-[#0A452A] text-[#FFFFFF] hover:bg-green-500',
+                            action: 'chat'
+                        }]
+                    };
+                }
+
+            case 'PENGEMBALIAN': return {
+                text: 'PENGEMBALIAN',
+                color: 'text-[#CD0030]',
+                buttons: [{
+                    text: 'Lihat Detail',
+                    style: 'border border-gray-300 text-gray-700 hover:bg-gray-100',
+                    action: 'lihat_detail_pengembalian'
+                }]
+            };
+            default: return {
+                text: '',
+                color: 'text-gray-500', buttons: []
+            };
+        }
+    };
+
+    const tabs = ['Semua', 'Belum Bayar', 'Dikemas', 'Dikirim', 'Selesai', 'Dibatalkan', 'Pengembalian'];
 
     const filteredOrders = mockOrders.filter(order => {
-        const matchesTab = activeTab === 'Semua' || order.status.toLowerCase().replace(/_/g, ' ') === activeTab.toLowerCase();
-        const matchesSearch = searchQuery === '' ||
-            order.storeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.products.some(product => product.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            order.id.toLowerCase().includes(searchQuery.toLowerCase());
+        const statusMap: { [key: string]: Order['status'] } = { 'belum bayar': 'BELUM_BAYAR', 'dikemas': 'SEDANG_DIKEMAS', 'dikirim': 'DIKIRIM', 'selesai': 'SELESAI', 'dibatalkan': 'DIBATALKAN', 'pengembalian': 'PENGEMBALIAN' };
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        const matchesTab = activeTab.toLowerCase() === 'semua' || order.status === statusMap[activeTab.toLowerCase()];
+        const matchesSearch = searchQuery === '' || order.storeName.toLowerCase().includes(lowerCaseQuery) || order.products.some(product => product.name.toLowerCase().includes(lowerCaseQuery)) || order.id.toLowerCase().includes(lowerCaseQuery);
         return matchesTab && matchesSearch;
     });
 
     return (
         <UserProfile>
-            {/* Konten yang sebelumnya ada di app/page.tsx */}
-            <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-                {/* Navigasi Atas (Tab Bar) */}
-                <div className="flex justify-between items-center border-b border-gray-200 bg-white">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab}
-                            className={`flex-1 py-3 text-center text-sm font-bold ${activeTab === tab
-                                ? 'text-[#7952B3] border-b-2 border-[#7952B3]'
-                                : 'text-gray-600 hover:text-[#7952B3]'
-                                } transition duration-150`}
-                            onClick={() => setActiveTab(tab as typeof activeTab)}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-                </div>
-                <div className="p-4 bg-white">
-                    <div className="mb-6 relative border-2 border-[#52357B] rounded-lg">
-                        <input
-                            type="text"
-                            placeholder="Pencarian berdasarkan Nama Produk, No. Pesanan atau Nama Penjual"
-                            className="w-full p-3 pl-4 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleSearch(searchQuery);
-                                }
-                            }}
-                        />
-                        <button
-                            className="absolute right-0 top-0 h-[90%] mt-[2px] w-16 bg-[#52357B] rounded-lg flex items-center justify-center text-white hover:bg-purple-700 transition duration-200 mr-[1px]"
-                            onClick={() => handleSearch(searchQuery)}
-                        >
-                            <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                                ></path>
-                            </svg>
-                        </button>
+            <h2 className="text-[22px] font-bold text-[#7952B3] mb-2 mt-2">Pesanan Saya</h2>
+            <p className="text-gray-500 mb-3">Semua belanjaanmu ada di sini! Cek status, lihat detail, atau ulangi pembelian dengan sekali klik.</p>
+            <CancelOrderModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmCancellation}/>
+            <ReturnOrderModal isOpen={isReturnModalOpen} onClose={() => setReturnModalOpen(false)} onConfirm={handleConfirmReturn} />
+            <div className='space-y-6'>
+                <div className='bg-white border border-[#DCDCDC] rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]'>
+                    <div className='px-8 border-b border-[#BBBBBBCC]/80'>
+                        <div className="">
+                            <div className="overflow-x-auto">
+                                <nav className="flex space-x-2 sm:space-x-6 px-4" aria-label="Tabs">
+                                    {
+                                        tabs.map((tab) => (
+                                            <button key={tab} onClick={() => setActiveTab(tab)} className={`${activeTab === tab ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4  pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
+                                                {tab}
+                                            </button>
+                                        ))}
+                                </nav>
+                            </div>
+                        </div>
                     </div>
-                    <p className='text-xs px-1 mt-[-10px] text-gray-500'>Pencarian berdasarkan Nama Produk, No.Pemesanan atau Nama Penjual</p>
+                    <div className="p-4 md:p-6">
+                        <div className="flex items-center">
+                            <div className="relative flex-grow">
+                                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <SearchIcon />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Pencarian berdasarkan Nama Produk, No. Pesanan atau Nama Penjual"
+                                    className="w-full h-[40px] py-3 pl-4 pr-4 text-[14px] border border-gray-300 rounded-l-[5px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm placeholder:text-[#888888]"
+                                    value={searchInput}
+                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    onKeyPress={(e) => { if (e.key === 'Enter') { performSearch(); } }}
+                                />
+                            </div>
+                            <button
+                                onClick={performSearch}
+                                className="flex-shrink-0 py-3 border border-[#CCCCCC] px-6 bg-[#7952B3] px-10 text-white font-semibold text-[14px] rounded-r-[5px] hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                            >
+                                Cari
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div className="p-4 mt-[-10px]">
+                <div className="space-y-8">
                     {filteredOrders.length > 0 ? (
                         filteredOrders.map((order) => {
-                            const statusColor = order.status === 'SELESAI' ? 'text-red-600' : 'text-red-600';
-
+                            const statusInfo = getStatusStyles(order.status, order?.arrived);
                             return (
-                                <div key={order.id} className="bg-white rounded-lg shadow-sm mb-4 border-2 border-[#52357B]">
-                                    <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                                        <h2 className="text-md font-semibold text-gray-800">{order.storeName}</h2>
-                                        <div className="flex items-center space-x-2">
-                                            {order.deliveryInfo && (
-                                                <span className="text-gray-600 text-sm">{order.deliveryInfo}</span>
-                                            )}
-                                            <span className={`font-bold text-sm ${statusColor}`}>{order.status}</span>
+                                <div key={order.id} className="bg-white border border-[#DCDCDC] rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border-b border-[#BBBBBBCC] px-6">
+                                        <div className="flex items-center mb-2 sm:mb-0">
+                                            {/* <StoreIcon /> */}
+                                            <h2 className="text-[16px] font-bold text-[#333333]">{order.storeName}</h2>
+                                        </div>
+                                        <div>
+                                            {
+                                                order?.arrived && <span className='text-right text-[#555555] text-[12px] font-bold mr-6'>Pesanan tiba di alamat tujuan</span>
+                                            }
+                                            <span className={`font-bold text-[16px] uppercase ${statusInfo.color}`}>{statusInfo.text}</span>
                                         </div>
                                     </div>
-
-                                    <div className="p-4">
-                                        {order.products.map((product) => (
-                                            <div key={product.id} className="flex items-center py-2">
-                                                <div className="relative w-20 h-20 mr-4 flex-shrink-0">
-                                                    <img
-                                                        src={product.image}
-                                                        alt={product.name}
-
-                                                        className="rounded-md"
-                                                    />
-                                                </div>
+                                    <div className="p-4 px-6 ">
+                                        {order.products.map((product, index) => (
+                                            <div key={product.id} className={`flex items-start ${index > 0 ? 'mt-4' : ''}`}>
+                                                <img src={product.image} alt={product.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-   mr-4 flex-shrink-0" onError={(e) => { e.currentTarget.src = 'https://placehold.co/100x100?text=Error'; }} />
                                                 <div className="flex-grow">
-                                                    <p className="text-gray-800 text-sm font-medium">{product.name}</p>
-                                                    <p className="text-gray-600 text-xs mt-1">X {product.quantity}</p>
+                                                    <p className="text-[#333333] text-[15px] font-bold leading-tight">{product.name}</p>
+                                                    <div className="text-[#333333] text-[13px] leading-tight flex">
+                                                        {product?.variant?.map((v, iv) => (
+                                                            <p key={iv}>
+                                                                Variasi   {v?.variant}: <span className='font-bold'>{v?.option}</span>
+                                                            </p>
+                                                        ))}
+                                                    </div>
+                                                    <p className="text-[#333] text-[13px] mt-1">X {product.quantity}</p>
                                                 </div>
-                                                <div className="text-gray-800 text-sm font-semibold">
-                                                    Rp {product.price.toLocaleString('id-ID')}
-                                                </div>
-                                            </div>
-                                        ))}
+                                                <div className="text-[#333333] text-[15px] text-right ml-4">Rp {product.price.toLocaleString('id-ID')}</div>
+                                            </div>))}
                                     </div>
-
-                                    <div className="flex items-center justify-between p-4 border-t border-gray-200 bg-gray-50 rounded-br-lg rounded-bl-lg">
-                                        <div className="flex space-x-2">
-                                            <button className="bg-[#52357B] hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md text-sm transition duration-200">
-                                                Beli Lagi
-                                            </button>
-                                            <button className="bg-[#0c5da5] text-white hover:bg-purple-50 hover:text-purple-700 font-medium py-2 px-4 rounded-md text-sm transition duration-200">
-                                                Kunjungi Toko
-                                            </button>
-                                        </div>
-                                        <div className="text-gray-800 font-semibold text-md">
-                                            Total pesanan : <span className="text-red-600">Rp {order.totalPrice.toLocaleString('id-ID')}</span>
+                                    <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 p-4  rounded-b-[5px] border-t border-[#BBBBBBCC] px-6">
+                                        <div className='space-y-6'>
+                                            <div className="text-left md:text-right flex justify-end items-center gap-10">
+                                                <p className="text-[14px] text-[#333333]">Total Pesanan:</p>
+                                                <p className="text-[24px] font-[500] text-[#ED4D2D]">Rp {order.totalPrice.toLocaleString('id-ID')}</p>
+                                            </div>
+                                            <div className="flex items-center justify-end flex-wrap gap-2">
+                                                {statusInfo.buttons.map(button => (
+                                                    <button key={button.text} className={`font-semibold py-2 px-4 text-[14px] transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 ${button.style}`} onClick={() => !button?.disable && handleButtonClick(button.action ?? '', order.id)}>{button.text}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             );
                         })
                     ) : (
-                        <p className="text-center text-gray-500 py-8">Tidak ada pesanan yang ditemukan.</p>
+                        <div className="text-center text-gray-500 py-16">
+                            <p className="font-semibold mb-2 text-lg">Tidak Ada Pesanan</p>
+                            <p className="text-sm">Saat ini tidak ada pesanan yang cocok dengan filter yang Anda pilih.</p>
+                        </div>
                     )}
                 </div>
             </div>
