@@ -20,6 +20,7 @@ interface CartItem { id: number; name: string; variant: string; price: string; o
 
 // --- Komponen Popup Keranjang ---
 const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: number }) => {
+    const router = useRouter();
     if (!items || items.length === 0) {
         return (
             <motion.div
@@ -45,7 +46,7 @@ const CartPopup = ({ items, totalItems }: { items: CartItem[], totalItems: numbe
             <div className="p-4 border-b">
                 <div className="flex justify-between items-start">
                     <h3 className="font-bold text-[17px] text-black">Keranjang ({totalItems})</h3>
-                    <div className="cursor-pointer text-[17px] font-bold text-[#0075C9]" onClick={() => window.location.href = '/cart'}>Lihat semua</div>
+                    <div className="cursor-pointer text-[17px] font-bold text-[#0075C9]" onClick={() => router?.push('/cart')}>Lihat semua</div>
                 </div>
             </div>
             <ul className="p-2 max-h-80 overflow-y-auto">
@@ -225,7 +226,7 @@ const Header = () => {
         updateHistoryState(newHistory);
         setSearchTerm(suggestion.text);
         setIsSearchFocused(false);
-        window.location.href = `/search/${createSlug(suggestion.text)}`;
+        router.push(`/search/${createSlug(suggestion.text)}`);
     };
 
     const handleMobileSearchSubmit = (submittedTerm: string) => {
@@ -233,7 +234,7 @@ const Header = () => {
         const newHistory = saveSearchTerm(submittedTerm);
         updateHistoryState(newHistory);
         setIsMobileSearchOpen(false);
-        window.location.href = `/search/${createSlug(submittedTerm)}`;
+        router.push(`/search/${createSlug(submittedTerm)}`);
     };
 
     const suggestionsForDropdown = dropdownMode === 'history' ? searchHistory : searchSuggestions;
@@ -263,7 +264,7 @@ const Header = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-8 container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] mt-[-3px] justify-between">
-                            <h1 className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[0px] mr-7" onClick={() => window.location.href = '/'} style={{ letterSpacing: "-0.05em" }}>Zukses</h1>
+                            <h1 className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[0px] mr-7" onClick={() => router.push('/')} style={{ letterSpacing: "-0.05em" }}>Zukses</h1>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-9 mt-1.5'>
                                     <div className="flex items-start justify-between gap-3 w-full">
@@ -281,7 +282,11 @@ const Header = () => {
                                             <div className='flex items-center jutify-left gap-3'>
                                                 <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md pr-0" title="Filter Provinsi"><img src='/icon/filter-dark.svg' width={25} /></button>
                                                 <div className="relative inline-block"><button className="p-2 rounded-md pr-0" onClick={() => router.push('/favorite')}><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
-                                                <div className="relative inline-block"><button className="p-2 rounded-md pr-0"><img src='/icon/message.svg' width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
+                                                <div className="relative inline-block" onClick={() => router.push('/user-profile/chat')}>
+                                                    <button className="p-2 rounded-md pr-0">
+                                                        <img src='/icon/message.svg' width={25} />
+                                                    </button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                                                </div>
 
                                                 <div
                                                     className="relative inline-block z-50"
@@ -303,7 +308,7 @@ const Header = () => {
 
 
                                             </div>
-                                            <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya" onClick={()=>window.location.href='/user-profile/profil'}>Akun Saya</button>
+                                            <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya" onClick={() => router.push('/user-profile/profil')}>Akun Saya</button>
                                         </div>
                                     </div>
                                 </div>

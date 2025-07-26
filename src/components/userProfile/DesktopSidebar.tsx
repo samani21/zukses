@@ -52,8 +52,8 @@ const orderItems: NavItem[] = [
 
 // Grup Aktivitas Lainnya
 const activityItems: NavItem[] = [
-    { name: 'Keranjang Belanja', url: '/user-profile/cart' },
-    { name: 'Produk Favorit', url: '/user-profile/favorites' },
+    { name: 'Keranjang Belanja', url: '/cart' },
+    { name: 'Produk Favorit', url: '/favorite' },
     { name: 'Terakhir Dilihat', url: '/user-profile/history' },
     { name: 'Saldo zukses', url: '/user-profile/balance' },
     { name: 'Chat', url: '/user-profile/chat' },

@@ -8,6 +8,7 @@ import { mockOrders } from 'components/userProfile/MyOrder/mockOrders';
 import ReturnOrderModal from 'components/userProfile/MyOrder/ReturnOrderModal';
 import UserProfile from 'pages/layouts/UserProfile';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 
 // --- SVG Icons ---
@@ -137,7 +138,7 @@ const MyOrderPage = ({ tab = 'Semua' }: MyOrderPageProps) => {
     const [orderToReturn, setOrderToReturn] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1); // State for pagination
     const ordersPerPage = 10; // Number of orders per page
-
+    const router = useRouter()
     const performSearch = () => {
         setSearchQuery(searchInput);
         setCurrentPage(1); // Reset to first page on new search
@@ -336,7 +337,7 @@ const MyOrderPage = ({ tab = 'Semua' }: MyOrderPageProps) => {
                         <div className="overflow-x-auto">
                             <nav className="flex space-x-2 sm:space-x-6 px-4" aria-label="Tabs">
                                 {tabs.map((item) => (
-                                    <button key={item?.name} onClick={() => window.location.href = item?.url} className={`${tab === item?.name ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4 pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
+                                    <button key={item?.name} onClick={() => router?.push(item?.url)} className={`${tab === item?.name ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4 pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
                                         {item?.name}
                                     </button>
                                 ))}
