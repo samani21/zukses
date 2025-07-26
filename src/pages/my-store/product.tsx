@@ -10,6 +10,7 @@ import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
 import Loading from 'components/Loading';
 import DeleteProductModal from 'components/my-store/product/DeleteProductModal';
+import { useRouter } from 'next/router';
 
 // Mendefinisikan tipe data untuk setiap produk untuk keamanan tipe (TypeScript)
 type Media = { id: string; url: string; type: string; };
@@ -24,6 +25,7 @@ const ProductPage: NextPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    const router = useRouter()
     const [snackbar, setSnackbar] = useState<{
         message: string;
         type?: 'success' | 'error' | 'info';
@@ -80,7 +82,7 @@ const ProductPage: NextPage = () => {
                     {/* Header Halaman */}
                     <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <h1 className="text-[20px] font-bold text-[#333333]">Produk Saya</h1>
-                        <button className="bg-[#52357B] text-white font-semibold px-4 py-2 rounded-[5px] text-[14px] font-[500] hover:bg-purple-600" onClick={() => window.location.href = '/my-store/add-product'}>
+                        <button className="bg-[#52357B] text-white font-semibold px-4 py-2 rounded-[5px] text-[14px] font-[500] hover:bg-purple-600" onClick={() => router.push('/my-store/add-product')}>
                             Tambah Produk
                         </button>
                     </header>
@@ -184,7 +186,7 @@ const ProductPage: NextPage = () => {
                                                     </button>
                                                     <button className="text-gray-400 hover:text-indigo-600 transition-colors"
                                                         onClick={() => {
-                                                            window.location.href = '/my-store/add-product?type=edit'
+                                                            router.push('/my-store/add-product?type=edit')
                                                             localStorage.setItem('EditProduct', JSON.stringify(product))
                                                         }}>
                                                         <FilePenLine size={20} />

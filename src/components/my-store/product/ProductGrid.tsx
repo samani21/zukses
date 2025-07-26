@@ -1,6 +1,7 @@
 import { Edit2, Trash2 } from 'lucide-react';
 import React, { FC } from 'react'
 import EmptyState from './EmptyState';
+import { useRouter } from 'next/router';
 type Media = { id: string; url: string; type: string; };
 type VarianPrice = { id: number; product_id: number; image: string; price: number | string; stock: number; variant_code?: string; };
 type Value = { id: number; variant_id: number; value: string; ordinal: number; }
@@ -12,8 +13,8 @@ const ProductGrid: FC<{
     products: Product[] | null;
     onDeleteClick: (product: Product) => void;
 }> = ({ products, onDeleteClick }) => {
+    const router = useRouter();
     if (products?.length === 0) return <EmptyState />;
-
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {products?.map((product) => (
@@ -49,7 +50,7 @@ const ProductGrid: FC<{
                             </button>
                             <button className="text-blue-600 hover:text-blue-900 mx-auto mt-0.5"
                                 onClick={() => {
-                                    window.location.href = '/my-store/add-product?type=edit'
+                                    router.push('/my-store/add-product?type=edit')
                                     localStorage.setItem('EditProduct', JSON.stringify(product))
                                 }}>
                                 <Edit2 size={18} />

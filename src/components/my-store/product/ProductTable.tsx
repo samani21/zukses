@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 import HeaderWithInfo from './HeaderWithInfo';
 import { Edit2, Trash2 } from 'lucide-react';
 import EmptyState from './EmptyState';
+import { useRouter } from 'next/router';
 type Media = { id: string; url: string; type: string; };
 type VarianPrice = { id: number; product_id: number; image: string; price: number | string; stock: number; variant_code?: string; };
 type Value = { id: number; variant_id: number; value: string; ordinal: number; }
@@ -13,8 +14,8 @@ const ProductTable: FC<{
     products: Product[] | null;
     onDeleteClick: (product: Product) => void;
 }> = ({ products, onDeleteClick }) => {
+    const router = useRouter()
     if (products?.length === 0) return <EmptyState />;
-
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -78,7 +79,7 @@ const ProductTable: FC<{
                                 </button>
                                 <button className="text-blue-600 hover:text-blue-900"
                                     onClick={() => {
-                                        window.location.href = '/my-store/add-product?type=edit'
+                                        router.push('/my-store/add-product?type=edit')
                                         localStorage.setItem('EditProduct', JSON.stringify(product))
                                     }}>
                                     <Edit2 size={18} />

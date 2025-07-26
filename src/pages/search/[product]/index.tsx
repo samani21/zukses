@@ -123,6 +123,7 @@ const FilterSidebar = () => {
 };
 
 const ProductCard = ({ product }: { product: Product }) => {
+    const router = useRouter()
     return (
         <div key={product.id}
             className="bg-white cursor-pointer w-full h-full overflow-hidden group lg:w-[190px] lg:h-[342px] border border-[#DDDDDD]"
@@ -135,7 +136,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                     .replace(/-+/g, '-')
                     .replace(/^-|-$/g, '');        // buang minus di awal/akhir
 
-                window.location.href = `/${slug}`;
+                router.push(`/${slug}`);
                 localStorage.setItem('product', JSON.stringify(product));
             }}
             style={{

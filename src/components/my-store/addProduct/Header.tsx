@@ -1,12 +1,14 @@
 import React, { FC } from 'react'
 import { ChevronDownIcon, ChevronRight, GridIcon, ListIcon, ShoppingBag } from './Icon';
 import { ShopProfile } from 'components/types/ShopProfile';
+import { useRouter } from 'next/router';
 
 interface HeaderProps {
     shopProfile: ShopProfile;
 }
 
 const Header: FC<HeaderProps> = ({ shopProfile }) => {
+    const router = useRouter()
     return (
         <header className="bg-white shadow-sm sticky top-0 z-30">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -17,9 +19,9 @@ const Header: FC<HeaderProps> = ({ shopProfile }) => {
                             <ShoppingBag size={20} className="text-white" />
                         </div>
                         <nav className="hidden md:flex items-center gap-2 text-gray-500 whitespace-nowrap">
-                            <a onClick={() => window.location.href = '/my-store'} className="hover:text-blue-500 cursor-pointer">Beranda</a>
+                            <a onClick={() => router?.push('/my-store')} className="hover:text-blue-500 cursor-pointer">Beranda</a>
                             <ChevronRight size={16} />
-                            <a onClick={() => window.location.href = '/my-store/product'} className="hover:text-blue-500 cursor-pointer">Produk Saya</a>
+                            <a onClick={() => router?.push('/my-store/product')} className="hover:text-blue-500 cursor-pointer">Produk Saya</a>
                             <ChevronRight size={16} />
                             <span className="font-semibold text-gray-800">Tambah Produk Baru</span>
                         </nav>

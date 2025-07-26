@@ -895,7 +895,7 @@ const AddProductPage: NextPage = () => {
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
-          window.location.href = '/my-store/product'
+          router.push('/my-store/product')
           localStorage.removeItem('EditProduct');
         }
       } else {
@@ -903,7 +903,7 @@ const AddProductPage: NextPage = () => {
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-          window.location.href = '/my-store/product';
+          router.push('/my-store/product');
           localStorage.removeItem('EditProduct');
         }
       }
@@ -1084,9 +1084,9 @@ const AddProductPage: NextPage = () => {
         <main className="px-0 pb-[120px]">
           <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
           <div className="flex items-center  text-gray-500 mb-4">
-            <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store'}>Dashboard</span>
+            <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store')}>Dashboard</span>
             <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" />
-            <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => window.location.href = '/my-store/product'}>Produk Saya</span>
+            <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store/product')}>Produk Saya</span>
             <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" />
             <span className="font-bold text-[14px] text-[#333333] ">Tambah Produk</span>
           </div>
@@ -2117,7 +2117,7 @@ const AddProductPage: NextPage = () => {
               <div className="bg-white flex justify-between items-center sticky bottom-0 p-4" style={{
                 boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'
               }}>
-                <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline" onClick={() => window.location.href = '/my-store/product'}>Kembali</button>
+                <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[124px] border-[#52357B] font-medium hover:underline" onClick={() => router?.push('/my-store/product')}>Kembali</button>
                 <div className="flex items-center space-x-2">
                   <button className="text-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:underline" onClick={() => handleSave('ARCHIVED')}>Simpan & Arsipkan</button>
                   <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200" onClick={() => handleSave('PUBLISHED')}>Simpan & Tampilkan</button>
