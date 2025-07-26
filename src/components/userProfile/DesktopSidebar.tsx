@@ -84,19 +84,21 @@ const DesktopSidebar = () => {
         <li key={item.name} className='px-2.5'>
             <button
                 onClick={() => router.push(item.url)}
-                className={` flex items-center text-left mb-[7px] px-4 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
+                className={` flex items-center text-left mb-[0px] px-4 transition-colors text-[14px] font-[400] my-1 ${isSubItem ? 'pl-6' : '' // Tambahkan indentasi jika ini sub-item
                     } ${router.pathname === item.url
                         ? 'bg-[#00AA5B] w-[209px] rounded-[15px] h-[30px] font-semibold text-[#FFFFFF]' // Contoh styling untuk item aktif
                         : 'text-[#444444] hover:bg-gray-100 rounded-[15px] h-[30px]  w-[209px]'
                     }`}
             >
-                <span className="tracking-[0px]">{item.name}</span>
+                <span className="tracking-[0px]" style={{
+                    lineHeight:"120%"
+                }}>{item.name}</span>
             </button>
         </li>
     );
 
     return (
-        <aside className="w-[230px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden rounded-[20px] border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+        <aside className="w-[230px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden rounded-[8px] border border-[#DFDFDF] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
             {/* Header Profil dengan Latar Belakang Hijau */}
             <div className="flex items-center gap-3 p-4 bg-[#7952B3] h-[60px] text-white">
                 {
@@ -105,7 +107,7 @@ const DesktopSidebar = () => {
                         {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}
                     </div>
                 }
-                <h4 className="text-[16px] font-bold">{user?.name ?? "Zukses"}</h4>
+                <h4 className="text-[16px] font-bold tracking-[-0.02em]">{user?.name ?? "Zukses"}</h4>
             </div>
 
             {/* Kontainer untuk semua menu item */}
