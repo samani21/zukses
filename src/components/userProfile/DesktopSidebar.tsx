@@ -100,9 +100,9 @@ const DesktopSidebar = () => {
     return (
         <aside className="w-[230px] mr-[40px] hidden md:flex flex-col bg-white overflow-hidden rounded-[8px] border border-[#DFDFDF] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
             {/* Header Profil dengan Latar Belakang Hijau */}
-            <div className="flex items-center gap-3 p-4 bg-[#7952B3] h-[60px] text-white">
+            <div className="flex items-center gap-3 p-4 bg-[#7952B3] h-[55px] text-white">
                 {
-                    user?.image ? <img src={user?.image} className='w-[40px] h-[40px] rounded-full' /> : <div className='w-[40px] h-[40px] rounded-full border border-[#BBBBBB] bg-[#F2F4F7] text-[#4A52B2] flex items-center justify-center font-bold text-[17px]'>
+                    user?.image ? <img src={user?.image} className='w-[34px] h-[34px] rounded-full' /> : <div className='w-[40px] h-[40px] rounded-full border border-[#BBBBBB] bg-[#F2F4F7] text-[#4A52B2] flex items-center justify-center font-bold text-[17px]'>
                         {/* Mengambil inisial nama, contoh: "Irvan Mamala" -> "IM" */}
                         {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}
                     </div>
@@ -111,7 +111,7 @@ const DesktopSidebar = () => {
             </div>
 
             {/* Kontainer untuk semua menu item */}
-            <div className='flex flex-col flex-grow mt-4'>
+            <div className='flex flex-col flex-grow mt-[14px]'>
                 <nav className="flex-grow">
                     {/* Grup Profil */}
                     <div className='mb-2'>
