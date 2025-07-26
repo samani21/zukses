@@ -1,30 +1,36 @@
 'use client';
 
+import React, { useState } from 'react';
+
+// Mock data and child components (assuming they exist in these paths)
 import CancelOrderModal from 'components/userProfile/MyOrder/CancelOrderModal';
 import { mockOrders } from 'components/userProfile/MyOrder/mockOrders';
 import ReturnOrderModal from 'components/userProfile/MyOrder/ReturnOrderModal';
 import UserProfile from 'pages/layouts/UserProfile';
-import React, { useState } from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
+
+// --- SVG Icons ---
 const SearchIcon = () => (
     <svg className="w-5 h-5 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
     </svg>
 );
 
-interface variant {
-    variant: string,
-    option: string
+
+// --- Type Definitions ---
+interface Variant {
+    variant: string;
+    option: string;
 }
 
-// --- Definisi Tipe Data ---
 interface Product {
     id: string;
     name: string;
     image: string;
     price: number;
     quantity: number;
-    variant?: variant[]
+    variant?: Variant[];
 }
 
 interface Order {
@@ -34,26 +40,107 @@ interface Order {
     products: Product[];
     totalPrice: number;
     receiver?: string;
-    arrived?: boolean
+    arrived?: boolean;
 }
 
-
-interface Props {
+interface MyOrderPageProps {
     tab?: string;
 }
 
-const MyOrderPage = ({ tab = 'Semua' }: Props) => {
+interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+}
 
-    const [searchInput, setSearchInput] = useState(''); // State untuk input field
-    const [searchQuery, setSearchQuery] = useState(''); // State untuk filter yang aktif
+// --- Pagination Component ---
+interface PaginationProps {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+}
+
+const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) => {
+    const getPageNumbers = () => {
+        const pages: (number | string)[] = [];
+
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else if (currentPage <= 3) {
+            pages.push(1, 2, 3, '...', totalPages - 1, totalPages);
+        } else if (currentPage >= totalPages - 2) {
+            pages.push(1, 2, '...', totalPages - 2, totalPages - 1, totalPages);
+        } else {
+            pages.push(currentPage - 1, currentPage, currentPage + 1, '...', totalPages - 1, totalPages);
+        }
+
+        return pages;
+    };
+
+    return (
+        <div className="flex flex-col items-center justify-center mt-8 space-y-4">
+            <nav className="flex items-center space-x-2">
+                <button
+                    onClick={() => onPageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1E1E1E] disabled:text-[#757575] bg-white tracking-[0px] rounded-md hover:bg-gray-50 disabled:bg-white disabled:cursor-not-allowed"
+                >
+                    <ArrowLeft className='w-[16px]' />
+                    Sebelumnya
+                </button>
+
+                <div className="flex items-center space-x-1">
+                    {getPageNumbers().map((page, index) =>
+                        typeof page === 'number' ? (
+                            <button
+                                key={index}
+                                onClick={() => onPageChange(page)}
+                                className={`px-4 py-2 text-sm font-medium rounded-[8px] ${currentPage === page ? 'bg-[#2C2C2C] text-[#F5F5F5]' : 'text-[#1E1E1E] bg-white  hover:bg-gray-50'}`}
+                            >
+                                {page}
+                            </button>
+                        ) : (
+                            <span key={index} className="px-2 py-1 text-gray-500">
+                                {page}
+                            </span>
+                        )
+                    )}
+                </div>
+
+                <button
+                    onClick={() => onPageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[#1E1E1E] disabled:text-[#757575] bg-white rounded-md hover:bg-gray-50 disabled:bg-white disabled:cursor-not-allowed"
+                >
+                    Berikutnya
+                    <ArrowRight className='w-[16px]' />
+                </button>
+            </nav>
+            <p className="text-[#555555] text-[15px] font-bold">
+                Menampilkan 10 Pembelian per Halaman
+            </p>
+        </div>
+    );
+};
+
+
+
+
+// --- Main Page Component ---
+const MyOrderPage = ({ tab = 'Semua' }: MyOrderPageProps) => {
+
+    const [searchInput, setSearchInput] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     const [isModalOpen, setModalOpen] = useState(false);
     const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
-
     const [isReturnModalOpen, setReturnModalOpen] = useState(false);
     const [orderToReturn, setOrderToReturn] = useState<string | null>(null);
-    // Fungsi untuk menjalankan pencarian
+    const [currentPage, setCurrentPage] = useState(1); // State for pagination
+    const ordersPerPage = 10; // Number of orders per page
+
     const performSearch = () => {
         setSearchQuery(searchInput);
+        setCurrentPage(1); // Reset to first page on new search
         console.log(`Mencari untuk: "${searchInput}" di semua tab`);
     };
 
@@ -61,28 +148,29 @@ const MyOrderPage = ({ tab = 'Semua' }: Props) => {
         if (action === 'batalkan_pesanan') {
             setOrderToCancel(orderId);
             setModalOpen(true);
-        } else if (action === 'ajukan_pengembalian') { // NEW: Handle return action
+        } else if (action === 'ajukan_pengembalian') {
             setOrderToReturn(orderId);
             setReturnModalOpen(true);
         } else {
-            // alert(`Aksi: ${action} untuk Pesanan: ${orderId}\n(Cek console browser untuk detail)`);
             console.log({ pesan: `Tombol '${action}' ditekan.`, orderId: orderId, timestamp: new Date().toISOString() });
         }
     };
 
     const handleConfirmCancellation = (reason: string) => {
-        // alert(`Pesanan ${orderToCancel} dibatalkan dengan alasan: "${reason}"`);
         console.log({ pesan: 'Pesanan Dibatalkan', orderId: orderToCancel, alasan: reason, timestamp: new Date().toISOString() });
         setModalOpen(false);
         setOrderToCancel(null);
     };
+
     const handleConfirmReturn = (reason: string) => {
         console.log({ pesan: 'Pengembalian Diajukan', orderId: orderToReturn, alasan: reason, timestamp: new Date().toISOString() });
         setReturnModalOpen(false);
         setOrderToReturn(null);
     };
 
-    const getStatusStyles = (status: Order['status'], arrived: Order['arrived']) => {
+    const getStatusStyles = (status: Order['status'], arrived?: Order['arrived']) => {
+        // This function remains the same as your original code
+        // ... (omitted for brevity, but it's the same as your provided code)
         switch (status) {
             case 'SELESAI': return {
                 text: 'SELESAI',
@@ -164,7 +252,7 @@ const MyOrderPage = ({ tab = 'Semua' }: Props) => {
                         buttons: [{
                             text: 'Pesanan Selesai',
                             style: 'bg-[#EE4D2D] text-[#fff] hover:bg-orange-500',
-                            disable: true
+                            action: 'pesanan_selesai'
                         }, {
                             text: 'Ajukan pengembalian',
                             style: 'bg-[#563D7C] text-[#fff] hover:bg-purple-500',
@@ -212,14 +300,13 @@ const MyOrderPage = ({ tab = 'Semua' }: Props) => {
 
     const tabs = [
         { name: 'Semua', url: '/user-profile/my-order' },
-        { name: 'Belum Bayar', url: '/user-profile//my-order/pending' },
-        { name: 'Dikemas', url: '/user-profile//my-order/packing' },
-        { name: 'Dikirim', url: '/user-profile//my-order/shipped' },
-        { name: 'Selesai', url: '/user-profile//my-order/completed' },
-        { name: 'Dibatalkan', url: '/user-profile//my-order/cancelled' },
-        { name: 'Pengembalian', url: '/user-profile//my-order/refund' },
+        { name: 'Belum Bayar', url: '/user-profile/my-order/pending' },
+        { name: 'Dikemas', url: '/user-profile/my-order/packing' },
+        { name: 'Dikirim', url: '/user-profile/my-order/shipped' },
+        { name: 'Selesai', url: '/user-profile/my-order/completed' },
+        { name: 'Dibatalkan', url: '/user-profile/my-order/cancelled' },
+        { name: 'Pengembalian', url: '/user-profile/my-order/refund' },
     ];
-
 
     const filteredOrders = mockOrders.filter(order => {
         const statusMap: { [key: string]: Order['status'] } = { 'belum bayar': 'BELUM_BAYAR', 'dikemas': 'SEDANG_DIKEMAS', 'dikirim': 'DIKIRIM', 'selesai': 'SELESAI', 'dibatalkan': 'DIBATALKAN', 'pengembalian': 'PENGEMBALIAN' };
@@ -229,28 +316,34 @@ const MyOrderPage = ({ tab = 'Semua' }: Props) => {
         return matchesTab && matchesSearch;
     });
 
+    // --- Pagination Logic ---
+    const indexOfLastOrder = currentPage * ordersPerPage;
+    const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+    const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+    const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
     return (
         <UserProfile>
             <h2 className="text-[22px] font-bold text-[#7952B3] mb-2 mt-2">Pesanan Saya</h2>
             <p className="text-gray-500 mb-3">Semua belanjaanmu ada di sini! Cek status, lihat detail, atau ulangi pembelian dengan sekali klik.</p>
             <CancelOrderModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmCancellation} />
             <ReturnOrderModal isOpen={isReturnModalOpen} onClose={() => setReturnModalOpen(false)} onConfirm={handleConfirmReturn} />
+
             <div className='space-y-6'>
                 <div className='bg-white border border-[#DCDCDC] rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]'>
+                    {/* Tabs */}
                     <div className='px-8 border-b border-[#BBBBBBCC]/80'>
-                        <div className="">
-                            <div className="overflow-x-auto">
-                                <nav className="flex space-x-2 sm:space-x-6 px-4" aria-label="Tabs">
-                                    {
-                                        tabs.map((item) => (
-                                            <button key={item?.name} onClick={() => window.location.href = item?.url} className={`${tab == item?.name ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4  pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
-                                                {item?.name}
-                                            </button>
-                                        ))}
-                                </nav>
-                            </div>
+                        <div className="overflow-x-auto">
+                            <nav className="flex space-x-2 sm:space-x-6 px-4" aria-label="Tabs">
+                                {tabs.map((item) => (
+                                    <button key={item?.name} onClick={() => window.location.href = item?.url} className={`${tab === item?.name ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4 pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
+                                        {item?.name}
+                                    </button>
+                                ))}
+                            </nav>
                         </div>
                     </div>
+                    {/* Search Bar */}
                     <div className="p-4 md:p-6">
                         <div className="flex items-center">
                             <div className="relative flex-grow">
@@ -275,43 +368,46 @@ const MyOrderPage = ({ tab = 'Semua' }: Props) => {
                         </div>
                     </div>
                 </div>
+
                 <div className="space-y-8">
-                    {filteredOrders.length > 0 ? (
-                        filteredOrders.map((order) => {
+                    {/* Use currentOrders for mapping */}
+                    {currentOrders.length > 0 ? (
+                        currentOrders.map((order) => {
                             const statusInfo = getStatusStyles(order.status, order?.arrived);
                             return (
                                 <div key={order.id} className="bg-white border border-[#DCDCDC] rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+                                    {/* Order Header */}
                                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border-b border-[#BBBBBBCC] px-6">
                                         <div className="flex items-center mb-2 sm:mb-0">
-                                            {/* <StoreIcon /> */}
                                             <h2 className="text-[16px] font-bold text-[#333333]">{order.storeName}</h2>
                                         </div>
                                         <div>
-                                            {
-                                                order?.arrived && <span className='text-right text-[#555555] text-[12px] font-bold mr-6'>Pesanan tiba di alamat tujuan</span>
-                                            }
+                                            {order?.arrived && <span className='text-right text-[#555555] text-[12px] font-bold mr-6'>Pesanan tiba di alamat tujuan</span>}
                                             <span className={`font-bold text-[16px] uppercase ${statusInfo.color}`}>{statusInfo.text}</span>
                                         </div>
                                     </div>
+                                    {/* Product List */}
                                     <div className="p-4 px-6 ">
                                         {order.products.map((product, index) => (
                                             <div key={product.id} className={`flex items-start ${index > 0 ? 'mt-4' : ''}`}>
-                                                <img src={product.image} alt={product.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-   mr-4 flex-shrink-0" onError={(e) => { e.currentTarget.src = 'https://placehold.co/100x100?text=Error'; }} />
+                                                <img src={product.image} alt={product.name} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded mr-4 flex-shrink-0" onError={(e) => { e.currentTarget.src = 'https://placehold.co/100x100?text=Error'; }} />
                                                 <div className="flex-grow">
                                                     <p className="text-[#333333] text-[15px] font-bold leading-tight">{product.name}</p>
                                                     <div className="text-[#333333] text-[13px] leading-tight flex">
                                                         {product?.variant?.map((v, iv) => (
                                                             <p key={iv}>
-                                                                Variasi   {v?.variant}: <span className='font-bold'>{v?.option}</span>
+                                                                Variasi {v?.variant}: <span className='font-bold'>{v?.option}</span>
                                                             </p>
                                                         ))}
                                                     </div>
                                                     <p className="text-[#333] text-[13px] mt-1">X {product.quantity}</p>
                                                 </div>
                                                 <div className="text-[#333333] text-[15px] text-right ml-4">Rp {product.price.toLocaleString('id-ID')}</div>
-                                            </div>))}
+                                            </div>
+                                        ))}
                                     </div>
-                                    <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 p-4  rounded-b-[5px] border-t border-[#BBBBBBCC] px-6">
+                                    {/* Order Footer */}
+                                    <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 p-4 rounded-b-[5px] border-t border-[#BBBBBBCC] px-6">
                                         <div className='space-y-6'>
                                             <div className="text-left md:text-right flex justify-end items-center gap-10">
                                                 <p className="text-[14px] text-[#333333]">Total Pesanan:</p>
@@ -335,6 +431,14 @@ const MyOrderPage = ({ tab = 'Semua' }: Props) => {
                         </div>
                     )}
                 </div>
+                {/* Render Pagination if there are orders */}
+                {filteredOrders.length > 0 && (
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={(page) => setCurrentPage(page)}
+                    />
+                )}
             </div>
         </UserProfile >
     );
