@@ -179,7 +179,7 @@ const RegisterPage: NextPage = () => {
         }
     }
     const handleLoginGoogle = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+        router.push(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`)
     }
     return (
         <AuthNewLayout>

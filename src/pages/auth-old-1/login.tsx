@@ -67,7 +67,7 @@ const Login = () => {
         setInput(register ?? '')
     }, [register]);
     const handleLoginGoogle = () => {
-        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`
+        router?.push(`${process.env.NEXT_PUBLIC_API_URL}/auth/google-zukses`)
     }
 
     const handleSubmit = async (e: React.FormEvent) => {

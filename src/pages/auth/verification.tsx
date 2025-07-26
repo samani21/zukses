@@ -92,17 +92,17 @@ const VerificationPage: NextPage = () => {
 
             if (res?.data?.status === 'success') {
                 if (type === 'daftar') {
-                    window.location.href = `/auth/complete-registration?contact=${contact}`;
+                    router?.push(`/auth/complete-registration?contact=${contact}`);
                 } else {
-                    window.location.href = `/auth/forget-password?contact=${contact}&type=next`;
+                    router?.push(`/auth/forget-password?contact=${contact}&type=next`);
                 }
             }
         } catch (err: unknown) {
             if (otp === '123456') {
                 if (type === 'daftar') {
-                    window.location.href = `/auth/complete-registration?contact=${contact}`;
+                    router?.push(`/auth/complete-registration?contact=${contact}`);
                 } else {
-                    window.location.href = `/auth/forget-password?contact=${contact}&type=next`;
+                    router?.push(`/auth/forget-password?contact=${contact}&type=next`);
                 }
             } else {
                 const error = err as AxiosError<{ message?: string }>;

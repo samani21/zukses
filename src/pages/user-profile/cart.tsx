@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Plus, Minus } from 'lucide-react';
 import UserProfile from 'pages/layouts/UserProfile';
+import { useRouter } from 'next/router';
 
 // --- INTERFACES & TIPE DATA ---
 // Menambahkan properti baru untuk tag diskon dan info lainnya
@@ -104,7 +105,7 @@ const initialCartData: Store[] = [
 // Komponen utama halaman keranjang belanja
 const ShoppingCartPage: React.FC = () => {
     const [stores, setStores] = useState<Store[]>(initialCartData);
-
+    const router = useRouter()
     // --- FUNGSI-FUNGSI LOGIKA (Tidak diubah) ---
 
     const formatCurrency = (amount: number) => {
@@ -388,7 +389,7 @@ const ShoppingCartPage: React.FC = () => {
                                     }}>Hemat {formatCurrency(cartSummary.totalSavings)}</p>
                                 )}
                             </div>
-                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors" onClick={() => window.location.href = '/checkout'}>
+                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors" onClick={() => router.push('/checkout')}>
                                 Beli ({cartSummary.selectedProductsCount})
                             </button>
                         </div>

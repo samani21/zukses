@@ -14,6 +14,7 @@ import Loading from 'components/Loading';
 import OtherProduct from 'components/OtherProduct';
 import ProductWithCategories from 'components/ProductWithCategories';
 import VariantModal from 'components/product/VariantModal';
+import { useRouter } from 'next/router';
 
 
 
@@ -23,6 +24,7 @@ const ProductPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [detailProduct, setDetailProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const router = useRouter();
     useEffect(() => {
         const dataString = localStorage.getItem('product');
         if (dataString) {
@@ -75,7 +77,7 @@ const ProductPage = () => {
                 <div className='h-[50px] flex md:hidden items-center px-4 justify-between'>
                     <div
                         onClick={() => {
-                            window.location.href = '/'
+                            router.push('/')
                             localStorage.removeItem('product')
                         }}
                         className=""
@@ -103,7 +105,7 @@ const ProductPage = () => {
                                 <a
                                     href="#"
                                     className="hover:underline truncate"
-                                    onClick={() => (window.location.href = '/')}
+                                    onClick={() => (router.push('/'))}
                                 >
                                     Zuksess
                                 </a>
