@@ -1,9 +1,10 @@
-import UserProfile from 'pages/layouts/UserProfile'
+
 import React from 'react'
+import MyOrderPage from '../my-order'
 
 const shipped = () => {
   return (
-    <UserProfile>shipped</UserProfile>
+    <MyOrderPage tab={'Dikirim'} />
   )
 }
 

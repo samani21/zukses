@@ -1,9 +1,9 @@
-import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
+import MyOrderPage from '../my-order'
 
 const cancelled = () => {
     return (
-        <UserProfile>cancelled</UserProfile>
+        <MyOrderPage tab={'Dibatalkan'} />
     )
 }
 

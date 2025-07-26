@@ -41,12 +41,12 @@ const profileItems: NavItem[] = [
 // Grup Pesanan (dengan struktur bersarang)
 const orderItems: NavItem[] = [
     { name: 'Pesanan Saya', url: '/user-profile/my-order', },
-    { name: 'Belum Bayar', url: '/user-profile/orders/pending', },
-    { name: 'Sedang Dikemas', url: '/user-profile/orders/packing', },
-    { name: 'Dikirim', url: '/user-profile/orders/shipped', },
-    { name: 'Selesai', url: '/user-profile/orders/completed', },
-    { name: 'Dibatalkan', url: '/user-profile/orders/cancelled', },
-    { name: 'Pengembalian', url: '/user-profile/orders/refund', },
+    { name: 'Belum Bayar', url: '/user-profile/my-order/pending', },
+    { name: 'Sedang Dikemas', url: '/user-profile/my-order/packing', },
+    { name: 'Dikirim', url: '/user-profile/my-order/shipped', },
+    { name: 'Selesai', url: '/user-profile/my-order/completed', },
+    { name: 'Dibatalkan', url: '/user-profile/my-order/cancelled', },
+    { name: 'Pengembalian', url: '/user-profile/my-order/refund', },
 
 ];
 
@@ -91,7 +91,7 @@ const DesktopSidebar = () => {
                     }`}
             >
                 <span className="tracking-[0px]" style={{
-                    lineHeight:"120%"
+                    lineHeight: "120%"
                 }}>{item.name}</span>
             </button>
         </li>

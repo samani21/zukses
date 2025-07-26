@@ -1,11 +1,11 @@
 'use client';
 
 import CancelOrderModal from 'components/userProfile/MyOrder/CancelOrderModal';
+import { mockOrders } from 'components/userProfile/MyOrder/mockOrders';
 import ReturnOrderModal from 'components/userProfile/MyOrder/ReturnOrderModal';
 import UserProfile from 'pages/layouts/UserProfile';
 import React, { useState } from 'react';
 
-// --- Icon Components (Inline SVG for simplicity) ---
 const SearchIcon = () => (
     <svg className="w-5 h-5 text-[#888888]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -37,131 +37,13 @@ interface Order {
     arrived?: boolean
 }
 
-// --- Data Mockup (Sesuai Gambar) ---
-const mockOrders: Order[] = [
-    {
-        id: 'ORDER-001',
-        storeName: 'Toko A',
-        status: 'SELESAI',
-        products: [{
-            id: 'PROD-001',
-            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-            image: '/image/image 13.png',
-            price: 99000,
-            quantity: 1,
-            variant: [
-                { variant: "Warna", option: "Merah" },
-                { variant: "Ukuran", option: "Besar" },
 
-            ]
-        },
-        {
-            id: 'PROD-002',
-            name: 'Kemko Pendek Motif/Kemeja Qurta/Pakaian Muslim',
-            image: '/image/image 10.svg',
-            price: 1741000,
-            quantity: 1,
-        },],
-        totalPrice: 1840000,
-        receiver: "Irvan Mamala"
-    },
-    {
-        id: 'ORDER-002',
-        storeName: 'Toko DEF',
-        status: 'DIBATALKAN',
-        products: [{
-            id: 'PROD-003',
-            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-            image: '/image/image 13.png',
-            price: 1580000,
-            quantity: 1,
-            variant: [
-                { variant: "Warna", option: "Merah" },
-                { variant: "Ukuran", option: "Besar" },
+interface Props {
+    tab?: string;
+}
 
-            ]
-        },],
-        totalPrice: 1580000,
-    },
-    {
-        id: 'ORDER-003',
-        storeName: 'Toko GHI',
-        status: 'SEDANG_DIKEMAS',
-        products: [{
-            id: 'PROD-004',
-            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-            image: '/image/image 13.png',
-            price: 1580000,
-            quantity: 1,
-            variant: [
-                { variant: "Warna", option: "Merah" },
-                { variant: "Ukuran", option: "Besar" },
+const MyOrderPage = ({ tab = 'Semua' }: Props) => {
 
-            ]
-        },],
-        totalPrice: 1580000,
-    },
-    {
-        id: 'ORDER-004',
-        storeName: 'Toko AB',
-        status: 'DIKIRIM',
-        products: [{
-            id: 'PROD-005',
-            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-            image: '/image/image 13.png',
-            price: 1580000,
-            quantity: 1,
-            variant: [
-                { variant: "Warna", option: "Merah" },
-                { variant: "Ukuran", option: "Besar" },
-
-            ]
-        },],
-        totalPrice: 1580000,
-    },
-    {
-        id: 'ORDER-006',
-        storeName: 'Toko AKJA',
-        status: 'DIKIRIM',
-        products: [{
-            id: 'PROD-006',
-            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-            image: '/image/image 13.png',
-            price: 3200000,
-            quantity: 1,
-            variant: [
-                { variant: "Warna", option: "Merah" },
-                { variant: "Ukuran", option: "Besar" },
-
-            ]
-        },],
-        arrived: true,
-        totalPrice: 4200000,
-    },
-    {
-        id: 'ORDER-005',
-        storeName: 'Toko ICR',
-        status: 'BELUM_BAYAR',
-        products: [{
-            id: 'PROD-006',
-            name: 'Rak Bumbu Dapur Multifungsi 2 susun',
-            image: '/image/image 13.png',
-            price: 3200000,
-            quantity: 29,
-            variant: [
-                { variant: "Warna", option: "Merah" },
-                { variant: "Ukuran", option: "Besar" },
-
-            ]
-        },],
-        totalPrice: 3200000,
-    },
-];
-
-
-// --- Komponen Utama ---
-const MyOrderPage = () => {
-    const [activeTab, setActiveTab] = useState('Semua');
     const [searchInput, setSearchInput] = useState(''); // State untuk input field
     const [searchQuery, setSearchQuery] = useState(''); // State untuk filter yang aktif
     const [isModalOpen, setModalOpen] = useState(false);
@@ -172,9 +54,6 @@ const MyOrderPage = () => {
     // Fungsi untuk menjalankan pencarian
     const performSearch = () => {
         setSearchQuery(searchInput);
-        // **PERBAIKAN:** Secara otomatis pindah ke tab "Semua" saat mencari
-        // untuk memastikan hasil pencarian tidak terbatas pada tab yang sedang aktif.
-        setActiveTab('Semua');
         console.log(`Mencari untuk: "${searchInput}" di semua tab`);
     };
 
@@ -331,12 +210,21 @@ const MyOrderPage = () => {
         }
     };
 
-    const tabs = ['Semua', 'Belum Bayar', 'Dikemas', 'Dikirim', 'Selesai', 'Dibatalkan', 'Pengembalian'];
+    const tabs = [
+        { name: 'Semua', url: '/user-profile/my-order' },
+        { name: 'Belum Bayar', url: '/user-profile//my-order/pending' },
+        { name: 'Dikemas', url: '/user-profile//my-order/packing' },
+        { name: 'Dikirim', url: '/user-profile//my-order/shipped' },
+        { name: 'Selesai', url: '/user-profile//my-order/completed' },
+        { name: 'Dibatalkan', url: '/user-profile//my-order/cancelled' },
+        { name: 'Pengembalian', url: '/user-profile//my-order/refund' },
+    ];
+
 
     const filteredOrders = mockOrders.filter(order => {
         const statusMap: { [key: string]: Order['status'] } = { 'belum bayar': 'BELUM_BAYAR', 'dikemas': 'SEDANG_DIKEMAS', 'dikirim': 'DIKIRIM', 'selesai': 'SELESAI', 'dibatalkan': 'DIBATALKAN', 'pengembalian': 'PENGEMBALIAN' };
         const lowerCaseQuery = searchQuery.toLowerCase();
-        const matchesTab = activeTab.toLowerCase() === 'semua' || order.status === statusMap[activeTab.toLowerCase()];
+        const matchesTab = tab.toLowerCase() === 'semua' || order.status === statusMap[tab.toLowerCase()];
         const matchesSearch = searchQuery === '' || order.storeName.toLowerCase().includes(lowerCaseQuery) || order.products.some(product => product.name.toLowerCase().includes(lowerCaseQuery)) || order.id.toLowerCase().includes(lowerCaseQuery);
         return matchesTab && matchesSearch;
     });
@@ -345,7 +233,7 @@ const MyOrderPage = () => {
         <UserProfile>
             <h2 className="text-[22px] font-bold text-[#7952B3] mb-2 mt-2">Pesanan Saya</h2>
             <p className="text-gray-500 mb-3">Semua belanjaanmu ada di sini! Cek status, lihat detail, atau ulangi pembelian dengan sekali klik.</p>
-            <CancelOrderModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmCancellation}/>
+            <CancelOrderModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onConfirm={handleConfirmCancellation} />
             <ReturnOrderModal isOpen={isReturnModalOpen} onClose={() => setReturnModalOpen(false)} onConfirm={handleConfirmReturn} />
             <div className='space-y-6'>
                 <div className='bg-white border border-[#DCDCDC] rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]'>
@@ -354,9 +242,9 @@ const MyOrderPage = () => {
                             <div className="overflow-x-auto">
                                 <nav className="flex space-x-2 sm:space-x-6 px-4" aria-label="Tabs">
                                     {
-                                        tabs.map((tab) => (
-                                            <button key={tab} onClick={() => setActiveTab(tab)} className={`${activeTab === tab ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4  pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
-                                                {tab}
+                                        tabs.map((item) => (
+                                            <button key={item?.name} onClick={() => window.location.href = item?.url} className={`${tab == item?.name ? 'border-[#BB2C31] border-b-[3px] text-[16px] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'} text-[16px] whitespace-nowrap py-4  pb-2 px-1 border-b-2 text-sm transition-colors duration-200 focus:outline-none tracking-[-0.05em]`}>
+                                                {item?.name}
                                             </button>
                                         ))}
                                 </nav>
@@ -448,7 +336,7 @@ const MyOrderPage = () => {
                     )}
                 </div>
             </div>
-        </UserProfile>
+        </UserProfile >
     );
 };
 

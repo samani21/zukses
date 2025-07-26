@@ -1,9 +1,9 @@
-import UserProfile from 'pages/layouts/UserProfile'
 import React from 'react'
+import MyOrderPage from '../my-order'
 
 const pending = () => {
     return (
-        <UserProfile>pending</UserProfile>
+        <MyOrderPage tab={'Belum Bayar'} />
     )
 }
 
