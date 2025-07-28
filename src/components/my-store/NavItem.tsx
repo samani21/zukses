@@ -18,7 +18,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
     const hasActiveChild = item.children?.some((child) => child.active);
 
     // State dropdown terbuka
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     // Jika ada child aktif, buka dropdown otomatis
     useEffect(() => {
@@ -33,7 +33,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
             <div>
                 <button
                     onClick={() => setIsOpen((prev) => !prev)}
-                    className={`w-full flex items-center justify-between text-left px-4 py-2.5 text-[#3D3D4E] text-[14px] font-semibold rounded-[5px] transition-colors`}
+                    className={`w-full flex items-center justify-between text-left px-4 py-2.5 text-[#3D3D4E] text-[14px] font-semibold rounded-[5px] transition-colors hover:bg-purple-100`}
                 >
                     <span>{item.title}</span>
                     <ChevronRight

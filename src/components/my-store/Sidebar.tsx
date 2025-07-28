@@ -12,7 +12,7 @@ import {
     User,
     Wallet,
 } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import NavItem from './NavItem';
 import { usePathname } from 'next/navigation';
 
@@ -39,6 +39,18 @@ const sidebarNavItems: NavItemData[] = [
             { title: 'Alamat Toko', icon: User, href: '#' },
             { title: 'Rekening Bank', icon: CreditCard, href: '#' },
             { title: 'Pengaturan Jasa Kirim', icon: Truck, href: '#' },
+            { title: 'Performa Toko', icon: Truck, href: '#' },
+            { title: 'Kesehatan Toko', icon: Truck, href: '#' },
+        ],
+    },
+
+    {
+        title: 'Produk',
+        icon: Package2,
+        href: '#',
+        children: [
+            { title: 'Produk Saya', icon: Package, href: '#' },
+            { title: 'Tambah Produk', icon: Package, href: '#' }
         ],
     },
     {
@@ -49,13 +61,11 @@ const sidebarNavItems: NavItemData[] = [
             { title: 'Penjualan Saya', icon: Wallet, href: '#' },
             { title: 'Belum Bayar', icon: Wallet, href: '#' },
             { title: 'Perlu Dikirim', icon: Package, href: '#' },
+            { title: 'Dikirim', icon: Package, href: '#' },
+            { title: 'Selesai', icon: Package, href: '#' },
+            { title: 'Dibatalkan', icon: Package, href: '#' },
+            { title: 'Pengembalian', icon: Package, href: '#' },
         ],
-    },
-    {
-        title: 'Produk',
-        icon: Package2,
-        href: '#',
-        children: [{ title: 'Produk Saya', icon: Package, href: '#' }],
     },
     {
         title: 'Pendapatan',
@@ -95,13 +105,64 @@ const Sidebar = ({
         return pathname === item.href;
     };
 
+    useEffect(() => {
+        if (isMobileOpen) {
+            document.body.classList.add('overflow-hidden');
+        } else {
+            document.body.classList.remove('overflow-hidden');
+        }
 
+        // Cleanup ketika unmount
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+        };
+    }, [isMobileOpen]);
+
+    useEffect(() => {
+        const nav = document.querySelector('.navbar-scrollbar');
+        if (!nav) return;
+
+        let timeout: NodeJS.Timeout;
+
+        const showScrollbar = () => {
+            nav.classList.remove('hide-scrollbar');
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                nav.classList.add('hide-scrollbar');
+            }, 2000); // sembunyikan setelah 2 detik tidak ada interaksi
+        };
+
+        // Tambahkan event listeners
+        nav.addEventListener('scroll', showScrollbar);
+        nav.addEventListener('mouseenter', showScrollbar);
+        nav.addEventListener('mousemove', showScrollbar);
+        nav.addEventListener('mouseleave', () => {
+            timeout = setTimeout(() => {
+                nav.classList.add('hide-scrollbar');
+            }, 2000);
+        });
+
+        // Inisialisasi sebagai disembunyikan
+        nav.classList.add('hide-scrollbar');
+
+        return () => {
+            nav.removeEventListener('scroll', showScrollbar);
+            nav.removeEventListener('mouseenter', showScrollbar);
+            nav.removeEventListener('mousemove', showScrollbar);
+            nav.removeEventListener('mouseleave', () => {
+                timeout = setTimeout(() => {
+                    nav.classList.add('hide-scrollbar');
+                }, 2000);
+            });
+            clearTimeout(timeout);
+        };
+    }, []);
 
     return (
         <>
             {/* Overlay untuk mobile */}
             <div
-                className={`fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity duration-300 ${isMobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                className={`fixed inset-0 bg-black/50 z-30 md:hidden transition-opacity duration-300 ${isMobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
                     }`}
                 onClick={() => setMobileOpen(false)}
             ></div>
@@ -129,10 +190,19 @@ const Sidebar = ({
                                 }`} strokeWidth={3} size={20}
                         />
                     </button>
+                    <button
+                        onClick={() => setMobileOpen(false)}
+                        className="md:hidden p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg"
+                    >
+                        <PanelLeft
+                            className={`transition-transform text-[#D0BBF0] duration-300 ${isCollapsed ? 'rotate-180' : ''
+                                }`} strokeWidth={3} size={20}
+                        />
+                    </button>
                 </div>
 
                 {/* Navigasi */}
-                <nav className="flex-1 p-2 space-y-2 overflow-y-auto mt-2 px-3">
+                <nav className="flex-1 p-2 space-y-2 overflow-y-auto mt-2 px-3 pb-6 navbar-scrollbar">
                     {sidebarNavItems.map((item) => (
                         <NavItem
                             key={item.title}

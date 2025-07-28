@@ -277,3 +277,23 @@ button{
   width: 0;
 }
 
+.navbar-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  scrollbar-gutter: stable;
+}
+
+.navbar-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.navbar-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.navbar-scrollbar.hide-scrollbar {
+  overflow-y: hidden !important; /* Ini benar-benar menyembunyikan scrollbar */
+}
