@@ -56,7 +56,7 @@ const DashboardPage: NextPage = () => {
                     {/* Grid Utama: Banner CTA dan Peringkat Toko */}
                     <div className="space-y-4 md:space-y-0 md:grid grid-cols-1 lg:grid-cols-10 gap-6 mb-6">
                         {/* Kartu CTA Utama (Ungu) */}
-                        <div className="lg:col-span-8 bg-[#6E62E5] text-white rounded-[8px] p-4 md:p-8 md:px-12 flex items-center tracking-[-0.02em]">
+                        <div className="lg:col-span-7 bg-[#6E62E5] text-white rounded-[8px] p-4 md:p-8 md:px-12 flex items-center tracking-[-0.02em]">
                             <div>
                                 <div className='flex flex-col md:flex-row items-start'>
                                     <div className="hidden md:block relative mb-4 md:mb-0 md:mr-6">
@@ -74,7 +74,7 @@ const DashboardPage: NextPage = () => {
                         </div>
 
                         {/* Kartu Peringkat Toko */}
-                        <div className='col-span-2'>
+                        <div className='col-span-3'>
                             <div className="bg-white rounded-[8px] p-6 border-2 border-[#6E62E5] shadow-sm">
                                 <h3 className="font-bold text-[20px] text-center text-[#444444]" style={{
                                     lineHeight: "110%"
