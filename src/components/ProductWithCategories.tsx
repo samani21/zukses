@@ -72,7 +72,7 @@ function ProductWithCategories({ products, idProduct }: ProductWithCategoriesPro
                                 <StarIcon className="w-5 h-5 text-yellow-400" />
                                 <span className='text-[12px] font-semibold text-[#555555]'>{product.rating || 4.9}</span> <span className='ml-2 text-[12px] mt-[-1px] text-[#555555]'>{product.sold || " 1000"}+ terjual</span>
                             </div>
-                            <p className="text-[12px] text-[#333333] ">Kota Makassar</p>
+                            <p className="text-[12px] text-[#333333] ">{product?.seller?.location}</p>
                         </div>
                     </a>
                 ))}

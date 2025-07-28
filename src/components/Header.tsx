@@ -215,6 +215,7 @@ const Header = () => {
     const handleSearch = () => {
         const newHistory = saveSearchTerm(searchTerm);
         updateHistoryState(newHistory);
+        router.push(`/search/${searchTerm}`);
         if (!searchTerm.trim()) { }
         setIsSearchFocused(false);
     };
