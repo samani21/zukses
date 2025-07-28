@@ -1,64 +1,169 @@
 'use client';
-import { X } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
-import SidebarSection from './SidebarSection';
 
-const SubNavLink = ({ text, url }: { text: string; url?: string }) => {
-    const [currentPath, setCurrentPath] = useState<string | null>(null);
+import {
+    CreditCard,
+    Home,
+    LineChart,
+    Package,
+    Package2,
+    PanelLeft,
+    Store,
+    Truck,
+    User,
+    Wallet,
+} from 'lucide-react';
+import React from 'react';
+import NavItem from './NavItem';
+import { usePathname } from 'next/navigation';
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setCurrentPath(window.location.pathname);
+interface NavItemData {
+    title: string;
+    icon: React.ElementType;
+    href: string;
+    active?: boolean;
+    children?: NavItemData[];
+}
+
+const sidebarNavItems: NavItemData[] = [
+    {
+        title: 'Dashboard',
+        icon: Home,
+        href: '/my-store',
+    },
+    {
+        title: 'Data Toko',
+        icon: Store,
+        href: '#',
+        children: [
+            { title: 'Profil Toko', icon: User, href: '/my-store/basic-info' },
+            { title: 'Alamat Toko', icon: User, href: '#' },
+            { title: 'Rekening Bank', icon: CreditCard, href: '#' },
+            { title: 'Pengaturan Jasa Kirim', icon: Truck, href: '#' },
+        ],
+    },
+    {
+        title: 'Data Penjualan',
+        icon: LineChart,
+        href: '#',
+        children: [
+            { title: 'Penjualan Saya', icon: Wallet, href: '#' },
+            { title: 'Belum Bayar', icon: Wallet, href: '#' },
+            { title: 'Perlu Dikirim', icon: Package, href: '#' },
+        ],
+    },
+    {
+        title: 'Produk',
+        icon: Package2,
+        href: '#',
+        children: [{ title: 'Produk Saya', icon: Package, href: '#' }],
+    },
+    {
+        title: 'Pendapatan',
+        icon: Wallet,
+        href: '#',
+        children: [
+            { title: 'Penghasilan Saya', icon: Wallet, href: '#' },
+            { title: 'Saldo Saya', icon: Wallet, href: '#' },
+        ],
+    },
+];
+
+const Sidebar = ({
+    isMobileOpen,
+    setMobileOpen,
+    isCollapsed,
+    setCollapsed,
+}: {
+    isMobileOpen: boolean;
+    setMobileOpen: (isOpen: boolean) => void;
+    isCollapsed: boolean;
+    setCollapsed: (isCollapsed: boolean) => void;
+}) => {
+    const pathname = usePathname();
+
+    // Fungsi pengecekan aktif
+    const isItemActive = (item: NavItemData): boolean => {
+        // Jika punya children, cek apakah pathname === child.href
+        if (item.children?.length) {
+            const hasActiveChild = item.children.some((child) =>
+                pathname === child.href
+            );
+            return hasActiveChild;
         }
-    }, []);
 
-    const isActive = currentPath === url;
+        // Kalau tidak punya children, aktif hanya jika path persis cocok
+        return pathname === item.href;
+    };
+
+
 
     return (
-        <a
-            href={url ?? '#'}
-            className={`block py-2 pr-4 pl-8 text-sm relative transition-colors duration-200 ${isActive ? 'text-blue-500' : 'text-gray-500 hover:text-gray-900'}`}
-        >
-            {isActive && <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-blue-500"></div>}
-            <span className={isActive ? 'font-semibold' : 'font-normal'}>{text}</span>
-        </a>
+        <>
+            {/* Overlay untuk mobile */}
+            <div
+                className={`fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity duration-300 ${isMobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                    }`}
+                onClick={() => setMobileOpen(false)}
+            ></div>
+
+            {/* Konten Sidebar */}
+            <aside
+                className={`fixed top-0 left-0 h-full bg-white shadow-xl z-40 flex flex-col transition-all duration-300 ease-in-out md:relative md:shadow-none
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+        md:translate-x-0 ${isCollapsed ? 'w-20' : 'w-64'}`}
+            >
+                {/* Header Sidebar */}
+                <div
+                    className={`p-4 bg-[#563D7C] flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'
+                        }`}
+                >
+                    {!isCollapsed && (
+                        <h1 className="text-[25px] font-bold text-white">Zukses <span className='font-[400]'>Seller</span></h1>
+                    )}
+                    <button
+                        onClick={() => setCollapsed(!isCollapsed)}
+                        className="hidden md:block p-1.5 text-gray-600 hover:bg-gray-100 rounded-lg"
+                    >
+                        <PanelLeft
+                            className={`transition-transform text-[#D0BBF0] duration-300 ${isCollapsed ? 'rotate-180' : ''
+                                }`} strokeWidth={3} size={20}
+                        />
+                    </button>
+                </div>
+
+                {/* Navigasi */}
+                <nav className="flex-1 p-2 space-y-2 overflow-y-auto">
+                    {sidebarNavItems.map((item) => (
+                        <NavItem
+                            key={item.title}
+                            item={{
+                                ...item,
+                                active: isItemActive(item),
+                                children: item.children?.map((child) => ({
+                                    ...child,
+                                    active: pathname === child.href,
+                                })),
+                            }}
+                            isCollapsed={isCollapsed}
+                        />
+
+                    ))}
+                </nav>
+
+                {/* Footer */}
+                <div className="p-6 border-t border-[#DFDFDF]/80">
+                    <div className={`space-y-2 ${isCollapsed ? 'hidden' : 'block'}`}>
+                        <button className="w-full text-center py-2.5 h-[40px] border border-[#CED0E5] text-[#444444] font-semibold terackig-[-0.02em] rounded-[5px] hover:bg-purple-600 hover:text-white transition-colors text-[14px]">
+                            Kunjungi Toko
+                        </button>
+                        <button className="w-full text-center py-2.5 h-[40px] border border-[#CED0E5] text-[#444444] font-semibold terackig-[-0.02em] rounded-[5px] hover:bg-gray-100  transition-colors text-[14px]">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </aside>
+        </>
     );
 };
 
-
-const Sidebar = ({ isOpen, setIsOpen }: { isOpen: boolean; setIsOpen: (isOpen: boolean) => void; }) => (
-    <>
-        <div
-            className={`fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-            onClick={() => setIsOpen(false)}
-        ></div>
-
-        <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col z-40 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 className="text-lg font-bold text-blue-500">Menu Penjual</h2>
-                <button onClick={() => setIsOpen(false)} className="lg:hidden text-gray-500 hover:text-gray-800">
-                    <X size={24} />
-                </button>
-            </div>
-            <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto">
-                <SidebarSection title="Pesanan" defaultOpen={true}>
-                    <SubNavLink text="Pesanan Saya" url="/my-store/my-order" />
-                    <SubNavLink text="Pengiriman Massal" />
-                    <SubNavLink text="Kelola Faktur Pesanan" />
-                    <SubNavLink text="Pengembalian/Pembatalan" url="/my-store/return" />
-                    <SubNavLink text="Pengaturan Pengiriman" />
-                </SidebarSection>
-                <SidebarSection title="Produk" defaultOpen={true}>
-                    <SubNavLink text="Produk Saya" url="/my-store/product" />
-                    <SubNavLink text="Tambah Produk Baru" url="/my-store/add-product" />
-                    <SubNavLink text="Manajemen Merek" url="/my-store/brand" />
-                </SidebarSection>
-
-                <SidebarSection title="Pusat Promosi" defaultOpen={true}>
-                    <SubNavLink text="Promosi Saya" />
-                </SidebarSection>
-            </nav>
-        </aside>
-    </>
-);
-export default Sidebar
+export default Sidebar;
