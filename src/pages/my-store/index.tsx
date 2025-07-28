@@ -49,7 +49,7 @@ const DashboardPage: NextPage = () => {
                         <p className="text-[#444444] mt-4 text-[14px]" style={{
                             lineHeight: "107%"
                         }}>
-                            Toko jalan. <br /> kamu tenang. Semua data penjualan dan laporan keuangan bisa kamu akses langsung di sini.
+                            Toko jalan, kamu tenang. <br /> Semua data penjualan dan laporan keuangan bisa kamu akses langsung di sini.
                         </p>
                     </div>
 
