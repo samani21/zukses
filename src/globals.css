@@ -277,7 +277,9 @@ button{
   width: 0;
 }
 
-.navbar-scrollbar {
+
+
+/* .navbar-scrollbar {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
@@ -295,5 +297,5 @@ button{
 }
 
 .navbar-scrollbar.hide-scrollbar {
-  overflow-y: hidden !important; /* Ini benar-benar menyembunyikan scrollbar */
-}
+  overflow-y: hidden !important;
+} */

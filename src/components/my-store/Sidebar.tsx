@@ -202,7 +202,7 @@ const Sidebar = ({
                 </div>
 
                 {/* Navigasi */}
-                <nav className="flex-1 p-2 space-y-2 overflow-y-auto mt-2 px-3 pb-6 navbar-scrollbar">
+                <nav className="flex-1 p-2 space-y-2 overflow-y-auto mt-2 px-3 pb-6 no-scrollbar">
                     {sidebarNavItems.map((item) => (
                         <NavItem
                             key={item.title}
