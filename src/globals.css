@@ -288,7 +288,7 @@ button{
 
 @media (min-width: 768px) {
   .navbar-scrollbar {
-    padding-right: 6px; /* Default padding */
+    padding-right: 3px; /* Default padding */
   }
 }
 .navbar-scrollbar::-webkit-scrollbar {
