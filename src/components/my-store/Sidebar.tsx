@@ -151,7 +151,7 @@ const Sidebar = ({
                 </nav>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-[#DFDFDF]/80">
+                <div className="hidden p-6 border-t border-[#DFDFDF]/80">
                     <div className={`space-y-2 ${isCollapsed ? 'hidden' : 'block'}`}>
                         <button className="w-full text-center py-2.5 h-[40px] border border-[#CED0E5] text-[#444444] font-semibold terackig-[-0.02em] rounded-[5px] hover:bg-purple-600 hover:text-white transition-colors text-[14px]">
                             Kunjungi Toko
