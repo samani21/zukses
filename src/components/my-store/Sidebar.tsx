@@ -108,7 +108,7 @@ const Sidebar = ({
 
             {/* Konten Sidebar */}
             <aside
-                className={`fixed top-0 left-0 h-full bg-white shadow-xl z-40 flex flex-col transition-all duration-300 ease-in-out md:relative md:shadow-none
+                className={`fixed top-0 left-0 h-full bg-white shadow-[1px_1px_10px_rgba(0,0,0,0.08)] z-40 flex flex-col transition-all duration-300 ease-in-out md:relative
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0 ${isCollapsed ? 'w-20' : 'w-64'}`}
             >
@@ -132,7 +132,7 @@ const Sidebar = ({
                 </div>
 
                 {/* Navigasi */}
-                <nav className="flex-1 p-2 space-y-2 overflow-y-auto mt-2">
+                <nav className="flex-1 p-2 space-y-2 overflow-y-auto mt-2 px-3">
                     {sidebarNavItems.map((item) => (
                         <NavItem
                             key={item.title}
