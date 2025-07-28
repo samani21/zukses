@@ -1,0 +1,92 @@
+import { ShopProfile } from 'components/types/ShopProfile';
+import { X } from 'lucide-react';
+import { useRouter } from 'next/router';
+import React from 'react';
+
+const ModalCompleteShopProfile = ({
+    onClose,
+    shopProfil,
+}: {
+    onClose: () => void;
+    shopProfil: ShopProfile | null;
+}) => {
+    const isComplete = (field: string | null | undefined) => !!field;
+    const router = useRouter()
+    return (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+            <div className="bg-white md:w-[719px] rounded-lg shadow-lg">
+                <div className="p-3 md:p-6 border-b text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
+                    Lengkapi data toko kamu dulu
+                    <X onClick={onClose} className='cursor-pointer' />
+                </div>
+                <div className="bg-[#C7F8BC] text-[#333333] p-3 text-[16px] font-semibold px-8 tracking-[-0.02em]" style={{
+                    lineHeight: "130%"
+                }}>
+                    Lengkapi Data Toko Kamu Dulu, Yuk!<br />Biar tokomu makin terlihat profesional dan siap terima pesanan.
+                </div>
+                <div className="py-5 px-8 space-y-4">
+                    {[
+                        {
+                            label: 'Profil Toko',
+                            field: shopProfil?.shop_name,
+                            icon: '/icon/damaged-package11.svg',
+                            description:
+                                'Nama, deskripsi, dan logo toko yang menarik bikin <br/> pembeli makin percaya dan tertarik belanja!',
+                            url: '/my-store/basic-info'
+                        },
+                        {
+                            label: 'Alamat Toko',
+                            field: shopProfil?.shop_name,
+                            icon: '/icon/damaged-package21.svg',
+                            description:
+                                'Lengkapi alamat tokomu sekarang. <br/> Biar proses kirim-mengirim jadi lebih cepat dan tepat.',
+                            url: '/my-store/address'
+                        },
+                        {
+                            label: 'Rekening Bank',
+                            field: shopProfil?.shop_name,
+                            icon: '/icon/damaged-package 3.svg',
+                            description:
+                                'Isi rekening bank kamu di sini.  <br/> Biar hasil jualanmu bisa langsung cair tanpa hambatan.',
+                            url: '/my-store/basic-info'
+                        },
+                        {
+                            label: 'Pengaturan Jasa Kirim',
+                            field: shopProfil?.shop_name,
+                            icon: '/icon/damaged-package 4.svg',
+                            description:
+                                'Atur jasa kirim sesuai kebutuhan tokomu.  <br/> Pilih kurir favorit biar pengiriman jadi makin praktis dan cepat!',
+                            url: '/my-store/basic-info'
+                        },
+                    ].map((item, i) => (
+                        <div
+                            key={i}
+                            className={`grid grid-cols-5 items-start cursor-pointer sm:items-center ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} p-3 rounded-[10px] border border-[#CCCCCC] flex-col sm:flex-row gap-2 sm:gap-0`}
+                            onClick={() => router?.push(item?.url)}
+                        >
+                            <div className="col-span-4 flex items-start gap-4 md:p-2">
+                                <img src={item?.icon} className='w-[50px] h-[50px]' />
+                                <div className='tracking-[-0.02em]'>
+                                    <div className="text-[18px] text-[#555555] font-bold sm:text-base">{item.label}</div>
+                                    <div
+                                        className="text-[14px] sm:text-sm text-[#666666]"
+                                        dangerouslySetInnerHTML={{ __html: item.description }}
+                                    />
+                                </div>
+                            </div>
+                            <div className='col-span-1 flex items-center justify-center'>
+                                {isComplete(item.field) ? (
+                                    <img src='/icon/ceklist.svg' className='w-[32px] h-[32px]' />
+                                ) : (
+                                    <img src='/icon/Alert triangle.svg' className='w-[32px] h-[32px]' />
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default ModalCompleteShopProfile;

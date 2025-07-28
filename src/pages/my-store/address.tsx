@@ -7,11 +7,12 @@ import { Response } from "services/api/types";
 import Post from "services/api/Post";
 import { AxiosError } from "axios";
 import Delete from "services/api/Delete";
-import AddAddressModal from "components/userProfile/AddAddressModal-old";
 import { ModalContainer } from "components/Profile/ModalContainer";
 import ModalDelete from "components/userProfile/ModalDelete";
 import Snackbar from "components/Snackbar";
 import Loading from "components/Loading";
+import ModalCompleteShopProfile from "components/my-store/ModalCompleteShopProfile";
+import AddAddressModal from "components/userProfile/AddAddressModal";
 interface User {
     name?: string;
     email?: string;
@@ -61,6 +62,7 @@ type GetAddressData = {
 
 function PageContent() {
     const shopProfil = useShopProfile();
+    const [showModal, setShowModal] = useState(false);
     const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
@@ -81,6 +83,20 @@ function PageContent() {
             getUserAddress(currentUser.id);
         }
     }, []);
+    useEffect(() => {
+        setLoading(true);
+
+        if (!shopProfil) {
+            const timeout = setTimeout(() => {
+                setShowModal(true);
+            }, 1500); // 1500ms = 1.5 detik
+
+            // Bersihkan timeout saat komponen unmount atau `shopProfil` berubah
+            return () => clearTimeout(timeout);
+        }
+        setLoading(false);
+    }, [shopProfil]);
+
 
     const getUserAddress = async (userId?: number) => {
         if (!userId) return;
@@ -186,14 +202,15 @@ function PageContent() {
                         }}>
                             Biar pembeli tahu kamu di mana.<br /> Lengkapi alamat tokomu untuk pengiriman dan kepercayaan pelanggan.   </p>
                     </div>
-                    <button className="bg-[#563D7C] text-white font-semibold text-[14px] rounded-[5px] px-4 py-2 w-[150px] h-[40px]" onClick={() => {
-                        setOpenModalAddAdress(true)
-                        setIsAdd(true);
-                    }}>
-                        Tambah Alamat
-                    </button>
+                    {
+                        shopProfil && <button className="bg-[#563D7C] text-white font-semibold text-[14px] rounded-[5px] px-4 py-2 w-[150px] h-[40px]" onClick={() => {
+                            setOpenModalAddAdress(true)
+                            setIsAdd(true);
+                        }}>
+                            Tambah Alamat
+                        </button>
+                    }
                 </div>
-                {shopProfil?.id}
                 <div className="w-full">
                     <div>
                         <div className="space-y-4 mt-5">
@@ -244,6 +261,11 @@ function PageContent() {
                     {loading && <Loading />}
                 </div>
             </main>
+
+            {showModal && (
+                <ModalCompleteShopProfile onClose={() => setShowModal(false)} shopProfil={shopProfil} />
+            )}
+
         </div>
     );
 }

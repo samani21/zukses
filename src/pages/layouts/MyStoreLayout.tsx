@@ -16,9 +16,11 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
         setLoading(true);
         const res = await Get<Response>('zukses', `shop/profile`);
         setLoading(false);
+
         if (res?.status === 'success' && res.data) {
-            const data = res?.data as ShopData;
-            setShopProfil(data ?? null);
+            // Gunakan unknown terlebih dahulu jika yakin datanya adalah ShopData
+            const data = res.data as unknown as ShopData;
+            setShopProfil(data);
         } else {
             console.warn('User profile tidak ditemukan atau gagal diambil');
         }
@@ -38,7 +40,7 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                     setCollapsed={setCollapsed}
                 />
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    <Header setMobileOpen={setMobileOpen} />
+                    <Header setMobileOpen={setMobileOpen} shopProfil={shopProfil} />
                     <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 md:pt-4">
                         {children}
                     </main>

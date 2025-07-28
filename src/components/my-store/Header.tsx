@@ -1,8 +1,25 @@
 import { Menu, User, ChevronUp, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/router';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ShopData } from './ShopProfileContext';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
 
-const Header = ({ setMobileOpen }: { setMobileOpen: (isOpen: boolean) => void; }) => {
+interface HeaderProps {
+    setMobileOpen: (isOpen: boolean) => void;
+    shopProfil: ShopData | null;
+}
+interface User {
+    name?: string;
+    email?: string;
+    whatsapp?: string;
+    id?: number;
+    username?: string;
+    image?: string;
+    role?: string;
+}
+
+
+const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
     // State untuk mengontrol visibilitas menu dropdown
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     // Ref untuk menunjuk ke elemen div utama dari dropdown
@@ -13,6 +30,13 @@ const Header = ({ setMobileOpen }: { setMobileOpen: (isOpen: boolean) => void; }
         setIsMenuOpen(!isMenuOpen);
     };
     const router = useRouter()
+    const [user, setUser] = useState<User | null>(null);
+    useEffect(() => {
+        const currentUser = getUserInfo();
+        if (currentUser) {
+            setUser(currentUser);
+        }
+    }, []);
     // useEffect untuk menangani klik di luar menu
     useEffect(() => {
         // Fungsi yang akan dijalankan saat ada klik
@@ -50,10 +74,14 @@ const Header = ({ setMobileOpen }: { setMobileOpen: (isOpen: boolean) => void; }
 
                 {/* Logo dan Nama Toko untuk Desktop */}
                 <div className="hidden md:flex items-center gap-4">
-                    <div className="bg-[#EBEAFC] w-[30px] h-[30px] rounded-full flex items-center justify-center">
-                        <p className='font-bold text-[#4A52B2] text-[14px]'>HS</p>
-                    </div>
-                    <span className="font-bold text-[16px] text-[#333333]">Toko Hati Senang</span>
+                    {
+                        shopProfil?.logo_url ?
+                            <img src={shopProfil?.logo_url} className='w-[30px] h-[30px] rounded-full' />
+                            : <div className="bg-[#EBEAFC] w-[30px] h-[30px] rounded-full flex items-center justify-center">
+                                <p className='font-bold text-[#4A52B2] text-[14px]'>HS</p>
+                            </div>
+                    }
+                    <span className="font-bold text-[16px] text-[#333333]">{shopProfil?.shop_name}</span>
                 </div>
 
                 {/* Area Profil Pengguna */}
@@ -69,7 +97,7 @@ const Header = ({ setMobileOpen }: { setMobileOpen: (isOpen: boolean) => void; }
                             className="flex items-center gap-2 p-2 rounded-md"
                         >
                             <User className="text-[#555555] w-[20px]" strokeWidth={3} />
-                            <span className="hidden md:inline font-bold text-[#555555] text-[16px]">Irvan Mamala</span>
+                            <span className="hidden md:inline font-bold text-[#555555] text-[16px]">{user?.name}</span>
                             {/* Ikon berubah tergantung pada apakah menu terbuka atau tidak */}
                             {isMenuOpen ? <ChevronUp className="w-4 h-4 text-[#555555]" /> : <ChevronDown className="w-4 h-4 text-[#555555]" />}
                         </button>
@@ -83,7 +111,7 @@ const Header = ({ setMobileOpen }: { setMobileOpen: (isOpen: boolean) => void; }
                                     </div>
                                     <p className="font-bold text-[17px] text-[#666666] tracking-[0px]" style={{
                                         lineHeight: "120%"
-                                    }}>Irvan Mamala</p>
+                                    }}>{user?.name}</p>
                                 </div>
                                 <nav className="py-2 text-[14px] px-4 font-[500] text-[#666666]">
                                     <div onClick={() => router?.push('/')} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Kembali ke halaman Utama</div>
