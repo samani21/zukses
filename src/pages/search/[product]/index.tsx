@@ -20,68 +20,76 @@ const formatRupiah = (amount: number) => {
     }).format(amount);
 };
 
-// --- Sub-components ---
+interface Province {
+    id: number;
+    name: string;
+}
 
-const FilterCheckbox = ({ id, label }: { id: string; label: string }) => (
+interface FilterSidebarProps {
+    province: Province[];
+    setIdProv: (value: string[]) => void;
+    setPaymentMethods: (methods: string[]) => void;
+    setConditions: (conds: string[]) => void;
+}
+
+// --- Sub-components ---
+const toTitleCase = (text: string) =>
+    text
+        .toLowerCase()
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+const FilterCheckbox = ({
+    id,
+    label,
+    onChange,
+}: {
+    id: string;
+    label: string;
+    onChange?: (checked: boolean) => void;
+}) => (
     <div className="flex items-center mb-2">
         <input
             id={id}
             type="checkbox"
             className="h-[15px] w-[16px] rounded border-gray-300 text-indigo-600 accent-[#52357B] focus:ring-[#52357B] flex-shrink-0"
+            onChange={(e) => onChange?.(e.target.checked)}
         />
-        <label htmlFor={id} className="ml-3 text-[14px] text-[#555555]" style={{
-            letterSpacing: "-0.05em"
-        }}>
-            {label}
+        <label htmlFor={id} className="ml-3 text-[14px] text-[#555555]" style={{ letterSpacing: "-0.05em" }}>
+            {toTitleCase(label)}
         </label>
     </div>
 );
 
-const FilterSidebar = () => {
-    const locations = [
-        "Aceh",
-        "Sumatera Utara",
-        "Sumatera Barat",
-        "Riau",
-        "Kepulauan Riau",
-        "Jambi",
-        "Sumatera Selatan",
-        "Bangka Belitung",
-        "Bengkulu",
-        "Lampung",
-        "DKI Jakarta",
-        "Jawa Barat",
-        "Banten",
-        "Jawa Tengah",
-        "DI Yogyakarta",
-        "Jawa Timur",
-        "Bali",
-        "Nusa Tenggara Barat",
-        "Nusa Tenggara Timur",
-        "Kalimantan Barat",
-        "Kalimantan Tengah",
-        "Kalimantan Selatan",
-        "Kalimantan Timur",
-        "Kalimantan Utara",
-        "Sulawesi Utara",
-        "Gorontalo",
-        "Sulawesi Tengah",
-        "Sulawesi Barat",
-        "Sulawesi Selatan",
-        "Sulawesi Tenggara",
-        "Maluku",
-        "Maluku Utara",
-        "Papua",
-        "Papua Tengah",
-        "Papua Pegunungan",
-        "Papua Selatan",
-        "Papua Barat",
-        "Papua Barat Daya"
-    ];
 
+const FilterSidebar = ({ province, setIdProv, setPaymentMethods, setConditions }: FilterSidebarProps) => {
     const [showAll, setShowAll] = useState(false);
 
-    const visibleLocations = showAll ? locations : locations.slice(0, 14);
+    const visibleLocations = showAll ? province : province?.slice(0, 14);
+    const [selectedProvinces, setSelectedProvinces] = useState<string[]>([]);
+    const [selectedPayments, setSelectedPayments] = useState<string[]>([]);
+    const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+    console.log(selectedPayments, selectedConditions)
+    const handleProvinceChange = (id: string, checked: boolean) => {
+        setSelectedProvinces(prev =>
+            checked ? [...prev, id] : prev.filter(pid => pid !== id)
+        );
+    };
+    useEffect(() => {
+        setIdProv(selectedProvinces);
+    }, [selectedProvinces, setIdProv]);
+    const handleChange = (
+        value: string,
+        checked: boolean,
+        setLocalState: React.Dispatch<React.SetStateAction<string[]>>,
+        setParentState: (value: string[]) => void
+    ) => {
+        setLocalState(prev => {
+            const updated = checked ? [...prev, value] : prev.filter(v => v !== value);
+            setParentState(updated);
+            return updated;
+        });
+    };
     return (
         <aside className="w-full">
             {/* Location Filter */}
@@ -89,8 +97,13 @@ const FilterSidebar = () => {
                 <h3 className="font-semibold text-[#555555] text-[14px] mb-3" style={{ letterSpacing: "-0.04em" }}>
                     Lokasi
                 </h3>
-                {visibleLocations.map(loc => (
-                    <FilterCheckbox key={loc} id={`loc-${loc}`} label={loc} />
+                {visibleLocations.map((loc) => (
+                    <FilterCheckbox
+                        key={loc.id}
+                        id={`loc-${loc.id}`}
+                        label={loc.name}
+                        onChange={(checked) => handleProvinceChange(String(loc.id), checked)}
+                    />
                 ))}
                 {!showAll && (
                     <a
@@ -106,24 +119,49 @@ const FilterSidebar = () => {
                     </a>
                 )}
             </div>
+
             <div className='h-1 w-full border-t border-gray-400 mb-3' />
+
             <div className="mb-3">
-                <h3 className="font-semibold text-[#555555] text-[14px] mb-3" style={{ letterSpacing: "-0.04em" }}>Metode Pembayaran</h3>
-                <FilterCheckbox id="payment-cod" label="COD (Bayar di Tempat)" />
-                <FilterCheckbox id="payment-transfer" label="Transfer" />
+                <h3 className="font-semibold text-[#555555] text-[14px] mb-3" style={{ letterSpacing: "-0.04em" }}>
+                    Metode Pembayaran
+                </h3>
+                <FilterCheckbox
+                    id="payment-cod"
+                    label="COD (Bayar di Tempat)"
+                    onChange={(checked) => handleChange('cod', checked, setSelectedPayments, setPaymentMethods)}
+                />
+                <FilterCheckbox
+                    id="payment-transfer"
+                    label="Transfer"
+                    onChange={(checked) => handleChange('transfer', checked, setSelectedPayments, setPaymentMethods)}
+                />
             </div>
+
             <div className='h-1 w-full border-t border-gray-400 mb-3' />
+
             <div>
-                <h3 className="font-semibold text-[#555555] text-[14px] mb-3" style={{ letterSpacing: "-0.04em" }}>Kondisi Barang</h3>
-                <FilterCheckbox id="condition-new" label="Baru" />
-                <FilterCheckbox id="condition-used" label="Bekas di Pakai" />
+                <h3 className="font-semibold text-[#555555] text-[14px] mb-3" style={{ letterSpacing: "-0.04em" }}>
+                    Kondisi Barang
+                </h3>
+                <FilterCheckbox
+                    id="condition-new"
+                    label="Baru"
+                    onChange={(checked) => handleChange('new', checked, setSelectedConditions, setConditions)}
+                />
+                <FilterCheckbox
+                    id="condition-used"
+                    label="Bekas di Pakai"
+                    onChange={(checked) => handleChange('used', checked, setSelectedConditions, setConditions)}
+                />
             </div>
         </aside>
     );
 };
 
 const ProductCard = ({ product }: { product: Product }) => {
-    const router = useRouter()
+    const router = useRouter();
+    console.log('product', product)
     return (
         <div key={product.id}
             className="bg-white cursor-pointer w-full h-full overflow-hidden group lg:w-[190px] lg:h-[342px] border border-[#DDDDDD]"
@@ -184,7 +222,7 @@ const ProductCard = ({ product }: { product: Product }) => {
                     <StarIcon className="w-5 h-5 text-yellow-400" />
                     <span className='text-[12px] font-semibold text-[#555555]'>{product.rating || 4.9}</span> <span className='ml-2 text-[12px] mt-[-1px] text-[#555555]'>{product.sold || " 1000"}+ terjual</span>
                 </div>
-                <p className="text-[12px] text-[#333333] ">Kota Makassar</p>
+                <p className="text-[12px] text-[#333333] ">{product?.seller?.location}</p>
             </div>
         </div>
     );
@@ -206,13 +244,51 @@ export default function App() {
     const router = useRouter();
     const { product } = router.query
     const [products, setProducts] = useState<Product[] | null>(null);
+    const [province, setProvince] = useState<Province[]>([]);
+    const [idProv, setIdProv] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [paymentMethods, setPaymentMethods] = useState<string[]>([]);
+    const [conditions, setConditions] = useState<string[]>([]);
     const getProduct = async () => {
         setLoading(true);
-        const res = await Get<Response>('zukses', `product`);
+
+        const queryParams: string[] = [];
+
+        if (product) queryParams.push(`search=${product}`);
+        idProv.forEach(id => queryParams.push(`province_id[]=${id}`));
+
+        // Perbaikan bagian pembayaran
+        paymentMethods.forEach(method => {
+            if (method === 'cod') queryParams.push(`payment[]=1`);
+            if (method === 'transfer') queryParams.push(`payment[]=0`);
+        });
+
+        // Perbaikan bagian kondisi
+        conditions.forEach(cond => {
+            if (cond === 'new') queryParams.push(`condition[]=0`);
+            if (cond === 'used') queryParams.push(`condition[]=1`);
+        });
+
+        const queryString = queryParams.join('&');
+        const res = await Get<Response>('zukses', `product?${queryString}`);
+
+
         if (res?.status === 'success' && Array.isArray(res.data)) {
-            const data = res?.data as Product[];
-            setProducts(data);
+            console.log(res.data)
+            setProducts(res.data as Product[]);
+        } else {
+            console.warn('Produk tidak ditemukan atau gagal diambil');
+        }
+        setLoading(false);
+    };
+
+    const getProvince = async () => {
+        setLoading(true);
+        const res = await Get<Response>('zukses', `province`);
+        if (res?.message === 'success' && Array.isArray(res.data)) {
+            const data = res?.data as Province[];
+            console.log('data', data)
+            setProvince(data);
         } else {
             console.warn('Produk tidak ditemukan atau gagal diambil');
 
@@ -222,7 +298,11 @@ export default function App() {
 
     useEffect(() => {
         getProduct();
-    }, []);
+        getProvince();
+    }, [product, paymentMethods, conditions]);
+    useEffect(() => {
+        getProduct();
+    }, [idProv]);
     return (
         <MainLayout>
             <div className="min-h-screen font-sans container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
@@ -254,7 +334,8 @@ export default function App() {
 
                     <div className="flex flex-col lg:flex-row gap-8">
                         <div className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-1/7`}>
-                            <FilterSidebar />
+                            <FilterSidebar province={province} setIdProv={setIdProv} setPaymentMethods={setPaymentMethods}
+                                setConditions={setConditions} />
                         </div>
 
                         {/* Main Content */}
