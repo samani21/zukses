@@ -1,142 +1,137 @@
-import ActionItem from 'components/my-store/ActionItem'
-import Card from 'components/my-store/Card'
-import CardHeader from 'components/my-store/CardHeader'
-import { Box, ChevronRight, Star, Target } from 'lucide-react'
-import MyStoreLayout from 'pages/layouts/MyStoreLayout'
-import React from 'react'
+import type { NextPage } from 'next';
+import MyStoreLayout from 'pages/layouts/MyStoreLayout';
+
+// Untuk membuat komponen lebih rapi, kita bisa definisikan tipe data untuk props
+type StatCardProps = {
+    value: string;
+    label: string;
+    className?: string;
+};
+
+type PerformanceMetricProps = {
+    title: string;
+    value: string;
+    change: string;
+    changeColorClass: string;
+};
+
+// Komponen untuk kartu statistik individual (Pesanan, Bayar, Kirim, dll.)
+const StatCard: React.FC<StatCardProps> = ({ value, label, className }) => (
+    <div className={`flex px-8  items-center rounded-[8px] p-4 ${className}`} style={{
+        lineHeight: "110%"
+    }}>
+        <p className="text-[#52357B] text-[24px] font-bold font-bold">{value}</p>
+        <p className="text-[16px] text-[#52357B] mt-1 px-10">{label}</p>
+    </div>
+);
+
+// Komponen untuk metrik performa individual (Penjualan, Pesanan, dll.)
+const PerformanceMetric: React.FC<PerformanceMetricProps> = ({ title, value, change, changeColorClass }) => (
+    <div className="flex flex-col space-y-2">
+        <p className="text-[16px] font-bold text-[#333333]">{title}</p>
+        <p className="text-[22px] font-regular text-[#333333] mt-1">{value}</p>
+        <div className={`flex items-center text-[#F77000] text-[15px] font-bold mt-1 ${changeColorClass}`}>
+            <img src='/icon/treangle.svg' className="mr-1" />
+            <span>{change}</span>
+        </div>
+    </div>
+);
 
 
-const index = () => {
+const DashboardPage: NextPage = () => {
     return (
         <MyStoreLayout>
-            {/* --- Bar Notifikasi --- */}
-            <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg text-sm mb-6 flex items-start">
-                <Star size={18} className="mr-3 text-blue-500 mt-0.5 flex-shrink-0" />
-                <span>Notifikasi data demo diaktifkan. Mohon lakukan verifikasi data ulang dengan tim terkait.</span>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* --- Kolom Utama (Kiri & Tengah) --- */}
-                <div className="col-span-1 lg:col-span-2 space-y-6">
-                    {/* Yang Perlu Dilakukan */}
-                    <Card>
-                        <CardHeader title="Yang Perlu Dilakukan" />
-                        <div className="flex flex-wrap justify-center md:justify-around divide-y md:divide-y-0 md:divide-x divide-gray-200 mt-2">
-                            <div className="w-1/2 md:w-auto p-2"><ActionItem value="0" title="Perlu Diproses" /></div>
-                            <div className="w-1/2 md:w-auto p-2"><ActionItem value="0" title="Telah Diproses" /></div>
-                            <div className="w-1/2 md:w-auto p-2"><ActionItem value="0" title="Dibatalkan" /></div>
-                            <div className="w-1/2 md:w-auto p-2"><ActionItem value="0" title="Pengembalian" /></div>
-                        </div>
-                    </Card>
-
-                    {/* Performa Toko */}
-                    <Card>
-                        <CardHeader title="Performa Toko" linkText="Lihat Semua" />
-                        <div className="flex flex-wrap justify-center divide-y md:divide-y-0 md:divide-x divide-gray-200 mt-4">
-                            <div className="w-1/2 md:flex-1 text-center p-2"><p className="text-xl sm:text-2xl font-bold">Rp0</p><p className="text-xs mt-1">Penjualan</p></div>
-                            <div className="w-1/2 md:flex-1 text-center p-2"><p className="text-xl sm:text-2xl font-bold">0</p><p className="text-xs mt-1">Pesanan</p></div>
-                            <div className="w-1/2 md:flex-1 text-center p-2"><p className="text-xl sm:text-2xl font-bold">0</p><p className="text-xs mt-1">Produk Dilihat</p></div>
-                            <div className="w-1/2 md:flex-1 text-center p-2"><p className="text-xl sm:text-2xl font-bold">0</p><p className="text-xs mt-1">Kunjungan</p></div>
-                            <div className="w-full md:flex-1 text-center p-2"><p className="text-xl sm:text-2xl font-bold">0,00%</p><p className="text-xs mt-1">Tingkat Konversi</p></div>
-                        </div>
-                    </Card>
-
-                    {/* Iklan Zukses */}
-                    <Card>
-                        <CardHeader title="Iklan Zukses" linkText="Lainnya" />
-                        <div className="flex flex-col sm:flex-row items-center">
-                            <div className="flex-1 text-center sm:text-left">
-                                <h4 className="font-semibold text-gray-800">Maksimalkan penjualanmu dengan Iklan Zukses</h4>
-                                <p className="text-sm text-gray-500 mt-2">Dengan Iklan Zukses, tokomu bisa menarik lebih banyak pengunjung.</p>
-                            </div>
-                            <button className="bg-blue-500 text-white font-bold py-2 px-6 rounded-md hover:bg-blue-600 transition-colors duration-200 mt-4 sm:mt-0 sm:ml-8 flex-shrink-0">
-                                Pasang Iklan
-                            </button>
-                        </div>
-                    </Card>
-
-                    {/* Affiliate & Livestream */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card>
-                            <CardHeader title="Affiliate Marketing Solution" linkText="Lainnya" />
-                            <h4 className="font-semibold text-blue-500">Tingkatkan penjualan dengan promosi dari Affiliate</h4>
-                            <p className="text-sm text-gray-500 mt-2 mb-4">Atur Komisi untuk Mempromosikan Tokomu.</p>
-                            <div className="text-sm text-gray-600 space-y-1">
-                                <p>• <span className="font-bold">50%</span> maks. komisi</p>
-                                <p>• <span className="font-bold">4%</span> Komisi Penjual +25% Komisi Ekstra</p>
-                            </div>
-                        </Card>
-                        <Card className="bg-blue-50">
-                            <CardHeader title="Livestream" linkText="Lihat semua" />
-                            <div className="flex items-center">
-                                <div className="flex-1" style={{ backgroundImage: "url(/image/ilustrasi-live.png)", height: "350px", backgroundSize: "cover", backgroundPosition: "center", padding: "10px" }}>
-                                    <h4 className="font-semibold text-dark">Buat Livestream</h4>
-                                    <p className="text-sm text-white mt-1">Tingkatkan konversi hingga 2x!</p>
-                                    <button className="mt-4 bg-blue-500 text-white text-sm font-bold py-2 px-4 rounded-md hover:bg-blue-600">
-                                        Mulai Live
-                                    </button>
-                                </div>
-                                {/* <img src="/image/ilustrasi-live.png" alt="Ilustrasi Livestream" className="w-24 sm:w-28 h-auto flex-shrink-0" /> */}
-                            </div>
-                        </Card>
+            <div className="min-h-screen bg-slate-50 font-sans text-gray-800">
+                <main className="">
+                    {/* Header */}
+                    <div className="mb-6 border border-[#D2D4D8] bg-[#F3F5F7] p-4 rounded-[8px]">
+                        <h1 className="text-[28px] text-[#333333] font-[800] tracking-[-0.02em]">Dashboard</h1>
+                        <p className="text-[#444444] mt-4 text-[14px]" style={{
+                            lineHeight: "107%"
+                        }}>
+                            Toko jalan. <br /> kamu tenang. Semua data penjualan dan laporan keuangan bisa kamu akses langsung di sini.
+                        </p>
                     </div>
 
-                    {/* Promosi */}
-                    <Card>
-                        <CardHeader title="Promosi" linkText="Lainnya" />
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <img src="/image/banner1.webp" alt="Promosi 1" className="rounded-md w-full h-auto object-cover" />
-                            <img src="/image/banner2.jpg" alt="Promosi 2" className="rounded-md w-full h-auto object-cover" />
-                            <img src="/image/banner3.jpg" alt="Promosi 3" className="rounded-md w-full h-auto object-cover" />
-                        </div>
-                    </Card>
-
-                </div>
-
-                {/* --- Kolom Samping (Kanan) --- */}
-                <div className="col-span-1 lg:col-span-1 space-y-6">
-                    {/* Performa Toko */}
-                    <Card>
-                        <CardHeader title="Performa Toko" />
-                        <a href="#" className="flex items-center space-x-4 group p-2 rounded-lg hover:bg-gray-50">
-                            <Target size={32} className="text-green-500 flex-shrink-0" />
-                            <div className='flex-1'>
-                                <h4 className="font-semibold text-green-600">Sangat Baik</h4>
-                                <p className="text-sm text-gray-500">Performa Toko memenuhi target.</p>
-                            </div>
-                            <ChevronRight size={20} className="text-gray-400 group-hover:text-gray-600" />
-                        </a>
-                    </Card>
-
-                    {/* Berita */}
-                    <Card>
-                        <CardHeader title="Berita" linkText="Lihat Semua" />
-                        <div className="text-center py-8">
-                            <Box size={48} className="mx-auto text-gray-300" />
-                            <p className="mt-4 text-sm text-gray-500">Belum ada informasi baru.</p>
-                        </div>
-                    </Card>
-
-                    {/* Misi Penjual */}
-                    <Card>
-                        <CardHeader title="Misi Penjual" linkText="Lainnya" />
-                        <div className="space-y-4">
-                            <div className="border p-4 rounded-lg">
-                                <p className="text-sm font-semibold text-gray-700">Selesaikan 1 pesanan</p>
-                                <p className="text-xs text-gray-500 mt-1">Dapatkan 2 koin untuk fitur Naikkan Produk.</p>
-                                <button className="mt-3 w-full text-center text-sm py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Mulai</button>
-                            </div>
-                            <div className="border p-4 rounded-lg">
-                                <p className="text-sm font-semibold text-gray-700">Buat 1 Voucher Toko</p>
-                                <p className="text-xs text-gray-500 mt-1">Dapatkan koin untuk semua misi.</p>
-                                <button className="mt-3 w-full text-center text-sm py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200">Mulai</button>
+                    {/* Grid Utama: Banner CTA dan Peringkat Toko */}
+                    <div className="space-y-4 md:space-y-0 md:grid grid-cols-1 lg:grid-cols-10 gap-6 mb-6">
+                        {/* Kartu CTA Utama (Ungu) */}
+                        <div className="lg:col-span-8 bg-[#6E62E5] text-white rounded-[8px] p-4 md:p-8 md:px-12 flex items-center tracking-[-0.02em]">
+                            <div>
+                                <div className='flex flex-col md:flex-row items-start'>
+                                    <div className="hidden md:block relative mb-4 md:mb-0 md:mr-6">
+                                        <img src='/icon/online-shopping_3081559 1.svg' className='w-[76px] h-[76px]' />
+                                    </div>
+                                    <div className=''>
+                                        <p className="text-[18px] text-white ">Punya produk tapi belum punya toko? <br /> Atau masih jualan lewat chat satu per satu?</p>
+                                        <h2 className="text-[21px] font-bold mt-3">Saatnya naik level bersama Zukses!</h2>
+                                    </div>
+                                </div>
+                                <p className="mt-2 text-[19px]">
+                                    Buka tokomu sendiri, kelola stok & transaksi, dan nikmati kemudahan <br /> Berjualan tanpa ribet.
+                                </p>
                             </div>
                         </div>
-                    </Card>
-                </div>
+
+                        {/* Kartu Peringkat Toko */}
+                        <div className='col-span-2'>
+                            <div className="bg-white rounded-[8px] p-6 border-2 border-[#6E62E5] shadow-sm">
+                                <h3 className="font-bold text-[20px] text-center text-[#444444]" style={{
+                                    lineHeight: "110%"
+                                }}>Peringkat Toko</h3>
+                                <div className="mt-2 text-center">
+                                    <p className="text-[35px] font-bold text-[#00AA5B]" style={{
+                                        lineHeight: "110%"
+                                    }}>Start</p>
+                                </div>
+                                <div className=''>
+                                    <ul className="mt-4 text-[12px] text-[#333333] space-y-1" style={{
+                                        lineHeight: "110%"
+                                    }}>
+                                        <li>Pesanan Terselesaikan 100%</li>
+                                        <li>Produk yang dilarang 0</li>
+                                        <li>Ketepatan Pengiriman 99%</li>
+                                        <li>Penilaian Pembeli 4.9 dari 5</li>
+                                        <li>Pelanggaran Kebijakan 0</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Grid Kartu Statistik */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <StatCard value="12" label="Pesanan dalam Bulan ini" className="bg-[#EBEAFC] border border-[#ddd] text-indigo-900" />
+                        <StatCard value="5" label="Pesanan yang Belum Bayar" className="bg-purple-100 text-purple-900" />
+                        <StatCard value="5" label="Pesanan yang perlu dikirim" className="bg-blue-100 text-blue-900" />
+                        <StatCard value="5" label="Pesanan dalam Pengiriman" className="bg-green-200 text-green-900" />
+                    </div>
+
+                    {/* Kartu Performa Toko */}
+                    <div className="bg-white rounded-[8px] p-6 shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                            <div className='md:flex items-end gap-4'>
+                                <h3 className="text-[23px] text-[#444444] font-bold" style={{
+                                    lineHeight: '110%'
+                                }}>Performa Toko</h3>
+                                <p className="text-[14px] text-[#333333]">Periode 01 Juli 2025 s.d 25 Juli 2025</p>
+                            </div>
+                            <p className="text-[14px] text-[#333333] mt-2 sm:mt-0">Update Terbaru 25-07-2025 jam 20:00</p>
+                        </div>
+
+                        {/* Grid Metrik Performa */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-8">
+                            <PerformanceMetric title="Penjualan" value="Rp1.750.000" change="45,32%" changeColorClass="text-orange-500" />
+                            <PerformanceMetric title="Pesanan" value="15" change="120%" changeColorClass="text-orange-500" />
+                            <PerformanceMetric title="Konversi Pesanan" value="85%" change="45,32%" changeColorClass="text-orange-500" />
+                            <PerformanceMetric title="Total Pengunjung" value="1.500" change="45,32%" changeColorClass="text-orange-500" />
+                            <PerformanceMetric title="Produk Diklik" value="2.000 Kali" change="45,32%" changeColorClass="text-orange-500" />
+                        </div>
+                    </div>
+                </main>
             </div>
         </MyStoreLayout>
-    )
-}
+    );
+};
 
-export default index
+export default DashboardPage;
