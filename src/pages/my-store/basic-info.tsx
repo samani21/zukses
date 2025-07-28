@@ -4,6 +4,7 @@ import Card from 'components/my-store/Card';
 import ImageCropper from 'components/my-store/ImageCropper';
 import Modal from 'components/my-store/Modal';
 import Snackbar from 'components/Snackbar';
+import { useRouter } from 'next/router';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout'
 import React, { useEffect, useRef, useState } from 'react'
 import Get from 'services/api/Get';
@@ -24,6 +25,7 @@ const BasicInfoForm = () => {
     const [submissionStatus, setSubmissionStatus] = useState<{ message: string; type: 'idle' | 'success' | 'error' }>({ message: '', type: 'idle' });
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const router = useRouter()
     const [snackbar, setSnackbar] = useState<{
         message: string;
         type?: 'success' | 'error' | 'info';
@@ -117,10 +119,12 @@ const BasicInfoForm = () => {
                 let isSuccess = false;
                 if (res?.data?.status === 'success') {
                     localStorage.setItem('shopProfile', JSON.stringify(res?.data?.data));
+                    router?.push('/my-store/basic-info')
                     setSnackbar({ message: 'Data berhasil dikirim!', type: 'success', isOpen: true })
                     setLoading(false);
                     fetchShopProfile()
                     isSuccess = true;
+                    window.location.reload();
                 }
                 setTimeout(() => {
                     // Ganti ini dengan logika fetch ke backend Lumen Anda
