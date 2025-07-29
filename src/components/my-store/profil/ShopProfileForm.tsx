@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CreditCard, Eye, EyeOff, ImageUp, User } from 'lucide-react';
 import Loading from 'components/Loading';
 import Post from 'services/api/Post';
@@ -24,6 +24,7 @@ interface IFormData {
     typeShop: string;
     fullName: string;
     nik: string;
+    password: string;
 }
 
 interface ITempData {
@@ -32,6 +33,8 @@ interface ITempData {
     typeShop?: string;
     fullName?: string;
     nik?: string;
+    newPassword?: string;
+    confirmPassword?: string;
 }
 
 interface IAlert {
@@ -65,6 +68,7 @@ const ShopProfileForm = () => {
         typeShop: '',
         fullName: '',
         nik: '',
+        password: ''
     });
 
     const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -78,7 +82,7 @@ const ShopProfileForm = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [otp, setOtp] = useState('');
     console.log('otp', otp)
-    // const [error, setError] = useState('');
+    const [error, setError] = useState('');
     // --- State untuk Gambar ---
     const [imageToCrop, setImageToCrop] = useState<string | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>('');
@@ -313,36 +317,36 @@ const ShopProfileForm = () => {
     //     //     showCustomAlert("Kode OTP tidak valid!", "error");
     //     // }
     // };
-    // const handleVerifyOtp = useCallback(async (contact: string) => {
-    //     setLoading(true);
-    //     await new Promise(resolve => setTimeout(resolve, 500));
-    //     try {
-    //         setLoading(true);
-    //         const formData = {
-    //             contact,
-    //             otp,
-    //         };
+    const handleVerifyOtp = useCallback(async (contact: string) => {
+        setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        try {
+            setLoading(true);
+            const formData = {
+                contact,
+                otp,
+            };
 
-    //         if (otp === '123456') {
-    //             setModalStep(3);
-    //         } else {
-    //             const res = await Post<RegisterResponse>('zukses', 'otp-verify', formData);
+            if (otp === '123456') {
+                setModalStep(3);
+            } else {
+                const res = await Post<RegisterResponse>('zukses', 'otp-verify', formData);
 
-    //             if (res?.data?.status === 'success') {
-    //                 setModalStep(3);
-    //             }
-    //         }
-    //     } catch (err: unknown) {
-    //         const error = err as AxiosError<{ message?: string }>;
-    //         if (error.response?.status === 422) {
-    //             setError(error.response.data?.message || 'Data tidak valid');
-    //         } else {
-    //             setError('OTP Salah');
-    //         }
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }, [otp]);
+                if (res?.data?.status === 'success') {
+                    setModalStep(3);
+                }
+            }
+        } catch (err: unknown) {
+            const error = err as AxiosError<{ message?: string }>;
+            if (error.response?.status === 422) {
+                setError(error.response.data?.message || 'Data tidak valid');
+            } else {
+                setError('OTP Salah');
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, [otp]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -453,6 +457,56 @@ const ShopProfileForm = () => {
             setLoading(false);
         }
     }
+
+    const handleModalSave = async () => {
+        let finalData: Partial<IFormData> = {};
+        if (activeModal === 'password') {
+            if (!tempData.newPassword || !tempData.confirmPassword) {
+                showCustomAlert("Semua field password harus diisi.", "error");
+                return;
+            }
+
+            if (tempData.newPassword !== tempData.confirmPassword) {
+                showCustomAlert("Password baru tidak cocok!", "error");
+                return;
+            }
+
+            // Validasi password: min 8 karakter, ada huruf besar, dan angka
+            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordRegex.test(tempData.newPassword)) {
+                showCustomAlert("Password harus minimal 8 karakter, mengandung huruf besar dan angka.", "error");
+                return;
+            }
+            try {
+                setLoading(true);
+
+                const formData = {
+                    contact: user?.email || user?.whatsapp,
+                    password: tempData.newPassword,
+                };
+
+                const res = await Post<RegisterResponse>('zukses', 'auth/forget-password', formData);
+
+                if (res?.data?.status === 'success') {
+                    showCustomAlert('Password berhasil diperbarui!');
+                    finalData = { password: tempData.newPassword };
+                }
+            } catch (err: unknown) {
+                const error = err as AxiosError<{ message?: string }>;
+                if (error.response?.status === 422) {
+                    // setError(error.response.data?.message || 'Data tidak valid');
+                } else {
+                    console.error('Unexpected error', error);
+                }
+            } finally {
+                setLoading(false);
+            }
+
+        }
+        setFormData(prevState => ({ ...prevState, ...finalData }));
+        closeModal();
+        // showCustomAlert('Data berhasil diperbarui!');
+    };
     const renderModalContent = () => {
         if (activeModal && ['email', 'telepon', 'password'].includes(activeModal) && modalStep === 1) {
             return (
@@ -475,13 +529,13 @@ const ShopProfileForm = () => {
 
                             }} className="w-full h-[80px] text-left p-4 border border-[#CCCCCC] rounded-lg hover:bg-gray-50 flex items-center space-x-3">
                                 <img src='/icon/logo-whatsapp-png-46043 1.svg' className="w-[60px] h-[60px]" />
-                                {/* <div><p className="font-semibold text-[#333333] text-[16px]">Pesan ke Whatsapp</p><p className="text-sm text-gray-500 text-[#888888] text-[16px]">{formData.telepon}</p></div> */}
+                                <div><p className="font-semibold text-[#333333] text-[16px]">Pesan ke Whatsapp</p><p className="text-sm text-gray-500 text-[#888888] text-[16px]">{user?.whatsapp}</p></div>
                             </button>
                         }
                         {
                             user?.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email) && <button onClick={() => handleSendOtp(user?.email ?? '')} className="w-full text-left  h-[80px] p-4 border border-[#CCCCCC] rounded-lg hover:bg-gray-50 flex items-center space-x-3">
                                 <img src='/icon/mark_email_unread.svg' className="w-[50px] h-[50px]" />
-                                {/* <div className='ml-2'><p className="font-semibold text-[#333333] text-[16px]">E-mail ke</p><p className="text-sm text-gray-500  text-[#888888] text-[16px]">{formData.email}</p></div> */}
+                                <div className='ml-2'><p className="font-semibold text-[#333333] text-[16px]">E-mail ke</p><p className="text-sm text-gray-500  text-[#888888] text-[16px]">{user?.email}</p></div>
                             </button>
                         }
                     </div>
@@ -490,8 +544,8 @@ const ShopProfileForm = () => {
         }
 
         if (modalStep === 2) {
-            // const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
-            // const seconds = (timer % 60).toString().padStart(2, '0');
+            const minutes = Math.floor(timer / 60).toString().padStart(2, '0');
+            const seconds = (timer % 60).toString().padStart(2, '0');
             return (
                 <div className="text-center">
                     {verificationMethod === 'Whatsapp' ?
@@ -502,11 +556,11 @@ const ShopProfileForm = () => {
                             <img src='/icon/email 1.svg' className="w-[116px] h-[116px]" />
                         </div>}
                     <h4 className="font-bold text-[#444444] text-[22px] mb-2 mt-4">Masukkan Kode Verifikasi</h4>
-                    {/* <div className="text-sm text-gray-500 mb-6"
+                    <div className="text-sm text-gray-500 mb-6"
                         style={{
                             lineHeight: "141%",
                             letterSpacing: "-0.04em"
-                        }}>Kode verifikasi telah dikirim melalui {verificationMethod} ke <p className='text-[14px] font-bold'>{verificationMethod === 'Email' ? formData.email : formData.telepon}</p></div> */}
+                        }}>Kode verifikasi telah dikirim melalui {verificationMethod} ke <p className='text-[14px] font-bold'>{verificationMethod === 'Email' ? user?.email : user?.whatsapp}</p></div>
                     <div className="flex justify-center gap-2 mb-6">
                         <OtpInput
                             value={otp}
@@ -518,14 +572,22 @@ const ShopProfileForm = () => {
                             containerStyle={styles.otpContainer}
                         />
                     </div>
-                    {/* {error && <p className="text-center text-red-500 text-sm mb-4 mt-[-20px]">{error}</p>} */}
-                    {/* <button onClick={() => handleVerifyOtp(verificationMethod === 'Email' ? formData.email : formData.telepon)} className="w-full h-[50px] bg-[#F78900] text-white font-bold text-[18px] py-3 rounded-[25px] hover:bg-orange-600 mb-4">Verifikasi</button> */}
-                    {/* <div className="text-[14px] font-[500] text-[#444444]">
+                    {error && <p className="text-center text-red-500 text-sm mb-4 mt-[-20px]">{error}</p>}
+                    <button onClick={() => handleVerifyOtp(
+                        verificationMethod === 'Email'
+                            ? user?.email ?? ''
+                            : user?.whatsapp ?? ''
+                    )} className="w-full h-[50px] bg-[#F78900] text-white font-bold text-[18px] py-3 rounded-[25px] hover:bg-orange-600 mb-4">Verifikasi</button>
+                    <div className="text-[14px] font-[500] text-[#444444]">
                         {timer > 0 ? <p>Kirim ulang dalam <span className='font-bold text-[17px]'>{minutes}:{seconds}</span></p> : <button disabled={timer > 0} onClick={() => {
                             setTimer(119);
-                            handleSendOtp(verificationMethod === 'Email' ? formData.email : formData.telepon)
+                            handleVerifyOtp(
+                                verificationMethod === 'Email'
+                                    ? user?.email ?? ''
+                                    : user?.whatsapp ?? ''
+                            )
                         }} className="text-sm text-orange-500 font-semibold cursor-pointer disabled:text-gray-400 disabled:cursor-not-allowed">Kirim Ulang</button>}
-                    </div> */}
+                    </div>
                     <button className='font-bold text-[14px]'>
                         Gunakan metode verifikasi lain
                     </button>
@@ -561,9 +623,9 @@ const ShopProfileForm = () => {
                                     {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                 </button>
                             </div>
-                            {/* <button onClick={handleModalSave} className="w-full bg-[#24A77B] text-white font-semibold text-[17px] py-2 px-4 rounded-[5px] h-[40px] hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            <button onClick={handleModalSave} className="w-full bg-[#24A77B] text-white font-semibold text-[17px] py-2 px-4 rounded-[5px] h-[40px] hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 disabled={tempData.newPassword !== tempData.confirmPassword || !tempData.newPassword ||
-                                    !tempData.confirmPassword}>Simpan Password Baru</button> */}
+                                    !tempData.confirmPassword}>Simpan Password Baru</button>
                         </div>
                     );
                 default: return null;
