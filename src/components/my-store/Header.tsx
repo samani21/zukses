@@ -75,11 +75,8 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
                 {/* Logo dan Nama Toko untuk Desktop */}
                 <div className="hidden md:flex items-center gap-4">
                     {
-                        shopProfil?.logo_url ?
-                            <img src={shopProfil?.logo_url} className='w-[30px] h-[30px] rounded-full' />
-                            : <div className="bg-[#EBEAFC] w-[30px] h-[30px] rounded-full flex items-center justify-center">
-                                <p className='font-bold text-[#4A52B2] text-[14px]'>HS</p>
-                            </div>
+                        shopProfil?.logo_url &&
+                        <img src={shopProfil?.logo_url} className='w-[30px] h-[30px] rounded-full' />
                     }
                     <span className="font-bold text-[16px] text-[#333333]">{shopProfil?.shop_name}</span>
                 </div>
