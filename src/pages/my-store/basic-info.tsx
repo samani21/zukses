@@ -8,7 +8,7 @@ function BasicInfoForm() {
     const shopProfil = useShopProfile();
     return (
         <div>
-            <div className="min-h-screen bg-slate-50 font-sans text-gray-800">
+            <div className="min-h-screen font-sans text-gray-800">
                 <main className="">
                     {/* Header */}
                     <div className="mb-6 border border-[#D2D4D8] bg-[#F3F5F7] p-4 rounded-[8px]">

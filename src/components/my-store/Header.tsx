@@ -110,11 +110,11 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
                                         lineHeight: "120%"
                                     }}>{user?.name}</p>
                                 </div>
-                                <nav className="py-2 text-[14px] px-4 font-[500] text-[#666666]">
-                                    <div onClick={() => router?.push('/')} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Kembali ke halaman Utama</div>
-                                    <div className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Lihat Toko Onlineku</div>
-                                    <div onClick={() => router?.push('/user-profile/profil')} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer">Akun Saya</div>
-                                    <div onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-100 cursor-pointer border-t border-[#DDDDDD] mt-1 pt-2">Logout</div>
+                                <nav className="py-2 text-[14px] font-[500] text-[#666666]">
+                                    <div onClick={() => router?.push('/')} className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Kembali ke halaman Utama</div>
+                                    <div className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Lihat Toko Onlineku</div>
+                                    <div onClick={() => router?.push('/user-profile/profil')} className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Akun Saya</div>
+                                    <div onClick={handleLogout} className="block px-8 py-2 hover:bg-gray-100 cursor-pointer border-t border-[#DDDDDD] mt-1 pt-2">Logout</div>
                                 </nav>
                             </div>
                         )}
