@@ -92,7 +92,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                             const borderColor = borderColors[index % borderColors.length];
 
                             return (
-                                <div className='text-center h-[130px]' key={index}>
+                                <div className='text-center h-[110px]' key={index}>
                                     <div className='flex items-center justify-center'>
                                         <div className='w-[70px] h-[70px] rounded-full flex flex-col items-center justify-start w-24 text-center group'
                                             style={{
