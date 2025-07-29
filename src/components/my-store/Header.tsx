@@ -94,7 +94,7 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
                             className="flex items-center gap-2 p-2 rounded-md"
                         >
                             <User className="text-[#555555] w-[20px]" strokeWidth={3} />
-                            <span className="hidden md:inline font-bold text-[#555555] text-[16px]">{user?.name}</span>
+                            <span className="hidden md:inline font-bold text-[#555555] text-[14px]">{user?.name}</span>
                             {/* Ikon berubah tergantung pada apakah menu terbuka atau tidak */}
                             {isMenuOpen ? <ChevronUp className="w-4 h-4 text-[#555555]" /> : <ChevronDown className="w-4 h-4 text-[#555555]" />}
                         </button>
