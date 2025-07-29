@@ -793,8 +793,8 @@ const ShopProfileForm = () => {
                                     <td className="py-5 pr-4">
                                         <label className="font-bold text-[15px] text-[#444444]">Jenis Usaha</label>
                                     </td>
-                                    <td className="py-2">
-                                        <div className="space-y-3 flex items-start gap-4">
+                                    <td className="py-5">
+                                        <div className="flex items-start gap-4">
                                             <label className="flex items-center space-x-2 cursor-pointer">
                                                 <input
                                                     type="radio"
