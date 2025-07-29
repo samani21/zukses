@@ -15,6 +15,7 @@ import {
 import React, { useEffect } from 'react';
 import NavItem from './NavItem';
 import { usePathname } from 'next/navigation';
+import { ShopData } from './ShopProfileContext';
 
 interface NavItemData {
     title: string;
@@ -22,7 +23,9 @@ interface NavItemData {
     href: string;
     active?: boolean;
     children?: NavItemData[];
+    onClick?: (e: React.MouseEvent) => void; // << tambahkan ini
 }
+
 
 const sidebarNavItems: NavItemData[] = [
     {
@@ -49,8 +52,8 @@ const sidebarNavItems: NavItemData[] = [
         icon: Package2,
         href: '#',
         children: [
-            { title: 'Produk Saya', icon: Package, href: '#' },
-            { title: 'Tambah Produk', icon: Package, href: '#' }
+            { title: 'Produk Saya', icon: Package, href: '/my-store/product' },
+            { title: 'Tambah Produk', icon: Package, href: '/my-store/add-product' }
         ],
     },
     {
@@ -83,13 +86,27 @@ const Sidebar = ({
     setMobileOpen,
     isCollapsed,
     setCollapsed,
+    setShowModal,
+    shopProfil
+
 }: {
     isMobileOpen: boolean;
     setMobileOpen: (isOpen: boolean) => void;
     isCollapsed: boolean;
     setCollapsed: (isCollapsed: boolean) => void;
+    setShowModal: (isCollapsed: boolean) => void;
+    shopProfil: ShopData | null;
 }) => {
     const pathname = usePathname();
+
+    const isShopProfileComplete = () => {
+        return !!(
+            shopProfil?.shop_name &&
+            shopProfil?.address &&
+            shopProfil?.bank &&
+            shopProfil?.delivery
+        );
+    };
 
     // Fungsi pengecekan aktif
     const isItemActive = (item: NavItemData): boolean => {
@@ -209,10 +226,21 @@ const Sidebar = ({
                             item={{
                                 ...item,
                                 active: isItemActive(item),
-                                children: item.children?.map((child) => ({
-                                    ...child,
-                                    active: pathname === child.href,
-                                })),
+                                children: item.children?.map((child) => {
+                                    const isProductMenu = ['/my-store/product', '/my-store/add-product'].includes(child.href);
+
+                                    return {
+                                        ...child,
+                                        active: pathname === child.href,
+                                        onClick: (e: React.MouseEvent) => {
+                                            if (isProductMenu && !isShopProfileComplete()) {
+                                                e.preventDefault(); // hentikan navigasi
+                                                setShowModal(true); // buka modal
+                                            }
+                                        }
+                                    };
+                                }),
+
                             }}
                             isCollapsed={isCollapsed}
                         />

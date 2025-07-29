@@ -14,17 +14,17 @@ const ModalCompleteShopProfile = ({
     const router = useRouter()
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-            <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg max-h-[90vh] md:max-h-[75vh]">
+            <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg">
                 <div className="p-3 md:p-4 text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
                     Lengkapi data toko kamu dulu
                     <X onClick={onClose} className='cursor-pointer' />
                 </div>
-                <div className="bg-[#C7F8BC] text-[#333333] p-3 text-[16px] font-semibold px-4 tracking-[-0.02em]" style={{
+                <div className="bg-[#C7F8BC] text-[#333333] py-2 text-[14px] font-semibold px-4 tracking-[-0.02em]" style={{
                     lineHeight: "130%"
                 }}>
                     Lengkapi Data Toko Kamu Dulu, Yuk!<br />Biar tokomu makin terlihat profesional dan siap terima pesanan.
                 </div>
-                <div className="p-4 space-y-4  overflow-y-auto no-scrollbar md:h-[350px]">
+                <div className="p-4 space-y-3 overflow-y-auto">
                     {[
                         {
                             label: 'Profil Toko',
@@ -44,7 +44,7 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Rekening Bank',
-                            field: shopProfil?.shop_name,
+                            field: shopProfil?.bank?.account_name,
                             icon: '/icon/damaged-package 3.svg',
                             description:
                                 'Isi rekening bank kamu di sini.  <br/> Biar hasil jualanmu bisa langsung cair tanpa hambatan.',
@@ -52,7 +52,7 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Pengaturan Jasa Kirim',
-                            field: shopProfil?.shop_name,
+                            field: shopProfil?.delivery?.name_delivery,
                             icon: '/icon/damaged-package 4.svg',
                             description:
                                 'Atur jasa kirim sesuai kebutuhan tokomu.  <br/> Pilih kurir favorit biar pengiriman jadi makin praktis dan cepat!',
@@ -61,7 +61,7 @@ const ModalCompleteShopProfile = ({
                     ].map((item, i) => (
                         <div
                             key={i}
-                            className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} p-3 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
+                            className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} px-2 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
                             onClick={() => {
                                 localStorage.setItem('modalShopProfileClosed', 'true');
                                 onClose()

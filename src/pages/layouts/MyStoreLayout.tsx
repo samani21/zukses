@@ -26,6 +26,14 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                 if (!isModalClosed) {
                     setShowModal(true);
                 }
+            } else if (!data?.bank) {
+                if (!isModalClosed) {
+                    setShowModal(true);
+                }
+            } else if (!data?.delivery) {
+                if (!isModalClosed) {
+                    setShowModal(true);
+                }
             }
         } else {
             const isModalClosed = localStorage.getItem('modalShopProfileClosed') === 'true';
@@ -48,6 +56,8 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                     setMobileOpen={setMobileOpen}
                     isCollapsed={isCollapsed}
                     setCollapsed={setCollapsed}
+                    shopProfil={shopProfil}
+                    setShowModal={setShowModal}
                 />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header setMobileOpen={setMobileOpen} shopProfil={shopProfil} />

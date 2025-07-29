@@ -9,6 +9,7 @@ interface NavItemData {
     href: string;
     active?: boolean;
     children?: NavItemData[];
+    onClick?: (e: React.MouseEvent) => void; // tambahkan ini
 }
 
 const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolean }) => {
@@ -48,8 +49,9 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
                             <a
                                 key={child.title}
                                 href={child.href}
+                                onClick={child.onClick}
                                 className={`block px-4 py-2  text-[14px] rounded-lg transition-colors
-                  ${child.active
+        ${child.active
                                         ? 'bg-[#EFEFFD] text-[#22268B] font-bold border-[#CED0E5] border'
                                         : 'text-[#3D3D4E] hover:bg-purple-100'}`}
                             >
