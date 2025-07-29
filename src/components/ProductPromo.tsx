@@ -94,7 +94,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border-[#DEDEDE] bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border-[#DEDEDE] bg-white border border-gray-200 rounded-lg  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
