@@ -1,14 +1,14 @@
-import { ShopProfile } from 'components/types/ShopProfile';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/router';
 import React from 'react';
+import { ShopData } from './ShopProfileContext';
 
 const ModalCompleteShopProfile = ({
     onClose,
     shopProfil,
 }: {
     onClose: () => void;
-    shopProfil: ShopProfile | null;
+    shopProfil: ShopData | null;
 }) => {
     const isComplete = (field: string | null | undefined) => !!field;
     const router = useRouter()
@@ -36,7 +36,7 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Alamat Toko',
-                            field: shopProfil?.shop_name,
+                            field: shopProfil?.address?.name_shop,
                             icon: '/icon/damaged-package21.svg',
                             description:
                                 'Lengkapi alamat tokomu sekarang. <br/> Biar proses kirim-mengirim jadi lebih cepat dan tepat.',
@@ -62,7 +62,11 @@ const ModalCompleteShopProfile = ({
                         <div
                             key={i}
                             className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} p-3 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
-                            onClick={() => router?.push(item?.url)}
+                            onClick={() => {
+                                localStorage.setItem('modalShopProfileClosed', 'true');
+                                onClose()
+                                router?.push(item?.url)
+                            }}
                         >
                             <div className=" flex items-start gap-4 md:p-2">
                                 <img src={item?.icon} className='w-[50px] h-[50px]' />

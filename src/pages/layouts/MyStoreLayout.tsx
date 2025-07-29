@@ -15,12 +15,18 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
     const [showModal, setShowModal] = useState<boolean>(false)
     const fetchShopProfile = async () => {
         setLoading(true);
-        const res = await Get<Response>('zukses', `shop/profile`);
+        const res = await Get<Response>('zukses', `shop-profile`);
         setLoading(false);
 
         if (res?.status === 'success' && res.data) {
             const data = res.data as unknown as ShopData;
             setShopProfil(data);
+            const isModalClosed = localStorage.getItem('modalShopProfileClosed') === 'true';
+            if (!data?.address) {
+                if (!isModalClosed) {
+                    setShowModal(true);
+                }
+            }
         } else {
             const isModalClosed = localStorage.getItem('modalShopProfileClosed') === 'true';
             if (!isModalClosed) {
