@@ -53,6 +53,18 @@ interface User {
     role?: string;
 }
 
+type FormErrors = {
+    nameShop?: string;
+    desc?: string;
+    type?: string;
+    fullName?: string;
+    nik?: string;
+    logo?: string
+    ktp?: string
+    selfie?: string
+};
+
+
 type Props = {
     shopProfil: ShopData | null;
 }
@@ -79,6 +91,8 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
     const [otp, setOtp] = useState('');
     const [typeShop, setTypeShop] = useState<string>('Perorangan')
     const [error, setError] = useState('');
+    const [errors, setErrors] = useState<FormErrors>({});
+
     // --- State untuk Gambar ---
     const [imageToCrop, setImageToCrop] = useState<string | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>('');
@@ -347,10 +361,43 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        const newErrors: FormErrors = {};
+
+        if (!formData?.nameShop.trim()) {
+            newErrors.nameShop = 'Nama toko wajib diisi';
+        }
+        if (!formData?.fullName.trim()) {
+            newErrors.fullName = 'Nama Lengkap wajib diisi';
+        }
+        if (!formData?.desc.trim()) {
+            newErrors.desc = 'Deskripsi wajib diisi';
+        }
+        if (!formData?.nik.trim()) {
+            newErrors.nik = 'NIK wajib diisi';
+        }
+        if (!typeShop) {
+            newErrors.type = 'Jenis usaha wajib dipilih';
+        }
+        if (!imagePreview) {
+            newErrors.logo = 'Logo wajib dipilih';
+        }
+        if (!shopProfil?.ktp_url) {
+            if (!ktpImage) {
+                newErrors.ktp = 'Foto KTP wajib dipilih';
+            }
+        }
+        if (!shopProfil?.selfie_url) {
+            if (!selfieImageFile) {
+                newErrors.selfie = 'Foto selfie wajib dipilih';
+            }
+        }
+
+        setErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) return;
         // 1. Buat objek FormData
+        setLoading(true);
+
         const submissionData = new FormData();
-        console.log('formData', formData, typeShop, ktpImageFile, selfieImageFile, profileImageFile)
-        // 2. Lampirkan semua data teks dari state `formData`
         submissionData.append('shop_name', formData.nameShop);
         submissionData.append('description', formData.desc);
         submissionData.append('full_name', formData.fullName);
@@ -392,7 +439,6 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                     setLoading(false);
                 }
             }
-            setLoading(true);
         } catch (err) {
             setLoading(false);
             const error = err as AxiosError<{ message?: string }>;
@@ -703,6 +749,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                     )}
                                 </div>
                                 <label htmlFor="file-upload" className="w-full cursor-pointer bg-[#24A77B] text-white text-[14px] font-bold py-3 px-4 rounded-lg text-center hover:bg-green-600 mb-2">Pilih Logo Foto</label>
+                                {errors.logo && (
+                                    <p className="text-red-500 text-[12px] mt-1 px-3">{errors.logo}</p>
+                                )}
                                 <input id="file-upload" type="file" className="hidden" onChange={handleImageChange} accept="image/png, image/jpeg, image/jpg" />
                                 <p className="text-[12px] text-[#333333] mb-3 text-left">Besar file: maksimum 10 MB. Ekstensi file yang diperbolehkan: .JPG, .JPEG, .PNG</p>
                                 <button type="button" onClick={() => openModal('password')} className="w-full bg-white border border-[#563D7C] text-[#563D7C] font-semibold py-2 px-4 rounded-[5px] hover:bg-gray-50" style={{ lineHeight: '22px' }}>Ubah Password</button>
@@ -720,7 +769,7 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                     <td className="py-2">
                                         <div className="relative w-full">
                                             <input
-                                                className="shadow-sm h-[40px] border border-[#CCCCCC] h-[40px] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                className="h-[40px] border border-[#CCCCCC] h-[40px] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
                                                 type="text"
                                                 value={formData.nameShop}
                                                 placeholder="Tulis Nama Tokomu"
@@ -731,6 +780,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                                 {formData.nameShop.length}/50
                                             </div>
                                         </div>
+                                        {errors.nameShop && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.nameShop}</p>
+                                        )}
                                     </td>
                                 </tr>
 
@@ -741,7 +793,7 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                     <td className="py-2">
                                         <div className="relative w-full">
                                             <textarea
-                                                className="shadow-sm border border-[#CCCCCC] rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px] resize-none overflow-y-auto scrollbar-hide max-h-[500px]"
+                                                className="border border-[#CCCCCC] rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px] resize-none overflow-y-auto scrollbar-hide max-h-[500px]"
                                                 placeholder="Tulis Deskripsi Tokomu"
                                                 value={formData.desc}
                                                 onChange={(e) => {
@@ -756,6 +808,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                             />
 
                                         </div>
+                                        {errors.desc && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.desc}</p>
+                                        )}
                                     </td>
                                 </tr>
                                 <tr className="align-top">
@@ -808,6 +863,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                             </label>
 
                                         </div>
+                                        {errors.type && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.type}</p>
+                                        )}
                                     </td>
                                 </tr>
                                 <tr className="align-top">
@@ -817,7 +875,7 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                     <td className="py-2">
                                         <div className="relative w-full">
                                             <input
-                                                className="shadow-sm h-[40px] border border-[#CCCCCC] h-[40px] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                className="h-[40px] border border-[#CCCCCC] h-[40px] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
                                                 type="text"
                                                 value={formData.fullName}
                                                 placeholder="Nama Lengkap Sesuai KTP"
@@ -828,6 +886,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                                 {formData.fullName.length}/50
                                             </div>
                                         </div>
+                                        {errors.fullName && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.fullName}</p>
+                                        )}
                                         <p className='text-[#666666] text-[12px] font-[500]'>Sesuai KTP</p>
                                     </td>
                                 </tr>
@@ -838,7 +899,7 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                     <td className="py-2">
                                         <div className="relative w-full">
                                             <input
-                                                className="shadow-sm h-[40px] border border-[#CCCCCC] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
+                                                className="h-[40px] border border-[#CCCCCC] rounded w-full py-2 px-3 pr-16 text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500 placeholder:font-[500] placeholder:text-[#888888] text-[15px]"
                                                 type="text"
                                                 inputMode="numeric" // tampilkan keyboard angka di mobile
                                                 pattern="[0-9]*"    // bantu validasi
@@ -858,6 +919,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                                 {formData.nik.length}/50
                                             </div>
                                         </div>
+                                        {errors.nik && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.nik}</p>
+                                        )}
                                     </td>
                                 </tr>
                                 <tr className="align-top">
@@ -881,6 +945,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                                 </p>
                                             </div>
                                         </div>
+                                        {errors.ktp && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.ktp}</p>
+                                        )}
                                     </td>
                                 </tr>
 
@@ -907,6 +974,9 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
                                                 </p>
                                             </div>
                                         </div>
+                                        {errors.selfie && (
+                                            <p className="text-red-500 text-[12px] mt-1 px-3">{errors.selfie}</p>
+                                        )}
                                     </td>
                                 </tr>
 

@@ -148,57 +148,42 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
 
     const handleResizeMove = (deltaX: number, deltaY: number) => {
         const { startBoxX, startBoxY, startBoxWidth, startBoxHeight, resizeDirection } = interactionState;
-        if (!imageRef.current || !cropBoxRef.current || !containerRef.current || !resizeDirection) return;
+        if (!imageRef.current || !cropBoxRef.current || !resizeDirection) return;
+
         const image = imageRef.current;
         const cropBox = cropBoxRef.current;
         const minSize = 40;
+
+        // Gunakan delta terkecil untuk menjaga proporsi
+        const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+        let newSize = resizeDirection.includes('left') || resizeDirection.includes('top')
+            ? startBoxWidth - delta
+            : startBoxWidth + delta;
+
+        newSize = Math.max(minSize, newSize);
+
         let newLeft = startBoxX;
         let newTop = startBoxY;
-        let newWidth = startBoxWidth;
-        let newHeight = startBoxHeight;
 
-        if (resizeDirection.includes('right')) newWidth = startBoxWidth + deltaX;
         if (resizeDirection.includes('left')) {
-            newWidth = startBoxWidth - deltaX;
-            newLeft = startBoxX + deltaX;
+            newLeft = startBoxX + (startBoxWidth - newSize);
         }
-        if (resizeDirection.includes('bottom')) newHeight = startBoxHeight + deltaY;
         if (resizeDirection.includes('top')) {
-            newHeight = startBoxHeight - deltaY;
-            newTop = startBoxY + deltaY;
+            newTop = startBoxY + (startBoxHeight - newSize);
         }
 
-        if (newWidth < minSize) {
-            newWidth = minSize;
-            if (resizeDirection.includes('left')) newLeft = startBoxX + startBoxWidth - minSize;
-        }
-        if (newHeight < minSize) {
-            newHeight = minSize;
-            if (resizeDirection.includes('top')) newTop = startBoxY + startBoxHeight - minSize;
-        }
-
-        const imageOffsetX = image.offsetLeft;
-        const imageOffsetY = image.offsetTop;
-        if (newLeft < imageOffsetX) {
-            newWidth -= (imageOffsetX - newLeft);
-            newLeft = imageOffsetX;
-        }
-        if (newTop < imageOffsetY) {
-            newHeight -= (imageOffsetY - newTop);
-            newTop = imageOffsetY;
-        }
-        if (newLeft + newWidth > imageOffsetX + image.clientWidth) {
-            newWidth = imageOffsetX + image.clientWidth - newLeft;
-        }
-        if (newTop + newHeight > imageOffsetY + image.clientHeight) {
-            newHeight = imageOffsetY + image.clientHeight - newTop;
-        }
+        // Batas ke dalam gambar
+        const maxLeft = image.offsetLeft + image.clientWidth - newSize;
+        const maxTop = image.offsetTop + image.clientHeight - newSize;
+        newLeft = Math.max(image.offsetLeft, Math.min(newLeft, maxLeft));
+        newTop = Math.max(image.offsetTop, Math.min(newTop, maxTop));
 
         cropBox.style.left = `${newLeft}px`;
         cropBox.style.top = `${newTop}px`;
-        cropBox.style.width = `${newWidth}px`;
-        cropBox.style.height = `${newHeight}px`;
-    }
+        cropBox.style.width = `${newSize}px`;
+        cropBox.style.height = `${newSize}px`;
+    };
+
 
     const handleInteractionEnd = () => {
         setInteractionState((prevState) => ({
