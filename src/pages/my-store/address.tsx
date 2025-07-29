@@ -1,7 +1,6 @@
 import MyStoreLayout from "pages/layouts/MyStoreLayout";
 import { useShopProfile } from "components/my-store/ShopProfileContext";
 import { useEffect, useState } from "react";
-import { getUserInfo } from "services/api/redux/action/AuthAction";
 import Get from "services/api/Get";
 import { Response } from "services/api/types";
 import Post from "services/api/Post";
@@ -11,17 +10,7 @@ import { ModalContainer } from "components/Profile/ModalContainer";
 import ModalDelete from "components/userProfile/ModalDelete";
 import Snackbar from "components/Snackbar";
 import Loading from "components/Loading";
-import ModalCompleteShopProfile from "components/my-store/ModalCompleteShopProfile";
-import AddAddressModal from "components/userProfile/AddAddressModal";
-interface User {
-    name?: string;
-    email?: string;
-    whatsapp?: string;
-    id?: number;
-    username?: string;
-    image?: string;
-    role?: string;
-}
+import AddAddressShopModal from "components/my-store/address/AddAddressShopModal";
 
 type AddressData = {
     name: string;
@@ -40,8 +29,8 @@ type AddressData = {
 };
 
 type GetAddressData = {
-    name_receiver?: string;
-    number_receiver?: string;
+    name_shop?: string;
+    number_shop?: string;
     provinces?: string;
     cities?: string;
     subdistricts?: string;
@@ -62,7 +51,6 @@ type GetAddressData = {
 
 function PageContent() {
     const shopProfil = useShopProfile();
-    const [showModal, setShowModal] = useState(false);
     const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
@@ -75,34 +63,15 @@ function PageContent() {
         isOpen: boolean;
     }>({ message: '', type: 'info', isOpen: false });
 
-    const [user, setUser] = useState<User | null>(null);
     useEffect(() => {
-        const currentUser = getUserInfo();
-        if (currentUser) {
-            setUser(currentUser);
-            getUserAddress(currentUser.id);
-        }
-    }, []);
-    useEffect(() => {
-        setLoading(true);
-
-        if (!shopProfil) {
-            const timeout = setTimeout(() => {
-                setShowModal(true);
-            }, 1500); // 1500ms = 1.5 detik
-
-            // Bersihkan timeout saat komponen unmount atau `shopProfil` berubah
-            return () => clearTimeout(timeout);
-        }
-        setLoading(false);
+        getShopAddress()
     }, [shopProfil]);
 
 
-    const getUserAddress = async (userId?: number) => {
-        if (!userId) return;
-        console.log('userId', userId);
+    const getShopAddress = async () => {
+        if (!shopProfil?.id) return;
         setLoading(true);
-        const res = await Get<Response>('zukses', `user-address/${userId}`);
+        const res = await Get<Response>('zukses', `shop/address/${shopProfil?.id}`);
         setLoading(false);
 
         console.log('data', res)
@@ -118,8 +87,8 @@ function PageContent() {
         try {
             setLoading(true);
             const formData = new FormData();
-            formData.append('name_receiver', data.name);
-            formData.append('number_receiver', data.phone);
+            formData.append('name_shop', data.name);
+            formData.append('number_shop', data.phone);
             formData.append('province_id', String(data.prov || 0));
             formData.append('citie_id', String(data.city || 0));
             formData.append('subdistrict_id', String(data.district || 0));
@@ -133,19 +102,19 @@ function PageContent() {
             formData.append('is_store', String(data.isStore ? 1 : 0));
 
             if (id) {
-                const res = await Post<Response>('zukses', `user-address/${id}/edit`, formData);
+                const res = await Post<Response>('zukses', `shop/address/${id}/edit`, formData);
                 setLoading(false);
 
                 if (res?.data?.status === 'success') {
-                    getUserAddress(user?.id); // refresh address list
+                    getShopAddress(); // refresh address list
                     setOpenModalAddAdress(false)
                 }
             } else {
-                const res = await Post<Response>('zukses', `user-address/create/${user?.id}`, formData);
+                const res = await Post<Response>('zukses', `shop/address/create/${shopProfil?.id}`, formData);
                 setLoading(false);
 
                 if (res?.data?.status === 'success') {
-                    getUserAddress(user?.id); // refresh address list
+                    getShopAddress(); // refresh address list
                     setOpenModalAddAdress(false)
                 }
             }
@@ -159,11 +128,11 @@ function PageContent() {
         try {
             setLoading(true);
             const formData = new FormData();
-            const res = await Post<Response>('zukses', `user-address/${id}/edit-status`, formData);
+            const res = await Post<Response>('zukses', `shop/address/${id}/edit-status`, formData);
             setLoading(false);
 
             if (res?.data?.status === 'success') {
-                getUserAddress(user?.id); // refresh address list
+                getShopAddress(); // refresh address list
                 setOpenModalAddAdress(false)
             }
         } catch (err) {
@@ -175,11 +144,11 @@ function PageContent() {
     const handleDelete = async (id?: number): Promise<void> => {
         try {
             setLoading(true);
-            const res = await Delete<Response>('zukses', `user-address/${id}/delete`);
+            const res = await Delete<Response>('zukses', `shop/address/${id}/delete`);
             setLoading(false);
 
             if (res?.data?.status === 'success') {
-                getUserAddress(user?.id); // refresh address list
+                getShopAddress(); // refresh address list
                 setOpenDelete(0)
             }
         } catch (err) {
@@ -218,8 +187,8 @@ function PageContent() {
                                 <div key={address.id} className="bg-[#FFFFFF] border border-[#DCDCDC] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] p-6 flex flex-col md:flex-row gap-4 rounded-[5px]">
                                     <div className="flex-grow text-[#333333]">
                                         <div className="flex items-baseline">
-                                            <span className="font-bold text-[16px] mr-1">{address.name_receiver}</span>
-                                            <span className='text-[16px]'> | {address.number_receiver}</span>
+                                            <span className="font-bold text-[16px] mr-1">{address.name_shop}</span>
+                                            <span className='text-[16px]'> | {address.number_shop}</span>
                                         </div>
                                         <p className='mt-2 text-[14px]'>{address.full_address}</p>
                                         <p className='mt-[-5px] text-[14px]'>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
@@ -244,7 +213,7 @@ function PageContent() {
                             ))}
                         </div>
                     </div>
-                    {openModalAddAddress && <AddAddressModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd} />}
+                    {openModalAddAddress && <AddAddressShopModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd} />}
                     <ModalContainer open={openDelete > 0 ? true : false}>
                         <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
                     </ModalContainer>
@@ -261,11 +230,6 @@ function PageContent() {
                     {loading && <Loading />}
                 </div>
             </main>
-
-            {showModal && (
-                <ModalCompleteShopProfile onClose={() => setShowModal(false)} shopProfil={shopProfil} />
-            )}
-
         </div>
     );
 }

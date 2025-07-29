@@ -5,23 +5,27 @@ import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
 import { ShopData, ShopProfileContext } from 'components/my-store/ShopProfileContext';
 import Loading from 'components/Loading';
+import ModalCompleteShopProfile from 'components/my-store/ModalCompleteShopProfile';
 
 export default function MyStoreLayout({ children }: { children: React.ReactNode }) {
     const [isMobileOpen, setMobileOpen] = useState(false);
     const [isCollapsed, setCollapsed] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [shopProfil, setShopProfil] = useState<ShopData | null>(null);
-    console.log('shopProfil', shopProfil)
+    const [showModal, setShowModal] = useState<boolean>(false)
     const fetchShopProfile = async () => {
         setLoading(true);
         const res = await Get<Response>('zukses', `shop/profile`);
         setLoading(false);
 
         if (res?.status === 'success' && res.data) {
-            // Gunakan unknown terlebih dahulu jika yakin datanya adalah ShopData
             const data = res.data as unknown as ShopData;
             setShopProfil(data);
         } else {
+            const isModalClosed = localStorage.getItem('modalShopProfileClosed') === 'true';
+            if (!isModalClosed) {
+                setShowModal(true);
+            }
             console.warn('User profile tidak ditemukan atau gagal diambil');
         }
     };
@@ -47,6 +51,16 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                 </div>
             </div>
             {loading && <Loading />}
+            {showModal && (
+                <ModalCompleteShopProfile
+                    onClose={() => {
+                        setShowModal(false);
+                        localStorage.setItem('modalShopProfileClosed', 'true');
+                    }}
+                    shopProfil={shopProfil}
+                />
+
+            )}
         </ShopProfileContext.Provider>
     );
 }

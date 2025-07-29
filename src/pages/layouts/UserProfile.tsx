@@ -5,6 +5,7 @@ import Payment from "components/Payment";
 import DesktopSidebar from "components/userProfile/DesktopSidebar";
 import InfoZukses from "components/InfoZukses";
 import CategoryFooter from "components/CategoryFooter";
+import { useEffect } from "react";
 interface Payments {
     id: number;
     src: string;
@@ -40,6 +41,9 @@ export default function UserProfile({ children }: { children: React.ReactNode })
         { id: 5, src: '/icon/delivery/gosend 1.svg', alt: 'Gosend' },
         { id: 6, src: '/icon/delivery/anteraja 1.svg', alt: 'Anteraja' },
     ];
+    useEffect(() => {
+        localStorage.removeItem('modalShopProfileClosed');
+    }, [])
     return (
         <div className="">
             <div className='hidden md:block'>
