@@ -1,3 +1,4 @@
+
 import type { NextPage } from 'next';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 
@@ -38,9 +39,9 @@ const PerformanceMetric: React.FC<PerformanceMetricProps> = ({ title, value, cha
 );
 
 
-const DashboardPage: NextPage = () => {
+const PageContent: NextPage = () => {
     return (
-        <MyStoreLayout>
+        <div>
             <div className="min-h-screen bg-slate-50 font-sans text-gray-800">
                 <main className="">
                     {/* Header */}
@@ -130,8 +131,17 @@ const DashboardPage: NextPage = () => {
                     </div>
                 </main>
             </div>
-        </MyStoreLayout>
+
+        </div>
     );
 };
 
-export default DashboardPage;
+
+
+export default function DashboardPage() {
+    return (
+        <MyStoreLayout>
+            <PageContent />
+        </MyStoreLayout>
+    );
+}

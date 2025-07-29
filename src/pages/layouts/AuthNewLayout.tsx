@@ -7,6 +7,7 @@ export default function AuthNewLayout({ children }: { children: React.ReactNode 
     const router = useRouter();
     const [hiddeLogo, setHiddenLogo] = useState<boolean>(false);
     useEffect(() => {
+        localStorage.removeItem('modalShopProfileClosed');
         if (router.pathname === '/auth/login' || router.pathname === '/auth/register') {
             setHiddenLogo(true)
         }

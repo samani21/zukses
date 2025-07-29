@@ -5,6 +5,7 @@ import {
     Right, Root, RootMobile, Title
 } from "components/layouts/auth";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -16,7 +17,9 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             ? 'register' : path.includes('login')
                 ? 'login'
                 : 'unknown';
-
+    useEffect(() => {
+        localStorage.removeItem('modalShopProfileClosed');
+    }, [])
     return (
         <>
             <Root>

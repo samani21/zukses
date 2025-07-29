@@ -14,7 +14,7 @@ const ModalCompleteShopProfile = ({
     const router = useRouter()
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-            <div className="bg-white md:w-[719px] rounded-lg shadow-lg">
+            <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
                 <div className="p-3 md:p-6 border-b text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
                     Lengkapi data toko kamu dulu
                     <X onClick={onClose} className='cursor-pointer' />
@@ -24,7 +24,7 @@ const ModalCompleteShopProfile = ({
                 }}>
                     Lengkapi Data Toko Kamu Dulu, Yuk!<br />Biar tokomu makin terlihat profesional dan siap terima pesanan.
                 </div>
-                <div className="py-5 px-8 space-y-4">
+                <div className="p-5 space-y-4">
                     {[
                         {
                             label: 'Profil Toko',
@@ -61,10 +61,10 @@ const ModalCompleteShopProfile = ({
                     ].map((item, i) => (
                         <div
                             key={i}
-                            className={`grid grid-cols-5 items-start cursor-pointer sm:items-center ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} p-3 rounded-[10px] border border-[#CCCCCC] flex-col sm:flex-row gap-2 sm:gap-0`}
+                            className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} p-3 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
                             onClick={() => router?.push(item?.url)}
                         >
-                            <div className="col-span-4 flex items-start gap-4 md:p-2">
+                            <div className=" flex items-start gap-4 md:p-2">
                                 <img src={item?.icon} className='w-[50px] h-[50px]' />
                                 <div className='tracking-[-0.02em]'>
                                     <div className="text-[18px] text-[#555555] font-bold sm:text-base">{item.label}</div>
@@ -74,7 +74,7 @@ const ModalCompleteShopProfile = ({
                                     />
                                 </div>
                             </div>
-                            <div className='col-span-1 flex items-center justify-center'>
+                            <div className='flex items-center justify-center'>
                                 {isComplete(item.field) ? (
                                     <img src='/icon/ceklist.svg' className='w-[32px] h-[32px]' />
                                 ) : (
