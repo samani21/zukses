@@ -15,7 +15,7 @@ const ModalCompleteShopProfile = ({
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
             <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
-                <div className="p-3 md:p-6 border-b text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
+                <div className="p-3 md:p-6 text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
                     Lengkapi data toko kamu dulu
                     <X onClick={onClose} className='cursor-pointer' />
                 </div>
