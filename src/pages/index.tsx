@@ -11,6 +11,8 @@ import { Product } from 'components/types/Product';
 import Loading from 'components/my-store/addProduct/Loading';
 import Welcome from 'components/Welcome';
 import { useRouter } from 'next/router';
+import NewProduct from 'components/NewProduct';
+import ProductPromo from 'components/ProductPromo';
 interface Banner {
   id: number;
   src: string;
@@ -157,7 +159,15 @@ const Home: React.FC<HomeLayoutProps> = () => {
         <main className="container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
           {
             products &&
+            <ProductPromo products={products} />
+          }
+          {
+            products &&
             <ProductList products={products} selectedCategory={selectedCategory} />
+          }
+          {
+            products &&
+            <NewProduct products={products} selectedCategory={selectedCategory} />
           }
         </main>
       </div>
