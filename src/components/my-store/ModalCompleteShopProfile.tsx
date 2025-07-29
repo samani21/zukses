@@ -44,7 +44,7 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Rekening Bank',
-                            field: shopProfil?.shop_name,
+                            field: shopProfil?.bank?.account_name,
                             icon: '/icon/damaged-package 3.svg',
                             description:
                                 'Isi rekening bank kamu di sini.  <br/> Biar hasil jualanmu bisa langsung cair tanpa hambatan.',
@@ -52,7 +52,7 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Pengaturan Jasa Kirim',
-                            field: shopProfil?.shop_name,
+                            field: shopProfil?.delivery?.name_delivery,
                             icon: '/icon/damaged-package 4.svg',
                             description:
                                 'Atur jasa kirim sesuai kebutuhan tokomu.  <br/> Pilih kurir favorit biar pengiriman jadi makin praktis dan cepat!',

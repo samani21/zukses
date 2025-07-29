@@ -13,6 +13,13 @@ interface Address {
     long: number;
     is_primary: number;
 }
+interface Bank {
+    account_name: string;
+    account_number: string;
+}
+interface Delivery {
+    name_delivery: string;
+}
 export interface ShopData {
     logo_url: string;
     shop_name: string;
@@ -24,6 +31,8 @@ export interface ShopData {
     nik: string;
     id: number;
     address: Address;
+    bank: Bank;
+    delivery: Delivery;
 }
 
 export const ShopProfileContext = createContext<ShopData | null>(null);
