@@ -6,7 +6,6 @@ import Loading from 'components/Loading';
 import Post from 'services/api/Post';
 import { RegisterResponse, Response } from 'services/api/types';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
-import Get from 'services/api/Get';
 import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
 import { OtpInput } from 'reactjs-otp-input';
@@ -14,6 +13,7 @@ import { theme } from 'styles/theme';
 import ImageCropperModal from './ImageCropperModal';
 import { Modal } from 'components/Modal';
 import ModalOpenCamera from './ModalOpenCamera';
+import { ShopData } from '../ShopProfileContext';
 
 // --- Tipe Data dari Komponen Kamera ---
 type CaptureMode = 'ktp' | 'selfie' | null;
@@ -42,14 +42,6 @@ interface IAlert {
     type: 'success' | 'error';
 }
 
-interface UserProfileData {
-    name?: string;
-    name_store?: string;
-    gender?: string;
-    date_birth?: string; // Change to string for YYYY-MM-DD
-    id?: number;
-    image?: string;
-}
 
 interface User {
     name?: string;
@@ -61,7 +53,11 @@ interface User {
     role?: string;
 }
 
-const ShopProfileForm = () => {
+type Props = {
+    shopProfil: ShopData | null;
+}
+
+const ShopProfileForm = ({ shopProfil }: Props) => {
     const [formData, setFormData] = useState<IFormData>({
         nameShop: '',
         desc: '',
@@ -81,7 +77,7 @@ const ShopProfileForm = () => {
     const [timer, setTimer] = useState(119);
     const [loading, setLoading] = useState<boolean>(false);
     const [otp, setOtp] = useState('');
-    console.log('otp', otp)
+    const [typeShop, setTypeShop] = useState<string>('Perorangan')
     const [error, setError] = useState('');
     // --- State untuk Gambar ---
     const [imageToCrop, setImageToCrop] = useState<string | null>(null);
@@ -114,31 +110,18 @@ const ShopProfileForm = () => {
         const currentUser = getUserInfo();
         if (currentUser) {
             setUser(currentUser);
-            fetchUserProfile(currentUser);
+            setFormData((prev) => ({
+                ...prev,
+                nameShop: shopProfil?.shop_name ?? '',
+                desc: shopProfil?.description ?? '',
+                nik: shopProfil?.nik ?? '',
+                fullName: shopProfil?.full_name ?? '',
+            }));
+            setTypeShop(shopProfil?.type ?? "")
+            setImagePreview(shopProfil?.logo_url ?? '');
         }
-    }, []);
+    }, [shopProfil]);
 
-    const fetchUserProfile = async (user?: User) => {
-        if (!user) return;
-        setLoading(true);
-        const res = await Get<Response>('zukses', `user-profile/${user?.id}`);
-        setLoading(false);
-
-        if (res?.status === 'success' && res.data) {
-            const data = res.data as UserProfileData;
-            // setFormData({
-            //     // namaUser: data?.name ?? '',
-            //     // email: user?.email ?? '',
-            //     // telepon: user?.whatsapp?.toString() ?? '',
-            //     // jenisKelamin: data?.gender ?? '',
-            //     // tanggalLahir: data?.date_birth ?? '',
-            //     // password: 'oldpassword'
-            // });
-            setImagePreview(data?.image ?? '');
-        } else {
-            console.warn('User profile tidak ditemukan atau gagal diambil');
-        }
-    };
 
     const dataURLtoFile = (dataurl: string, filename: string): File | null => {
         try {
@@ -366,26 +349,26 @@ const ShopProfileForm = () => {
 
         // 1. Buat objek FormData
         const submissionData = new FormData();
-
+        console.log('formData', formData, typeShop, ktpImageFile, selfieImageFile, profileImageFile)
         // 2. Lampirkan semua data teks dari state `formData`
-        // submissionData.append('name', formData.namaUser);
-        // submissionData.append('email', formData.email);
-        // submissionData.append('whatsapp', formData.telepon);
-        // submissionData.append('gender', formData.jenisKelamin);
-        // submissionData.append('date_birth', formData.tanggalLahir);
+        submissionData.append('shop_name', formData.nameShop);
+        submissionData.append('description', formData.desc);
+        submissionData.append('full_name', formData.fullName);
+        submissionData.append('nik', formData.nik);
+        submissionData.append('type', typeShop);
 
         // 3. Lampirkan file gambar dari state `profileImageFile` jika ada
         if (profileImageFile) {
-            submissionData.append('image', profileImageFile, profileImageFile.name);
+            submissionData.append('logo', profileImageFile);
         }
 
         if (ktpImageFile) {
             // Ganti 'ktp_image' dengan nama field yang diharapkan oleh API Anda
-            submissionData.append('ktp_image', ktpImageFile, ktpImageFile.name);
+            submissionData.append('ktp', ktpImageFile);
         }
         if (selfieImageFile) {
             // Ganti 'selfie_image' dengan nama field yang diharapkan oleh API Anda
-            submissionData.append('selfie_image', selfieImageFile, selfieImageFile.name);
+            submissionData.append('selfie', selfieImageFile);
         }
 
         // showCustomAlert("Seluruh perubahan berhasil disimpan!");
@@ -394,31 +377,17 @@ const ShopProfileForm = () => {
             if (user) {
                 const res = await Post<Response>(
                     'zukses',
-                    `user-profile/${user.id}/update`,
+                    `shop-profile/${user.id}/update`,
                     submissionData
                 );
                 setLoading(false);
 
                 if (res?.data?.status === 'success') {
-                    const updatedData = res?.data?.data as UserProfileData;
-                    localStorage.setItem(
-                        'user',
-                        JSON.stringify({
-                            ...user,
-                            name: updatedData.name ?? '',
-                            image: updatedData.image ?? '',
-                            // date_birth: updatedData.date_birth ?? '',
-                            // email: formData.email ?? '',
-                            // whatsapp: formData.telepon ?? '',
-                        })
-                    );
                     setSnackbar({
                         message: 'Data berhasil dikirim!',
                         type: 'success',
                         isOpen: true,
                     });
-
-                    fetchUserProfile(user);
                     setTimeout(() => window.location.reload(), 1500);
                     setLoading(false);
                 }
@@ -800,17 +769,17 @@ const ShopProfileForm = () => {
                                                     type="radio"
                                                     value="Perorangan"
                                                     name="typeShop"
-                                                    checked={tempData.typeShop === 'Perorangan'} onChange={handleTempChange}
+                                                    checked={typeShop === 'Perorangan'} onChange={() => setTypeShop('Perorangan')}
                                                     className="hidden"
                                                 />
                                                 <div
                                                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
-                ${tempData.typeShop === 'Perorangan' ? 'border-[#660077]' : 'border-gray-400'}`}
+                ${typeShop === 'Perorangan' ? 'border-[#660077]' : 'border-gray-400'}`}
                                                 >
-                                                    {tempData.typeShop === 'Perorangan' && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
+                                                    {typeShop === 'Perorangan' && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
                                                 </div>
                                                 <span
-                                                    className={`text-[14px] text-[#333333] ${tempData.typeShop === 'Perorangan' ? 'font-bold' : 'font-normal'
+                                                    className={`text-[14px] text-[#333333] ${typeShop === 'Perorangan' ? 'font-bold' : 'font-normal'
                                                         }`}
                                                 >
                                                     Perorangan
@@ -821,17 +790,17 @@ const ShopProfileForm = () => {
                                                     type="radio"
                                                     name="typeShop"
                                                     value="Perusahaan"
-                                                    checked={tempData.typeShop === 'Perusahaan'} onChange={handleTempChange}
+                                                    checked={typeShop === 'Perusahaan'} onChange={() => setTypeShop('Perusahaan')}
                                                     className="hidden"
                                                 />
                                                 <div
                                                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
-                ${tempData.typeShop === 'Perusahaan' ? 'border-[#660077]' : 'border-gray-400'}`}
+                ${typeShop === 'Perusahaan' ? 'border-[#660077]' : 'border-gray-400'}`}
                                                 >
-                                                    {tempData.typeShop === 'Perusahaan' && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
+                                                    {typeShop === 'Perusahaan' && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
                                                 </div>
                                                 <span
-                                                    className={`text-[14px] text-[#333333] ${tempData.typeShop === 'Perusahaan' ? 'font-bold' : 'font-normal'
+                                                    className={`text-[14px] text-[#333333] ${typeShop === 'Perusahaan' ? 'font-bold' : 'font-normal'
                                                         }`}
                                                 >
                                                     Perusahaan
@@ -899,11 +868,10 @@ const ShopProfileForm = () => {
                                         <div className="flex items-center gap-4">
                                             {ktpImage ? (
                                                 <img src={ktpImage} alt="Preview KTP" className="w-32 h-20 object-cover rounded-lg border" />
-                                            ) : (
-                                                <div className="w-32 h-20 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 text-gray-400">
+                                            ) :
+                                                shopProfil?.ktp_url ? <img src={shopProfil?.ktp_url} className="w-32 h-20 object-cover rounded-lg border" /> : <div className="w-32 h-20 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 text-gray-400">
                                                     <CreditCard size={32} />
-                                                </div>
-                                            )}
+                                                </div>}
                                             <div>
                                                 <button type="button" onClick={() => handleOpenKameraModal('ktp')} className='w-[150px] h-[40px] cursor-pointer bg-[#24A77B] text-white text-[14px] font-bold py-3 px-4 rounded-lg text-center hover:bg-green-600 mb-2'>
                                                     {ktpImage ? 'Ambil Ulang' : 'Ambil Foto KTP'}
@@ -924,11 +892,9 @@ const ShopProfileForm = () => {
                                         <div className="flex items-center gap-4">
                                             {selfieImage ? (
                                                 <img src={selfieImage} alt="Preview Selfie" className="w-32 h-20 object-cover rounded-lg border" />
-                                            ) : (
-                                                <div className="w-32 h-20 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 text-gray-400">
-                                                    <User size={32} />
-                                                </div>
-                                            )}
+                                            ) : shopProfil?.selfie_url ? <img src={shopProfil?.selfie_url} className="w-32 h-20 object-cover rounded-lg border" /> : <div className="w-32 h-20 border-2 border-dashed rounded-lg flex items-center justify-center bg-gray-50 text-gray-400">
+                                                <User size={32} />
+                                            </div>}
                                             <div>
                                                 <div className='flex items-center gap-4'>
                                                     <button type="button" onClick={() => handleOpenKameraModal('selfie')} className='w-[150px] h-[40px] cursor-pointer bg-[#24A77B] text-white text-[14px] font-bold py-3 px-4 rounded-lg text-center hover:bg-green-600 mb-2'>
@@ -960,50 +926,6 @@ const ShopProfileForm = () => {
             {
                 loading && <Loading />
             }
-            {/* {isCameraModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-                        <div className="p-4 border-b">
-                            <h2 className="text-xl font-bold text-center text-gray-800">
-                                {cameraCaptureMode === 'ktp' ? 'Arahkan Kamera ke KTP Anda' : 'Ambil Foto Selfie dengan KTP'}
-                            </h2>
-                        </div>
-                        <div className="p-4 bg-black">
-                            <div className="relative w-full aspect-video rounded-lg overflow-hidden">
-                                {capturedImage ? (
-                                    <img src={capturedImage} alt="Captured preview" className="w-full h-full object-contain" />
-                                ) : (
-                                    <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover transform scale-x-[-1]"></video>
-                                )}
-                                {cameraError && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70 text-white p-4 text-center">
-                                        <p>{cameraError}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        <div className="p-4 bg-gray-50 flex justify-center items-center gap-4">
-                            {capturedImage ? (
-                                <>
-                                    <button onClick={handleRetake} className="flex-1 flex items-center justify-center gap-2 bg-yellow-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-yellow-600 transition-all">
-                                        <RefreshCw size={20} /> Ulangi
-                                    </button>
-                                    <button onClick={handleSaveKamera} className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-600 transition-all">
-                                        <Check size={20} /> Simpan
-                                    </button>
-                                </>
-                            ) : (
-                                <button onClick={handleCapture} disabled={!!cameraError} className="w-16 h-16 bg-blue-600 rounded-full border-4 border-white shadow-lg hover:bg-blue-700 transition-all disabled:bg-gray-400" aria-label="Ambil Foto">
-                                    <Camera size={32} className="text-white mx-auto" />
-                                </button>
-                            )}
-                        </div>
-                        <button onClick={handleCloseKameraModal} className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75">
-                            <X size={20} />
-                        </button>
-                    </div>
-                </div>
-            )} */}
             {
                 isCameraModalOpen &&
                 <ModalOpenCamera cameraCaptureMode={cameraCaptureMode} capturedImage={capturedImage} cameraError={cameraError} handleRetake={handleRetake} handleSaveKamera={handleSaveKamera} handleCapture={handleCapture} handleCloseKameraModal={handleCloseKameraModal} videoRef={videoRef} />

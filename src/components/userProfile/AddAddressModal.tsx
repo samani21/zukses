@@ -207,14 +207,24 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
         <GoogleMapsProvider>
             <div className="fixed inset-0 bg-black/50 z-50 md:flex items-center justify-center md:p-4">
                 {
-                    openMaps ? <ModalMaps
-                        fullAddressStreet={formData.fullAddressStreet}
-                        lat={formData.lat}
-                        long={formData.long}
-                        setLat={(val) => handleChange('lat', val)}
-                        setLong={(val) => handleChange('long', val)}
-                        setOpenMaps={setOpenMaps}
-                    /> :
+                    openMaps ?
+                        editData?.subdistrict_id === formData?.district &&
+                            editData?.lat !== undefined &&
+                            editData?.long !== undefined ? <ModalMaps
+                            fullAddressStreet={formData.fullAddressStreet}
+                            lat={editData?.lat}
+                            long={editData?.long}
+                            setLat={(val) => handleChange('lat', val)}
+                            setLong={(val) => handleChange('long', val)}
+                            setOpenMaps={setOpenMaps}
+                        /> : <ModalMaps
+                            fullAddressStreet={formData.fullAddressStreet}
+                            lat={formData.lat}
+                            long={formData.long}
+                            setLat={(val) => handleChange('lat', val)}
+                            setLong={(val) => handleChange('long', val)}
+                            setOpenMaps={setOpenMaps}
+                        /> :
                         <div className="bg-white h-full md:h-50%  shadow-xl rounded-[10px] w-full max-w-2xl overflow-y-auto no-scrollbar">
                             <div className="hidden md:flex text-[#333333] justify-between items-center p-6 px-7">
                                 <h2 className="text-[22px] font-bold tracking-[-5%]" >Alamat Baru</h2>
@@ -361,17 +371,23 @@ const AddAddressModal = ({ setOpenModalAddAdress, handleAdd, editData, setOpenDe
                                 </WrapperInput>
                                 <p className='tracking-[-0.05em] w-[80%] text-[16px] text-[#111111]'>Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.</p>
                                 <div className='mt-3'>
-                                    {formData.lat && formData.long ? (
+                                    {editData?.subdistrict_id === formData?.district &&
+                                        editData?.lat !== undefined &&
+                                        editData?.long !== undefined ? (
+                                        <MapWithDraggableSvgPinDisable
+                                            lat={editData.lat}
+                                            lng={editData.long}
+                                            setOpenMaps={setOpenMaps}
+                                        />
+                                    ) : formData.lat !== 0 && formData.long !== 0 ? (
                                         <MapWithDraggableSvgPinDisable
                                             lat={formData.lat}
                                             lng={formData.long}
                                             setOpenMaps={setOpenMaps}
                                         />
-                                    ) : (
-                                        <LocationContainer>
-                                            <AddLocation>+ Tambah Location</AddLocation>
-                                        </LocationContainer>
-                                    )}
+                                    ) : <LocationContainer>
+                                        <AddLocation>+ Tambah Location</AddLocation>
+                                    </LocationContainer>}
                                 </div>
                                 <div className='flex items-center' onClick={() => handleChange('isPrivate', !formData.isPrivate)}>
                                     <SwitchContainer>

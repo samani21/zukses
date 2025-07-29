@@ -372,6 +372,7 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
                                 </WrapperInput>
                                 <p className='tracking-[-0.05em] w-[80%] text-[16px] text-[#111111]'>Tetapkan pin yang tepat. Kami akan mengantarkan ke lokasi peta. Mohon periksa apakah sudah benar, jika belum klik peta untuk menyesuaikan.</p>
                                 <div className='mt-3'>
+
                                     {editData?.subdistrict_id === formData?.district &&
                                         editData?.lat !== undefined &&
                                         editData?.long !== undefined ? (
@@ -380,7 +381,7 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
                                             lng={editData.long}
                                             setOpenMaps={setOpenMaps}
                                         />
-                                    ) : formData.lat !== undefined && formData.long !== undefined ? (
+                                    ) : formData.lat !== 0 && formData.long !== 0 ? (
                                         <MapWithDraggableSvgPinDisable
                                             lat={formData.lat}
                                             lng={formData.long}

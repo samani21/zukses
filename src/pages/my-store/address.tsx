@@ -159,7 +159,7 @@ function PageContent() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-gray-800">
+        <div className="min-h-screen font-sans text-gray-800">
             <main className="">
                 {/* Header */}
 
