@@ -131,7 +131,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
             onMouseLeave={end}
         >
             <div
-                className="relative group overflow-hidden "
+                className="relative group overflow-hidden rounded-[15px]"
                 onTouchStart={e => start(e.touches[0].clientX)}
                 onTouchMove={e => move(e.touches[0].clientX)}
                 onTouchEnd={end}
@@ -141,7 +141,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                 onMouseLeave={() => { if (isDraggingRef.current) end(); }}
             >
                 <div
-                    className="flex items-center gap-3"     /* gap‑4 = 1rem */
+                    className="flex items-center gap-3 "     /* gap‑4 = 1rem */
                     style={transformStyle}
                     onTransitionEnd={onTransitionEnd}
                 >
@@ -155,7 +155,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                                 src={b.src}
                                 alt={b.alt}
                                 className={`w-full h-40 md:h-56 object-cover shadow
-                  transition-opacity duration-500 ease-in-out
+                  transition-opacity duration-500 ease-in-out rounded-[15px]
                   ${i === currentIndex ? 'opacity-100' : 'opacity-100'}`}
                                 draggable={false}
                             />

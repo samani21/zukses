@@ -73,7 +73,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: -scrollByAmount, behavior: 'smooth' });
                         }}
-                        className="absolute top-[60px] left-4 transform -translate-y-1/2 bg-black/40 rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
+                        className="absolute w-[40px] h-[40px]  top-[55px] left-4 transform -translate-y-1/2 bg-[#9C9C9C]  rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
                     >
                         <ChevronLeftIcon />
                     </button>
@@ -84,28 +84,48 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto scroll-smooth scrollbar-hide"
                 >
-                    <div className="flex flex-row md:grid md:grid-rows-1 md:grid-flow-col gap-2 px-2 md:px-0">
+                    <div className="flex flex-row md:grid md:grid-rows-1 md:grid-flow-col gap-2 px-2 md:px-0 gap-5">
                         {categories.map((category, index) => {
-                            const bgColors = ['#E9E2FF', '#C4EDDD', '#FFDFDF', '#F4EFC0'];
+                            const bgColors = ['#E9E2FF', '#C4EDDD', '#FFDFDF', '#F4EFC0', '#CCEAFF'];
+                            const borderColors = ['#845FF5', '#4FBD92', '#FF6363', '#E0CE1B', '#3D98D9'];
                             const bgColor = bgColors[index % bgColors.length];
+                            const borderColor = borderColors[index % borderColors.length];
 
                             return (
-                                <button
-                                    onClick={() => onCategorySelect(category.name)}
-                                    key={category.name}
-                                    className="w-[80px] md:w-[120px] h-[80px] md:h-[120px] rounded-[10px] flex flex-col items-center justify-start w-24 text-center group"
-                                    style={{ backgroundColor: bgColor }}
-                                >
-                                    <img
-                                        src={category.icon}
-                                        alt={category.name}
-                                        className="w-[30px] md:w-[57px] h-[30px] md:h-[57px] object-contain mt-4 md:mt-5"
-                                        onError={(e) => {
-                                            (e.target as HTMLImageElement).src = 'https://placehold.co/64x64/eee/ccc?text=?';
+                                <div className='text-center h-[110px]' key={index}>
+                                    <div className='flex items-center justify-center'>
+                                        <div className='w-[70px] h-[70px] rounded-full flex flex-col items-center justify-start w-24 text-center group'
+                                            style={{
+                                                backgroundColor: bgColor,
+                                                border: `2px solid ${borderColor}`,
+                                            }}>
+                                            <button
+                                                onClick={() => onCategorySelect(category.name)}
+                                                key={category.name}
+                                                className="-mt-2"
+
+                                            >
+                                                <img
+                                                    src={category.icon}
+                                                    alt={category.name}
+                                                    className="w-[40px] h-[40px] object-contain mt-4 md:mt-5"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = 'https://placehold.co/64x64/eee/ccc?text=?';
+                                                    }}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <span
+                                        className="text-[#444444] font-bold text-[14px] block mt-2 w-[100px]"
+                                        style={{
+                                            lineHeight: '99%',
+                                            letterSpacing: '-0.02em',
                                         }}
-                                    />
-                                    <span className="text-[10px] md:text-[14px]  text-[#222222] leading-[99%] tracking-[-0.02em] mt-2">{category.name}</span>
-                                </button>
+                                    >
+                                        {category.name}
+                                    </span>
+                                </div>
                             );
                         })}
 
@@ -119,7 +139,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: scrollByAmount, behavior: 'smooth' });
                         }}
-                        className="absolute top-[60px] right-4 transform -translate-y-1/2 bg-black/40 rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
+                        className="absolute w-[40px] h-[40px] top-[55px] right-4 transform -translate-y-1/2 bg-[#9C9C9C] rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
                     >
                         <ChevronRightIcon />
                     </button>

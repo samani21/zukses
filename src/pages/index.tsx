@@ -11,6 +11,8 @@ import { Product } from 'components/types/Product';
 import Loading from 'components/my-store/addProduct/Loading';
 import Welcome from 'components/Welcome';
 import { useRouter } from 'next/router';
+import NewProduct from 'components/NewProduct';
+import ProductPromo from 'components/ProductPromo';
 interface Banner {
   id: number;
   src: string;
@@ -74,9 +76,9 @@ const Home: React.FC<HomeLayoutProps> = () => {
     setUser(fetchedUser);
   }, []);
   const sampleBanners: Banner[] = [
-    { id: 1, src: '/image/banner1.webp', alt: 'Banner 1' },
-    { id: 2, src: '/image/banner2.jpg', alt: 'Banner 2' },
-    { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
+    // { id: 1, src: '/image/banner1.webp', alt: 'Banner 1' },
+    // { id: 2, src: '/image/banner2.jpg', alt: 'Banner 2' },
+    // { id: 3, src: '/image/banner3.jpg', alt: 'Banner 3' },
     { id: 6, src: '/image/3 3.svg', alt: 'Banner 6' },
     { id: 4, src: '/image/3 1.svg', alt: 'Banner 4' },
     { id: 5, src: '/image/3 2.svg', alt: 'Banner 5' },
@@ -85,10 +87,11 @@ const Home: React.FC<HomeLayoutProps> = () => {
     { name: "Pc & Laptop", icon: "/icon/categories/laptop_utama.svg" },
     { name: "Handphone", icon: "/icon/categories/hp.svg" },
     { name: "Elektronik", icon: "/icon/categories/elektronik.svg" },
-    { name: "Pakaian", icon: "/icon/categories/pakaian.svg" },
+    { name: "Pakaian Pria", icon: "/icon/categories/pakaian.svg" },
     { name: "Sepatu", icon: "/icon/categories/sepatu.svg" },
-    { name: "Perlengkapan Rumah", icon: "/icon/categories/peralatan.svg" },
+    { name: "Perabot Rumah", icon: "/icon/categories/electronic 6.svg" },
     { name: "Jam Tangan", icon: "/icon/categories/jam_tangan.svg" },
+    { name: "Pakaian Wanita", icon: "/icon/categories/bajumuslim 1.svg" },
     { name: "Makanan & Minuman", icon: "/icon/categories/makanan.svg" },
     { name: "Mainan Anak", icon: "/icon/categories/mainan_anak 3.svg" },
     { name: "Tas Wanita", icon: "/icon/categories/bag_9442444 1.svg" },
@@ -156,7 +159,15 @@ const Home: React.FC<HomeLayoutProps> = () => {
         <main className="container mx-auto pb-24 md:pb-0 lg:w-[1200px] md:px-[0px] mt-[24px]">
           {
             products &&
+            <ProductPromo products={products} />
+          }
+          {
+            products &&
             <ProductList products={products} selectedCategory={selectedCategory} />
+          }
+          {
+            products &&
+            <NewProduct products={products} selectedCategory={selectedCategory} />
           }
         </main>
       </div>
