@@ -14,17 +14,17 @@ const ModalCompleteShopProfile = ({
     const router = useRouter()
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-            <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
-                <div className="p-3 md:p-6 text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
+            <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg max-h-[90vh] md:max-h-[75vh]">
+                <div className="p-3 md:p-4 text-[#555555] font-semibold text-base sm:text-lg md:text-[20px] tracking-[-0.02em] flex items-center justify-between">
                     Lengkapi data toko kamu dulu
                     <X onClick={onClose} className='cursor-pointer' />
                 </div>
-                <div className="bg-[#C7F8BC] text-[#333333] p-3 text-[16px] font-semibold px-8 tracking-[-0.02em]" style={{
+                <div className="bg-[#C7F8BC] text-[#333333] p-3 text-[16px] font-semibold px-4 tracking-[-0.02em]" style={{
                     lineHeight: "130%"
                 }}>
                     Lengkapi Data Toko Kamu Dulu, Yuk!<br />Biar tokomu makin terlihat profesional dan siap terima pesanan.
                 </div>
-                <div className="p-5 space-y-4">
+                <div className="p-4 space-y-4  overflow-y-auto no-scrollbar md:h-[350px]">
                     {[
                         {
                             label: 'Profil Toko',
