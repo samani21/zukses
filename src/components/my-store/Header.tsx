@@ -1,4 +1,4 @@
-import { Menu, User, ChevronUp, ChevronDown } from 'lucide-react';
+import { Menu, User, ChevronUp, ChevronDown, UserCircle } from 'lucide-react';
 import { useRouter } from 'next/router';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ShopData } from './ShopProfileContext';
@@ -93,7 +93,7 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
                             onClick={toggleMenu}
                             className="flex items-center gap-2 p-2 rounded-md"
                         >
-                            <User className="text-[#555555] w-[20px]" strokeWidth={3} />
+                            <UserCircle className="text-[#367940]" size={25} strokeWidth={3} />
                             <span className="hidden md:inline font-bold text-[#555555] text-[14px]">{user?.name}</span>
                             {/* Ikon berubah tergantung pada apakah menu terbuka atau tidak */}
                             {isMenuOpen ? <ChevronUp className="w-4 h-4 text-[#555555]" /> : <ChevronDown className="w-4 h-4 text-[#555555]" />}

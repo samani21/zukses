@@ -75,18 +75,13 @@ const BankAccount = ({ shopProfil }: Props) => {
             if (data?.id) {
                 const res = await Post<Response>('zukses', `shop/bank-accounts/${data?.id}/edit`, formData);
                 if (res?.data?.status === 'success') {
-                    console.log('rsasad')
-                    setLoading(false);
-                    setIsModalOpen(false)
-                    getBankAccounts(); // refresh address list
+                    window.location.reload()
                 }
             } else {
                 const res = await Post<Response>('zukses', `shop/bank-accounts/${shopProfil?.id}`, formData);
 
                 if (res?.data?.status === 'success') {
-                    setLoading(false);
-                    setIsModalOpen(false)
-                    getBankAccounts(); // refresh address list
+                    window.location.reload()
                 }
             }
         } catch (err) {
@@ -120,8 +115,7 @@ const BankAccount = ({ shopProfil }: Props) => {
             setLoading(false);
 
             if (res?.data?.status === 'success') {
-                getBankAccounts(); // refresh address list
-                setOpenDelete(0)
+                window.location.reload()
             }
         } catch (err) {
             setLoading(false);
