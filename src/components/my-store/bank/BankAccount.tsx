@@ -43,7 +43,6 @@ type Props = {
 }
 
 const BankAccount = ({ shopProfil }: Props) => {
-    console.log('shopProfil', shopProfil)
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [user, setUser] = useState<User | null>(null);
@@ -60,14 +59,13 @@ const BankAccount = ({ shopProfil }: Props) => {
         const currentUser = getUserInfo();
         if (currentUser) {
             setUser(currentUser);
-            getBankAccounts(currentUser?.id)
+            getBankAccounts()
         }
-    }, []);
-    const getBankAccounts = async (userId?: number) => {
-        if (!userId) return;
-        console.log('userId', userId);
+    }, [shopProfil]);
+    const getBankAccounts = async () => {
+        if (!shopProfil?.id) return;
         setLoading(true);
-        const res = await Get<Response>('zukses', `bank-accounts/${userId}/show`);
+        const res = await Get<Response>('zukses', `shop/bank-accounts/${shopProfil?.id}/show`);
         setLoading(false);
 
         console.log('data', res)
@@ -90,20 +88,20 @@ const BankAccount = ({ shopProfil }: Props) => {
             formData.append('is_primary', data.is_primary ? '1' : '0');
 
             if (data?.id) {
-                const res = await Post<Response>('zukses', `bank-accounts/${data?.id}/edit`, formData);
+                const res = await Post<Response>('zukses', `shop/bank-accounts/${data?.id}/edit`, formData);
                 if (res?.data?.status === 'success') {
                     console.log('rsasad')
                     setLoading(false);
                     setIsModalOpen(false)
-                    getBankAccounts(user?.id); // refresh address list
+                    getBankAccounts(); // refresh address list
                 }
             } else {
-                const res = await Post<Response>('zukses', `bank-accounts/${user?.id}`, formData);
+                const res = await Post<Response>('zukses', `shop/bank-accounts/${shopProfil?.id}`, formData);
 
                 if (res?.data?.status === 'success') {
                     setLoading(false);
                     setIsModalOpen(false)
-                    getBankAccounts(user?.id); // refresh address list
+                    getBankAccounts(); // refresh address list
                 }
             }
         } catch (err) {
@@ -117,11 +115,11 @@ const BankAccount = ({ shopProfil }: Props) => {
         try {
             setLoading(true);
             const formData = new FormData();
-            const res = await Post<Response>('zukses', `bank-accounts/${id}/edit-status`, formData);
+            const res = await Post<Response>('zukses', `shop/bank-accounts/${id}/edit-status`, formData);
             setLoading(false);
 
             if (res?.data?.status === 'success') {
-                getBankAccounts(user?.id);
+                getBankAccounts();
             }
         } catch (err) {
             setLoading(false);
@@ -133,11 +131,11 @@ const BankAccount = ({ shopProfil }: Props) => {
     const handleDelete = async (id?: number): Promise<void> => {
         try {
             setLoading(true);
-            const res = await Delete<Response>('zukses', `bank-accounts/${id}`);
+            const res = await Delete<Response>('zukses', `shop/bank-accounts/${id}`);
             setLoading(false);
 
             if (res?.data?.status === 'success') {
-                getBankAccounts(user?.id); // refresh address list
+                getBankAccounts(); // refresh address list
                 setOpenDelete(0)
             }
         } catch (err) {
@@ -167,30 +165,14 @@ const BankAccount = ({ shopProfil }: Props) => {
                         Simpan dan kelola informasi rekening bank Anda untuk memudahkan proses pengembalian dana dan transaksi lainnya. (Tambahkan Maks. 3 Rekening)
                     </p>
                 </div>
-                {/* {
-                    shopProfil && <button className="bg-[#563D7C] text-white font-semibold text-[14px] rounded-[5px] px-4 py-2 w-[150px] h-[40px]" onClick={() => {
-                        setOpenModalAddAdress(true)
-                        setIsAdd(true);
-                    }}>
-                        Tambah Alamat
+                {
+                    shopProfil && bankAccount?.length < 3 &&
+                    <button className="bg-[#563D7C] w-[150px] h-[40px] text-white text-[14px] rounded-[5px] font-semibold" onClick={() => setIsModalOpen(true)}>
+                        Tambah Rekening
                     </button>
-                } */}
+                }
             </div>
             <div className="w-full">
-                <div className="md:grid grid-cols-4 mb-6">
-                    <div className='col-span-3'>
-                        <p className="text-[20px] font-bold text-[#7952B3]">Rekening Bank Saya</p>
-                        <p className='text-[#444444] text-[14px] w-[75%] mt-2' style={{ lineHeight: "115%" }}>Simpan dan kelola informasi rekening bank Anda untuk memudahkan proses pengembalian dana dan transaksi lainnya. (Tambahkan Maks. 3 Rekening)</p>
-                    </div>
-                    <div className='col-span-1 flex justify-end'>
-                        {
-                            bankAccount?.length < 3 &&
-                            <button className="bg-[#563D7C] w-[150px] h-[40px] text-white text-[14px] rounded-[5px] font-semibold" onClick={() => setIsModalOpen(true)}>
-                                Tambah Rekening
-                            </button>
-                        }
-                    </div>
-                </div>
                 <div className='py-4 mt-[-10px] space-y-4'>
                     {
                         bankAccount?.map((ab, i) => (
