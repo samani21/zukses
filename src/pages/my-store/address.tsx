@@ -106,16 +106,14 @@ function PageContent() {
                 setLoading(false);
 
                 if (res?.data?.status === 'success') {
-                    getShopAddress(); // refresh address list
-                    setOpenModalAddAdress(false)
+                    window.location.reload()
                 }
             } else {
                 const res = await Post<Response>('zukses', `shop/address/create/${shopProfil?.id}`, formData);
                 setLoading(false);
 
                 if (res?.data?.status === 'success') {
-                    getShopAddress(); // refresh address list
-                    setOpenModalAddAdress(false)
+                    window.location.reload()
                 }
             }
         } catch (err) {
@@ -148,8 +146,7 @@ function PageContent() {
             setLoading(false);
 
             if (res?.data?.status === 'success') {
-                getShopAddress(); // refresh address list
-                setOpenDelete(0)
+                window.location.reload()
             }
         } catch (err) {
             setLoading(false);
