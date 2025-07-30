@@ -48,7 +48,7 @@ const ModalCompleteShopProfile = ({
                             icon: '/icon/damaged-package 3.svg',
                             description:
                                 'Isi rekening bank kamu di sini.  <br/> Biar hasil jualanmu bisa langsung cair tanpa hambatan.',
-                            url: '/my-store/basic-info'
+                            url: '/my-store/bank'
                         },
                         {
                             label: 'Pengaturan Jasa Kirim',
@@ -56,7 +56,7 @@ const ModalCompleteShopProfile = ({
                             icon: '/icon/damaged-package 4.svg',
                             description:
                                 'Atur jasa kirim sesuai kebutuhan tokomu.  <br/> Pilih kurir favorit biar pengiriman jadi makin praktis dan cepat!',
-                            url: '/my-store/basic-info'
+                            url: '/my-store/delivery'
                         },
                     ].map((item, i) => (
                         <div
