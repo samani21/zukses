@@ -18,7 +18,7 @@ interface Bank {
     account_number: string;
 }
 interface Delivery {
-    name_delivery: string;
+    seller_id: string;
 }
 export interface ShopData {
     logo_url: string;

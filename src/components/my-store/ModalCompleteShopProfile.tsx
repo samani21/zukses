@@ -52,7 +52,7 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Pengaturan Jasa Kirim',
-                            field: shopProfil?.delivery?.name_delivery,
+                            field: shopProfil?.delivery?.seller_id ,
                             icon: '/icon/damaged-package 4.svg',
                             description:
                                 'Atur jasa kirim sesuai kebutuhan tokomu.  <br/> Pilih kurir favorit biar pengiriman jadi makin praktis dan cepat!',
@@ -64,8 +64,8 @@ const ModalCompleteShopProfile = ({
                             className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} px-2 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
                             onClick={() => {
                                 localStorage.setItem('modalShopProfileClosed', 'true');
-                                onClose()
                                 router?.push(item?.url)
+                                onClose()
                             }}
                         >
                             <div className=" flex items-start gap-4 md:p-2">
