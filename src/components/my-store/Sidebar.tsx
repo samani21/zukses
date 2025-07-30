@@ -41,7 +41,7 @@ const sidebarNavItems: NavItemData[] = [
             { title: 'Profil Toko', icon: User, href: '/my-store/basic-info' },
             { title: 'Alamat Toko', icon: User, href: '/my-store/address' },
             { title: 'Rekening Bank', icon: CreditCard, href: '/my-store/bank' },
-            { title: 'Pengaturan Jasa Kirim', icon: Truck, href: '#' },
+            { title: 'Pengaturan Jasa Kirim', icon: Truck, href: '/my-store/delivery' },
             { title: 'Performa Toko', icon: Truck, href: '#' },
             { title: 'Kesehatan Toko', icon: Truck, href: '#' },
         ],
