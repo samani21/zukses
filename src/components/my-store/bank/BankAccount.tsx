@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Loading from 'components/Loading';
 import Post from 'services/api/Post';
-import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import { Response } from 'services/api/types';
 import { AxiosError } from 'axios';
 import Snackbar from 'components/Snackbar';
@@ -20,15 +19,6 @@ type BankAccountData = {
     account_number: string;
 };
 
-interface User {
-    name?: string;
-    email?: string;
-    whatsapp?: string;
-    id?: number;
-    username?: string;
-    image?: string;
-    role?: string;
-}
 type GetAccountBank = {
     name_bank?: string;
     account_name?: string;
@@ -45,7 +35,6 @@ type Props = {
 const BankAccount = ({ shopProfil }: Props) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [user, setUser] = useState<User | null>(null);
     const [bankAccount, setBankAccount] = useState<GetAccountBank[]>([]);
     const [editBank, setEditBank] = useState<GetAccountBank>({});
     const [openDelete, setOpenDelete] = useState<number>(0);
@@ -56,11 +45,7 @@ const BankAccount = ({ shopProfil }: Props) => {
     }>({ message: '', type: 'info', isOpen: false });
 
     useEffect(() => {
-        const currentUser = getUserInfo();
-        if (currentUser) {
-            setUser(currentUser);
-            getBankAccounts()
-        }
+        getBankAccounts()
     }, [shopProfil]);
     const getBankAccounts = async () => {
         if (!shopProfil?.id) return;
