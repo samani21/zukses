@@ -6,13 +6,18 @@ import { Response } from 'services/api/types';
 import { ShopData, ShopProfileContext } from 'components/my-store/ShopProfileContext';
 import Loading from 'components/Loading';
 import ModalCompleteShopProfile from 'components/my-store/ModalCompleteShopProfile';
+import { useRouter } from 'next/router';
+import HeaderAddProduct from 'components/my-store/HeaderAddProduct';
 
 export default function MyStoreLayout({ children }: { children: React.ReactNode }) {
     const [isMobileOpen, setMobileOpen] = useState(false);
     const [isCollapsed, setCollapsed] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [shopProfil, setShopProfil] = useState<ShopData | null>(null);
-    const [showModal, setShowModal] = useState<boolean>(false)
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const router = useRouter();
+    const pathName = router?.pathname;
+
     const fetchShopProfile = async () => {
         setLoading(true);
         const res = await Get<Response>('zukses', `shop-profile`);
@@ -22,15 +27,7 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
             const data = res.data as unknown as ShopData;
             setShopProfil(data);
             const isModalClosed = localStorage.getItem('modalShopProfileClosed') === 'true';
-            if (!data?.address) {
-                if (!isModalClosed) {
-                    setShowModal(true);
-                }
-            } else if (!data?.bank) {
-                if (!isModalClosed) {
-                    setShowModal(true);
-                }
-            } else if (!data?.delivery) {
+            if (!data?.address || !data?.bank || !data?.delivery) {
                 if (!isModalClosed) {
                     setShowModal(true);
                 }
@@ -48,19 +45,25 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
         fetchShopProfile();
     }, []);
 
+    const hideSidebar = pathName === '/my-store/add-product';
+
     return (
         <ShopProfileContext.Provider value={shopProfil}>
             <div className="flex h-screen">
-                <Sidebar
-                    isMobileOpen={isMobileOpen}
-                    setMobileOpen={setMobileOpen}
-                    isCollapsed={isCollapsed}
-                    setCollapsed={setCollapsed}
-                    shopProfil={shopProfil}
-                    setShowModal={setShowModal}
-                />
+                {!hideSidebar && (
+                    <Sidebar
+                        isMobileOpen={isMobileOpen}
+                        setMobileOpen={setMobileOpen}
+                        isCollapsed={isCollapsed}
+                        setCollapsed={setCollapsed}
+                        shopProfil={shopProfil}
+                        setShowModal={setShowModal}
+                    />
+                )}
                 <div className="flex-1 flex flex-col overflow-hidden">
-                    <Header setMobileOpen={setMobileOpen} shopProfil={shopProfil} />
+                    {!hideSidebar ?
+                        <Header setMobileOpen={setMobileOpen} shopProfil={shopProfil} /> :
+                        <HeaderAddProduct setMobileOpen={setMobileOpen} shopProfil={shopProfil} />}
                     <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 md:pt-4">
                         {children}
                     </main>
@@ -75,7 +78,6 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                     }}
                     shopProfil={shopProfil}
                 />
-
             )}
         </ShopProfileContext.Provider>
     );

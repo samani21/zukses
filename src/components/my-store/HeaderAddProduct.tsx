@@ -5,7 +5,7 @@ import { ShopData } from './ShopProfileContext';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
 import Link from 'next/link';
 
-interface HeaderProps {
+interface HeaderAddProductProps {
     setMobileOpen: (isOpen: boolean) => void;
     shopProfil: ShopData | null;
 }
@@ -20,7 +20,7 @@ interface User {
 }
 
 
-const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
+const HeaderAddProduct = ({ setMobileOpen, shopProfil }: HeaderAddProductProps) => {
     // State untuk mengontrol visibilitas menu dropdown
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     // Ref untuk menunjuk ke elemen div utama dari dropdown
@@ -64,22 +64,24 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
     }, [router]);
     return (
         <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-sm shadow-sm">
-            <div className="flex items-center justify-between h-16 px-4 md:px-8">
+            <div className="p-4 bg-[#563D7C] flex items-center justify-between h-16 px-4 md:px-8">
                 {/* Tombol menu untuk mobile */}
-                <button
-                    className="md:hidden text-gray-600"
-                    onClick={() => setMobileOpen(true)}
-                >
-                    <Menu className="w-6 h-6" />
-                </button>
-
-                {/* Logo dan Nama Toko untuk Desktop */}
-                <div className="hidden md:flex items-center gap-4">
-                    {
-                        shopProfil?.logo_url &&
-                        <img src={shopProfil?.logo_url} className='w-[30px] h-[30px] rounded-full' />
-                    }
-                    <span className="font-bold text-[16px] text-[#333333]">{shopProfil?.shop_name}</span>
+                <div className='flex items-center gap-10'>
+                    <button
+                        className="md:hidden text-gray-600"
+                        onClick={() => setMobileOpen(true)}
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
+                    <h1 className="text-[25px] font-bold text-white">Zukses <span className='font-[400]'>Seller</span></h1>
+                    {/* Logo dan Nama Toko untuk Desktop */}
+                    <div className="hidden md:flex items-center gap-4">
+                        {
+                            shopProfil?.logo_url &&
+                            <img src={shopProfil?.logo_url} className='w-[30px] h-[30px] rounded-full bg-white' />
+                        }
+                        <span className="font-bold text-[16px] text-[#fff]">{shopProfil?.shop_name}</span>
+                    </div>
                 </div>
 
                 {/* Area Profil Pengguna */}
@@ -94,10 +96,10 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
                             onClick={toggleMenu}
                             className="flex items-center gap-2 p-2 rounded-md"
                         >
-                            <UserCircle className="text-[#367940]" size={25} strokeWidth={3} />
-                            <span className="hidden md:inline font-bold text-[#555555] text-[14px]">{user?.name}</span>
+                            <UserCircle className="text-[#fff]" size={25} strokeWidth={3} />
+                            <span className="hidden md:inline font-bold text-[#fff] text-[14px]">{user?.name}</span>
                             {/* Ikon berubah tergantung pada apakah menu terbuka atau tidak */}
-                            {isMenuOpen ? <ChevronUp className="w-4 h-4 text-[#555555]" /> : <ChevronDown className="w-4 h-4 text-[#555555]" />}
+                            {isMenuOpen ? <ChevronUp className="w-4 h-4 text-[#fff]" /> : <ChevronDown className="w-4 h-4 text-[#fff]" />}
                         </button>
 
                         {/* Menu Dropdown, ditampilkan jika isMenuOpen bernilai true */}
@@ -132,4 +134,4 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
     );
 };
 
-export default Header;
+export default HeaderAddProduct;
