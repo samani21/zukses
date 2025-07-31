@@ -110,7 +110,7 @@ type Props = {
 
 export default function CourierSettingsPage({ shopProfil }: Props) {
     const [view, setView] = useState<'main' | 'config'>('main');
-    const [isStoreCourierActive, setIsStoreCourierActive] = useState(true);
+    const [isStoreCourierActive, setIsStoreCourierActive] = useState(false);
     const [loading, setLoading] = useState<boolean>(false)
     const [maxDistance, setMaxDistance] = useState(0);
     const [distanceTiers, setDistanceTiers] = useState<DistanceTier[]>([]);
