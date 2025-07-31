@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ProvinceModal from './ProvinceModal';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from "framer-motion";
+import Link from 'next/link';
 // --- Komponen Ikon (Tidak ada perubahan) ---
 const SearchIcon = ({ className }: { className?: string }) => (
     <svg className={className || "w-5 h-5 text-gray-500"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -247,25 +248,25 @@ const Header = () => {
                     <div className="flex flex-col">
                         <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[30px]">
                             <div className="container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] flex justify-between">
-                                <a onClick={() => router.push('/')} className="text-[14px] font-[500] text-[#555555] hover:underline">Download aplikasinya di Playstore</a>
+                                <Link href={'/'} className="text-[14px] font-[500] text-[#555555] hover:underline">Download aplikasinya di Playstore</Link>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
-                                            <a onClick={() => router.push('/my-store')} className="font-[500] hover:underline cursor-pointer text-[14px] text-[#555555] ">Toko Saya</a>
-                                            <a onClick={() => router.push('/user-profile/profil')} className="font-[500] text-[14px] text-[#555555]  hover:underline cursor-pointer text-right">{userName}</a>
+                                            <Link href={'/my-store'} className="font-[500] hover:underline cursor-pointer text-[14px] text-[#555555] ">Toko Saya</Link>
+                                            <Link href={'/user-profile/profil'} className="font-[500] text-[14px] text-[#555555]  hover:underline cursor-pointer text-right">{userName}</Link>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
-                                            <a onClick={() => router.push('/auth/register')} className="hover:underline cursor-pointer text-[14px] text-[#555555] font-[500]">Daftar</a>
+                                            <Link href={'/auth/register'} className="hover:underline cursor-pointer text-[14px] text-[#555555] font-[500]">Daftar</Link>
                                             <div className="h-3 w-px bg-indigo-400"></div>
-                                            <a onClick={() => router.push('/auth/login')} className="hover:underline cursor-pointer text-[14px] text-[#555555] font-[500]">Masuk</a>
+                                            <Link href={'/auth/login'} className="hover:underline cursor-pointer text-[14px] text-[#555555] font-[500]">Masuk</Link>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-8 container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] mt-[-3px] justify-between">
-                            <h1 className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[0px] mr-7" onClick={() => router.push('/')} style={{ letterSpacing: "-0.05em" }}>Zukses</h1>
+                            <Link href={'/'} className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[0px] mr-7" style={{ letterSpacing: "-0.05em" }}>Zukses</Link>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-9 mt-1.5'>
                                     <div className="flex items-start justify-between gap-3 w-full">
@@ -282,12 +283,14 @@ const Header = () => {
                                         <div className='flex items-center w-[400px] justify-between gap-4'>
                                             <div className='flex items-center jutify-left gap-3'>
                                                 <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md pr-0" title="Filter Provinsi"><img src='/icon/filter-dark.svg' width={25} /></button>
-                                                <div className="relative inline-block"><button className="p-2 rounded-md pr-0" onClick={() => router.push('/favorite')}><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></div>
-                                                <div className="relative inline-block" onClick={() => router.push('/user-profile/chat')}>
-                                                    <button className="p-2 rounded-md pr-0">
-                                                        <img src='/icon/message.svg' width={25} />
-                                                    </button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
-                                                </div>
+                                                <Link href={'/favorite'} className="relative inline-block"><button className="p-2 rounded-md pr-0" ><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></Link>
+                                                <Link href={'/user-profile/chat'}>
+                                                    <div className="relative inline-block">
+                                                        <button className="p-2 rounded-md pr-0">
+                                                            <img src='/icon/message.svg' width={25} />
+                                                        </button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                                                    </div>
+                                                </Link>
 
                                                 <div
                                                     className="relative inline-block z-50"
