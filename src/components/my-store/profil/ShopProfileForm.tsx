@@ -381,16 +381,16 @@ const ShopProfileForm = ({ shopProfil }: Props) => {
         if (!imagePreview) {
             newErrors.logo = 'Logo wajib dipilih';
         }
-        if (!shopProfil?.ktp_url) {
-            if (!ktpImage) {
-                newErrors.ktp = 'Foto KTP wajib dipilih';
-            }
-        }
-        if (!shopProfil?.selfie_url) {
-            if (!selfieImageFile) {
-                newErrors.selfie = 'Foto selfie wajib dipilih';
-            }
-        }
+        // if (!shopProfil?.ktp_url) {
+        //     if (!ktpImage) {
+        //         newErrors.ktp = 'Foto KTP wajib dipilih';
+        //     }
+        // }
+        // if (!shopProfil?.selfie_url) {
+        //     if (!selfieImageFile) {
+        //         newErrors.selfie = 'Foto selfie wajib dipilih';
+        //     }
+        // }
 
         setErrors(newErrors);
         if (Object.keys(newErrors).length > 0) return;
