@@ -1,4 +1,4 @@
-import Link from 'next/link';
+
 import React, { FC } from 'react'
 
 const ConfirmationModal: FC<{ isOpen: boolean; onConfirm: () => void; onCancel: () => void }> = ({ isOpen, onConfirm, onCancel }) => {
