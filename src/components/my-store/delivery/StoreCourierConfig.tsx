@@ -446,6 +446,7 @@ const StoreCourierConfig: FC<StoreCourierConfigProps> = ({
             <ConfirmationModal
                 isOpen={isConfirmModalOpen}
                 onConfirm={confirmAndSaveChanges}
+                onCancel={onCancel}
             />
 
             {
