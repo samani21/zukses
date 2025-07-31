@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
 interface NavItemData {
@@ -46,7 +47,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
                 {isOpen && (
                     <div className="pl-4 mt-1 space-y-1">
                         {item.children.map((child) => (
-                            <a
+                            <Link
                                 key={child.title}
                                 href={child.href}
                                 onClick={child.onClick}
@@ -56,7 +57,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
                                         : 'text-[#3D3D4E] hover:bg-purple-100'}`}
                             >
                                 {child.title}
-                            </a>
+                            </Link>
                         ))}
                     </div>
                 )}
@@ -66,7 +67,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
 
     // Untuk menu utama atau saat sidebar collapse
     return (
-        <a
+        <Link
             href={item.href}
             title={isCollapsed ? item.title : undefined}
             className={`flex items-center px-4 py-2.5 rounded-[5px] text-[14px] transition-colors duration-200
@@ -77,7 +78,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
                 <Icon className={`w-5 h-5 ${item.active ? 'text-white' : 'text-gray-500'}`} />
             )}
             {!isCollapsed && <span>{item.title}</span>}
-        </a>
+        </Link>
     );
 };
 
