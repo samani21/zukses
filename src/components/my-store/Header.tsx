@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ShopData } from './ShopProfileContext';
 import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import Link from 'next/link';
 
 interface HeaderProps {
     setMobileOpen: (isOpen: boolean) => void;
@@ -111,9 +112,13 @@ const Header = ({ setMobileOpen, shopProfil }: HeaderProps) => {
                                     }}>{user?.name}</p>
                                 </div>
                                 <nav className="py-2 text-[14px] font-[500] text-[#666666]">
-                                    <div onClick={() => router?.push('/')} className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Kembali ke halaman Utama</div>
+                                    <Link href={'/'}>
+                                        <div className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Kembali ke halaman Utama</div>
+                                    </Link>
                                     <div className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Lihat Toko Onlineku</div>
-                                    <div onClick={() => router?.push('/user-profile/profil')} className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Akun Saya</div>
+                                    <Link href={'/user-profile/profil'}>
+                                        <div className="block px-8 py-2 hover:bg-gray-100 cursor-pointer">Akun Saya</div>
+                                    </Link>
                                     <div onClick={handleLogout} className="block px-8 py-2 hover:bg-gray-100 cursor-pointer border-t border-[#DDDDDD] mt-1 pt-2">Logout</div>
                                 </nav>
                             </div>
