@@ -31,11 +31,12 @@ const ProductImageUploader = React.memo(({
     console.log('Rendering ProductImageUploader...');
 
     return (
-        <div className="rounded-lg mb-6">
+        <div className="rounded-lg">
             {/* FOTO PRODUK UTAMA */}
-            <div>
+            <div className='border-b border-[#CCCCCC] pb-2 px-8'>
                 <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
-                    <span className="text-red-500">*</span> Foto Produk
+                    Foto Produk
+                    <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                 </label>
                 <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4 mt-1">
                     <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
@@ -103,9 +104,10 @@ const ProductImageUploader = React.memo(({
             {/* FOTO PROMOSI */}
             <div
                 id="promo"
-                className="mt-4">
+                className="mt-4 px-8 ">
                 <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
-                    <span className="text-red-500">*</span> Foto Produk Promosi
+                    Foto Produk Promosi
+                    <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                 </label>
                 <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4 mt-1">
                     <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>

@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Video, X } from 'lucide-react';
 
 interface VideoUploaderProps {
-    videoFile: File | null;
+    videoFile: File | null | string | string[];
     onVideoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     urlvideoFile?: string | null;
 }
@@ -33,11 +33,18 @@ const VideoUploader = React.memo(({ videoFile, onVideoChange, urlvideoFile }: Vi
                 {videoFile ? (
                     <div className="relative w-[160px] h-[160px]">
                         <video
-                            src={urlvideoFile ? urlvideoFile : URL.createObjectURL(videoFile)}
+                            src={
+                                urlvideoFile
+                                    ? urlvideoFile
+                                    : videoFile instanceof File
+                                        ? URL.createObjectURL(videoFile)
+                                        : ''
+                            }
                             className="w-full h-full object-cover rounded-[5px] cursor-pointer"
                             controls
                             onClick={() => inputRef.current?.click()}
                         />
+
                         <button
                             type="button"
                             className="absolute top-[-6px] right-[-6px] bg-white border border-gray-300 rounded-full p-[2px] hover:bg-gray-100"

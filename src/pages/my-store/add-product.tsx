@@ -1,226 +1,29 @@
-import DateTimePicker from 'components/DateTimePicker';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import MyStoreLayout from 'pages/layouts/MyStoreLayout';
+
+
 import Loading from 'components/Loading';
 import { Modal } from 'components/Modal';
 import { ModalError } from 'components/ModalError';
 import CropModal from 'components/my-store/addProduct/CropModal';
-import ProductImageUploader from 'components/my-store/addProduct/ProductImageUploader';
-import TipsCard from 'components/my-store/addProduct/TipsCard';
-import VideoUploader from 'components/my-store/addProduct/VideoUploader';
 import CategorySelector from 'components/my-store/product/CategorySelector';
-import { formatRupiahNoRP, formatRupiahNoRPHarga } from 'components/Rupiah';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
-import { Pencil, Trash2, ChevronRight, Move, CheckCircle, ImageIcon, Plus, X, AlertTriangle } from 'lucide-react';
-import type { NextPage } from 'next';
-import { useRouter } from 'next/router';
-import MyStoreLayout from 'pages/layouts/MyStoreLayout';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { ChevronRight, AlertTriangle } from 'lucide-react';
+
+// Impor utilitas dan tipe
 import Get from 'services/api/Get';
 import Post from 'services/api/Post';
 import { Category } from 'services/api/product';
 import { Response } from 'services/api/types';
-const IconLabel = ({ icon, text }: { icon: React.ReactNode; text: string }) => (
-  <div className="flex items-center space-x-2 text-sm text-gray-600">
-    {icon}
-    <span>{text}</span>
-  </div>
-);
-
-// Komponen untuk kartu di sidebar kiri
-const InfoCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="bg-white rounded-[10px] shadow-sm border border-[#DDDDDD] w-[236px]">
-    {
-      title === "Rekomendasi" &&
-      <div className='h-[38px] flex items-center '>
-        <h3 className="font-bold text-white text-[16px] rounded-tr-[10px] rounded-tl-[10px] py-2  px-4 bg-[#00AA5B] w-full h-full">{title}</h3>
-      </div>
-    }
-    <div className="space-y-2 p-4 text-[#333333] text-[14px]">
-      {children}
-    </div>
-  </div >
-);
-
-
-// Komponen input dengan label dan character counter
-const TextInput = ({ id, label, placeholder, maxLength, value, setValue, required = false }: { id?: string; label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
-  <div id={id}>
-    <label className="text-[#333333] font-bold text-[14px]">
-      {required && <span className="text-red-500">*</span>} {label}
-    </label>
-    <div className="relative mt-1">
-      <input
-        type="text"
-        className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px]"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        maxLength={maxLength}
-      />
-      <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-        {value?.length}/{maxLength}
-      </span>
-    </div>
-  </div>
-);
-
-const TextAreaInput = ({
-  label,
-  placeholder,
-  maxLength,
-  value,
-  setValue,
-  required = false,
-  id,
-}: {
-  label: string,
-  placeholder: string,
-  maxLength: number,
-  value: string,
-  setValue: (val: string) => void,
-  required?: boolean
-  id?: string
-}) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // Fungsi untuk menyesuaikan tinggi textarea
-  const autoResize = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto'; // Reset dulu
-      textarea.style.height = Math.min(textarea.scrollHeight, 480) + 'px'; // Maks 480px (30 baris)
-    }
-  };
-
-  useEffect(() => {
-    autoResize();
-  }, [value]);
-
-  return (
-    <div id={id}>
-      <label className="text-[#333333] font-bold text-[14px]">
-        {required && <span className="text-red-500">*</span>} {label}
-      </label>
-      <div className="relative mt-1">
-        <textarea
-          ref={textareaRef}
-          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] overflow-hidden"
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-          }}
-          maxLength={maxLength}
-          rows={4} // default tinggi awal (misal 4 baris)
-          style={{ resize: 'none', maxHeight: '480px', overflowY: 'auto', }} // maksimal 30 baris, tidak bisa di-resize
-        />
-        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-          {value?.length}/{maxLength}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-const RadioGroup = ({
-  label,
-  name,
-  options,
-  required = false,
-  onChange,
-  defaultValue,
-}: {
-  label: string;
-  name: string;
-  options: string[];
-  required?: boolean;
-  onChange?: (val: string) => void;
-  defaultValue?: string;
-}) => {
-  const [selectedValue, setSelectedValue] = useState(defaultValue ?? options[0]);
-
-  useEffect(() => {
-    // isi ulang selectedValue saat defaultValue berubah (saat data edit dimuat ulang)
-    if (defaultValue) {
-      setSelectedValue(defaultValue);
-    }
-  }, [defaultValue]);
-
-  useEffect(() => {
-    if (onChange) onChange(selectedValue);
-  }, [selectedValue]);
-
-  return (
-    <div>
-      <label className="block text-[14px] font-bold text-[#333333] mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <div className="flex items-center space-x-6">
-        {options.map((option) => (
-          <label key={option} className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="radio"
-              name={name}
-              value={option}
-              checked={selectedValue === option}
-              onChange={() => setSelectedValue(option)}
-              className="hidden"
-            />
-            <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors 
-                ${selectedValue === option ? 'border-[#660077]' : 'border-gray-400'}`}
-            >
-              {selectedValue === option && <div className="w-2 h-2 rounded-full bg-[#660077]"></div>}
-            </div>
-            <span
-              className={`text-[14px] text-[#333333] ${selectedValue === option ? 'font-bold' : 'font-normal'
-                }`}
-            >
-              {option}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-
-
-interface Variation {
-  name: string;
-  options: string[];
-}
-
-interface VariantRowData {
-  price: string;
-  stock: string;
-  discount: string;
-  discountPercent: string;
-  image?: File | null;
-  weight?: string;
-  length?: string;
-  width?: string;
-  height?: string;
-}
-
-type Specification = {
-  name: string;
-  value: string;
-};
-
-type CombinationItem = {
-  price?: number | string;
-  stock?: number | string;
-  discount_price?: number | string;
-  discount_percent?: number | string;
-  weight?: number | string;
-  length?: number | string;
-  width?: number | string;
-  height?: number | string;
-  image?: string;
-};
+import { Variation, VariantRowData, Specification, MediaItem, CombinationItem } from 'types/product'
+import Sidebar from 'components/my-store/addProduct/Sidebar';
+import ProductInfoSection from 'components/my-store/addProduct/ProductInfoSection';
+import ProductSalesSection from 'components/my-store/addProduct/ProductSalesSection';
+import ProductOtherInfoSection from 'components/my-store/addProduct/ProductOtherInfoSection';
+import ProductDeliveryInfoSection from 'components/my-store/addProduct/ProductDeliveryInfoSection';
 
 
 async function convertImageUrlToFile(url: string): Promise<File | null> {
@@ -234,12 +37,7 @@ async function convertImageUrlToFile(url: string): Promise<File | null> {
   }
 }
 
-type MediaItem = {
-  url: string;
-  type: string;
-};
 
-// Komponen Utama Halaman
 const AddProductPage: NextPage = () => {
   const router = useRouter()
   const params = router?.query;
@@ -310,10 +108,8 @@ const AddProductPage: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
-
-  const [sku, setSku] = useState('');
   console.log(variantData)
-  //jadwal ditampilkan 
+  const [sku, setSku] = useState('');
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
   const [schedule, setSchedule] = useState<string | ''>('');
   const [scheduleError, setScheduleError] = useState('');
@@ -330,6 +126,138 @@ const AddProductPage: NextPage = () => {
 
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState('');
+
+  // ++ START: Logika untuk Navigasi Sidebar ++
+  const [activeSection, setActiveSection] = useState('informasi-produk-section');
+
+  const sectionRefs = {
+    'informasi-produk-section': useRef<HTMLDivElement>(null),
+    'informasi-penjualan-section': useRef<HTMLDivElement>(null),
+    'informasi-pengiriman-section': useRef<HTMLDivElement>(null),
+    'informasi-lainnya-section': useRef<HTMLDivElement>(null), // Anchor untuk bagian "Lainnya"
+  };
+  const sectionIds = [
+    'informasi-produk-section',
+    'informasi-penjualan-section',
+    'informasi-pengiriman-section',
+    'informasi-lainnya-section'
+  ];
+  // Letakkan hook ini di dalam komponen AddProductPage
+  // Di dalam komponen AddProductPage
+
+  useEffect(() => {
+    // 1. Temukan kontainer yang bisa di-scroll berdasarkan ID
+    const scrollContainer = document.getElementById('main-scroll-container');
+
+    // 2. Jika kontainer tidak ditemukan, tampilkan error dan hentikan
+    if (!scrollContainer) {
+      console.error("PENTING: Elemen dengan id 'main-scroll-container' tidak ditemukan! Pastikan Anda sudah menambahkannya di file layout.");
+      return;
+    }
+
+    const handleScroll = () => {
+      // 3. Gunakan scrollTop dari kontainer, bukan window
+      const scrollY = scrollContainer.scrollTop;
+      let newActiveSection = sectionIds[0];
+
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (element) {
+          // 4. Gunakan offsetTop elemen, yang kini akurat relatif terhadap kontainer
+          // Tambahkan offset agar menu aktif saat seksi sudah terlihat
+          if (element.offsetTop - 150 <= scrollY) {
+            newActiveSection = id;
+          }
+        }
+      }
+      setActiveSection(newActiveSection);
+    };
+
+    // 5. Pasang listener ke KONTENINER, bukan window
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      scrollContainer.removeEventListener('scroll', handleScroll);
+    };
+  }, []); // Dependency array kosong sudah benar
+
+  const handleNavigate = (id: string) => {
+    const element = document.getElementById(id);
+    setActiveSection(id)
+    console.log('id', id)
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth', // Animasi scroll halus
+        block: 'start',     // Posisikan bagian atas elemen di bagian atas viewport
+        inline: 'nearest'
+      });
+    }
+  };
+  // Di dalam komponen AddProductPage
+
+  const validationStatus = useMemo(() => {
+    // Tambahkan tipe return 'number | "valid"' pada setiap fungsi check
+    const checkProduk = (): number | "valid" => {
+      let count = 0;
+      if (selectedImages.length === 0 && !urlpromoImage) count++;
+      if (!promoImage && !urlpromoImage) count++;
+      if (!productName.trim()) count++;
+      if (!category.trim()) count++;
+      if (!description.trim()) count++;
+      return count === 0 ? 'valid' : count;
+    };
+
+    const checkPenjualan = (): number | "valid" => {
+      let count = 0;
+      if (isVariant) {
+        const hasVariantsDefined = variations.length > 0 && variations[0].name.trim() && variations[0].options.filter(opt => opt.trim()).length > 0;
+        if (!hasVariantsDefined) {
+          count++;
+        }
+        const expectedVariantCount = variations[0].options.filter(opt => opt.trim()).length;
+        if (variantData.length < expectedVariantCount || variantData.some(d => !d.price || !d.stock)) {
+          count++;
+        }
+      } else {
+        if (!globalPrice.trim()) count++;
+        if (!globalStock.trim()) count++;
+      }
+      if (minOrder < 1 || maxOrder < 1 || maxOrder < minOrder) count++;
+      if (!globalWeight.trim() || !globalLength.trim() || !globalWidth.trim() || !globalHeight.trim()) {
+        if (!isVariant || !showDimensionTable) count++;
+      }
+      return count === 0 ? 'valid' : count;
+    };
+
+    const checkPengiriman = (): number | "valid" => {
+      let count = 0;
+      if (isVariant && showDimensionTable && variantData.some(d => !d.weight || !d.length || !d.width || !d.height)) {
+        count++;
+      }
+      // Logika lain untuk pengiriman bisa ditambahkan di sini
+      return count === 0 ? 'valid' : count;
+    };
+
+    const checkLainnya = (): number | "valid" => {
+      let count = 0;
+      if (!schedule.trim() || scheduleError) count++;
+      return count === 0 ? 'valid' : count;
+    };
+
+    return {
+      produk: checkProduk(),
+      penjualan: checkPenjualan(),
+      pengiriman: checkPengiriman(),
+      lainnya: checkLainnya(),
+    };
+  }, [
+    selectedImages, promoImage, urlpromoImage, productName, category, description, countryOrigin,
+    isVariant, variations, variantData, globalPrice, globalStock, minOrder, maxOrder,
+    showDimensionTable, globalWeight, globalLength, globalWidth, globalHeight,
+    schedule, scheduleError
+  ]);
+  // ++ END: Logika untuk Navigasi Sidebar ++
+
   const scrollToFirstError = (errors: { [key: string]: string }) => {
     const firstErrorKey = Object.keys(errors)[0];
     if (!firstErrorKey) return;
@@ -364,6 +292,7 @@ const AddProductPage: NextPage = () => {
       setSchedule(formattedDate);
     }
   }, [scheduleDate])
+
 
   useEffect(() => {
     // Membersihkan format rupiah dan memastikan nilai adalah angka
@@ -684,7 +613,7 @@ const AddProductPage: NextPage = () => {
     if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
     if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
     if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
-    if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
+    // if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
     if (!isVariant) {
       if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
       if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
@@ -697,8 +626,8 @@ const AddProductPage: NextPage = () => {
       const totalVariant = variations?.length > 1
         ? (optionCount1 - 1) + (optionCount2 - 1)
         : optionCount1 - 1;
-      console.log(variantData?.length, totalVariant)
-      if (!variantData || variantData?.length < totalVariant) {
+      console.log('tes', variantData?.length, totalVariant - 1)
+      if (!variantData || variantData?.length < totalVariant - 1) {
         newErrors.variant = 'Harga dan stock tidak boleh kosong';
       }
 
@@ -826,7 +755,9 @@ const AddProductPage: NextPage = () => {
           price: variant?.price?.replace(/\./g, ''),
           stock: variant.stock,
           sku: variant.stock, // sementara pakai stock sebagai sku
-          image: variant.image ? { preview: URL.createObjectURL(variant.image) } : null,
+          image: variant.image instanceof File
+            ? { preview: URL.createObjectURL(variant.image) }
+            : null,
           weight: variant.weight,
           length: variant?.length,
           width: variant.width,
@@ -874,7 +805,7 @@ const AddProductPage: NextPage = () => {
     // Spesifikasi (sementara hardcoded, bisa diganti sesuai input UI)
     formData.append('specifications', JSON.stringify({
       Merek: brand,
-      'Negara Asal': countryOrigin,
+      'Negara Asal': "indonesia",
     }));
 
     try {
@@ -1081,1039 +1012,135 @@ const AddProductPage: NextPage = () => {
   return (
     <MyStoreLayout>
       <div className="min-h-screen font-sans mt-[-10px]">
-        <main className="px-0 pb-[120px]">
+        <main className="px-0">
           <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
-          <div className="flex items-center  text-gray-500 mb-4">
+          <div className="flex items-center text-gray-500 mb-4">
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store')}>Dashboard</span>
-            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3}/>
+            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3} />
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store/product')}>Produk Saya</span>
-            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3}/>
+            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3} />
             <span className="font-bold text-[14px] text-[#333333] ">Tambah Produk</span>
           </div>
 
-          <div className="flex items-start gap-10 relative">
-            {/* Kolom Kiri */}
-            <aside className="lg:col-span-1 space-y-6 sticky top-6 pr-2">
-              <InfoCard title="Rekomendasi">
-                {Object.entries(tipsChecklist).map(([label, isDone]) => (
-                  <IconLabel
-                    key={label}
-                    icon={
-                      isDone
-                        ? <CheckCircle className="w-4 h-4 text-green-500" />
-                        : <CheckCircle className="w-4 h-5 text-[#000000]" />
-                    }
-                    text={label}
-                  />
-                ))}
-              </InfoCard>
+          <div className="flex items-start gap-4 relative">
+            <Sidebar
+              tipsChecklist={tipsChecklist}
+              activeSection={activeSection}
+              onNavigate={handleNavigate}
+              validationStatus={validationStatus}
+            />
 
-              <TipsCard />
-
-            </aside>
-
-            {/* Kolom Kanan - Form Utama */}
-            <div className="lg:col-span-2 mt-2">
-              <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Produk</h1>
-
-              <div className="rounded-lg mb-6">
-                <div
-
-                  onMouseEnter={() => setTipKey('photo')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <ProductImageUploader
-                    selectedImages={selectedImages}
-                    promoImage={promoImage}
-                    onSelectMainImage={handleSelectImage}
-                    onReplaceMainImage={handleReplaceMainImage}
-                    onRemoveMainImage={handleRemoveMainImage}
-                    onReplacePromoImage={handleReplacePromoImage} // bisa kirim ke modal crop juga
-                    onRemovePromoImage={handleRemovePromoImage}
-                    errorPromo={errors.promo}
-                    errorImages={errors.images}
-                  />
-                </div>
-
-                <hr className="my-6 border-[#CCCCCC]" />
-
-                <div onMouseEnter={() => setTipKey('video')} onMouseLeave={() => setTipKey('default')}>
-                  <VideoUploader videoFile={videoFile} onVideoChange={handleVideoChange} urlvideoFile={urlvideoFile} />
-                </div>
-              </div>
-
-              <div className="mb-6 space-y-4">
-                <div
-                  id="productName"
-                  onMouseEnter={() => setTipKey('name')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <TextInput label="Nama Produk" placeholder="Masukkan Nama Produk" maxLength={255} value={productName} setValue={setProductName} required />
-                  {errors.productName && (
-                    <div className="text-red-500 text-sm mt-1">{errors.productName}</div>
-                  )}
-
-                </div>
-                <div className="mt-[-15px] rounded-md text-[12px] text-[#333333]">
-                  <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
-                </div>
-                <div
-                  id="category"
-                  onMouseEnter={() => setTipKey('category')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    <span className="text-red-500">*</span> Kategori
-                  </label>
-                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px] mt-1" onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }}>
-                    <div className="w-full px-3 py-2 text-[#555555] text-[14px]">
-                      {category || "Pilih Kategori Produk"}
-                    </div>
-                    <button className="ml-2 p-2 text-gray-600 hover:bg-gray-100 rounded-md">
-                      <Pencil className="w-5 h-5" />
-                    </button>
-                  </div>
-                  {errors.category && (
-                    <div className="text-red-500 text-sm mt-1">{errors.category}</div>
-                  )}
-                </div>
-                <div
-                  id="description"
-                  onMouseEnter={() => setTipKey('description')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <TextAreaInput label="Deskripsi / Spesifikasi Produk" placeholder="Jelaskan secara detil mengenai produkmu" maxLength={3000} value={description} setValue={setDescription} required />
-                  {errors.description && (
-                    <div className="text-red-500 text-sm mt-1">{errors.description}</div>
-                  )}
-                </div>
-                <div
-                  id="brand"
-                  onMouseEnter={() => setTipKey('brand')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <TextInput label="Merek Produk" placeholder="Masukkan Merek Produkmu" maxLength={255} value={brand} setValue={setBrand} />
-                  {errors.brand && (
-                    <div className="text-red-500 text-sm mt-1">{errors.brand}</div>
-                  )}
-                </div>
-                <div
-                  id="countryOrigin"
-                  onMouseEnter={() => setTipKey('brand')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <label className="block text-[#333333] font-bold text-[14px] mb-0.5"><span className="text-red-500">*</span> Negara Asal</label>
-                  <select className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] mt-1" value={countryOrigin}
-                    onChange={(e) => setCountryOrigin(e.target.value)}>
-                    <option>Pilih Negara Asal</option>
-                    <option>Indonesia</option>
-                  </select>
-                </div>
-                {errors.countryOrigin && (
-                  <div className="text-red-500 text-sm mt-1">{errors.countryOrigin}</div>
-                )}
-
-              </div>
-
-              {/* Variasi Produk */}
-              <div
-                onMouseEnter={() => setTipKey('variation')}
-                onMouseLeave={() => setTipKey('default')} >
-                <div className="">
-                  <div className='flex items-center justify-left gap-3'>
-                    <div className="relative w-[12px] h-[12px] ml-1">
-                      {/* Lingkaran luar - ping */}
-                      <span className="absolute inset-0 m-auto h-full w-full rounded-full bg-[#52357B] opacity-75 animate-ping-custom" />
-
-                      {/* Lingkaran dalam - tetap */}
-                      <span className="absolute inset-0 m-auto h-[12px] w-[12px] rounded-full bg-[#52357B]" />
-                    </div>
-                    <h2 className="text-[14px] font-bold text-[#333333]">Variasi Produk</h2>
-                  </div>
-                  <div className='flex jusity-left items-center gap-4 mt-3'>
-                    {
-                      isVariant ?
-                        <button className='border border-[#52357B] rounded-[5px] w-[175px] h-[35px] flex items-center px-2 justify-center' onClick={() => setIsVariant(false)}>
-                          <Plus className='text-[#52357B] h-[22px] w-[22px]' />
-                          <span className='text-[#52357B] text-[14px] font-semibold'>Tanpa Variasi</span>
-                        </button> :
-                        <button className='border border-[#52357B] rounded-[5px] w-[175px] h-[35px] flex items-center px-2' onClick={() => setIsVariant(true)}>
-                          <Plus className='text-[#52357B] h-[22px] w-[22px]' />
-                          <span className='text-[#52357B] text-[14px] font-semibold'>Tambahkan Variasi</span>
-                        </button>
-                    }
-                    <div className='w-1/2 text-[14px]'>
-                      Tambahkan Variasi Produk jika produk memiliki beberapa pilihan, seperti <span className='text-[#52357B] font-bold'> warna, ukuran, kapasitas, dan lainnya.</span>
-                    </div>
-                  </div>
-                  {
-                    isVariant ? <div className='mt-4'>
-                      {variations.map((variation, varIndex) => (
-                        <div key={varIndex} className="border border-gray-200 rounded-md p-4 space-y-4 mb-4">
-                          <div className='flex justify-between items-center gap-4'>
-                            <div className="grid grid-cols-[100px_1fr] items-center gap-4 w-1/2">
-                              <label className="text-[14px] font-bold text-[#333333]">Variasi {varIndex + 1}</label>
-                              <div className="relative">
-                                <div className="relative">
-                                  <div className="relative w-full">
-                                    <input
-                                      type="text"
-                                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                      placeholder="Ketik atau pilih"
-                                      value={variation.name}
-                                      onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
-                                      onFocus={() => setShowSuggestionIndex(varIndex)}
-                                      onBlur={() => setTimeout(() => setShowSuggestionIndex(null), 200)} // biar gak hilang pas klik
-                                    />
-                                    {showSuggestionIndex === varIndex &&
-                                      variationSuggestions.some(s => s.toLowerCase().includes(variation.name.toLowerCase())) && (
-                                        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
-                                          <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
-                                          {variationSuggestions
-                                            .filter(s =>
-                                              s.toLowerCase().includes(variation.name.toLowerCase()) &&
-                                              s.toLowerCase() !== (variations[varIndex === 0 ? 1 : 0]?.name?.toLowerCase())
-                                            )
-                                            .map((suggestion) => (
-                                              <div
-                                                key={suggestion}
-                                                className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                                onPointerDown={() => handleVariationNameChange(varIndex, suggestion)}
-                                              >
-                                                {suggestion}
-                                              </div>
-                                            ))}
-                                        </div>
-                                      )}
-
-                                  </div>
-
-                                </div>
-
-                                <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-                                  {variation.name?.length}/20
-                                </span>
-                              </div>
-                            </div>
-                            {
-                              variations?.length > 1 ?
-                                <div onClick={() => handleRemoveVariation(varIndex)} className=' cursor-pointer'>
-                                  <X className='w-[24px] h-[24px] text text-gray-500' />
-                                </div> :
-                                <div onClick={() => setIsVariant(false)} className=' cursor-pointer'>
-                                  <X className='w-[24px] h-[24px] text text-gray-500' />
-                                </div>
-                            }
-                          </div>
-                          <div className="grid grid-cols-[100px_1fr] items-start gap-4">
-                            <label className="text-[14px] font-bold text-[#333333] pt-2">Opsi</label>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
-                              {variation.options.map((option, optIndex) => (
-                                <div
-                                  key={optIndex}
-                                  draggable
-                                  onDragStart={() => handleDragStart(optIndex)}
-                                  onDragOver={(e) => e.preventDefault()}
-                                  onDrop={() => handleDrop(varIndex, optIndex)}
-                                  className="flex items-center gap-2">
-                                  <div className="relative w-full">
-                                    <div className="relative w-full">
-                                      <input
-                                        type="text"
-                                        value={option}
-                                        onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
-                                        placeholder="Ketik atau Pilih"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                        onFocus={() => setShowOptionSuggestIndex(`${varIndex}-${optIndex}`)}
-                                        onBlur={() => setTimeout(() => setShowOptionSuggestIndex(null), 200)} // biar bisa diklik suggestion-nya
-                                      />
-                                      {showOptionSuggestIndex === `${varIndex}-${optIndex}` &&
-                                        (optionSuggestions[variations[varIndex].name] || [])
-                                          .filter(suggestion =>
-                                            suggestion.toLowerCase().includes(option.toLowerCase()) && // 1. Filter berdasarkan ketikan (tetap ada)
-                                            !variation.options.includes(suggestion)                     // 2. HANYA tampilkan jika belum ada di daftar opsi yang dipilih
-                                          )?.length > 0 && (
-                                          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md">
-                                            <div className="text-[12px] text-gray-500 px-3 py-1 border-b border-gray-200">Nilai yang direkomendasikan</div>
-                                            {(optionSuggestions[variations[varIndex].name] || [])
-                                              .filter(suggestion =>
-                                                suggestion.toLowerCase().includes(option.toLowerCase()) &&
-                                                !variation.options.includes(suggestion)
-                                              )
-                                              .map((suggestion) => (
-                                                <div
-                                                  key={suggestion}
-                                                  className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                                  onPointerDown={() => handleOptionChange(varIndex, optIndex, suggestion)}
-                                                >
-                                                  {suggestion}
-                                                </div>
-                                              ))
-                                            }
-                                          </div>
-                                        )
-                                      }
-                                    </div>
-
-                                  </div>
-
-                                  <div className="p-2 text-gray-500 hover:text-gray-700 cursor-move">
-                                    <Move className="w-4 h-4" />
-                                  </div>
-                                  <div
-                                    className="p-2 text-gray-500 hover:text-red-600"
-                                    onClick={() => handleDeleteOption(varIndex, optIndex)}
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-
-                      {variations?.length < 2 && (
-                        <div className='flex justif-left items-center gap-3'>
-                          <button
-                            type="button"
-                            onClick={handleAddVariation}
-                            className="bg-white  text-[#52357B] border border-[#52357B] px-4 py-2 rounded-[5px] text-[14px] font-semibold flex items-center justify-center gap-1"
-                          >
-                            <Plus className='h-[22px] w-[22px]' />
-                            Tambah Variasi 2
-                          </button>
-                          <div className='w-[508px] text-[14px] text-[#33333]'>
-                            Tambahkan Variasi 2 jika setiap produk memiliki variasi lanjutan berdasarkan Variasi 1, misalnya:<span className='font-bold text-[#52357B]'> Merah Besar, Merah Kecil, atau Merah Sedang.</span>
-                          </div>
-                        </div>
-                      )}</div> :
-                      <>
-                        <div
-                          id="globalPrice"
-                          className="flex items-center gap-4 items-end mt-4 w-[75%]"
-                          onMouseEnter={() => setTipKey('priceStock')}
-                          onMouseLeave={() => setTipKey('default')}>
-                          <div className="col-span-12 sm:col-span-5">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                              <span className="text-red-500">*</span>
-                              Harga Produk
-                            </label>
-                            <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
-                              <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                              <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
-                                value={formatRupiahNoRP(globalPrice)}
-                                onChange={(e) => setGlobalPrice(e.target.value)} />
-                            </div>
-                          </div>
-                          <div className="col-span-12 sm:col-span-5 ml-[-20px]">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                              <span className="text-red-500">*</span>
-                              Stok
-                            </label>
-                            <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                              <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
-                                value={globalStock}
-                                onChange={(e) => setGlobalStock(e.target.value)} />
-                            </div>
-                          </div>
-                          <div className="col-span-1 w-1/4">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                              Persen Diskon
-                            </label>
-                            <div className="relative">
-                              <div className="relative">
-                                <input
-                                  type="number"
-                                  placeholder="Diskon (%)"
-                                  className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
-                                  value={globalDiscountPercent}
-                                  onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                                  onFocus={() => setShowPercentSuggest(true)}
-                                  onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
-                                />
-                                {showPercentSuggest && (
-                                  <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
-                                    {discountOptions
-                                      .filter(opt =>
-                                        globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
-                                      )
-                                      .map(opt => (
-                                        <div
-                                          key={opt}
-                                          className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                          onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
-                                        >
-                                          {opt}%
-                                        </div>
-                                      ))}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                          </div>
-                          <div className="col-span-12 sm:col-span-3">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                              <span className="text-red-500">*</span> Harga Diskon</label>
-                            <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
-                              <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                              <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)}
-                                readOnly />
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                  }
-                </div>
-              </div>
-              {
-                isVariant &&
-                <div className="mb-2 mt-2">
-                  <div className="flex items-center gap-4 items-end " onMouseEnter={() => setTipKey('priceStock')}
-                    onMouseLeave={() => setTipKey('default')}>
-                    <div className="col-span-12 sm:col-span-5 ">
-                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-
-                        Harga Produk
-                      </label>
-                      <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
-                        <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                        <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
-                      </div>
-                    </div>
-                    <div className="col-span-12 sm:col-span-5 ml-[-20px] ">
-                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-
-                        Stok
-                      </label>
-                      <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                        <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
-                      </div>
-                    </div>
-                    <div className="col-span-12 sm:col-span-3">
-                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-                        Persen Diskon</label>
-                      <div className="relative">
-                        <input
-                          type="number"
-                          placeholder="Diskon (%)"
-                          className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
-                          value={globalDiscountPercent}
-                          onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                          onFocus={() => setShowPercentSuggest(true)}
-                          onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
-                        />
-                        {showPercentSuggest && (
-                          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
-                            {discountOptions
-                              .filter(opt =>
-                                globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
-                              )
-                              .map(opt => (
-                                <div
-                                  key={opt}
-                                  className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                  onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
-                                >
-                                  {opt}%
-                                </div>
-                              ))}
-                          </div>
-                        )}
-                      </div>
-
-                    </div>
-                    <div className="col-span-12 sm:col-span-2">
-                      <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
-                        Harga Setelah Diskon</label>
-                      <div className='flex items-center gap-3'>
-                        <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
-                          <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                          <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)} readOnly />
-                        </div>
-                        {
-                          variations[0]?.options[0] != '' &&
-                          <div className="col-span-12 sm:col-span-2">
-                            <button className="w-[155px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              }
-              {errors.globalPrice && errors.globalStock ? (
-                <div className="text-red-500 text-sm mt-1">Harga dan Stok wajib diisi</div>
-              ) : errors.globalPrice ? (
-                <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
-              ) : errors?.globalStock && (
-                <div className="text-red-500 text-sm mt-1">{errors.globalPrice}</div>
-              )}
-
-              <div className="overflow-x-auto"
-                id="variant"
-                onMouseEnter={() => setTipKey('variation')}
-                onMouseLeave={() => setTipKey('default')}>
-                {
-                  variations[0]?.name && isVariant &&
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
-                      <tr>
-                        {
-                          variations[0]?.name &&
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            {variations[0]?.name}
-                          </th>
-                        }
-                        {
-                          variations[1]?.name &&
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            {variations[1]?.name}
-                          </th>
-                        }
-
-                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                          Harga
-                        </th>
-                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                          Stok
-                        </th>
-                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                          Persen Diskon
-                        </th>
-                        <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider text-center align-middle">
-                          Harga Setelah Diskon
-                        </th>
-                      </tr>
-                    </thead>
-
-
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {combinations.map((variation, vIndex) =>
-                        variation.sizes.map((size, sIndex) => {
-                          const index = vIndex * variation.sizes?.length + sIndex;
-                          const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
-
-                          return (
-                            <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
-                              {sIndex === 0 &&
-                                variation.color !== '' && (
-                                  <td
-                                    className="px-4 py-4 whitespace-nowrap align-top"
-                                    rowSpan={variation.sizes?.length}
-                                  >
-                                    <div className="grid justify-center">
-                                      <span className="text-center w-full text-[#333333] text-[14px]">
-                                        {variation.color}
-                                      </span>
-                                      <div className="flex justify-center mt-2">
-                                        {rowData.image ? (
-                                          // --- AWAL PERUBAHAN ---
-                                          <div className="relative w-[60px] h-[60px]">
-                                            <label htmlFor={`variant-img-${index}`} className="cursor-pointer">
-                                              <img
-                                                // Penanganan src yang lebih aman untuk File object atau string URL
-                                                src={rowData.image instanceof File ? URL.createObjectURL(rowData.image) : String(rowData.image)}
-                                                alt="Varian"
-                                                className="w-full h-full object-cover border rounded-[5px]"
-                                              />
-                                            </label>
-                                            <input
-                                              type="file"
-                                              accept="image/*"
-                                              className="hidden"
-                                              onChange={(e) => handleVariantImageUpload(index, e)}
-                                              id={`variant-img-${index}`}
-                                            />
-                                            {/* Tombol Hapus Gambar */}
-                                            <button
-                                              type="button"
-                                              onClick={() => handleRemoveVariantImage(index)} // Memanggil fungsi hapus
-                                              className="absolute top-[-5px] right-[-5px] bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-sm font-bold shadow-md hover:bg-red-700"
-                                              aria-label="Hapus gambar"
-                                            >
-                                              &times;
-                                            </button>
-                                          </div>
-                                          // --- AKHIR PERUBAHAN ---
-                                        ) : (
-                                          <div className="w-[60px] h-[60px] flex items-center justify-center border border-[#BBBBBB] rounded-[5px] bg-white">
-                                            <input
-                                              type="file"
-                                              accept="image/*"
-                                              className="hidden"
-                                              onChange={(e) => handleVariantImageUpload(index, e)}
-                                              id={`variant-img-${index}`}
-                                            />
-                                            <label htmlFor={`variant-img-${index}`} className="cursor-pointer">
-                                              <ImageIcon className="w-[48px] h-[48px] text-[#000000]" />
-                                            </label>
-                                          </div>
-                                        )}
-                                      </div>
-                                      {errors[`variantImage_${index}`] && (
-                                        <div className="text-red-500 text-sm mt-1">
-                                          {errors[`variantImage_${index}`]}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </td>
-                                )}
-
-                              {variations[1]?.name && (
-                                <td className="px-4 py-4 text-[14px] text-[#333333] border border-[#AAAAAA]" align="center">
-                                  {size || '-'}
-                                </td>
-                              )}
-
-                              <td className="px-4 py-4 border border-[#AAAAAA]">
-                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
-                                  <span className="text-[15px] text-[#555555] mr-2">Rp</span>
-                                  <input
-                                    type="text"
-                                    placeholder="Harga"
-                                    className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                    value={formatRupiahNoRP(rowData.price)}
-                                    onChange={(e) => {
-                                      const newData = [...variantData];
-                                      const priceValue = parseFloat(String(e.target.value).replace(/[^0-9]/g, '')) || 0;
-                                      const percentValue = parseInt(newData[index]?.discountPercent, 10) || 0;
-                                      let newDiscountPrice = '';
-
-                                      if (priceValue > 0 && percentValue > 0) {
-                                        newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
-                                      }
-
-                                      newData[index] = { ...rowData, price: e.target.value, discount: newDiscountPrice };
-                                      setVariantData(newData);
-                                    }}
-                                  />
-                                </div>
-                                {errors[`variantPrice_${index}`] && (
-                                  <div className="text-red-500 text-sm mt-1">
-                                    {errors[`variantPrice_${index}`]}
-                                  </div>
-                                )}
-                              </td>
-
-                              <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={100}>
-                                <input
-                                  type="number"
-                                  placeholder="Stock"
-                                  className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
-                                  value={rowData.stock}
-                                  onChange={(e) => {
-                                    const newData = [...variantData];
-                                    newData[index] = { ...rowData, stock: e.target.value };
-                                    setVariantData(newData);
-                                  }}
-                                />
-                                {errors[`variantStock_${index}`] && (
-                                  <div className="text-red-500 text-sm mt-1">
-                                    {errors[`variantStock_${index}`]}
-                                  </div>
-                                )}
-                              </td>
-                              <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
-                                {/* Wrapper untuk input, tidak perlu 'relative' lagi tapi tidak apa-apa jika ada */}
-                                <div>
-                                  <input
-                                    type="number"
-                                    placeholder="Diskon (%)"
-                                    className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
-                                    value={rowData.discountPercent || ''}
-                                    onChange={(e) => {
-                                      // Logika onChange Anda tetap sama, tidak perlu diubah
-                                      const value = e.target.value;
-                                      const newData = [...variantData];
-                                      const percentValue = parseInt(value, 10) || 0;
-                                      const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-                                      let newDiscountPrice = '';
-
-                                      if (priceValue > 0 && percentValue > 0) {
-                                        newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
-                                      }
-
-                                      newData[index] = { ...rowData, discountPercent: value, discount: newDiscountPrice };
-                                      setVariantData(newData);
-                                    }}
-                                    // UBAH onFocus untuk MENGHITUNG POSISI
-                                    onFocus={(e) => {
-                                      const rect = e.currentTarget.getBoundingClientRect();
-                                      setDropdownPosition({
-                                        top: rect.bottom, // Posisi bawah input (relatif ke layar)
-                                        left: rect.left,  // Posisi kiri input (relatif ke layar)
-                                        width: rect.width, // Lebar dropdown sama dengan input
-                                      });
-                                      setShowPercentSuggestIndex(index);
-                                    }}
-                                    onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)}
-                                  />
-
-                                  {/* Dropdown sekarang dirender via Portal. 
-      Tidak ada output visual di sini, tapi akan muncul di <body>
-    */}
-                                  {showPercentSuggestIndex === index && createPortal(
-                                    <div
-                                      className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
-                                      style={{
-                                        position: 'fixed', // Gunakan 'fixed' agar benar-benar melayang
-                                        top: `${dropdownPosition.top + 4}px`, // +4px untuk memberi sedikit jarak
-                                        left: `${dropdownPosition.left}px`,
-                                        width: `${dropdownPosition.width}px`,
-                                        zIndex: 9999, // z-index super tinggi untuk memastikan di paling atas
-                                      }}
-                                    >
-                                      {discountOptions
-                                        .filter(opt =>
-                                          rowData.discountPercent === '' || opt.toString() !== rowData.discountPercent
-                                        )
-                                        .map(opt => (
-                                          <div
-                                            key={opt}
-                                            className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                            // event onMouseDown untuk memilih opsi
-                                            onMouseDown={() => {
-                                              const newData = [...variantData];
-                                              const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-                                              const newDiscountPrice = priceValue > 0 ? String(priceValue - (priceValue * (opt / 100))) : '';
-
-                                              newData[index] = { ...rowData, discountPercent: opt.toString(), discount: newDiscountPrice };
-                                              setVariantData(newData);
-                                              setShowPercentSuggestIndex(null); // Langsung tutup dropdown setelah dipilih
-                                            }}
-                                          >
-                                            {opt}%
-                                          </div>
-                                        ))}
-                                    </div>,
-                                    document.body // Ini adalah target Portal
-                                  )}
-                                </div>
-                              </td>
-                              <td className="px-4 py-4 border border-[#AAAAAA]">
-                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
-                                  <span className="text-[15px] text-[#555555] mr-2">Rp</span>
-                                  <input
-                                    type="text"
-                                    placeholder="Harga"
-                                    className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                    value={formatRupiahNoRPHarga(rowData.discount)}
-                                    readOnly
-                                  />
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                        })
-                      )}
-                    </tbody>
-
-
-
-                  </table>
-                }
-                {errors.variant && (
-                  <div className="text-red-500 text-sm mt-1">{errors.variant}</div>
-                )}
-              </div>
-
-              {/* Info Tambahan */}
-              <div className="mb-6 space-y-6 ">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
-                  onMouseEnter={() => setTipKey('purchaseLimit')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <div>
-                    <label className="text-[#333333] font-bold text-[14px]">
-                      <span className="text-red-500">*</span>  Min. Jumlah Pembelian
-                    </label>
-                    <input type="number" defaultValue="1" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
-                  </div>
-                  <div>
-                    <label className="text-[#333333] font-bold text-[14px]">
-                      <span className="text-red-500">*</span>  Maks. Jumlah Pembelian
-                    </label>
-                    <input type="number" defaultValue="1000" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" value={maxOrder} onChange={(e) => setMaxOrder(Number(e.target.value))} />
-                  </div>
-                </div>
-
-                <div className='mt-[-15px]'
-                  id="globalDelivry"
-                  onMouseEnter={() => setTipKey('weightDimension')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    Berat dan Dimensi Produk
-                  </label>
-                  <div className="flex items-center gap-3 mt-4">
-                    <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                      <input type="number" placeholder="Berat" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
-                        onChange={(e) => setGlobalWeight(e.target.value)} />
-                      <span className="text-[15px] text-[#555555]">Gr</span>
-                    </div>
-                    <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                      <input type="number" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
-                        value={globalWidth} onChange={(e) => setGlobalWidth(e.target.value)} />
-                      <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <input type="number" placeholder="Panjang" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
-                        value={globalLength} onChange={(e) => setGlobalLength(e.target.value)} />
-                      <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <input type="number" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
-                        value={globalHeight} onChange={(e) => setGlobalHeight(e.target.value)} />
-                      <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                      <span className="text-[15px] text-[#555555]">Cm</span>
-                    </div>
-                    {
-                      isVariant && variations[0]?.options[0] != '' &&
-                      <div>
-                        <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
-                          onClick={applyDimensionToAll}>
-                          Terapkan kesemua
-                        </button>
-                      </div>
-                    }
-                  </div>
-                  {
-                    isVariant &&
-                    <div className="mt-2">
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={showDimensionTable}
-                          onChange={() => setShowDimensionTable(!showDimensionTable)}
-                          className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]"
-
-                        />
-                        <span className="text-[14px] text-[#333333] font-bold">Berat & Dimensi berbeda untuk tiap variasi?</span>
-                      </label>
-                    </div>
-                  }
-                  {errors.globalDelivry && (
-                    <div className="text-red-500 text-sm mt-1">{errors?.globalDelivry}</div>
-                  )}
-                </div>
-                {variations[0]?.name && showDimensionTable && isVariant && (
-                  <div className="overflow-x-auto mt-4"
-                    onMouseEnter={() => setTipKey('weightDimension')}
-                    onMouseLeave={() => setTipKey('default')}>
-                    <table className="w-full">
-                      <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
-                        <tr>
-                          {variations[0]?.options.filter(opt => opt.trim() !== '')?.length > 0 && (
-                            <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                              {variations[0]?.name || 'Variasi 1'}
-                            </th>
-                          )}
-
-                          {variations[1]?.options.filter(opt => opt.trim() !== '')?.length > 0 && (
-                            <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                              {variations[1]?.name || 'Variasi 2'}
-                            </th>
-                          )}
-
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            Berat
-                          </th>
-                          <th className="px-4 py-3 text-[14px] font-bold text-[#333333] uppercase tracking-wider border-r border-[#AAAAAA] text-center align-middle">
-                            Ukuran
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {combinations.map((variation, vIndex) =>
-                          variation.sizes.map((size, sIndex) => {
-                            const index = vIndex * variation.sizes?.length + sIndex;
-                            const rowData = variantData[index] || {};
-
-                            return (
-                              <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
-                                {sIndex === 0 && variation.color !== '' && (
-                                  <td
-                                    className="px-4 py-4 align-middle border border-[#AAAAAA] align-top text-center"
-                                    rowSpan={variation.sizes?.length}
-                                  >
-                                    <span className="font-medium text-gray-900 text-[14px]">{variation.color}</span>
-                                  </td>
-                                )}
-
-                                {variations[1]?.name && (
-                                  <td className="px-4 py-4 whitespace-nowrap text-[14px] text-[#333333] align-middle border border-[#AAAAAA] text-center" width={100}>
-                                    {size || ''}
-                                  </td>
-                                )}
-
-                                {/* Berat */}
-                                <td className="px-4 py-4 border border-[#AAAAAA]" width={150}>
-                                  <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-3">
-                                    <input
-                                      type="number"
-                                      placeholder="Berat"
-                                      value={rowData.weight || ''}
-                                      onChange={(e) => {
-                                        const updated = [...variantData];
-                                        updated[index] = { ...rowData, weight: e.target.value };
-                                        setVariantData(updated);
-                                      }}
-                                      className="w-full p-1.5 text-[14px] focus:outline-none focus:ring-0 focus:border-none"
-                                    />
-                                    <span className="text-[14px] text-gray-500 ml-2">gr</span>
-                                  </div>
-                                  {errors[`variantWeight_${index}`] && (
-                                    <div className="text-red-500 text-sm mt-1">
-                                      {errors[`variantWeight_${index}`]}
-                                    </div>
-                                  )}
-                                </td>
-
-                                {/* Dimensi */}
-                                <td className="px-4 py-4 border border-[#AAAAAA]">
-                                  <div className="border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between gap-2">
-                                    <input
-                                      type="number"
-                                      placeholder="Lebar"
-                                      className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
-                                      value={rowData.width || ''}
-                                      onChange={(e) => {
-                                        const updated = [...variantData];
-                                        updated[index] = { ...rowData, width: e.target.value };
-                                        setVariantData(updated);
-                                      }}
-                                    />
-                                    <p className="text-[#AAAAAA]">|</p>
-                                    <input
-                                      type="number"
-                                      placeholder="Panjang"
-                                      className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
-                                      value={rowData?.length || ''}
-                                      onChange={(e) => {
-                                        const updated = [...variantData];
-                                        updated[index] = { ...rowData, length: e.target.value };
-                                        setVariantData(updated);
-                                      }}
-                                    />
-                                    <p className="text-[#AAAAAA]">|</p>
-                                    <input
-                                      type="number"
-                                      placeholder="Tinggi"
-                                      className="w-16 placeholder:text-[#AAAAAA] text-[14px] focus:outline-none placeholder:text-center"
-                                      value={rowData.height || ''}
-                                      onChange={(e) => {
-                                        const updated = [...variantData];
-                                        updated[index] = { ...rowData, height: e.target.value };
-                                        setVariantData(updated);
-                                      }}
-                                    />
-                                    <p className="text-[#AAAAAA]">|</p>
-                                    <p className="text-[#555555]">Cm</p>
-                                  </div>
-                                  <div>
-                                    {errors[`variantWidth_${index}`] && (
-                                      <span className="text-red-500 text-sm mt-1">
-                                        {errors[`variantWidth_${index}`]},
-                                      </span>
-                                    )}
-                                    {errors[`variantLength_${index}`] && (
-                                      <span className="text-red-500 text-sm mt-1  ml-1">
-                                        {errors[`variantLength_${index}`]},
-                                      </span>
-                                    )}
-                                    {errors[`variantHeight_${index}`] && (
-                                      <span className="text-red-500 text-sm mt-1 ml-1">
-                                        {errors[`variantHeight_${index}`]}
-                                      </span>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })
-                        )}
-
-                      </tbody>
-
-                    </table>
-                    {errors.variant && (
-                      <div className="text-red-500 text-sm mt-1">{errors.variant}</div>
-                    )}
-                  </div>
-                )}
-                <div onMouseEnter={() => setTipKey('dangerousGoods')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <RadioGroup label="Produk Berbahaya?" name="dangerous" options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']} defaultValue={isHazardous === '1' ? 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar' : 'Tidak'}
-                    onChange={(value) => setIsHazardous(value === 'Tidak' ? '0' : '1')} />
-                </div>
-                <div onMouseEnter={() => setTipKey('preorder')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <RadioGroup
-                    label="Pre Order"
-                    name="preorder"
-                    options={['Tidak', 'Ya']}
-                    defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'}
-                    onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')}
-                  />
-                </div>
-                <div onMouseEnter={() => setTipKey('condition')}
-                  onMouseLeave={() => setTipKey('default')}>
-
-                  <RadioGroup
-                    label="Kondisi"
-                    name="condition"
-                    options={['Baru', 'Bekas Dipakai']}
-                    required
-                    defaultValue={isUsed === '1' ? 'Bekas Dipakai' : 'Baru'}
-                    onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')}
-                  />
-                </div>
-
-                <div onMouseEnter={() => setTipKey('sku')}
-                  onMouseLeave={() => setTipKey('default')}>
-                  <label className="text-[#333333] font-bold text-[14px]">
-                    SKU Induk
-                  </label>
-                  <input type="text" placeholder="Masukkan kode unik untuk setiap produk agar mudah dilacak dan dikelola di sistem." className="w-full px-3 py-2 border border-gray-300 rounded-md" value={sku} onChange={(e) => setSku(e?.target?.value)} />
-                </div>
-                <div className="mt-[-15px] text-[14px] text-[#333333]">
-                  Masukkan kode unik untuk setiap produk agar mudah dilacak dan dikelola di sistem.
-                </div>
-
-                <div className='mt-[-10px]'>
-                  <div onMouseEnter={() => setTipKey('cod')}
-                    onMouseLeave={() => setTipKey('default')}>
-                    <label className="text-[#333333] font-bold text-[14px]">
-                      Pembayaran di Tempat (COD)
-                    </label>
-                    <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
-                      <input id="cod" type="checkbox" defaultChecked className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isCodEnabled === '1'}
-                        onChange={(e) => setIsCodEnabled(e.target.checked ? '1' : '0')} />
-                      <div className='mt-[-5px]'>
-                        <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
-                        <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima. Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="relative"
-                    id="schedule"
-                    onMouseEnter={() => setTipKey('schedule')}
-                    onMouseLeave={() => setTipKey('default')}>
-                    <label className="text-[#333333] font-bold text-[14px]">
-                      Jadwal Ditampilkan
-                    </label>
-                    <div className='mt-2'>
-                      <DateTimePicker
-                        value={new Date(schedule.toString())}
-                        onChange={(date) => {
-                          setScheduleDate(date);
-                          validateScheduleDate(date);
-                        }}
-                      />
-                    </div>
-                    {scheduleError && (
-                      <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>
-                        {scheduleError}
-                      </div>
-                    )}
-                  </div>
-                  {errors.schedule && (
-                    <div className="text-red-500 text-sm mt-1">{errors?.schedule}</div>
-                  )}
-                </div>
-              </div>
-
-              {/* Tombol Aksi */}
+            <div className="lg:col-span-2 space-y-8">
+              <ProductInfoSection
+                setTipKey={setTipKey}
+                selectedImages={selectedImages}
+                promoImage={promoImage}
+                onSelectMainImage={handleSelectImage}
+                onReplaceMainImage={handleReplaceMainImage}
+                onRemoveMainImage={handleRemoveMainImage}
+                onReplacePromoImage={handleReplacePromoImage}
+                onRemovePromoImage={handleRemovePromoImage}
+                errorPromo={errors.promo}
+                errorImages={errors.images}
+                videoFile={videoFile}
+                urlvideoFile={urlvideoFile}
+                onVideoChange={handleVideoChange}
+                productName={productName}
+                setProductName={setProductName}
+                errors={errors}
+                category={category}
+                setTempCategory={setTempCategory}
+                setCategoryModalOpen={setCategoryModalOpen}
+                description={description}
+                setDescription={setDescription}
+                brand={brand}
+                setBrand={setBrand}
+                countryOrigin={countryOrigin}
+                setCountryOrigin={setCountryOrigin}
+              />
+              <ProductSalesSection
+                setTipKey={setTipKey}
+                isVariant={isVariant}
+                setIsVariant={setIsVariant}
+                variations={variations}
+                setVariations={setVariations}
+                handleVariationNameChange={handleVariationNameChange}
+                showSuggestionIndex={showSuggestionIndex}
+                setShowSuggestionIndex={setShowSuggestionIndex}
+                variationSuggestions={variationSuggestions}
+                handleRemoveVariation={handleRemoveVariation}
+                handleOptionChange={handleOptionChange}
+                showOptionSuggestIndex={showOptionSuggestIndex}
+                setShowOptionSuggestIndex={setShowOptionSuggestIndex}
+                optionSuggestions={optionSuggestions}
+                handleDragStart={handleDragStart}
+                handleDrop={handleDrop}
+                handleDeleteOption={handleDeleteOption}
+                handleAddVariation={handleAddVariation}
+                globalPrice={globalPrice}
+                setGlobalPrice={setGlobalPrice}
+                globalStock={globalStock}
+                setGlobalStock={setGlobalStock}
+                globalDiscountPercent={globalDiscountPercent}
+                setGlobalDiscountPercent={setGlobalDiscountPercent}
+                showPercentSuggest={showPercentSuggest}
+                setShowPercentSuggest={setShowPercentSuggest}
+                discountOptions={discountOptions}
+                globalDiscount={globalDiscount}
+                errors={errors}
+                variantData={variantData}
+                setVariantData={setVariantData}
+                handleVariantImageUpload={handleVariantImageUpload}
+                handleRemoveVariantImage={handleRemoveVariantImage}
+                applyGlobalToAll={applyGlobalToAll}
+                showPercentSuggestIndex={showPercentSuggestIndex}
+                setShowPercentSuggestIndex={setShowPercentSuggestIndex}
+                dropdownPosition={dropdownPosition}
+                setDropdownPosition={setDropdownPosition}
+                minOrder={minOrder}
+                setMinOrder={setMinOrder}
+                maxOrder={maxOrder}
+                setMaxOrder={setMaxOrder}
+                globalWeight={globalWeight}
+                setGlobalWeight={setGlobalWeight}
+                globalWidth={globalWidth}
+                setGlobalWidth={setGlobalWidth}
+                globalLength={globalLength}
+                setGlobalLength={setGlobalLength}
+                globalHeight={globalHeight}
+                setGlobalHeight={setGlobalHeight}
+                applyDimensionToAll={applyDimensionToAll}
+                showDimensionTable={showDimensionTable}
+                setShowDimensionTable={setShowDimensionTable}
+              />
+              <ProductDeliveryInfoSection
+                setTipKey={setTipKey}
+                isHazardous={isHazardous}
+                setIsHazardous={setIsHazardous}
+                isCodEnabled={isCodEnabled}
+                setIsCodEnabled={setIsCodEnabled}
+                sectionRefs={sectionRefs['informasi-pengiriman-section']}
+              />
+              <ProductOtherInfoSection
+                setTipKey={setTipKey}
+                isHazardous={isHazardous}
+                setIsHazardous={setIsHazardous}
+                isCodEnabled={isCodEnabled}
+                setIsCodEnabled={setIsCodEnabled}
+                isProductPreOrder={isProductPreOrder}
+                setIsProductPreOrder={setIsProductPreOrder}
+                isUsed={isUsed}
+                setIsUsed={setIsUsed}
+                sku={sku}
+                setSku={setSku}
+                schedule={schedule}
+                scheduleDate={scheduleDate}
+                setScheduleDate={setScheduleDate}
+                validateScheduleDate={validateScheduleDate}
+                scheduleError={scheduleError}
+                errors={errors}
+                sectionRefs={sectionRefs['informasi-lainnya-section']}
+              />
               <div className="bg-white flex justify-between items-center sticky bottom-0 p-4" style={{
                 boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'
               }}>
@@ -2123,40 +1150,35 @@ const AddProductPage: NextPage = () => {
                   <button className="text-white bg-[#52357B] text-[14px] font-semibold h-[32px] rounded-[5px] border w-[160px] border-[#52357B] font-medium hover:bg-purple-800 transition duration-200" onClick={() => handleSave('PUBLISHED')}>Simpan & Tampilkan</button>
                 </div>
               </div>
-
             </div>
           </div>
         </main>
-      </div >
+      </div>
+
+      {/* ... Modal dan Notifikasi lainnya ... */}
       {cropModalImage && cropCallback && (
-        <CropModal
-          imageSrc={cropModalImage}
+        <CropModal imageSrc={cropModalImage}
           onClose={() => setCropModalImage(null)}
           onCropComplete={(file) => {
             cropCallback(file);
             setCropModalImage(null);
-          }}
-        />
+          }} />
       )}
       <Modal isOpen={isCategoryModalOpen} onClose={() => setCategoryModalOpen(false)}>
         <CategorySelector onSelectCategory={setTempCategory} initialCategory={category} categories={apiCategories} isLoading={categoryLoading} error={categoryApiError} setIdCategorie={setIdCategorie} setCategoryModalOpen={setCategoryModalOpen} handleConfirmCategory={handleConfirmCategory} />
       </Modal>
-      {
-        snackbar.isOpen && (
-          <Snackbar
-            message={snackbar.message}
-            type={snackbar.type}
-            isOpen={snackbar.isOpen}
-            onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
-          />
-        )
-      }
+      {snackbar.isOpen && (
+        <Snackbar message={snackbar.message}
+          type={snackbar.type}
+          isOpen={snackbar.isOpen}
+          onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))} />
+      )}
       {loading && <Loading />}
       <ModalError
         isOpen={isErrorModalOpen}
         onClose={() => setIsErrorModalOpen(false)}
         title="Input Belum Lengkap"
-        hideCloseButton={true} // Sembunyikan tombol 'X' agar user fokus pada tombol 'Mengerti'
+        hideCloseButton={true}
       >
         <div className="flex flex-col items-center text-center">
           {/* Ikon Peringatan */}
@@ -2178,7 +1200,7 @@ const AddProductPage: NextPage = () => {
           </button>
         </div>
       </ModalError>
-    </MyStoreLayout >
+    </MyStoreLayout>
   );
 };
 
