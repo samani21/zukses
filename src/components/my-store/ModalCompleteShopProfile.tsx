@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
-import { useRouter } from 'next/router';
 import React from 'react';
 import { ShopData } from './ShopProfileContext';
+import Link from 'next/link';
 
 const ModalCompleteShopProfile = ({
     onClose,
@@ -11,7 +11,6 @@ const ModalCompleteShopProfile = ({
     shopProfil: ShopData | null;
 }) => {
     const isComplete = (field: string | null | undefined) => !!field;
-    const router = useRouter()
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
             <div className="bg-white w-full  md:w-[600px] rounded-lg shadow-lg">
@@ -52,40 +51,42 @@ const ModalCompleteShopProfile = ({
                         },
                         {
                             label: 'Pengaturan Jasa Kirim',
-                            field: shopProfil?.delivery?.seller_id ,
+                            field: shopProfil?.delivery?.seller_id,
                             icon: '/icon/damaged-package 4.svg',
                             description:
                                 'Atur jasa kirim sesuai kebutuhan tokomu.  <br/> Pilih kurir favorit biar pengiriman jadi makin praktis dan cepat!',
                             url: '/my-store/delivery'
                         },
                     ].map((item, i) => (
-                        <div
-                            key={i}
-                            className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} px-2 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
-                            onClick={() => {
-                                localStorage.setItem('modalShopProfileClosed', 'true');
-                                router?.push(item?.url)
-                                onClose()
-                            }}
-                        >
-                            <div className=" flex items-start gap-4 md:p-2">
-                                <img src={item?.icon} className='w-[50px] h-[50px]' />
-                                <div className='tracking-[-0.02em]'>
-                                    <div className="text-[18px] text-[#555555] font-bold sm:text-base">{item.label}</div>
-                                    <div
-                                        className="text-[14px] sm:text-sm text-[#666666]"
-                                        dangerouslySetInnerHTML={{ __html: item.description }}
-                                    />
+
+                        <Link href={item?.url} key={i} passHref legacyBehavior>
+                            <a
+                                onClick={() => {
+                                    localStorage.setItem('modalShopProfileClosed', 'true');
+                                    onClose();
+                                }}
+                                className={`flex justify-between md:pr-5 items-center cursor-pointer ${i % 2 ? 'bg-white' : 'bg-[#EFEFEF]'} px-2 rounded-[10px] border border-[#CCCCCC] gap-2 sm:gap-0`}
+                            >
+                                <div className="flex items-start gap-4 md:p-2">
+                                    <img src={item?.icon} className="w-[50px] h-[50px]" />
+                                    <div className="tracking-[-0.02em]">
+                                        <div className="text-[18px] text-[#555555] font-bold sm:text-base">{item.label}</div>
+                                        <div
+                                            className="text-[14px] sm:text-sm text-[#666666]"
+                                            dangerouslySetInnerHTML={{ __html: item.description }}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='flex items-center justify-center'>
-                                {isComplete(item.field) ? (
-                                    <img src='/icon/ceklist.svg' className='w-[32px] h-[32px]' />
-                                ) : (
-                                    <img src='/icon/Alert triangle.svg' className='w-[32px] h-[32px]' />
-                                )}
-                            </div>
-                        </div>
+                                <div className="flex items-center justify-center">
+                                    {isComplete(item.field) ? (
+                                        <img src="/icon/ceklist.svg" className="w-[32px] h-[32px]" />
+                                    ) : (
+                                        <img src="/icon/Alert triangle.svg" className="w-[32px] h-[32px]" />
+                                    )}
+                                </div>
+                            </a>
+                        </Link>
+
                     ))}
                 </div>
             </div>

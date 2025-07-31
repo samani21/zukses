@@ -120,6 +120,14 @@ interface StoreCourierConfigProps {
 const formatNumber = (num: number | string) =>
     num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
+// const generateAutoDistanceTiers = (start: number, end: number): DistanceTier[] => {
+//     if (start >= end) return [];
+//     return [{
+//         from: start,
+//         to: end,
+//         price: ''
+//     }];
+// };
 
 // --- Komponen Modal/Halaman Konfigurasi Kurir Toko ---
 const StoreCourierConfig: FC<StoreCourierConfigProps> = ({
@@ -139,12 +147,24 @@ const StoreCourierConfig: FC<StoreCourierConfigProps> = ({
     }, [maxDistance, distanceTiers.length, setDistanceTiers]);
 
     useEffect(() => {
-        if (maxWeight > 0 && weightTiers.length === 0) {
-            setWeightTiers([{ from: '', price: '' }]);
-        } else if (maxWeight <= 0) {
-            setWeightTiers([]);
+        if (maxDistance > 0) {
+            // Jika tidak ada tier, buat default 0 - maxDistance
+            if (distanceTiers.length === 0) {
+                setDistanceTiers([{ from: 0, to: maxDistance, price: '' }]);
+            } else {
+                // Koreksi tier terakhir jika maxDistance berubah
+                const updated = distanceTiers.map((tier, i) => {
+                    // const from = tier.from;
+                    const to = i === distanceTiers.length - 1 ? maxDistance : tier.to;
+                    return { ...tier, to };
+                });
+                setDistanceTiers(updated);
+            }
+        } else {
+            setDistanceTiers([]);
         }
-    }, [maxWeight, weightTiers.length, setWeightTiers]);
+    }, [maxDistance]);
+
 
 
     const handleDistanceTierChange = (
@@ -166,55 +186,37 @@ const StoreCourierConfig: FC<StoreCourierConfigProps> = ({
     };
 
 
-
-
-
     const handleDistanceToBlur = (index: number) => {
         const newTiers = [...distanceTiers];
         const tier = newTiers[index];
 
         const rawTo = tier.to;
         const fromVal = Number(tier.from);
-        const toVal = Number(rawTo);
+        let toVal = Number(rawTo);
 
-        // Jika kosong atau tidak valid, fallback ke from
-        if (rawTo === '' || isNaN(toVal)) {
-            tier.to = maxDistance;
-        } else {
-            // Koreksi batasan
-            if (toVal < fromVal) {
-                tier.to = maxDistance;
-            } else if (toVal > maxDistance) {
-                tier.to = maxDistance;
-            } else {
-                tier.to = toVal;
-            }
+        if (rawTo === '' || isNaN(toVal) || toVal <= fromVal || toVal > maxDistance) {
+            toVal = maxDistance;
         }
 
-        // Update tier berikutnya
-        const fixedTo = Number(tier.to);
-        const nextFrom = fixedTo + 12;
+        tier.to = toVal;
+        newTiers[index] = tier;
 
-        if (index < newTiers.length - 1) {
-            // Jika nextFrom > maxDistance, hapus tier setelahnya
-            if (nextFrom > maxDistance) {
-                setDistanceTiers(newTiers.slice(0, index + 13));
-                return;
-            }
+        const nextFrom = toVal + 1;
 
-            newTiers[index + 11].from = nextFrom;
+        // Hapus semua tier setelah index
+        const trimmedTiers = newTiers.slice(0, index + 1);
 
-            const nextTo = Number(newTiers[index + 1].to);
-            if (!isNaN(nextTo) && nextFrom > nextTo) {
-                newTiers[index + 12].to = '';
-            }
+        // Tambahkan 1 tier baru jika masih ada sisa
+        if (nextFrom <= maxDistance) {
+            trimmedTiers.push({
+                from: nextFrom,
+                to: maxDistance,
+                price: ''
+            });
         }
 
-        setDistanceTiers(newTiers);
+        setDistanceTiers(trimmedTiers);
     };
-
-
-
 
 
     const handleAddDistanceTier = () => {
