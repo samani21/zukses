@@ -244,7 +244,7 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
                                     <TextField
                                         fullWidth
                                         variant="outlined"
-                                        label="Nama Lengkap"
+                                        label="Nama lokasi / nama gudang"
                                         value={formData.name}
                                         onChange={(e) => handleChange('name', e.target.value)}
                                         error={!!errors.name}
@@ -259,7 +259,7 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
                                             }
                                         }}
                                     />
-                                    {/* <p className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>Contoh : Ibu Aisyah</p> */}
+                                    <p className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>Contoh : Lokasi 123 atau gudang 123</p>
                                 </div>
                                 <div className='w-full'>
                                     <TextField
@@ -312,7 +312,7 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
                                         }}
                                     />
 
-                                    {/* <p className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>Contoh : 08123456789</p> */}
+                                    <p className='text-[#333333] text-[14px] tracking-[-5%] pl-3'>Contoh : 08123456789</p>
                                 </div>
                             </div>
                             <div className='p-6 pt-3'>

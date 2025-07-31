@@ -1085,9 +1085,9 @@ const AddProductPage: NextPage = () => {
           <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
           <div className="flex items-center  text-gray-500 mb-4">
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store')}>Dashboard</span>
-            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" />
+            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3}/>
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store/product')}>Produk Saya</span>
-            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" />
+            <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3}/>
             <span className="font-bold text-[14px] text-[#333333] ">Tambah Produk</span>
           </div>
 
