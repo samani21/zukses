@@ -202,6 +202,7 @@ const AddProduct: NextPage = () => {
       let count = 0;
       if (selectedImages.length === 0 && !urlpromoImage) count++;
       if (!promoImage && !urlpromoImage) count++;
+      if (!videoFile && !urlvideoFile) count++;
       if (!productName.trim()) count++;
       if (!category.trim()) count++;
       if (!description.trim()) count++;
@@ -613,7 +614,7 @@ const AddProduct: NextPage = () => {
     if (!productName.trim()) newErrors.productName = 'Nama produk wajib diisi';
     if (!category.trim()) newErrors.category = 'Kategori wajib dipilih';
     if (!description.trim()) newErrors.description = 'Deskripsi produk wajib diisi';
-    if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
+    // if (!brand.trim()) newErrors.brand = 'Merek wajib dipilih';
     // if (!countryOrigin.trim()) newErrors.countryOrigin = 'Negara asal wajib dipilih';
     if (!isVariant) {
       if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
