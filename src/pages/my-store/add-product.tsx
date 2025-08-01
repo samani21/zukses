@@ -62,6 +62,7 @@ const AddProduct: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
+  const [sizeGuide, setSizeGuide] = useState<File | null>(null); //foto produk promosi
   const [urlpromoImage, setUrlPromoImage] = useState<string>(''); //foto produk promosi
   const [urlvideoFile, setUrlVideoFile] = useState<string | null>(null); //video produk
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
@@ -146,7 +147,10 @@ const AddProduct: NextPage = () => {
   const [shippingCost, setShippingCost] = useState<string>('Normal')
   const [subsidy, setSubsidy] = useState<string>('')
   const [isVoucher, setIsVoucher] = useState<boolean>(false)
-  const [voucher, setVoucher] = useState<string>('')
+  const [voucher, setVoucher] = useState<string>('');
+  const [courierServicesIds, setCourierServicesIds] = useState<number[]>([]);
+  const [idAddress, setIdAddress] = useState<string>();
+  console.log('courierServicesIds', courierServicesIds)
   useEffect(() => {
     // 1. Temukan kontainer yang bisa di-scroll berdasarkan ID
     const scrollContainer = document.getElementById('main-scroll-container');
@@ -234,7 +238,7 @@ const AddProduct: NextPage = () => {
 
     const checkPengiriman = (): number | "valid" => {
       let count = 0;
-      if (isVariant && showDimensionTable && variantData.some(d => !d.weight || !d.length || !d.width || !d.height)) {
+      if (courierServicesIds?.length < 1) {
         count++;
       }
       // Logika lain untuk pengiriman bisa ditambahkan di sini
@@ -661,6 +665,7 @@ const AddProduct: NextPage = () => {
     if (isVoucher) {
       if (!voucher.trim()) newErrors.voucher = 'Voucher wajib diisi';
     }
+    if (courierServicesIds?.length < 1) newErrors.courier = 'Kurir wajib dipilih';
     if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
 
     // videoFile tidak wajib
@@ -816,6 +821,23 @@ const AddProduct: NextPage = () => {
       Merek: brand,
       'Negara Asal': "indonesia",
     }));
+    if (shippingCost === 'Ongkos kirim disubsidi Penjual') {
+      formData.append('subsidy', subsidy.replace(/\./g, ''));
+    } else {
+      formData.append('subsidy', '0');
+
+    }
+    if (isVoucher) {
+      formData.append('voucher', voucher.replace(/\./g, ''));
+    } else {
+      formData.append('voucher', '0');
+
+    }
+    formData.append('courierServicesIds', JSON.stringify(courierServicesIds));
+    formData.append('id_address', idAddress ?? '');
+    if (sizeGuide) {
+      formData.append('image_guide', sizeGuide);
+    }
 
     try {
       if (idProduct) {
@@ -835,16 +857,16 @@ const AddProduct: NextPage = () => {
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
-          router.push('/my-store/product')
-          localStorage.removeItem('EditProduct');
+          // router.push('/my-store/product')
+          // localStorage.removeItem('EditProduct');
         }
       } else {
         const res = await Post<Response>('zukses', `product`, formData);
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-          router.push('/my-store/product');
-          localStorage.removeItem('EditProduct');
+          // router.push('/my-store/product');
+          // localStorage.removeItem('EditProduct');
         }
       }
     } catch (error) {
@@ -1122,6 +1144,7 @@ const AddProduct: NextPage = () => {
                 showDimensionTable={showDimensionTable}
                 setShowDimensionTable={setShowDimensionTable}
                 tempCategory={tempCategory}
+                setSizeGuide={setSizeGuide}
               />
               <ProductDeliveryInfoSection
                 setTipKey={setTipKey}
@@ -1133,6 +1156,9 @@ const AddProduct: NextPage = () => {
                 setIsProductPreOrder={setIsProductPreOrder}
                 sectionRefs={sectionRefs['informasi-pengiriman-section']}
                 shopProfil={shopProfil}
+                setCourierServicesIds={setCourierServicesIds}
+                errors={errors}
+                setIdAddress={setIdAddress}
               />
               <ProductOtherInfoSection
                 setTipKey={setTipKey}

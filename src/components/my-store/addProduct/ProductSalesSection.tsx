@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useRef, useState } from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction, useMemo, useRef, useState } from 'react';
 import { Plus, X, Move, Trash2, ImageIcon, Image } from 'lucide-react';
 import { formatRupiahNoRP, formatRupiahNoRPHarga } from 'components/Rupiah';
 import { Variation, VariantRowData } from 'types/product';
@@ -61,6 +61,7 @@ interface ProductSalesSectionProps {
     showDimensionTable: boolean;
     setShowDimensionTable: (show: boolean) => void;
     tempCategory?: string;
+    setSizeGuide: Dispatch<SetStateAction<File | null>>;
 }
 function roundLastThreeDigitsToNearestHundred(value: number): number {
     const lastThree = value % 1000;
@@ -86,12 +87,10 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         showPercentSuggestIndex, setShowPercentSuggestIndex, dropdownPosition, setDropdownPosition,
         minOrder, setMinOrder, maxOrder, setMaxOrder,
         globalWeight, setGlobalWeight, globalWidth, setGlobalWidth, globalLength, setGlobalLength, globalHeight, setGlobalHeight,
-        applyDimensionToAll, showDimensionTable, setShowDimensionTable, tempCategory
+        applyDimensionToAll, showDimensionTable, setShowDimensionTable, tempCategory, setSizeGuide
     } = props;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    console.log('selectedFile', selectedFile)
     const requiredCategories = [
         'Pakaian Wanita',
         'Pakaian Pria',
@@ -137,7 +136,8 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         if (file) {
             // Validasi sederhana untuk tipe file
             if (file.type.startsWith('image/')) {
-                setSelectedFile(file);
+                setSizeGuide(file);
+                setSizeGuide(file)
                 // Membuat URL objek untuk preview gambar
                 setPreviewUrl(URL.createObjectURL(file));
             } else {
@@ -153,7 +153,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
 
     // Fungsi untuk menghapus gambar yang dipilih
     const handleRemoveImage = () => {
-        setSelectedFile(null);
+        setSizeGuide(null);
         setPreviewUrl(null);
         // Reset nilai input file agar bisa memilih file yang sama lagi
         if (fileInputRef.current) {
@@ -556,7 +556,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                 onMouseLeave={() => setTipKey('default')}>
                 {
                     variations[0]?.name && isVariant &&
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="min-w-full divide-y divide-gray-200 mb-2">
                         <thead className="bg-[#EEEEEE] border border-[#AAAAAA]">
                             <tr>
                                 {
@@ -851,7 +851,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                     <div className="text-red-500 text-sm mt-1">{errors.variant}</div>
                 )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 -mt-4"
                 onMouseEnter={() => setTipKey('purchaseLimit')}
                 onMouseLeave={() => setTipKey('default')}>
                 <div>
@@ -859,14 +859,14 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                         Min. Jumlah Pembelian
                         <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                     </label>
-                    <input type="number" defaultValue="1" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] h-[40px] text-[17px] text-[#333333]" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
+                    <input type="number" defaultValue="1" className="mt-2 w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] h-[40px] text-[17px] text-[#333333]" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
                 </div>
                 <div>
                     <label className="text-[#333333] font-bold text-[16px]">
                         Maks. Jumlah Pembelian
                         <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                     </label>
-                    <input type="number" defaultValue="1000" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] h-[40px] text-[17px] text-[#333333]" value={maxOrder} onChange={(e) => setMaxOrder(Number(e.target.value))} />
+                    <input type="number" defaultValue="1000" className="mt-2 w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] h-[40px] text-[17px] text-[#333333]" value={maxOrder} onChange={(e) => setMaxOrder(Number(e.target.value))} />
                 </div>
             </div>
 
@@ -878,7 +878,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                     Berat dan Dimensi Produk
                 </label>
                 <div className="grid grid-cols-12 items-center gap-3 mt-4 w-full">
-                    <div className='col-span-4 border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
+                    <div className={`${isVariant ? "col-span-4" : "col-span-6"} border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex justify-between items-center`}>
                         <input type="number" placeholder="Berat" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
                             onChange={(e) => setGlobalWeight(e.target.value)} />
                         <span className="text-[15px] text-[#555555]">Gr</span>

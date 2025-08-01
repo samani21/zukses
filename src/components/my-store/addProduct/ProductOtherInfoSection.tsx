@@ -64,9 +64,9 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         </div>
                     </div>
                     <div className="flex items-start space-x-3 p-3 rounded-md pl-0 pb-0">
-                        <input id="cod" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isVoucher}
+                        <input id="voucher" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isVoucher}
                             onChange={(e) => setIsVoucher(e.target.checked)} />
-                        <label htmlFor="cod" className="font-bold text-[16px] text-[#333333] cursor-pointer">Aktifkan Voucher Toko</label>
+                        <label htmlFor="voucher" className="font-bold text-[16px] text-[#333333] cursor-pointer">Aktifkan Voucher Toko</label>
                     </div>
                     <div className='-mt-4'>
                         <div className='flex items-center gap-4'>
@@ -97,7 +97,7 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         </div>
                     </div>
                     <div className="relative" id="schedule" onMouseEnter={() => setTipKey('schedule')} onMouseLeave={() => setTipKey('default')}>
-                        <label className="text-[#333333] font-bold text-[16px]">Jadwal Ditampilkan</label>
+                        <label className="text-[#333333] font-bold text-[16px]">Jadwal Ditampilkan <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span></label>
                         <div className='mt-2'>
                             <DateTimePicker
                                 value={schedule ? new Date(schedule.replace(' ', 'T')) : new Date()}
