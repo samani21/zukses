@@ -210,7 +210,8 @@ function PageContent() {
                             ))}
                         </div>
                     </div>
-                    {openModalAddAddress && <AddAddressShopModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd} />}
+                    {openModalAddAddress &&
+                        <AddAddressShopModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd} />}
                     <ModalContainer open={openDelete > 0 ? true : false}>
                         <ModalDelete id={openDelete} handleDelete={handleDelete} setOpenDelete={setOpenDelete} />
                     </ModalContainer>
