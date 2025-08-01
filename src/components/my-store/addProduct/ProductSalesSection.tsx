@@ -170,21 +170,21 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             {/* Lingkaran dalam - tetap */}
                             <span className="absolute inset-0 m-auto h-[12px] w-[12px] rounded-full bg-[#F77000]" />
                         </div>
-                        <h2 className="text-[14px] font-bold text-[#333333]">Variasi Produk</h2>
+                        <h2 className="text-[16px] font-bold text-[#333333]">Variasi Produk</h2>
                     </div>
                     <div className='flex jusity-left items-center gap-4 mt-3'>
                         {
                             isVariant ?
-                                <button className='border border-[#52357B] rounded-[5px] w-[175px] h-[35px] flex items-center px-2 justify-center' onClick={() => setIsVariant(false)}>
-                                    <Plus className='text-[#52357B] h-[22px] w-[22px]' />
+                                <button className='border border-[#52357B] rounded-[5px] h-[35px] flex items-center px-2 justify-center' onClick={() => setIsVariant(false)}>
+                                    <Plus className='text-[#52357B] h-[13px] w-[13px]' strokeWidth={3} />
                                     <span className='text-[#52357B] text-[14px] font-semibold'>Tanpa Variasi</span>
                                 </button> :
-                                <button className='border border-[#52357B] rounded-[5px] w-[175px] h-[35px] flex items-center px-2' onClick={() => setIsVariant(true)}>
-                                    <Plus className='text-[#52357B] h-[22px] w-[22px]' />
+                                <button className='border border-[#52357B] rounded-[5px] h-[35px] flex items-center px-2' onClick={() => setIsVariant(true)}>
+                                    <Plus className='text-[#52357B] h-[13px] w-[13px]' strokeWidth={3} />
                                     <span className='text-[#52357B] text-[14px] font-semibold'>Tambahkan Variasi</span>
                                 </button>
                         }
-                        <div className='w-1/2 text-[14px]'>
+                        <div className='w-1/2 text-[14px] tracking-[-0.02em]'>
                             Tambahkan Variasi Produk jika produk memiliki beberapa pilihan, seperti <span className='text-[#52357B] font-bold'> warna, ukuran, kapasitas, dan lainnya.</span>
                         </div>
                     </div>
@@ -200,7 +200,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                     <div className="relative w-full">
                                                         <input
                                                             type="text"
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                                            className="w-full px-3 py-2 border border-[#AAAAAA] h-[40px] outline-none focus:border focus:border-blue-500 rounded-md"
                                                             placeholder="Ketik atau pilih"
                                                             value={variation.name}
                                                             onChange={(e) => handleVariationNameChange(varIndex, e.target.value)}
@@ -265,7 +265,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                                 value={option}
                                                                 onChange={(e) => handleOptionChange(varIndex, optIndex, e.target.value)}
                                                                 placeholder="Ketik atau Pilih"
-                                                                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                                                                className="w-full px-3 py-2 border border-[#AAAAAA] h-[40px] outline-none focus:border focus:border-blue-500 rounded-md"
                                                                 onFocus={() => setShowOptionSuggestIndex(`${varIndex}-${optIndex}`)}
                                                                 onBlur={() => setTimeout(() => setShowOptionSuggestIndex(null), 200)} // biar bisa diklik suggestion-nya
                                                             />
@@ -333,54 +333,75 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             <>
                                 <div
                                     id="globalPrice"
-                                    className="flex items-center gap-4 items-end mt-4 w-[75%]"
+                                    className="flex items-center gap-4 items-end mt-4"
                                     onMouseEnter={() => setTipKey('priceStock')}
                                     onMouseLeave={() => setTipKey('default')}>
                                     <div className="col-span-12 sm:col-span-5">
-                                        <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                                        <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
                                             Harga Produk
                                             <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                                         </label>
                                         <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
                                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                            <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                                            <input type="text" placeholder="Harga" className="flex-1 h-[40px] block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
                                                 value={formatRupiahNoRP(globalPrice)}
                                                 onChange={(e) => setGlobalPrice(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="col-span-12 sm:col-span-5 ml-[-20px]">
-                                        <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
-
+                                        <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
                                             Stok
                                         </label>
                                         <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                                            <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                                            <input type="number" placeholder="Stock" className="w-24 px-3 h-[40px] py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
                                                 value={globalStock}
                                                 onChange={(e) => setGlobalStock(e.target.value)} />
                                         </div>
                                     </div>
-                                    <div className="col-span-1 w-1/4">
-                                        <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                                    <div className="col-span-1 ">
+                                        <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
                                             Persen Diskon
                                         </label>
                                         <div className="relative">
-                                            <div className="relative">
+                                            <div className="relative border border-[#AAAAAA] rounded-[5px] ">
                                                 <input
                                                     type="number"
                                                     placeholder="Diskon (%)"
-                                                    className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                                                    className="w-full px-3 py-2 focus:outline-none h-[40px]"
                                                     value={globalDiscountPercent}
-                                                    onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                                                    onFocus={() => setShowPercentSuggest(true)}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        // Validasi hanya angka 0–100
+                                                        if (
+                                                            value === '' ||
+                                                            (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)
+                                                        ) {
+                                                            setGlobalDiscountPercent(value);
+
+                                                            // Cek apakah ada saran yang cocok
+                                                            const match = discountOptions.some((opt) =>
+                                                                opt.toString().includes(value)
+                                                            );
+                                                            setShowPercentSuggest(match);
+                                                        }
+                                                    }}
+                                                    onFocus={() => {
+                                                        const match = discountOptions.some((opt) =>
+                                                            opt.toString().includes(globalDiscountPercent)
+                                                        );
+                                                        setShowPercentSuggest(match);
+                                                    }}
                                                     onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
                                                 />
                                                 {showPercentSuggest && (
                                                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
                                                         {discountOptions
-                                                            .filter(opt =>
-                                                                globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
+                                                            .filter(
+                                                                (opt) =>
+                                                                    opt.toString().includes(globalDiscountPercent) &&
+                                                                    opt.toString() !== globalDiscountPercent
                                                             )
-                                                            .map(opt => (
+                                                            .map((opt) => (
                                                                 <div
                                                                     key={opt}
                                                                     className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
@@ -394,13 +415,14 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             </div>
                                         </div>
 
+
                                     </div>
                                     <div className="col-span-12 sm:col-span-3">
-                                        <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                                        <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
                                             Harga Diskon</label>
                                         <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                            <input type="text" placeholder="Harga Diskon" className="h-[42px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)}
+                                            <input type="text" placeholder="Harga Diskon" className="h-[40px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)}
                                                 readOnly />
                                         </div>
                                     </div>
@@ -411,48 +433,72 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
             </div>
             {
                 isVariant &&
-                <div className="mb-2 mt-2">
+                <div className="my-4">
                     <div className="flex items-center gap-4 items-end " onMouseEnter={() => setTipKey('priceStock')}
                         onMouseLeave={() => setTipKey('default')}>
                         <div className="col-span-12 sm:col-span-5 ">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                            <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
 
                                 Harga Produk
                             </label>
-                            <div className="flex rounded-l-[5px] border border-[#AAAAAA] bg-white">
+                            <div className="flex rounded-l-[5px] border border-[#AAAAAA] h-[40px] bg-white">
                                 <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
                                 <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
                             </div>
                         </div>
                         <div className="col-span-12 sm:col-span-5 ml-[-20px] ">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                            <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
 
                                 Stok
                             </label>
-                            <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
+                            <div className="flex items-center border border-[#AAAAAA] h-[40px] bg-white rounded-r-[5px]">
                                 <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
                             </div>
                         </div>
                         <div className="col-span-12 sm:col-span-3">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5">
+                            <label className="block text-[16px] font-bold text-[#333333] mb-1.5">
                                 Persen Diskon</label>
-                            <div className="relative">
+                            <div className="relative border border-[#AAAAAA] rounded-[5px] h-[40px]">
                                 <input
                                     type="number"
                                     placeholder="Diskon (%)"
-                                    className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] focus:outline-none h-[42px]"
+                                    className="w-full px-3 py-2   focus:outline-none "
                                     value={globalDiscountPercent}
-                                    onChange={(e) => setGlobalDiscountPercent(e.target.value)}
-                                    onFocus={() => setShowPercentSuggest(true)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+
+                                        // Validasi: hanya angka 0–100
+                                        if (
+                                            value === '' ||
+                                            (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)
+                                        ) {
+                                            setGlobalDiscountPercent(value);
+
+                                            // Cek apakah ada saran yang cocok
+                                            const hasMatch = discountOptions.some((opt) =>
+                                                opt.toString().includes(value)
+                                            );
+                                            setShowPercentSuggest(hasMatch);
+                                        }
+                                    }}
+                                    onFocus={() => {
+                                        const hasMatch = discountOptions.some((opt) =>
+                                            opt.toString().includes(globalDiscountPercent)
+                                        );
+                                        setShowPercentSuggest(hasMatch);
+                                    }}
                                     onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
                                 />
+
                                 {showPercentSuggest && (
                                     <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
                                         {discountOptions
-                                            .filter(opt =>
-                                                globalDiscountPercent === '' || opt.toString() !== globalDiscountPercent
+                                            .filter(
+                                                (opt) =>
+                                                    opt.toString().includes(globalDiscountPercent) &&
+                                                    opt.toString() !== globalDiscountPercent
                                             )
-                                            .map(opt => (
+                                            .map((opt) => (
                                                 <div
                                                     key={opt}
                                                     className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
@@ -464,20 +510,19 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                     </div>
                                 )}
                             </div>
-
                         </div>
                         <div className="col-span-12 sm:col-span-2">
-                            <label className="block text-[14px] font-bold text-[#333333] mb-1.5 w-[200px]">
+                            <label className="block text-[16px] font-bold text-[#333333] mb-1.5 w-[200px]">
                                 Harga Setelah Diskon</label>
                             <div className='flex items-center gap-3'>
-                                <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
+                                <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white h-[40px]">
                                     <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
                                     <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)} readOnly />
                                 </div>
                                 {
                                     variations[0]?.options[0] != '' &&
                                     <div className="col-span-12 sm:col-span-2">
-                                        <button className="w-[155px] bg-[#52357B] h-[42px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
+                                        <button className="w-[155px] bg-[#52357B] h-[40px] rounded-[5px] text-white font-semibold text-[14px] py-2 hover:bg-purple-800 transition duration-200" onClick={applyGlobalToAll}>Terapkan kesemua</button>
                                     </div>
                                 }
                             </div>
@@ -610,12 +655,12 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             )}
 
                                             <td className="px-4 py-4 border border-[#AAAAAA]">
-                                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                                <div className="flex items-center border border-[#AAAAAA] h-[40px]  rounded-[5px] px-1">
                                                     <span className="text-[15px] text-[#555555] mr-2">Rp</span>
                                                     <input
                                                         type="text"
                                                         placeholder="Harga"
-                                                        className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
+                                                        className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none"
                                                         value={formatRupiahNoRP(rowData.price)}
                                                         onChange={(e) => {
                                                             const newData = [...variantData];
@@ -639,11 +684,11 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                 )}
                                             </td>
 
-                                            <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={100}>
+                                            <td className="px-4 py-4 border border-[#AAAAAA] h-[40px]  text-center align-middle" width={100}>
                                                 <input
                                                     type="number"
                                                     placeholder="Stock"
-                                                    className="w-full p-1 border border-[#AAAAAA] rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
+                                                    className="w-full p-1 border border-[#AAAAAA] h-[40px]  rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
                                                     value={rowData.stock}
                                                     onChange={(e) => {
                                                         const newData = [...variantData];
@@ -657,81 +702,117 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td className="px-4 py-4 border border-[#AAAAAA] text-center align-middle" width={155}>
+                                            <td className="px-4 py-4 border border border-[#AAAAAA] h-[40px]  text-center align-middle" width={155}>
                                                 {/* Wrapper untuk input, tidak perlu 'relative' lagi tapi tidak apa-apa jika ada */}
                                                 <div>
                                                     <input
                                                         type="number"
                                                         placeholder="Diskon (%)"
-                                                        className="w-full p-2 border border-[#AAAAAA] rounded-[5px] text-[14px] text-center focus:outline-none"
+                                                        className="w-full p-2 border border border-[#AAAAAA] h-[40px]  rounded-[5px] text-[14px] text-center focus:outline-none"
                                                         value={rowData.discountPercent || ''}
                                                         onChange={(e) => {
-                                                            // Logika onChange Anda tetap sama, tidak perlu diubah
                                                             const value = e.target.value;
-                                                            const newData = [...variantData];
-                                                            const percentValue = parseInt(value, 10) || 0;
-                                                            const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-                                                            let newDiscountPrice = '';
 
-                                                            if (priceValue > 0 && percentValue > 0) {
-                                                                newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                                            // Validasi input: hanya 0–100
+                                                            if (
+                                                                value === '' ||
+                                                                (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)
+                                                            ) {
+                                                                const newData = [...variantData];
+                                                                const percentValue = parseInt(value, 10) || 0;
+                                                                const priceValue =
+                                                                    parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
+
+                                                                let newDiscountPrice = '';
+                                                                if (priceValue > 0 && percentValue > 0) {
+                                                                    newDiscountPrice = String(
+                                                                        priceValue - priceValue * (percentValue / 100)
+                                                                    );
+                                                                }
+
+                                                                newData[index] = {
+                                                                    ...rowData,
+                                                                    discountPercent: value,
+                                                                    discount: newDiscountPrice,
+                                                                };
+                                                                setVariantData(newData);
+
+                                                                // Cek apakah ada opsi yang cocok
+                                                                const hasMatch = discountOptions.some((opt) =>
+                                                                    opt.toString().includes(value)
+                                                                );
+                                                                setShowPercentSuggestIndex(hasMatch ? index : null);
                                                             }
-
-                                                            newData[index] = { ...rowData, discountPercent: value, discount: newDiscountPrice };
-                                                            setVariantData(newData);
                                                         }}
-                                                        // UBAH onFocus untuk MENGHITUNG POSISI
                                                         onFocus={(e) => {
                                                             const rect = e.currentTarget.getBoundingClientRect();
                                                             setDropdownPosition({
-                                                                top: rect.bottom, // Posisi bawah input (relatif ke layar)
-                                                                left: rect.left,  // Posisi kiri input (relatif ke layar)
-                                                                width: rect.width, // Lebar dropdown sama dengan input
+                                                                top: rect.bottom,
+                                                                left: rect.left,
+                                                                width: rect.width,
                                                             });
-                                                            setShowPercentSuggestIndex(index);
+
+                                                            const hasMatch = discountOptions.some((opt) =>
+                                                                opt.toString().includes(rowData.discountPercent || '')
+                                                            );
+                                                            setShowPercentSuggestIndex(hasMatch ? index : null);
                                                         }}
                                                         onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)}
                                                     />
-                                                    {showPercentSuggestIndex === index && createPortal(
-                                                        <div
-                                                            className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
-                                                            style={{
-                                                                position: 'fixed', // Gunakan 'fixed' agar benar-benar melayang
-                                                                top: `${dropdownPosition.top + 4}px`, // +4px untuk memberi sedikit jarak
-                                                                left: `${dropdownPosition.left}px`,
-                                                                width: `${dropdownPosition.width}px`,
-                                                                zIndex: 9999, // z-index super tinggi untuk memastikan di paling atas
-                                                            }}
-                                                        >
-                                                            {discountOptions
-                                                                .filter(opt =>
-                                                                    rowData.discountPercent === '' || opt.toString() !== rowData.discountPercent
-                                                                )
-                                                                .map(opt => (
-                                                                    <div
-                                                                        key={opt}
-                                                                        className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                                                        // event onMouseDown untuk memilih opsi
-                                                                        onMouseDown={() => {
-                                                                            const newData = [...variantData];
-                                                                            const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-                                                                            const newDiscountPrice = priceValue > 0 ? String(priceValue - (priceValue * (opt / 100))) : '';
 
-                                                                            newData[index] = { ...rowData, discountPercent: opt.toString(), discount: newDiscountPrice };
-                                                                            setVariantData(newData);
-                                                                            setShowPercentSuggestIndex(null); // Langsung tutup dropdown setelah dipilih
-                                                                        }}
-                                                                    >
-                                                                        {opt}%
-                                                                    </div>
-                                                                ))}
-                                                        </div>,
-                                                        document.body // Ini adalah target Portal
-                                                    )}
+                                                    {showPercentSuggestIndex === index &&
+                                                        createPortal(
+                                                            <div
+                                                                className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
+                                                                style={{
+                                                                    position: 'fixed',
+                                                                    top: `${dropdownPosition.top + 4}px`,
+                                                                    left: `${dropdownPosition.left}px`,
+                                                                    width: `${dropdownPosition.width}px`,
+                                                                    zIndex: 9999,
+                                                                }}
+                                                            >
+                                                                {discountOptions
+                                                                    .filter(
+                                                                        (opt) =>
+                                                                            opt.toString().includes(rowData.discountPercent || '') &&
+                                                                            opt.toString() !== rowData.discountPercent
+                                                                    )
+                                                                    .map((opt) => (
+                                                                        <div
+                                                                            key={opt}
+                                                                            className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
+                                                                            onMouseDown={() => {
+                                                                                const newData = [...variantData];
+                                                                                const priceValue =
+                                                                                    parseFloat(
+                                                                                        String(newData[index]?.price).replace(/[^0-9]/g, '')
+                                                                                    ) || 0;
+                                                                                const newDiscountPrice =
+                                                                                    priceValue > 0
+                                                                                        ? String(priceValue - priceValue * (opt / 100))
+                                                                                        : '';
+
+                                                                                newData[index] = {
+                                                                                    ...rowData,
+                                                                                    discountPercent: opt.toString(),
+                                                                                    discount: newDiscountPrice,
+                                                                                };
+                                                                                setVariantData(newData);
+                                                                                setShowPercentSuggestIndex(null);
+                                                                            }}
+                                                                        >
+                                                                            {opt}%
+                                                                        </div>
+                                                                    ))}
+                                                            </div>,
+                                                            document.body
+                                                        )}
                                                 </div>
+
                                             </td>
-                                            <td className="px-4 py-4 border border-[#AAAAAA]">
-                                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-1">
+                                            <td className="px-4 py-4 border border border-[#AAAAAA] h-[40px] ">
+                                                <div className="flex items-center border border border-[#AAAAAA] h-[40px]  rounded-[5px] px-1">
                                                     <span className="text-[15px] text-[#555555] mr-2">Rp</span>
                                                     <input
                                                         type="text"
@@ -756,22 +837,22 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                     <div className="text-red-500 text-sm mt-1">{errors.variant}</div>
                 )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
                 onMouseEnter={() => setTipKey('purchaseLimit')}
                 onMouseLeave={() => setTipKey('default')}>
                 <div>
-                    <label className="text-[#333333] font-bold text-[14px]">
+                    <label className="text-[#333333] font-bold text-[16px]">
                         Min. Jumlah Pembelian
                         <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                     </label>
-                    <input type="number" defaultValue="1" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
+                    <input type="number" defaultValue="1" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] h-[40px] text-[17px] text-[#333333]" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
                 </div>
                 <div>
-                    <label className="text-[#333333] font-bold text-[14px]">
+                    <label className="text-[#333333] font-bold text-[16px]">
                         Maks. Jumlah Pembelian
                         <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                     </label>
-                    <input type="number" defaultValue="1000" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[17px] text-[#333333] mt-4" value={maxOrder} onChange={(e) => setMaxOrder(Number(e.target.value))} />
+                    <input type="number" defaultValue="1000" className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] h-[40px] text-[17px] text-[#333333]" value={maxOrder} onChange={(e) => setMaxOrder(Number(e.target.value))} />
                 </div>
             </div>
 
@@ -779,30 +860,30 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                 id="globalDelivry"
                 onMouseEnter={() => setTipKey('weightDimension')}
                 onMouseLeave={() => setTipKey('default')}>
-                <label className="text-[#333333] font-bold text-[14px]">
+                <label className="text-[#333333] font-bold text-[16px]">
                     Berat dan Dimensi Produk
                 </label>
-                <div className="flex items-center gap-3 mt-4">
-                    <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                        <input type="number" placeholder="Berat" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
+                <div className="grid grid-cols-12 items-center gap-3 mt-4 w-full">
+                    <div className='col-span-4 border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
+                        <input type="number" placeholder="Berat" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
                             onChange={(e) => setGlobalWeight(e.target.value)} />
                         <span className="text-[15px] text-[#555555]">Gr</span>
                     </div>
-                    <div className='border rounded-[5px] px-4 border-[#AAAAAA] h-[40px]'>
-                        <input type="number" placeholder="Lebar" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                    <div className='col-span-6 border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between'>
+                        <input type="number" placeholder="Lebar" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
                             value={globalWidth} onChange={(e) => setGlobalWidth(e.target.value)} />
                         <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                        <input type="number" placeholder="Panjang" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                        <input type="number" placeholder="Panjang" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
                             value={globalLength} onChange={(e) => setGlobalLength(e.target.value)} />
                         <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                        <input type="number" placeholder="Tinggi" className="w-24 p-2 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
+                        <input type="number" placeholder="Tinggi" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
                             value={globalHeight} onChange={(e) => setGlobalHeight(e.target.value)} />
                         <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
                         <span className="text-[15px] text-[#555555]">Cm</span>
                     </div>
                     {
                         isVariant && variations[0]?.options[0] != '' &&
-                        <div>
+                        <div className='col-span-2'>
                             <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
                                 onClick={applyDimensionToAll}>
                                 Terapkan kesemua
@@ -812,7 +893,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                 </div>
                 {
                     isVariant &&
-                    <div className="mt-2">
+                    <div className="mt-4">
                         <label className="flex items-center space-x-2">
                             <input
                                 type="checkbox"
@@ -881,7 +962,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
 
                                             {/* Berat */}
                                             <td className="px-4 py-4 border border-[#AAAAAA]" width={150}>
-                                                <div className="flex items-center border border-[#AAAAAA] rounded-[5px] px-3">
+                                                <div className="flex items-center border border-[#AAAAAA] h-[40px] rounded-[5px] px-3">
                                                     <input
                                                         type="number"
                                                         placeholder="Berat"
@@ -977,7 +1058,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
 
             {showSizeGuide && (
                 <>
-                    <label className="text-[#333333] font-bold text-[14px]">
+                    <label className="text-[#333333] font-bold text-[16px]">
                         Panduan Ukuran
                         <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                     </label>
@@ -1003,13 +1084,16 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             ) : (
                                 // Tampilkan placeholder jika tidak ada gambar
                                 <div className=" text-gray-500 flex items-start cursor-pointer gap-4">
-                                    <div className='border border-[#BBBBBB] rounded-[5px]' onClick={handleAreaClick}>
-                                        <Image size={67} strokeWidth={1.5} />
+                                    <div className='border border-[#BBBBBB] w-[67px] h-[67px] rounded-[5px] flex items-center justify-center' onClick={handleAreaClick}>
+                                        <Image size={40} strokeWidth={1.5} />
                                     </div>
 
                                     <div>
-                                        <p className=" text-[#555555] text-[12px]" onClick={handleAreaClick}>
-                                            Ukuran: Maks. 2MB, pastikan resolusi tidak <br /> boleh melebihi 1280x1280px Format: JPG, PNG
+                                        <p className=" text-[#555555] text-[12px]" onClick={handleAreaClick} style={{
+                                            lineHeight: "110%",
+                                            letterSpacing: "-0.02em"
+                                        }}>
+                                            Ukuran: Maks. 2MB, pastikan resolusi tidak <br /> boleh melebihi 1280x1280px Format: JPG,<br /> PNG
                                         </p>
                                         <button
                                             type="button"
