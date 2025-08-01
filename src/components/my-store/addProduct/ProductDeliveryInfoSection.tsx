@@ -236,7 +236,7 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                 }
             </section>
             <section>
-                <label className="text-[#333333] font-bold text-[14px]">
+                <label className="text-[#333333] font-bold text-[16px]">
                     Wajib memilih jasa kirim
                     <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                 </label>

@@ -62,7 +62,15 @@ interface ProductSalesSectionProps {
     setShowDimensionTable: (show: boolean) => void;
     tempCategory?: string;
 }
+function roundLastThreeDigitsToNearestHundred(value: number): number {
+    const lastThree = value % 1000;
+    const roundedLastThree =
+        lastThree % 1000 < 550
+            ? Math.floor(lastThree / 100) * 100
+            : Math.ceil(lastThree / 100) * 100;
 
+    return value - lastThree + roundedLastThree;
+}
 
 // Komponen ini akan sangat besar, namun sudah terisolasi
 const ProductSalesSection = (props: ProductSalesSectionProps) => {
@@ -152,6 +160,10 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
             fileInputRef.current.value = "";
         }
     };
+
+
+    const parsedDiscount = parseFloat(globalDiscount || '0'); // hasil number
+    const rounded = roundLastThreeDigitsToNearestHundred(parsedDiscount); // hasil number
 
     return (
         <div id="informasi-penjualan-section" className='border border-[#DCDCDC] py-6 rounded-[5px] space-y-4 px-8'>
@@ -422,7 +434,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             Harga Diskon</label>
                                         <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                            <input type="text" placeholder="Harga Diskon" className="h-[40px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)}
+                                            <input type="text" placeholder="Harga Diskon" className="h-[40px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)}
                                                 readOnly />
                                         </div>
                                     </div>
@@ -517,7 +529,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             <div className='flex items-center gap-3'>
                                 <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white h-[40px]">
                                     <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                    <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(globalDiscount)} readOnly />
+                                    <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)} readOnly />
                                 </div>
                                 {
                                     variations[0]?.options[0] != '' &&
@@ -581,6 +593,8 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                 variation.sizes.map((size, sIndex) => {
                                     const index = vIndex * variation.sizes?.length + sIndex;
                                     const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
+                                    const discountVariant = parseFloat(rowData?.discount || '0'); // hasil number
+                                    const roundedVariant = roundLastThreeDigitsToNearestHundred(discountVariant); // hasil number
 
                                     return (
                                         <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
@@ -818,7 +832,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                         type="text"
                                                         placeholder="Harga"
                                                         className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                                        value={formatRupiahNoRPHarga(rowData.discount)}
+                                                        value={formatRupiahNoRPHarga(roundedVariant)}
                                                         readOnly
                                                     />
                                                 </div>

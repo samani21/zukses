@@ -2,6 +2,7 @@ import React from 'react';
 import DateTimePicker from 'components/DateTimePicker';
 import { RadioGroup } from './FormInputs';
 import { TipKey } from './tipsStore';
+import { formatRupiahNoRP } from 'components/Rupiah';
 
 interface ProductOtherInfoSectionProps {
     setTipKey: (key: TipKey) => void;
@@ -11,6 +12,10 @@ interface ProductOtherInfoSectionProps {
     setIsCodEnabled: (val: string) => void;
     isUsed: string;
     setIsUsed: (val: string) => void;
+    setShippingCost: (val: string) => void;
+    shippingCost: string;
+    subsidy: string;
+    setSubsidy: (val: string) => void;
     sku: string;
     setSku: (val: string) => void;
     schedule: string;
@@ -20,13 +25,18 @@ interface ProductOtherInfoSectionProps {
     scheduleError: string;
     errors: { [key: string]: string };
     sectionRefs: React.RefObject<HTMLDivElement | null>;
+    isVoucher: boolean
+    setIsVoucher: (val: boolean) => void
+    voucher: string
+    setVoucher: (val: string) => void
 }
 
 const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
     const {
         setTipKey, isCodEnabled, setIsCodEnabled, isUsed, setIsUsed,
         sku, setSku, schedule, setScheduleDate, validateScheduleDate, scheduleError,
-        errors, sectionRefs
+        errors, sectionRefs, setShippingCost, shippingCost, subsidy, setSubsidy,
+        isVoucher, setIsVoucher, voucher, setVoucher
     } = props;
 
     return (
@@ -38,24 +48,56 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                     <div onMouseEnter={() => setTipKey('condition')} onMouseLeave={() => setTipKey('default')}>
                         <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required defaultValue={isUsed === '1' ? 'Bekas Dipakai' : 'Baru'} onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')} />
                     </div>
+                    <div onMouseEnter={() => setTipKey('condition')} onMouseLeave={() => setTipKey('default')}>
+                        <RadioGroup label="Ongkos Kirim" name="condition" options={['Normal', 'Ongkos kirim ditanggung Penjual', 'Ongkos kirim disubsidi Penjual']} defaultValue={shippingCost} onChange={(value) => setShippingCost(value)} />
+                        <div className='ml-7'>
+                            <label className="block text-[14px] font-bold text-[#333333] mb-2 mt-1">Subsidi Ongkir</label>
+                            <div className='flex items-center gap-4'>
+                                <div className={`border border-[#AAAAAA] ${shippingCost === 'Ongkos kirim disubsidi Penjual' ? "bg-white" : "bg-[#D8D8D8]"} w-[204px] h-[40px] rounded-[5px] grid grid-cols-6 items-center px-2`}>
+                                    <p className='text-[#555555] text-[14px] col-span-1'>Rp |</p>
+                                    <input type="text" className='col-span-5 outline-none' placeholder='Subsidi Ongkir' value={formatRupiahNoRP(subsidy)}
+                                        onChange={(e) => setSubsidy(e.target.value)} disabled={shippingCost === 'Ongkos kirim disubsidi Penjual' ? false : true} />
+                                </div>
+                                <p className='text-[#333333] text-[14px]'>Jika ongkos kirim disubsidi penjual maka wajib diisi</p>
+                            </div>
+                            {errors.subsidy && <div className="text-red-500 text-sm mt-1">{errors?.subsidy}</div>}
+                        </div>
+                    </div>
+                    <div className="flex items-start space-x-3 p-3 rounded-md pl-0 pb-0">
+                        <input id="cod" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isVoucher}
+                            onChange={(e) => setIsVoucher(e.target.checked)} />
+                        <label htmlFor="cod" className="font-bold text-[16px] text-[#333333] cursor-pointer">Aktifkan Voucher Toko</label>
+                    </div>
+                    <div className='-mt-4'>
+                        <div className='flex items-center gap-4'>
+                            <div className={`border border-[#AAAAAA] ${isVoucher ? "bg-white" : "bg-[#D8D8D8]"} w-[204px] h-[40px] rounded-[5px] grid grid-cols-6 items-center px-2`}>
+                                <p className='text-[#555555] text-[14px] col-span-1'>Rp |</p>
+                                <input type="text" className='col-span-5 outline-none' placeholder='Subsidi Ongkir' value={formatRupiahNoRP(voucher)}
+                                    onChange={(e) => setVoucher(e.target.value)} disabled={isVoucher ? false : true} />
+                            </div>
+                            <p className='text-[#333333] text-[14px]'>Jika Voucher Toko aktif maka wajib diisi</p>
+                        </div>
+                        {errors.voucher && <div className="text-red-500 text-sm mt-1">{errors?.voucher}</div>}
+                    </div>
                     <div onMouseEnter={() => setTipKey('sku')} onMouseLeave={() => setTipKey('default')}>
-                        <label className="text-[#333333] font-bold text-[14px]">SKU Induk</label>
-                        <input type="text" placeholder="Masukkan kode unik..." className="w-full px-3 py-2 border border-gray-300 rounded-md" value={sku} onChange={(e) => setSku(e?.target?.value)} />
-                        <div className="mt-1 text-[14px] text-[#333333]">Masukkan kode unik untuk setiap produk...</div>
+                        <label className="text-[#333333] font-bold text-[16px]">SKU Induk</label>
+                        <input type="text" placeholder="Masukkan kode unik..." className="w-full h-[40px] px-3 py-2 border border-gray-300 rounded-md" value={sku} onChange={(e) => setSku(e?.target?.value)} />
+                        <div className="mt-1 text-[14px] text-[#333333]">Masukkan kode unik untuk setiap produk agar mudah dilacak dan dikelola di sistem.</div>
                     </div>
                     <div onMouseEnter={() => setTipKey('cod')} onMouseLeave={() => setTipKey('default')}>
-                        <label className="text-[#333333] font-bold text-[14px]">Pembayaran di Tempat (COD)</label>
-                        <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
+                        <label className="text-[#333333] font-bold text-[16px]">Pembayaran di Tempat (COD)</label>
+                        <div className="flex items-start space-x-3 p-3 rounded-md">
                             <input id="cod" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isCodEnabled === '1'}
                                 onChange={(e) => setIsCodEnabled(e.target.checked ? '1' : '0')} />
                             <div className='mt-[-5px]'>
-                                <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
-                                <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima...</p>
+                                <label htmlFor="cod" className="font-bold text-[15px] text-[#333333] cursor-pointer">Aktifkan COD</label>
+                                <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima.</p>
+                                <p className="text-[14px] text-[#333333]">Dengan mengaktifkan COD, Anda setuju dengan syarat & ketentuan yang berlaku.</p>
                             </div>
                         </div>
                     </div>
                     <div className="relative" id="schedule" onMouseEnter={() => setTipKey('schedule')} onMouseLeave={() => setTipKey('default')}>
-                        <label className="text-[#333333] font-bold text-[14px]">Jadwal Ditampilkan</label>
+                        <label className="text-[#333333] font-bold text-[16px]">Jadwal Ditampilkan</label>
                         <div className='mt-2'>
                             <DateTimePicker
                                 value={schedule ? new Date(schedule.replace(' ', 'T')) : new Date()}
@@ -66,7 +108,7 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                             />
                         </div>
                         {scheduleError && <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>{scheduleError}</div>}
-                        {errors.schedule && <div className="text-red-500 text-sm mt-1">{errors?.schedule}</div>}
+                        {errors.schedule ? <div className="text-red-500 text-sm mt-1">{errors?.schedule}</div> : <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan</div>}
                     </div>
                 </div>
             </div>

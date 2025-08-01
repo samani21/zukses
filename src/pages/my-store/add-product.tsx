@@ -109,7 +109,6 @@ const AddProduct: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
-  console.log(variantData)
   const [sku, setSku] = useState('');
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
   const [schedule, setSchedule] = useState<string | ''>('');
@@ -143,9 +142,11 @@ const AddProduct: NextPage = () => {
     'informasi-pengiriman-section',
     'informasi-lainnya-section'
   ];
-  // Letakkan hook ini di dalam komponen AddProductPage
-  // Di dalam komponen AddProductPage
 
+  const [shippingCost, setShippingCost] = useState<string>('Normal')
+  const [subsidy, setSubsidy] = useState<string>('')
+  const [isVoucher, setIsVoucher] = useState<boolean>(false)
+  const [voucher, setVoucher] = useState<string>('')
   useEffect(() => {
     // 1. Temukan kontainer yang bisa di-scroll berdasarkan ID
     const scrollContainer = document.getElementById('main-scroll-container');
@@ -654,6 +655,12 @@ const AddProduct: NextPage = () => {
         }
       }
     }
+    if (shippingCost === 'Ongkos kirim disubsidi Penjual') {
+      if (!subsidy.trim()) newErrors.subsidy = 'Subsidi ongkir wajib diisi';
+    }
+    if (isVoucher) {
+      if (!voucher.trim()) newErrors.voucher = 'Voucher wajib diisi';
+    }
     if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
 
     // videoFile tidak wajib
@@ -1144,6 +1151,14 @@ const AddProduct: NextPage = () => {
                 scheduleError={scheduleError}
                 errors={errors}
                 sectionRefs={sectionRefs['informasi-lainnya-section']}
+                setShippingCost={setShippingCost}
+                shippingCost={shippingCost}
+                subsidy={subsidy}
+                setSubsidy={setSubsidy}
+                isVoucher={isVoucher}
+                setIsVoucher={setIsVoucher}
+                voucher={voucher}
+                setVoucher={setVoucher}
               />
               <div className="bg-white flex justify-between items-center sticky bottom-0 p-4" style={{
                 boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'
