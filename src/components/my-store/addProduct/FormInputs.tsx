@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 // Komponen input dengan label dan character counter
 export const TextInput = ({ id, label, placeholder, maxLength, value, setValue, required = false }: { id?: string; label: string, placeholder: string, maxLength: number, value: string, setValue: (val: string) => void, required?: boolean }) => (
   <div id={id}>
-    <label className="text-[#333333] font-bold text-[14px]">
+    <label className="text-[#333333] font-bold text-[16px]">
       {label} {required && <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>}
     </label>
     <div className="relative mt-2">
@@ -34,7 +34,7 @@ export const TextInput = ({ id, label, placeholder, maxLength, value, setValue, 
             maxLength={maxLength}
           />
       }
-      <span className="absolute bottom-2 right-3 text-xs text-gray-400">
+      <span className="absolute bottom-4 right-3 text-xs text-gray-400">
         {value?.length}/{maxLength}
       </span>
     </div>
@@ -75,10 +75,10 @@ export const TextAreaInput = ({
 
   return (
     <div id={id}>
-      <label className="text-[#333333] font-bold text-[14px]">
+      <label className="text-[#333333] font-bold text-[16px]">
         {label}   {required && <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>}
       </label>
-      <div className="relative mt-2">
+      <div className="relative mt-2 text-end">
         <textarea
           ref={textareaRef}
           className="w-full px-3 py-2 border border-[#AAAAAA] rounded-[5px] text-[#555555] text-[14px] overflow-hidden outline-none focus:border focus:border-blue-500"
@@ -89,10 +89,10 @@ export const TextAreaInput = ({
           rows={4}
           style={{ resize: 'none', maxHeight: '480px', overflowY: 'auto' }}
         />
-        <span className="absolute bottom-2 right-3 text-xs text-gray-400">
-          {value?.length}/{maxLength}
-        </span>
       </div>
+      <p className=" text-[14px] text-[#555555] text-end w-full pr-2">
+        {value?.length}/{maxLength}
+      </p>
     </div>
   );
 };

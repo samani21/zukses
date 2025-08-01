@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Camera, X } from 'lucide-react';
+import { Image, X } from 'lucide-react';
 
 interface ProductImageUploaderProps {
     selectedImages: (File | string)[];
@@ -34,18 +34,19 @@ const ProductImageUploader = React.memo(({
         <div className="rounded-lg">
             {/* FOTO PRODUK UTAMA */}
             <div className='border-b border-[#CCCCCC] pb-2 px-8'>
-                <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
+                <label className="text-[#333333] font-bold text-[17px] tracking-[-0.02em] ml-[-2px]">
                     Foto Produk
                     <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                 </label>
-                <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4 mt-1">
-                    <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                    <li>Foto Produk yang baik akan meningkatkan minat belanja Pembeli.</li>
+                <ul className="text-[12px] text-[#555555] list-disc list-outside pl-4 leading-tight mb-2 mt-1">
+                    <li>Upload Foto 1:1</li>
+                    <li className="max-w-[240px]">
+                        Foto Produk yang baik akan meningkatkan minat belanja Pembeli.
+                    </li>
                 </ul>
-
                 <div
                     id="images"
-                    className="flex flex-wrap gap-2 mt-2">
+                    className="flex flex-wrap gap-2 mt-2 mb-2">
                     {selectedImages.map((img, index) => (
                         <div key={index} className="relative w-[80px] h-[80px]">
                             <img
@@ -83,9 +84,9 @@ const ProductImageUploader = React.memo(({
 
                     {selectedImages.length < 10 && (
                         <label className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50">
-                            <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
-                            <span className="text-[12px] text-[#333333]">Tambah</span>
-                            <span className="text-[12px] text-[#333333]">{selectedImages.length}/10</span>
+                            <Image className="w-[40px] h-[40px] mb-1 text-[#555555]" />
+                            <span className="text-[12px] text-[#333333] font-bold" style={{ lineHeight: "110%" }}>Tambah</span>
+                            <span className="text-[12px] text-[#333333] font-bold" style={{ lineHeight: "110%" }}>{selectedImages.length}/10</span>
                             <input
                                 type="file"
                                 accept="image/*"
@@ -105,82 +106,85 @@ const ProductImageUploader = React.memo(({
             <div
                 id="promo"
                 className="mt-4 px-8 ">
-                <label className="text-[#333333] font-bold text-[14px] ml-[-2px]">
+                <label className="text-[#333333] font-bold text-[17px] tracking-[-0.02em] ml-[-2px] mb-2">
                     Foto Produk Promosi
-                    <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
+                    <span className='bg-[#FACACA] p-1 px-3 rounded-full font  text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                 </label>
-                <ul className="text-[12px] text-[#555555] list-disc list-inside mb-4 mt-1">
-                    <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
-                    <li>Foto Produk Promosi untuk menampilkan di hasil pencarian SEO</li>
-                </ul>
+                <div className='flex items-start gap-4 mt-2 mb-4'>
+                    <div
+                        className="relative flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50"
+                        onClick={() => {
+                            if (promoImage) {
+                                promoReplaceInputRef.current?.click();
+                            } else {
+                                promoAddInputRef.current?.click();
+                            }
+                        }}
+                    >
+                        {promoImage ? (
+                            <>
+                                <img
+                                    src={typeof promoImage === 'string' ? promoImage : URL.createObjectURL(promoImage)}
+                                    alt="Promo Preview"
+                                    className="w-full h-full object-cover rounded"
+                                />
+                                <button
+                                    className="absolute top-[-6px] right-[-6px] bg-white border border-gray-300 rounded-full p-[2px] hover:bg-gray-100"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onRemovePromoImage();
+                                    }}
+                                    type="button"
+                                >
+                                    <X className="w-4 h-4 text-gray-600" />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Image className="w-[40px] h-[40px] mb-1 text-[#555555]" />
+                                <span className="text-[12px] text-[#333333] font-bold" style={{ lineHeight: "110%" }}>Tambahkan</span>
+                                <span className="text-[12px] text-[#333333] font-bold" style={{ lineHeight: "110%" }}>0/1</span>
+                            </>
+                        )}
 
-                <div
-                    className="relative flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50"
-                    onClick={() => {
-                        if (promoImage) {
-                            promoReplaceInputRef.current?.click();
-                        } else {
-                            promoAddInputRef.current?.click();
-                        }
-                    }}
-                >
-                    {promoImage ? (
-                        <>
-                            <img
-                                src={typeof promoImage === 'string' ? promoImage : URL.createObjectURL(promoImage)}
-                                alt="Promo Preview"
-                                className="w-full h-full object-cover rounded"
-                            />
-                            <button
-                                className="absolute top-[-6px] right-[-6px] bg-white border border-gray-300 rounded-full p-[2px] hover:bg-gray-100"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onRemovePromoImage();
-                                }}
-                                type="button"
-                            >
-                                <X className="w-4 h-4 text-gray-600" />
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <Camera className="w-[29px] h-[29px] mb-1 text-[#7952B3]" />
-                            <span className="text-[12px] text-[#333333]">Tambahkan</span>
-                            <span className="text-[12px] text-[#333333]">0/1</span>
-                        </>
+                        {/* Tambah gambar promo */}
+                        <input
+                            ref={promoAddInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    onReplacePromoImage(e.target.files[0]);
+                                }
+                            }}
+                            onClick={(e) => (e.currentTarget.value = '')}
+                        />
+
+                        {/* Ganti gambar promo */}
+                        <input
+                            ref={promoReplaceInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                if (e.target.files && e.target.files[0]) {
+                                    onReplacePromoImage(e.target.files[0]);
+                                }
+                            }}
+                            onClick={(e) => (e.currentTarget.value = '')}
+                        />
+                    </div>
+                    {errorPromo && (
+                        <div className="text-red-500 text-sm mt-1">{errorPromo}</div>
                     )}
-
-                    {/* Tambah gambar promo */}
-                    <input
-                        ref={promoAddInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                onReplacePromoImage(e.target.files[0]);
-                            }
-                        }}
-                        onClick={(e) => (e.currentTarget.value = '')}
-                    />
-
-                    {/* Ganti gambar promo */}
-                    <input
-                        ref={promoReplaceInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                onReplacePromoImage(e.target.files[0]);
-                            }
-                        }}
-                        onClick={(e) => (e.currentTarget.value = '')}
-                    />
+                    <ul className="text-[12px] text-[#555555] list-disc list-outside pl-4 leading-tight mb-4 mt-1">
+                        <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
+                        <li className="max-w-[240px]">
+                            Foto Produk Promosi untuk menampilkan di hasil pencarian SEO
+                        </li>
+                    </ul>
                 </div>
-                {errorPromo && (
-                    <div className="text-red-500 text-sm mt-1">{errorPromo}</div>
-                )}
             </div>
         </div>
     );
