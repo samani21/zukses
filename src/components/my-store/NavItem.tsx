@@ -75,7 +75,7 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
         ${isCollapsed ? 'justify-center' : ''}`}
         >
             {isCollapsed && (
-                <Icon className={`w-5 h-5 ${item.active ? 'text-white' : 'text-gray-500'}`} />
+                <Icon className={`w-5 h-5 ${item.active ? 'text-black' : 'text-gray-500'}`} />
             )}
             {!isCollapsed && <span>{item.title}</span>}
         </Link>
