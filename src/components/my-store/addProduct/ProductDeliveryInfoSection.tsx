@@ -187,7 +187,7 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
             <div onMouseEnter={() => setTipKey('preorder')} onMouseLeave={() => setTipKey('default')}>
                 <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'} onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')} />
             </div>
-            <p className='text-[#333333] text-[14px]'>Kirimkan produk dalam 2 hari (tidak termasuk hari Sabtu, Minggu, libur nasional dan non-operasional jasa kirim).</p>
+            <p className='text-[#333333] text-[14px] -mt-4'>Kirimkan produk dalam 2 hari (tidak termasuk hari Sabtu, Minggu, libur nasional dan non-operasional jasa kirim).</p>
             <div className='-mt-4'>
                 {isProductPreOrder == '1' && (
                     <>
@@ -213,7 +213,7 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                 )}
             </div>
 
-            <section className='border border-[#DCDCDC] tracking-[-0.02em] p-4'>
+            <section className='border border-[#DCDCDC] tracking-[-0.02em] p-4 mt-8'>
                 <div className='flex gap-2 items-center'>
                     <MapPin size={24} className='text-[#7952B3]' />
                     <h3 className='text-[#7952B3] text-[20px] font-semibold'>Alamat Pickup</h3>
