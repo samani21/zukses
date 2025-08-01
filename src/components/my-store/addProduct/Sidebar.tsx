@@ -33,7 +33,7 @@ interface SidebarProps {
 
 const Sidebar = ({ tipsChecklist, activeSection, onNavigate, validationStatus }: SidebarProps) => {
   return (
-    <aside className="lg:col-span-1 space-y-6 sticky  pr-2">
+    <aside className="lg:col-span-1 space-y-6 sticky top-1 pr-2">
       <InfoCard title="Rekomendasi">
         {Object.entries(tipsChecklist).map(([label, isDone]) => (
           <IconLabel
