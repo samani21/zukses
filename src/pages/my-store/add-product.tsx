@@ -11,7 +11,7 @@ import CropModal from 'components/my-store/addProduct/CropModal';
 import CategorySelector from 'components/my-store/product/CategorySelector';
 import Snackbar from 'components/Snackbar';
 import { useTipsStore } from 'components/stores/tipsStore';
-import { ChevronRight, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 // Impor utilitas dan tipe
 import Get from 'services/api/Get';
@@ -24,6 +24,7 @@ import ProductInfoSection from 'components/my-store/addProduct/ProductInfoSectio
 import ProductSalesSection from 'components/my-store/addProduct/ProductSalesSection';
 import ProductOtherInfoSection from 'components/my-store/addProduct/ProductOtherInfoSection';
 import ProductDeliveryInfoSection from 'components/my-store/addProduct/ProductDeliveryInfoSection';
+import { useShopProfile } from 'components/my-store/ShopProfileContext';
 
 
 async function convertImageUrlToFile(url: string): Promise<File | null> {
@@ -38,7 +39,8 @@ async function convertImageUrlToFile(url: string): Promise<File | null> {
 }
 
 
-const AddProductPage: NextPage = () => {
+const AddProduct: NextPage = () => {
+  const shopProfil = useShopProfile();
   const router = useRouter()
   const params = router?.query;
   const [productName, setProductName] = useState('');
@@ -1010,17 +1012,17 @@ const AddProductPage: NextPage = () => {
     setVariantData(updated);
   };
   return (
-    <MyStoreLayout>
+    <>
       <div className="min-h-screen font-sans mt-[-10px]">
         <main className="px-0">
-          <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p>
-          <div className="flex items-center text-gray-500 mb-4">
+          {/* <p className='text-[#52357B] font-bold text-[16px] mb-1'>Toko Saya</p> */}
+          {/* <div className="flex items-center text-gray-500 mb-4">
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store')}>Dashboard</span>
             <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3} />
             <span className='text-[14px] text-[#333333] cursor-pointer' onClick={() => router?.push('/my-store/product')}>Produk Saya</span>
             <ChevronRight className="w-[25px] h-[25px] text-[#333333] mx-1" strokeWidth={3} />
             <span className="font-bold text-[14px] text-[#333333] ">Tambah Produk</span>
-          </div>
+          </div> */}
 
           <div className="flex items-start gap-4 relative">
             <Sidebar
@@ -1030,7 +1032,7 @@ const AddProductPage: NextPage = () => {
               validationStatus={validationStatus}
             />
 
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-8 mt-8">
               <ProductInfoSection
                 setTipKey={setTipKey}
                 selectedImages={selectedImages}
@@ -1119,7 +1121,10 @@ const AddProductPage: NextPage = () => {
                 setIsHazardous={setIsHazardous}
                 isCodEnabled={isCodEnabled}
                 setIsCodEnabled={setIsCodEnabled}
+                isProductPreOrder={isProductPreOrder}
+                setIsProductPreOrder={setIsProductPreOrder}
                 sectionRefs={sectionRefs['informasi-pengiriman-section']}
+                shopProfil={shopProfil}
               />
               <ProductOtherInfoSection
                 setTipKey={setTipKey}
@@ -1127,8 +1132,6 @@ const AddProductPage: NextPage = () => {
                 setIsHazardous={setIsHazardous}
                 isCodEnabled={isCodEnabled}
                 setIsCodEnabled={setIsCodEnabled}
-                isProductPreOrder={isProductPreOrder}
-                setIsProductPreOrder={setIsProductPreOrder}
                 isUsed={isUsed}
                 setIsUsed={setIsUsed}
                 sku={sku}
@@ -1200,8 +1203,15 @@ const AddProductPage: NextPage = () => {
           </button>
         </div>
       </ModalError>
-    </MyStoreLayout>
+    </>
   );
 };
 
-export default AddProductPage;
+
+export default function AddProductPage() {
+  return (
+    <MyStoreLayout>
+      <AddProduct />
+    </MyStoreLayout>
+  );
+}

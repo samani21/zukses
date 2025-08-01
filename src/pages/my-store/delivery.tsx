@@ -7,7 +7,6 @@ import React from 'react'
 
 function DeliveryForm() {
     const shopProfil = useShopProfile();
-    console.log('shopProfil', shopProfil)
     return (
         <div>
             <div className="min-h-screen font-sans text-gray-800">

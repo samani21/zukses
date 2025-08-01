@@ -61,7 +61,7 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                 />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header setMobileOpen={setMobileOpen} shopProfil={shopProfil} />
-                    <main id="main-scroll-container" className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 md:pt-4">
+                    <main id="main-scroll-container" className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 md:pt-4 md:pb-0">
                         {children}
                     </main>
                 </div>

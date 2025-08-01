@@ -9,8 +9,6 @@ interface ProductOtherInfoSectionProps {
     setIsHazardous: (val: string) => void;
     isCodEnabled: string;
     setIsCodEnabled: (val: string) => void;
-    isProductPreOrder: string;
-    setIsProductPreOrder: (val: string) => void;
     isUsed: string;
     setIsUsed: (val: string) => void;
     sku: string;
@@ -26,7 +24,7 @@ interface ProductOtherInfoSectionProps {
 
 const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
     const {
-        setTipKey, isProductPreOrder, setIsProductPreOrder, isUsed, setIsUsed,
+        setTipKey, isCodEnabled, setIsCodEnabled, isUsed, setIsUsed,
         sku, setSku, schedule, setScheduleDate, validateScheduleDate, scheduleError,
         errors, sectionRefs
     } = props;
@@ -37,9 +35,6 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
             <div id="informasi-lainnya-section">
                 <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Lainnya</h1>
                 <div className='space-y-6'>
-                    <div onMouseEnter={() => setTipKey('preorder')} onMouseLeave={() => setTipKey('default')}>
-                        <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'} onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')} />
-                    </div>
                     <div onMouseEnter={() => setTipKey('condition')} onMouseLeave={() => setTipKey('default')}>
                         <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required defaultValue={isUsed === '1' ? 'Bekas Dipakai' : 'Baru'} onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')} />
                     </div>
@@ -47,6 +42,17 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         <label className="text-[#333333] font-bold text-[14px]">SKU Induk</label>
                         <input type="text" placeholder="Masukkan kode unik..." className="w-full px-3 py-2 border border-gray-300 rounded-md" value={sku} onChange={(e) => setSku(e?.target?.value)} />
                         <div className="mt-1 text-[14px] text-[#333333]">Masukkan kode unik untuk setiap produk...</div>
+                    </div>
+                    <div onMouseEnter={() => setTipKey('cod')} onMouseLeave={() => setTipKey('default')}>
+                        <label className="text-[#333333] font-bold text-[14px]">Pembayaran di Tempat (COD)</label>
+                        <div className="flex items-start space-x-3 bg-gray-50 p-3 rounded-md">
+                            <input id="cod" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isCodEnabled === '1'}
+                                onChange={(e) => setIsCodEnabled(e.target.checked ? '1' : '0')} />
+                            <div className='mt-[-5px]'>
+                                <label htmlFor="cod" className="font-bold text-[14px] text-[#333333]">Aktifkan COD</label>
+                                <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima...</p>
+                            </div>
+                        </div>
                     </div>
                     <div className="relative" id="schedule" onMouseEnter={() => setTipKey('schedule')} onMouseLeave={() => setTipKey('default')}>
                         <label className="text-[#333333] font-bold text-[14px]">Jadwal Ditampilkan</label>
