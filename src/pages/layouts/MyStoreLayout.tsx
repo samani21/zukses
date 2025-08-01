@@ -6,13 +6,21 @@ import { Response } from 'services/api/types';
 import { ShopData, ShopProfileContext } from 'components/my-store/ShopProfileContext';
 import Loading from 'components/Loading';
 import ModalCompleteShopProfile from 'components/my-store/ModalCompleteShopProfile';
+import { useRouter } from 'next/router';
 
 export default function MyStoreLayout({ children }: { children: React.ReactNode }) {
     const [isMobileOpen, setMobileOpen] = useState(false);
     const [isCollapsed, setCollapsed] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [shopProfil, setShopProfil] = useState<ShopData | null>(null);
-    const [showModal, setShowModal] = useState<boolean>(false)
+    const router = useRouter();
+    const pathname = router?.pathname;
+    const [showModal, setShowModal] = useState<boolean>(false);
+    useEffect(() => {
+        if (pathname === '/my-store/add-product') {
+            setCollapsed(true)
+        }
+    }, [pathname])
     const fetchShopProfile = async () => {
         setLoading(true);
         const res = await Get<Response>('zukses', `shop-profile`);
