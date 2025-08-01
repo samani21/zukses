@@ -14,7 +14,7 @@ const VideoUploader = React.memo(({ videoFile, onVideoChange, urlvideoFile }: Vi
 
     return (
         <div>
-            <label className="text-[#333333] font-bold text-[14px]">
+            <label className="text-[#333333] font-bold text-[17px]">
                 Video Produk
             </label>
 
@@ -63,14 +63,15 @@ const VideoUploader = React.memo(({ videoFile, onVideoChange, urlvideoFile }: Vi
                         className="flex flex-col items-center justify-center w-[80px] h-[80px] border-2 border-[#BBBBBB] rounded-[5px] text-center cursor-pointer hover:bg-gray-50"
                     >
                         <Video className="w-[29px] h-[29px] text-[#7952B3] mb-1" />
-                        <span className="text-[12px] text-[#333333]">Tambahkan Video</span>
+                        <span className="text-[12px] text-[#333333]" style={{lineHeight:"108%"}}>Tambahkan Video</span>
                     </div>
                 )}
 
-                {/* INFO */}
-                <ul className="text-[12px] text-gray-500 list-disc list-inside">
-                    <li>File video maks. 30Mb, resolusi ≤ 1280 x 1280px</li>
-                    <li>Durasi: 10–60 detik</li>
+                <ul className="text-[12px] text-[#555555] list-disc list-outside pl-4 leading-tight mb-4 mt-1">
+                    <li className="max-w-[260px]">
+                        File video maks. harus 30Mb dengan resolusi tidak melebihi 1280 x 1280px.
+                    </li>
+                    <li>Durasi: 10-60 detik</li>
                     <li>Format: MP4</li>
                 </ul>
             </div>

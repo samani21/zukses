@@ -75,11 +75,11 @@ const ProductInfoSection = (props: ProductInfoSectionProps) => {
                     <span className="font-bold text-[14px]">Tips!. </span> Masukkan Nama Merek + Tipe Produk + Fitur Produk (Bahan, Warna, Ukuran, Variasi)
                 </div>
                 <div id="category" onMouseEnter={() => setTipKey('category')} onMouseLeave={() => setTipKey('default')}>
-                    <label className="text-[#333333] font-bold text-[14px]">
+                    <label className="text-[#333333] font-bold text-[16px]">
                         Kategori <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                     </label>
                     <div className="flex items-center border border-[#AAAAAA] rounded-[5px] mt-2" onClick={() => { setTempCategory(category); setCategoryModalOpen(true); }}>
-                        <div className="w-full px-3 py-2 text-[#555555] text-[14px]">
+                        <div className="w-full px-3 py-2 text-[#AAAAAA] text-[14px] tracking-[-0.02em]">
                             {category || "Pilih Kategori Produk"}
                         </div>
                         <button className="ml-2 p-2 text-gray-600 hover:bg-gray-100 rounded-md">
