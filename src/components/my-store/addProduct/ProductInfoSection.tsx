@@ -43,7 +43,7 @@ const ProductInfoSection = (props: ProductInfoSectionProps) => {
 
     return (
         <div id="informasi-produk-section" className='border border-[#DCDCDC] py-6 rounded-[5px]'>
-            <h1 className="font-bold text-[20px] text-[#483AA0] mb-4 px-8">Informasi Produk</h1>
+            <h1 className="font-bold text-[20px] text-[#483AA0] mb-4 px-7.5">Informasi Produk</h1>
 
             <div className="rounded-lg mb-6">
                 <div onMouseEnter={() => setTipKey('photo')} onMouseLeave={() => setTipKey('default')}>
