@@ -206,7 +206,7 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
 
     return (
         <GoogleMapsProvider>
-            <div className="fixed inset-0 bg-black/50 z-50 md:flex items-center justify-center md:p-4">
+            <div className="fixed inset-0 bg-black/50 z-50 mb-0 md:flex items-center justify-center md:p-4">
                 {
                     openMaps ?
                         editData?.subdistrict_id === formData?.district &&

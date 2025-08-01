@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { RadioGroup } from './FormInputs';
 import { TipKey } from './tipsStore';
-import { Modal } from 'components/Modal';
-import { MapPin } from 'lucide-react';
+import { MapPin, X } from 'lucide-react';
 import { ShopData } from '../ShopProfileContext';
 import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
 import Loading from 'components/Loading';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ModalClean } from 'components/ModalClean';
+import AddAddressShopModal from '../address/AddAddressShopModal';
+import Post from 'services/api/Post';
+import { AxiosError } from 'axios';
+import Snackbar from 'components/Snackbar';
 interface Address {
     name_shop?: string;
     number_shop?: string;
@@ -28,6 +32,22 @@ interface Address {
     postal_code_id?: number;
 }
 
+
+type AddressData = {
+    name: string;
+    phone: string;
+    isPrivate: boolean;
+    isStore: boolean;
+    detailAddress: string;
+    fullAddress: string;
+    fullAddressStreet: string;
+    lat: number;
+    long: number;
+    prov: number;
+    city: number;
+    district: number;
+    postCode: number;
+};
 interface Services {
     id?: number;
     courier_id?: string;
@@ -59,10 +79,20 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     } = props;
     const [showModal, setShowModal] = useState(false);
     const [dataAddress, setDataAddress] = useState<Address | null>(null);
+    const [dataEditAddress, setDataEditAddress] = useState<Address | null>(null);
     const [listAddres, setListAddress] = useState<Address[]>([]);
     const [loading, setLoading] = useState<boolean>(false)
     const [couriers, setCouriers] = useState<Courier[]>([]);
     const [openDetailIds, setOpenDetailIds] = useState<string[]>(couriers.map(c => c.id!).filter(Boolean));
+    const [isAdd, setIsAdd] = useState<boolean>(false);
+    const [openDelete, setOpenDelete] = useState<number>(0);
+    console.log(openDelete)
+    const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
+    const [snackbar, setSnackbar] = useState<{
+        message: string;
+        type?: 'success' | 'error' | 'info';
+        isOpen: boolean;
+    }>({ message: '', type: 'info', isOpen: false });
     useEffect(() => {
         if (shopProfil?.address) {
             getShopAddress()
@@ -100,6 +130,48 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
         }
     };
 
+    const handleAdd = async (data: AddressData, id?: number): Promise<void> => {
+        try {
+            setLoading(true);
+            const formData = new FormData();
+            formData.append('name_shop', data.name);
+            formData.append('number_shop', data.phone);
+            formData.append('province_id', String(data.prov || 0));
+            formData.append('citie_id', String(data.city || 0));
+            formData.append('subdistrict_id', String(data.district || 0));
+            formData.append('postal_code_id', String(data.postCode || 0));
+            formData.append('full_address', data.fullAddressStreet);
+            formData.append('full_location', data.fullAddress);
+            formData.append('detail_address', data.detailAddress);
+            formData.append('lat', String(data.lat || 0));
+            formData.append('long', String(data.long || 0));
+            formData.append('is_primary', String(data.isPrivate ? 1 : 0));
+            formData.append('is_store', String(data.isStore ? 1 : 0));
+
+            if (id) {
+                const res = await Post<Response>('zukses', `shop/address/${id}/edit`, formData);
+                setLoading(false);
+
+                if (res?.data?.status === 'success') {
+                    setOpenModalAddAdress(false)
+                    getShopAddress()
+                }
+            } else {
+                const res = await Post<Response>('zukses', `shop/address/create/${shopProfil?.id}`, formData);
+                setLoading(false);
+
+                if (res?.data?.status === 'success') {
+                    setOpenModalAddAdress(false)
+                    getShopAddress()
+                }
+            }
+        } catch (err) {
+            setLoading(false);
+            const error = err as AxiosError<{ message?: string }>;
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
+        }
+    };
+
     return (
         <div id="informasi-pengiriman-section" ref={sectionRefs} className="mb-6 space-y-6 border border-[#DCDCDC] py-6 rounded-[5px] px-8">
             <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Pengiriman</h1>
@@ -115,11 +187,11 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
             <div onMouseEnter={() => setTipKey('preorder')} onMouseLeave={() => setTipKey('default')}>
                 <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'} onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')} />
             </div>
-            <div>
+            <p className='text-[#333333] text-[14px]'>Kirimkan produk dalam 2 hari (tidak termasuk hari Sabtu, Minggu, libur nasional dan non-operasional jasa kirim).</p>
+            <div className='-mt-4'>
                 {isProductPreOrder == '1' && (
                     <>
-                        <p className='text-[#333333] text-[14px]'>Kirimkan produk dalam 2 hari (tidak termasuk hari Sabtu, Minggu, libur nasional dan non-operasional jasa kirim).</p>
-                        <div className="flex flex-col sm:flex-row sm:space-x-3 items-start sm:items-center mb-4 mt-2">
+                        <div className="flex flex-col sm:flex-row sm:space-x-3 items-start sm:items-center mb-4">
                             <label htmlFor="preorderDuration" className="text-[#333333] text-[14px]">
                                 Saya memerlukan
                             </label>
@@ -232,29 +304,85 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                     </fieldset>
                 </div>
             </section>
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={"Ubah Alamat"}>
-                <div className='space-y-4 max-h-75 overflow-y-auto no-scrollbar'>
-                    {listAddres.map(address => (
-                        <div key={address.id} className="bg-[#FFFFFF] border border-[#DCDCDC] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] p-6 flex flex-col md:flex-row gap-4 rounded-[5px] cursor-pointer" onClick={() => {
-                            setDataAddress(address)
-                            setShowModal(false)
-                        }}>
-                            <div className="flex-grow text-[#333333]">
-                                <div className="flex items-baseline">
-                                    <span className="font-bold text-[16px] mr-1">{address.name_shop}</span>
-                                    <span className='text-[16px]'> | {address.number_shop}</span>
-                                </div>
-                                <p className='mt-2 text-[14px]'>{address.full_address}</p>
-                                <p className='mt-[-5px] text-[14px]'>{`${address?.subdistricts},${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
-                                <div className="flex gap-">
-                                    {address.is_primary ? <span className="text-[#E67514] font-bold text-[14px] rounded-sm">Alamat Utama</span> : ''}
-                                </div>
-                            </div>
+            <ModalClean isOpen={showModal} onClose={() => setShowModal(false)}>
+                <div className=''>
+                    <div className="flex justify-between items-center p-6">
+                        <h3 className="text-[20px] text-[#333333] font-bold">Ubah Alamat</h3>
+                        <button onClick={() => setShowModal(false)} className="text-[#555555] hover:text-gray-800"><X size={20} /></button>
+                    </div>
+                    <div className="space-y-3">
+                        <div className='flex justify-end px-4'>
+                            <button className="text-center bg-[#238744] py-3 px-4 text-[14px] font-semibold text-white font-bold rounded-[10px] hover:bg-green-500 transition" onClick={() => {
+                                setOpenModalAddAdress(true)
+                                setIsAdd(true);
+                            }}>
+                                Tambah Alamat
+                            </button>
                         </div>
-                    ))}
+                        <div className='max-h-[60vh] overflow-y-auto no-scrollbar'>
+                            {listAddres.map(address => (
+                                <div key={address.id} className="border-b border-[#BBBBBB] p-6 py-4">
+                                    <div className="flex items-start">
+                                        {/* Input radio dengan ID */}
+                                        <input
+                                            id={`address-${address.id}`}
+                                            type="radio"
+                                            name="address"
+                                            className="mt-1 mr-4 accent-[#660077] w-[20px] h-[20px]"
+                                            checked={dataAddress?.id === address.id}
+                                            onChange={() => setDataAddress(address)}
+                                        />
+
+                                        {/* Label terkait input */}
+                                        <label
+                                            htmlFor={`address-${address.id}`}
+                                            className="flex-1 space-y-3 cursor-pointer"
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div className='flex'>
+                                                    <p className="font-bold text-[#333333] text-[15px] line-clamp-1 w-[140px]">{address.name_shop}</p>
+                                                    <p className=''>{address.number_shop}</p>
+                                                </div>
+                                            </div>
+                                            <p className='mt-[-5px] text-[14px]'>{`${address?.subdistricts}, ${address?.cities}, ${address?.provinces}, ID, ${address?.postal_codes}`}</p>
+                                        </label>
+
+                                        {/* Tombol ubah di luar label, aman */}
+                                        <div
+                                            className="ml-4 text-[#F77000] w-1/8 font-bold text-[15px] text-end text-sm hover:underline cursor-pointer"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // opsional, hanya berjaga-jaga
+                                                setDataEditAddress(address);
+                                                setOpenModalAddAdress(true);
+                                            }}
+                                        >
+                                            Ubah
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
+                    <div className="flex justify-end items-center p-4 space-x-3">
+                        <button onClick={() => setShowModal(false)} className="px-6 py-2 text-[#333333] text-[14px] font-semibold rounded-[10px] border border-[#AAAAAA] hover:bg-gray-100">Batalkan</button>
+                        <button onClick={() => setShowModal(false)} className="px-6 py-2 bg-[#4A52B2] text-[14px] font-semibold text-white rounded-md hover:bg-purple-700">Terapkan</button>
+                    </div>
+
                 </div>
-                {loading && <Loading />}
-            </Modal>
+
+            </ModalClean>
+            {snackbar.isOpen && (
+                <Snackbar
+                    message={snackbar.message}
+                    type={snackbar.type}
+                    isOpen={snackbar.isOpen}
+                    onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                />
+            )}
+            {openModalAddAddress &&
+                <AddAddressShopModal setOpenModalAddAdress={setOpenModalAddAdress} handleAdd={handleAdd} editData={dataEditAddress} openModalAddAddress={openModalAddAddress} setOpenDelete={setOpenDelete} isAdd={isAdd} setIsAdd={setIsAdd} />}
+            {loading && <Loading />}
         </div >
     );
 };
