@@ -60,7 +60,9 @@ interface ProductSalesSectionProps {
     applyDimensionToAll: () => void;
     showDimensionTable: boolean;
     setShowDimensionTable: (show: boolean) => void;
+    tempCategory?: string;
 }
+
 
 // Komponen ini akan sangat besar, namun sudah terisolasi
 const ProductSalesSection = (props: ProductSalesSectionProps) => {
@@ -76,14 +78,29 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         showPercentSuggestIndex, setShowPercentSuggestIndex, dropdownPosition, setDropdownPosition,
         minOrder, setMinOrder, maxOrder, setMaxOrder,
         globalWeight, setGlobalWeight, globalWidth, setGlobalWidth, globalLength, setGlobalLength, globalHeight, setGlobalHeight,
-        applyDimensionToAll, showDimensionTable, setShowDimensionTable
+        applyDimensionToAll, showDimensionTable, setShowDimensionTable, tempCategory
     } = props;
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // State untuk menyimpan file yang dipilih dan URL preview-nya
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     console.log('selectedFile', selectedFile)
-    // Ref untuk mengakses input file yang tersembunyi
+    const requiredCategories = [
+        'Pakaian Wanita',
+        'Pakaian Pria',
+        'Aksesoris Fashion',
+        'Sepatu Pria',
+        'Fashion Muslim',
+        'Koper & Tas Travel',
+        'Tas Wanita',
+        'Sepatu Wanita',
+        'Tas Pria',
+        'Jam Tangan',
+        'Fashion Bayi & Anak',
+    ];
+
+    // Ekstrak kategori utama (bagian sebelum " > ")
+    const mainCategory = tempCategory?.split('>')[0].trim() || '';
+    const showSizeGuide = requiredCategories.includes(mainCategory);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Logika yang spesifik untuk rendering (seperti `combinations`) bisa tetap di sini
@@ -958,108 +975,111 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                 </div>
             )}
 
-            <label className="text-[#333333] font-bold text-[14px]">
-                Panduan Ukuran
-                <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
-            </label>
-            <div className='mt-2'>
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    accept="image/png, image/jpeg, image/jpg"
-                />
+            {showSizeGuide && (
+                <>
+                    <label className="text-[#333333] font-bold text-[14px]">
+                        Panduan Ukuran
+                        <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
+                    </label>
+                    <div className='mt-2'>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            className="hidden"
+                            accept="image/png, image/jpeg, image/jpg"
+                        />
 
-                <div>
-                    {previewUrl ? (
-                        // Tampilkan preview gambar jika ada
                         <div>
-                            <img
-                                src={previewUrl}
-                                alt="Preview panduan ukuran"
-                                className="w-[80px] rounded-md object-contain mb-2"
-                            />
-                        </div>
-                    ) : (
-                        // Tampilkan placeholder jika tidak ada gambar
-                        <div className=" text-gray-500 flex items-start cursor-pointer gap-4">
-                            <div className='border border-[#BBBBBB] rounded-[5px]' onClick={handleAreaClick}>
-                                <Image size={67} strokeWidth={1.5} />
-                            </div>
-
-                            <div>
-                                <p className=" text-[#555555] text-[12px]" onClick={handleAreaClick}>
-                                    Ukuran: Maks. 2MB, pastikan resolusi tidak <br /> boleh melebihi 1280x1280px Format: JPG, PNG
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={openModal}
-                                    className="text-[14px] font-bold text-[#555555] transition-colors duration-200 hover:text-indigo-800 focus:outline-none mt-3"
-                                >
-                                    Lihat Contoh
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {previewUrl && (
-                        <button
-                            onClick={handleRemoveImage}
-                            className="flex items-center gap-1.5 rounded-md bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
-                            aria-label="Hapus gambar"
-                        >
-                            <Trash2 className="h-4 w-4" />
-                            Hapus
-                        </button>
-                    )}
-
-                </div>
-            </div>
-
-            {/* Modal untuk Menampilkan Contoh Gambar */}
-            {isModalOpen && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-                    aria-labelledby="modal-title"
-                    role="dialog"
-                    aria-modal="true"
-                    onClick={closeModal}
-                >
-                    <div
-                        className="relative w-full max-w-4xl transform rounded-xl bg-white p-4 py-6 shadow-2xl transition-all"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="space-y-4">
-                            <div className='flex justify-between px-8'>
-                                <div className='space-y-2'>
-                                    <h3 id="modal-title" className="text-[27px] font-bold text-black tracking-[-0.03em]">
-                                        Panduan Ukuran
-                                    </h3>
-                                    <p className="text-[16px] text-black tracking-[-0.03em]">
-                                        Anda bisa meng-upload panduan ukuran seperti gambar berikut
-                                    </p>
+                            {previewUrl ? (
+                                // Tampilkan preview gambar jika ada
+                                <div>
+                                    <img
+                                        src={previewUrl}
+                                        alt="Preview panduan ukuran"
+                                        className="w-[80px] rounded-md object-contain mb-2"
+                                    />
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
+                            ) : (
+                                // Tampilkan placeholder jika tidak ada gambar
+                                <div className=" text-gray-500 flex items-start cursor-pointer gap-4">
+                                    <div className='border border-[#BBBBBB] rounded-[5px]' onClick={handleAreaClick}>
+                                        <Image size={67} strokeWidth={1.5} />
+                                    </div>
 
-                                    aria-label="Tutup modal"
+                                    <div>
+                                        <p className=" text-[#555555] text-[12px]" onClick={handleAreaClick}>
+                                            Ukuran: Maks. 2MB, pastikan resolusi tidak <br /> boleh melebihi 1280x1280px Format: JPG, PNG
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={openModal}
+                                            className="text-[14px] font-bold text-[#555555] transition-colors duration-200 hover:text-indigo-800 focus:outline-none mt-3"
+                                        >
+                                            Lihat Contoh
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {previewUrl && (
+                                <button
+                                    onClick={handleRemoveImage}
+                                    className="flex items-center gap-1.5 rounded-md bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100"
+                                    aria-label="Hapus gambar"
                                 >
-                                    <X className="h-6 w-6" />
+                                    <Trash2 className="h-4 w-4" />
+                                    Hapus
                                 </button>
-                            </div>
-                            <div className="overflow-hidden">
-                                <img
-                                    src="/image/contoh.png"
-                                    alt="Contoh Panduan Ukuran Baju"
-                                    className="h-auto w-full object-contain"
-                                />
-                            </div>
+                            )}
+
                         </div>
                     </div>
-                </div>
-            )}
+
+                    {/* Modal untuk Menampilkan Contoh Gambar */}
+                    {isModalOpen && (
+                        <div
+                            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+                            aria-labelledby="modal-title"
+                            role="dialog"
+                            aria-modal="true"
+                            onClick={closeModal}
+                        >
+                            <div
+                                className="relative w-full max-w-4xl transform rounded-xl bg-white p-4 py-6 shadow-2xl transition-all"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="space-y-4">
+                                    <div className='flex justify-between px-8'>
+                                        <div className='space-y-2'>
+                                            <h3 id="modal-title" className="text-[27px] font-bold text-black tracking-[-0.03em]">
+                                                Panduan Ukuran
+                                            </h3>
+                                            <p className="text-[16px] text-black tracking-[-0.03em]">
+                                                Anda bisa meng-upload panduan ukuran seperti gambar berikut
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={closeModal}
+
+                                            aria-label="Tutup modal"
+                                        >
+                                            <X className="h-6 w-6" />
+                                        </button>
+                                    </div>
+                                    <div className="overflow-hidden">
+                                        <img
+                                            src="/image/contoh.png"
+                                            alt="Contoh Panduan Ukuran Baju"
+                                            className="h-auto w-full object-contain"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </>)}
         </div>
     );
 };
