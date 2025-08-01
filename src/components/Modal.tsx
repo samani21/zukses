@@ -83,7 +83,8 @@ export function Modal({ isOpen, onClose, children, title }: ModalProps) {
         >
             <div
                 ref={modalRef}
-                className="relative w-full max-w-sm p-6 bg-white rounded-xl shadow-2xl m-4"
+                className="relative min-w-sm p-6 bg-white rounded-xl shadow-2xl m-4"
+                // className="relative w-full max-w-sm p-6 bg-white rounded-xl shadow-2xl m-4"
                 onClick={(e) => e.stopPropagation()}
                 tabIndex={-1}
             >

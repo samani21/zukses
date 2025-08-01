@@ -1,24 +1,32 @@
 import { createContext, useContext } from 'react';
 
 interface Address {
-    name_shop: string;
-    number_shop: string;
-    province_id: string;
-    citie_id: string;
-    subdistrict_id: string;
-    postal_code_id: string;
-    full_address: string;
-    label: string;
-    lat: number;
-    long: number;
-    is_primary: number;
+    name_shop?: string;
+    number_shop?: string;
+    provinces?: string;
+    cities?: string;
+    subdistricts?: string;
+    postal_codes?: string;
+    full_address?: string;
+    detail_address?: string;
+    id?: number;
+    lat?: number;
+    long?: number;
+    is_primary?: number;
+    is_store?: number;
+    province_id?: number;
+    citie_id?: number;
+    subdistrict_id?: number;
+    postal_code_id?: number;
 }
+
 interface Bank {
     account_name: string;
     account_number: string;
 }
 interface Delivery {
     seller_id: string;
+    enabled_service_ids: number[];
 }
 export interface ShopData {
     logo_url: string;

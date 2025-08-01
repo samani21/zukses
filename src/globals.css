@@ -304,3 +304,48 @@ button{
 .navbar-scrollbar.hide-scrollbar {
   overflow-y: hidden !important; /* Ini benar-benar menyembunyikan scrollbar */
 }
+
+
+input.no-spinner::-webkit-outer-spin-button,
+input.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.no-spinner {
+  -moz-appearance: textfield;
+}
+
+.toggle-checkbox {
+  width: 46px; /* 40px */
+  height: 26px; /* 20px */
+  appearance: none;
+  background-color: #D1D5DB; /* gray-300 */
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #9CA3AF; /* gray-400 */
+}
+
+.toggle-checkbox:checked {
+  background-color: #6871F1; /* blue-purple */
+  border: 2px solid #303BD1; /* darker blue border */
+}
+
+.toggle-checkbox::before {
+  content: "";
+  position: absolute;
+  top: 2.5px;
+  left: 0px;
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 9999px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 0 0 1px #9CA3AF;
+}
+
+.toggle-checkbox:checked::before {
+  transform: translateX(20px);
+  box-shadow: 0 0 0 1px #303BD1;
+}
