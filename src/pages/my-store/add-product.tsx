@@ -85,7 +85,6 @@ const AddProduct: NextPage = () => {
   const [apiCategories, setApiCategories] = useState<Category[]>([]);
   const [categoryApiError, setCategoryApiError] = useState<string | null>(null);
   const [categoryLoading, setCategoryLoading] = useState(true);
-
   //variasi
   const variationSuggestions = ['Warna', 'Ukuran', 'Model', 'Bahan'];
   const [showSuggestionIndex, setShowSuggestionIndex] = useState<number | null>(null);
@@ -1024,7 +1023,7 @@ const AddProduct: NextPage = () => {
             <span className="font-bold text-[14px] text-[#333333] ">Tambah Produk</span>
           </div> */}
 
-          <div className="flex items-start gap-4 relative">
+          <div className="flex items-start gap-4 relative mt-3">
             <Sidebar
               tipsChecklist={tipsChecklist}
               activeSection={activeSection}
@@ -1032,7 +1031,7 @@ const AddProduct: NextPage = () => {
               validationStatus={validationStatus}
             />
 
-            <div className="lg:col-span-2 space-y-8 mt-8">
+            <div className="lg:col-span-2 space-y-8 ">
               <ProductInfoSection
                 setTipKey={setTipKey}
                 selectedImages={selectedImages}
@@ -1114,6 +1113,7 @@ const AddProduct: NextPage = () => {
                 applyDimensionToAll={applyDimensionToAll}
                 showDimensionTable={showDimensionTable}
                 setShowDimensionTable={setShowDimensionTable}
+                tempCategory={tempCategory}
               />
               <ProductDeliveryInfoSection
                 setTipKey={setTipKey}
