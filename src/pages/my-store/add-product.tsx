@@ -151,6 +151,23 @@ const AddProduct: NextPage = () => {
   const [courierServicesIds, setCourierServicesIds] = useState<number[]>([]);
   const [idAddress, setIdAddress] = useState<string>();
   console.log('courierServicesIds', courierServicesIds)
+  const requiredCategories = [
+    'Pakaian Wanita',
+    'Pakaian Pria',
+    'Aksesoris Fashion',
+    'Sepatu Pria',
+    'Fashion Muslim',
+    'Koper & Tas Travel',
+    'Tas Wanita',
+    'Sepatu Wanita',
+    'Tas Pria',
+    'Jam Tangan',
+    'Fashion Bayi & Anak',
+  ];
+
+  // Ekstrak kategori utama (bagian sebelum " > ")
+  const mainCategory = tempCategory?.split('>')[0].trim() || '';
+  const showSizeGuide = requiredCategories.includes(mainCategory);
   useEffect(() => {
     // 1. Temukan kontainer yang bisa di-scroll berdasarkan ID
     const scrollContainer = document.getElementById('main-scroll-container');
@@ -662,6 +679,9 @@ const AddProduct: NextPage = () => {
     if (shippingCost === 'Ongkos kirim disubsidi Penjual') {
       if (!subsidy.trim()) newErrors.subsidy = 'Subsidi ongkir wajib diisi';
     }
+    if (showSizeGuide) {
+      if (!sizeGuide) newErrors.sizeGuide = 'Gambar panduan ukuran wajib diisi';
+    }
     if (isVoucher) {
       if (!voucher.trim()) newErrors.voucher = 'Voucher wajib diisi';
     }
@@ -1145,6 +1165,7 @@ const AddProduct: NextPage = () => {
                 setShowDimensionTable={setShowDimensionTable}
                 tempCategory={tempCategory}
                 setSizeGuide={setSizeGuide}
+                showSizeGuide={showSizeGuide}
               />
               <ProductDeliveryInfoSection
                 setTipKey={setTipKey}
