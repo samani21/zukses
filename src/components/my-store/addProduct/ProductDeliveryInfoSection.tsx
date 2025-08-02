@@ -69,13 +69,16 @@ interface ProductDeliveryInfoSectionProps {
     setIsCodEnabled: (val: string) => void;
     isProductPreOrder: string;
     setIsProductPreOrder: (val: string) => void;
+    setIdAddress: (val: string) => void;
     sectionRefs: React.RefObject<HTMLDivElement | null>;
     shopProfil?: ShopData | null;
+    setCourierServicesIds: (val: number[]) => void;
+    errors: { [key: string]: string };
 }
 
 const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     const {
-        setTipKey, isHazardous, setIsHazardous, isProductPreOrder, setIsProductPreOrder, sectionRefs, shopProfil
+        setTipKey, isHazardous, setIsHazardous, isProductPreOrder, setIsProductPreOrder, sectionRefs, shopProfil, setCourierServicesIds, errors, setIdAddress
     } = props;
     const [showModal, setShowModal] = useState(false);
     const [dataAddress, setDataAddress] = useState<Address | null>(null);
@@ -87,6 +90,8 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     const [isAdd, setIsAdd] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<number>(0);
     console.log(openDelete)
+    const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
+
     const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<{
         message: string;
@@ -100,6 +105,11 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
             getCourier()
         }
     }, [shopProfil])
+    useEffect(() => {
+        if (dataAddress) {
+            setIdAddress(String(dataAddress?.id))
+        }
+    }, [dataAddress])
     const getCourier = async () => {
         // setLoading(true);
         const res = await Get<Response>('zukses', `courier-service/list`);
@@ -171,7 +181,9 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
             setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
         }
     };
-
+    useEffect(() => {
+        setCourierServicesIds(selectedServiceIds)
+    }, [selectedServiceIds]);
     return (
         <div id="informasi-pengiriman-section" ref={sectionRefs} className="mb-6 space-y-6 border border-[#DCDCDC] py-6 rounded-[5px] px-8">
             <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Pengiriman</h1>
@@ -236,7 +248,7 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                 }
             </section>
             <section>
-                <label className="text-[#333333] font-bold text-[14px]">
+                <label className="text-[#333333] font-bold text-[16px]">
                     Wajib memilih jasa kirim
                     <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>
                 </label>
@@ -247,11 +259,17 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                             lineHeight: "108%"
                         }}>Kurir Toko</p>
                         <div>
-                            <input type="checkbox" className="toggle-checkbox" />
+                            <input type="checkbox" className="toggle-checkbox" checked={selectedServiceIds.includes(0)}
+                                onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    setSelectedServiceIds((prev) =>
+                                        isChecked ? [...prev, 0] : prev.filter((id) => id !== 0)
+                                    );
+                                }} />
                         </div>
                     </div>
                     <fieldset className="space-y-4 rounded-[5px]">
-                        {couriers.map((courier) => {
+                        {(couriers as Courier[]).map((courier: Courier) => {
                             const isOpen = openDetailIds.includes(courier.id!);
                             return (
                                 <details
@@ -286,7 +304,23 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                                         </span>
 
                                         <div className="flex items-center space-x-3">
-                                            <input type="checkbox" className="toggle-checkbox" />
+                                            <input type="checkbox" className="toggle-checkbox"
+                                                checked={courier.services?.every(srv => selectedServiceIds.includes(Number(srv.id)))}
+                                                onChange={(e) => {
+                                                    const isChecked = e.target.checked;
+                                                    const serviceIds = courier.services?.map(s => Number(s.id)) || [];
+
+                                                    setSelectedServiceIds((prev) => {
+                                                        if (isChecked) {
+                                                            // Gabungkan semua ID, hindari duplikat
+                                                            const merged = [...new Set([...prev, ...serviceIds])];
+                                                            return merged;
+                                                        } else {
+                                                            // Hapus semua service id dari courier tersebut
+                                                            return prev.filter((id) => !serviceIds.includes(id));
+                                                        }
+                                                    });
+                                                }} />
                                         </div>
                                     </summary>
 
@@ -303,6 +337,7 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
 
                     </fieldset>
                 </div>
+                {errors.courier && <div className="text-red-500 text-sm mt-1">{errors?.courier}</div>}
             </section>
             <ModalClean isOpen={showModal} onClose={() => setShowModal(false)}>
                 <div className=''>

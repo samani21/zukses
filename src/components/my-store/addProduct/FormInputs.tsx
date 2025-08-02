@@ -127,10 +127,11 @@ export const RadioGroup = ({
 
   return (
     <div>
-      <label className="block text-[14px] font-bold text-[#333333] mb-2">
-        {label} {required && <span className="text-red-500">*</span>}
+      <label className="block text-[16px] font-bold text-[#333333] mb-2">
+        {label} {required && <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span>}
       </label>
-      <div className="flex items-center space-x-6">
+      <div className={`${label === 'Ongkos Kirim' ? "space-y-2" : "flex items-center space-x-6"}`}>
+        {/* <div className="flex items-center space-x-6"> */}
         {options.map((option) => (
           <label key={option} className="flex items-center space-x-2 cursor-pointer">
             <input
