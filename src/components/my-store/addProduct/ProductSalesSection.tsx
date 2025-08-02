@@ -62,6 +62,7 @@ interface ProductSalesSectionProps {
     setShowDimensionTable: (show: boolean) => void;
     tempCategory?: string;
     setSizeGuide: Dispatch<SetStateAction<File | null>>;
+    showSizeGuide: boolean
 }
 function roundLastThreeDigitsToNearestHundred(value: number): number {
     const lastThree = value % 1000;
@@ -87,27 +88,11 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         showPercentSuggestIndex, setShowPercentSuggestIndex, dropdownPosition, setDropdownPosition,
         minOrder, setMinOrder, maxOrder, setMaxOrder,
         globalWeight, setGlobalWeight, globalWidth, setGlobalWidth, globalLength, setGlobalLength, globalHeight, setGlobalHeight,
-        applyDimensionToAll, showDimensionTable, setShowDimensionTable, tempCategory, setSizeGuide
+        applyDimensionToAll, showDimensionTable, setShowDimensionTable, setSizeGuide, showSizeGuide
     } = props;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const requiredCategories = [
-        'Pakaian Wanita',
-        'Pakaian Pria',
-        'Aksesoris Fashion',
-        'Sepatu Pria',
-        'Fashion Muslim',
-        'Koper & Tas Travel',
-        'Tas Wanita',
-        'Sepatu Wanita',
-        'Tas Pria',
-        'Jam Tangan',
-        'Fashion Bayi & Anak',
-    ];
 
-    // Ekstrak kategori utama (bagian sebelum " > ")
-    const mainCategory = tempCategory?.split('>')[0].trim() || '';
-    const showSizeGuide = requiredCategories.includes(mainCategory);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Logika yang spesifik untuk rendering (seperti `combinations`) bisa tetap di sini
@@ -435,7 +420,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                         <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
                                             <input type="text" placeholder="Harga Diskon" className="h-[40px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)}
-                                                readOnly />
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -529,7 +514,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             <div className='flex items-center gap-3'>
                                 <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white h-[40px]">
                                     <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                    <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)} readOnly />
+                                    <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)} />
                                 </div>
                                 {
                                     variations[0]?.options[0] != '' &&
@@ -833,7 +818,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                         placeholder="Harga"
                                                         className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
                                                         value={formatRupiahNoRPHarga(roundedVariant)}
-                                                        readOnly
+
                                                     />
                                                 </div>
                                             </td>
@@ -1133,7 +1118,9 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
 
                         </div>
                     </div>
-
+                    {errors.sizeGuide && (
+                        <div className="text-red-500 text-sm mt-1">{errors.sizeGuide}</div>
+                    )}
                     {/* Modal untuk Menampilkan Contoh Gambar */}
                     {isModalOpen && (
                         <div

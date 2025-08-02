@@ -175,9 +175,7 @@ const ProductImageUploader = React.memo(({
                             onClick={(e) => (e.currentTarget.value = '')}
                         />
                     </div>
-                    {errorPromo && (
-                        <div className="text-red-500 text-sm mt-1">{errorPromo}</div>
-                    )}
+
                     <ul className="text-[12px] text-[#555555] list-disc list-outside pl-4 leading-tight mb-4 mt-1">
                         <li style={{ letterSpacing: "-2%" }}>Upload Foto 1:1</li>
                         <li className="max-w-[240px]">
@@ -185,6 +183,9 @@ const ProductImageUploader = React.memo(({
                         </li>
                     </ul>
                 </div>
+                {errorPromo && (
+                    <div className="text-red-500 text-sm mt-1">{errorPromo}</div>
+                )}
             </div>
         </div>
     );
