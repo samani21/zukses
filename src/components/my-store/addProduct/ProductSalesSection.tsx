@@ -969,19 +969,19 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                     Berat dan Dimensi Produk
                 </label>
                 <div className="grid grid-cols-12 items-center gap-3 mt-4 w-full">
-                    <div className={`${isVariant ? "col-span-4" : "col-span-6"} border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex justify-between items-center`}>
-                        <input type="number" placeholder="Berat" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
+                    <div className={`${isVariant ? "col-span-2" : "col-span-2"} border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex justify-between items-center`}>
+                        <input type="number" placeholder="Berat" className="w-full py-2.5 placeholder:text-[#AAAAAA] text-[15px]  focus:outline-none focus:ring-0 focus:border-none" value={globalWeight}
                             onChange={(e) => setGlobalWeight(e.target.value)} />
                         <span className="text-[15px] text-[#555555]">Gr</span>
                     </div>
-                    <div className='col-span-6 border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between'>
-                        <input type="number" placeholder="Lebar" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                    <div className={`${isVariant ? "col-span-8" : "col-span-10"} border rounded-[5px] px-4 border-[#AAAAAA] h-[40px] flex items-center justify-between`}>
+                        <input type="number" placeholder="Lebar" className="w-full py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] text-center focus:outline-none focus:ring-0 focus:border-none"
                             value={globalWidth} onChange={(e) => setGlobalWidth(e.target.value)} />
                         <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                        <input type="number" placeholder="Panjang" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none"
+                        <input type="number" placeholder="Panjang" className="w-full py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] text-center focus:outline-none focus:ring-0 focus:border-none"
                             value={globalLength} onChange={(e) => setGlobalLength(e.target.value)} />
                         <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
-                        <input type="number" placeholder="Tinggi" className="py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
+                        <input type="number" placeholder="Tinggi" className="w-full py-2.5 placeholder:text-[#AAAAAA] text-[15px] w-[70px] text-center focus:outline-none focus:ring-0 focus:border-none  focus:outline-none focus:ring-0 focus:border-none"
                             value={globalHeight} onChange={(e) => setGlobalHeight(e.target.value)} />
                         <span className="text-[15px] text-[#AAAAAA] mr-[20px]">|</span>
                         <span className="text-[15px] text-[#555555]">Cm</span>
@@ -989,7 +989,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                     {
                         isVariant && variations[0]?.options[0] != '' &&
                         <div className='col-span-2'>
-                            <button className="bg-[#52357B] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
+                            <button className="bg-[#52357B] h-[40px] text-white px-4 py-2 rounded-md text-[15px] font-[500] hover:bg-purple-800 transition duration-200 ml-auto"
                                 onClick={applyDimensionToAll}>
                                 Terapkan kesemua
                             </button>

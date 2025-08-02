@@ -641,7 +641,7 @@ const AddProduct: NextPage = () => {
     if (!isVariant) {
       if (!globalPrice.trim()) newErrors.globalPrice = 'Harga wajib diisi';
       if (!globalStock.trim()) newErrors.globalStock = 'Stok wajib diisi';
-      if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Pengiriman wajib diisi';
+      if (!globalHeight.trim() || !globalWeight.trim() || !globalWidth.trim() || !globalLength.trim()) newErrors.globalDelivry = 'Berat dan dimensi produk wajib diisi';
     }
     if (isVariant) {
       const optionCount1 = variations[0]?.options?.length ?? 0;
