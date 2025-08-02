@@ -63,6 +63,7 @@ interface ProductSalesSectionProps {
     tempCategory?: string;
     setSizeGuide: Dispatch<SetStateAction<File | null>>;
     showSizeGuide: boolean
+    setGlobalDiscount: (val: string) => void;
 }
 function roundLastThreeDigitsToNearestHundred(value: number): number {
     const lastThree = value % 1000;
@@ -88,7 +89,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         showPercentSuggestIndex, setShowPercentSuggestIndex, dropdownPosition, setDropdownPosition,
         minOrder, setMinOrder, maxOrder, setMaxOrder,
         globalWeight, setGlobalWeight, globalWidth, setGlobalWidth, globalLength, setGlobalLength, globalHeight, setGlobalHeight,
-        applyDimensionToAll, showDimensionTable, setShowDimensionTable, setSizeGuide, showSizeGuide
+        applyDimensionToAll, showDimensionTable, setShowDimensionTable, setSizeGuide, showSizeGuide, setGlobalDiscount
     } = props;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -145,10 +146,6 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
             fileInputRef.current.value = "";
         }
     };
-
-
-    const parsedDiscount = parseFloat(globalDiscount || '0'); // hasil number
-    const rounded = roundLastThreeDigitsToNearestHundred(parsedDiscount); // hasil number
 
     return (
         <div id="informasi-penjualan-section" className='border border-[#DCDCDC] py-6 rounded-[5px] space-y-4 px-8'>
@@ -342,7 +339,17 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
                                             <input type="text" placeholder="Harga" className="flex-1 h-[40px] block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
                                                 value={formatRupiahNoRP(globalPrice)}
-                                                onChange={(e) => setGlobalPrice(e.target.value)} />
+                                                onChange={(e) => {
+                                                    const priceValue = String(e.target.value).replace(/[^0-9]/g, '');
+                                                    setGlobalPrice(priceValue);
+
+                                                    // Tambahkan ini: Hitung ulang harga diskon saat harga utama berubah
+                                                    const percent = parseFloat(globalDiscountPercent) || 0;
+                                                    if (percent > 0) {
+                                                        const newDiscount = parseFloat(priceValue) * (1 - percent / 100);
+                                                        setGlobalDiscount(String(newDiscount));
+                                                    }
+                                                }} />
                                         </div>
                                     </div>
                                     <div className="col-span-12 sm:col-span-5 ml-[-20px]">
@@ -374,6 +381,14 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                             (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)
                                                         ) {
                                                             setGlobalDiscountPercent(value);
+                                                            const price = parseFloat(String(globalPrice).replace(/[^0-9]/g, '')) || 0;
+                                                            const percent = parseFloat(value) || 0;
+                                                            if (price > 0 && percent > 0) {
+                                                                const newDiscount = price * (1 - percent / 100);
+                                                                setGlobalDiscount(String(newDiscount));
+                                                            } else {
+                                                                setGlobalDiscount(''); // Kosongkan jika persen 0 atau tidak valid
+                                                            }
 
                                                             // Cek apakah ada saran yang cocok
                                                             const match = discountOptions.some((opt) =>
@@ -419,7 +434,36 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             Harga Diskon</label>
                                         <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white">
                                             <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                            <input type="text" placeholder="Harga Diskon" className="h-[40px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)}
+                                            <input
+                                                type="text"
+                                                placeholder="Harga Diskon"
+                                                className="h-[40px] flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]"
+                                                // Gunakan globalDiscount langsung, bukan `rounded` agar user bisa mengetik bebas
+                                                value={formatRupiahNoRPHarga(globalDiscount)}
+
+                                                // onChange HANYA untuk memperbarui state dengan input mentah dari user
+                                                onChange={(e) => {
+                                                    const rawValue = String(e.target.value).replace(/[^0-9]/g, '');
+                                                    setGlobalDiscount(rawValue);
+                                                }}
+
+                                                // onBlur untuk membulatkan nilai dan menghitung persen setelah selesai
+                                                onBlur={() => {
+                                                    const currentValue = parseFloat(globalDiscount) || 0;
+                                                    const originalPrice = parseFloat(String(globalPrice).replace(/[^0-9]/g, '')) || 0;
+
+                                                    // 1. Bulatkan nilai saat user selesai mengedit
+                                                    const roundedDiscount = roundLastThreeDigitsToNearestHundred(currentValue);
+                                                    setGlobalDiscount(String(roundedDiscount)); // Set nilai final yang sudah dibulatkan
+
+                                                    // 2. Hitung persentase baru berdasarkan nilai yang sudah dibulatkan
+                                                    if (originalPrice > 0 && roundedDiscount > 0 && roundedDiscount < originalPrice) {
+                                                        const newPercent = ((originalPrice - roundedDiscount) / originalPrice) * 100;
+                                                        setGlobalDiscountPercent(String(Math.round(newPercent)));
+                                                    } else {
+                                                        setGlobalDiscountPercent('0'); // Reset persen jika tidak valid
+                                                    }
+                                                }}
                                             />
                                         </div>
                                     </div>
@@ -440,7 +484,18 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             </label>
                             <div className="flex rounded-l-[5px] border border-[#AAAAAA] h-[40px] bg-white">
                                 <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)} onChange={(e) => setGlobalPrice(e.target.value)} />
+                                <input type="text" placeholder="Harga" className="flex-1 block w-full px-3 py-2 border-0 rounded-none focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={formatRupiahNoRP(globalPrice)}
+                                    onChange={(e) => {
+                                        const priceValue = String(e.target.value).replace(/[^0-9]/g, '');
+                                        setGlobalPrice(priceValue);
+
+                                        // Tambahkan ini: Hitung ulang harga diskon saat harga utama berubah
+                                        const percent = parseFloat(globalDiscountPercent) || 0;
+                                        if (percent > 0) {
+                                            const newDiscount = parseFloat(priceValue) * (1 - percent / 100);
+                                            setGlobalDiscount(String(newDiscount));
+                                        }
+                                    }} />
                             </div>
                         </div>
                         <div className="col-span-12 sm:col-span-5 ml-[-20px] ">
@@ -463,26 +518,33 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                     value={globalDiscountPercent}
                                     onChange={(e) => {
                                         const value = e.target.value;
-
-                                        // Validasi: hanya angka 0–100
+                                        // Validasi hanya angka 0–100
                                         if (
                                             value === '' ||
                                             (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)
                                         ) {
                                             setGlobalDiscountPercent(value);
+                                            const price = parseFloat(String(globalPrice).replace(/[^0-9]/g, '')) || 0;
+                                            const percent = parseFloat(value) || 0;
+                                            if (price > 0 && percent > 0) {
+                                                const newDiscount = price * (1 - percent / 100);
+                                                setGlobalDiscount(String(newDiscount));
+                                            } else {
+                                                setGlobalDiscount(''); // Kosongkan jika persen 0 atau tidak valid
+                                            }
 
                                             // Cek apakah ada saran yang cocok
-                                            const hasMatch = discountOptions.some((opt) =>
+                                            const match = discountOptions.some((opt) =>
                                                 opt.toString().includes(value)
                                             );
-                                            setShowPercentSuggest(hasMatch);
+                                            setShowPercentSuggest(match);
                                         }
                                     }}
                                     onFocus={() => {
-                                        const hasMatch = discountOptions.some((opt) =>
+                                        const match = discountOptions.some((opt) =>
                                             opt.toString().includes(globalDiscountPercent)
                                         );
-                                        setShowPercentSuggest(hasMatch);
+                                        setShowPercentSuggest(match);
                                     }}
                                     onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
                                 />
@@ -514,7 +576,33 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             <div className='flex items-center gap-3'>
                                 <div className="flex rounded-[5px] border border-[#AAAAAA] bg-white h-[40px]">
                                     <span className="inline-flex items-center px-3 text-[#555555] text-[14px]">Rp |</span>
-                                    <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" value={formatRupiahNoRPHarga(rounded)} />
+                                    <input type="text" placeholder="Harga Diskon" className="flex-1 block w-full rounded-none rounded-[5px] focus:outline-none border-gray-300 px-3 py-2 placeholder:text-[#AAAAAA]" // Gunakan globalDiscount langsung, bukan `rounded` agar user bisa mengetik bebas
+                                        value={formatRupiahNoRPHarga(globalDiscount)}
+
+                                        // onChange HANYA untuk memperbarui state dengan input mentah dari user
+                                        onChange={(e) => {
+                                            const rawValue = String(e.target.value).replace(/[^0-9]/g, '');
+                                            setGlobalDiscount(rawValue);
+                                        }}
+
+                                        // onBlur untuk membulatkan nilai dan menghitung persen setelah selesai
+                                        onBlur={() => {
+                                            const currentValue = parseFloat(globalDiscount) || 0;
+                                            const originalPrice = parseFloat(String(globalPrice).replace(/[^0-9]/g, '')) || 0;
+
+                                            // 1. Bulatkan nilai saat user selesai mengedit
+                                            const roundedDiscount = roundLastThreeDigitsToNearestHundred(currentValue);
+                                            setGlobalDiscount(String(roundedDiscount)); // Set nilai final yang sudah dibulatkan
+
+                                            // 2. Hitung persentase baru berdasarkan nilai yang sudah dibulatkan
+                                            if (originalPrice > 0 && roundedDiscount > 0 && roundedDiscount < originalPrice) {
+                                                const newPercent = ((originalPrice - roundedDiscount) / originalPrice) * 100;
+                                                setGlobalDiscountPercent(String(Math.round(newPercent)));
+                                            } else {
+                                                setGlobalDiscountPercent('0'); // Reset persen jika tidak valid
+                                            }
+                                        }}
+                                    />
                                 </div>
                                 {
                                     variations[0]?.options[0] != '' &&
@@ -578,8 +666,6 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                 variation.sizes.map((size, sIndex) => {
                                     const index = vIndex * variation.sizes?.length + sIndex;
                                     const rowData = variantData[index] || { price: '', stock: '', discount: '', discountPercent: '' };
-                                    const discountVariant = parseFloat(rowData?.discount || '0'); // hasil number
-                                    const roundedVariant = roundLastThreeDigitsToNearestHundred(discountVariant); // hasil number
 
                                     return (
                                         <tr key={`${vIndex}-${sIndex}`} className="border border-[#AAAAAA]">
@@ -663,15 +749,15 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                         value={formatRupiahNoRP(rowData.price)}
                                                         onChange={(e) => {
                                                             const newData = [...variantData];
-                                                            const priceValue = parseFloat(String(e.target.value).replace(/[^0-9]/g, '')) || 0;
+                                                            const priceValue = String(e.target.value).replace(/[^0-9]/g, '');
                                                             const percentValue = parseInt(newData[index]?.discountPercent, 10) || 0;
                                                             let newDiscountPrice = '';
 
-                                                            if (priceValue > 0 && percentValue > 0) {
-                                                                newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
+                                                            if (parseFloat(priceValue) > 0 && percentValue > 0) {
+                                                                newDiscountPrice = String(parseFloat(priceValue) * (1 - percentValue / 100));
                                                             }
 
-                                                            newData[index] = { ...rowData, price: e.target.value, discount: newDiscountPrice };
+                                                            newData[index] = { ...rowData, price: priceValue, discount: newDiscountPrice };
                                                             setVariantData(newData);
                                                         }}
                                                     />
@@ -711,22 +797,14 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                         value={rowData.discountPercent || ''}
                                                         onChange={(e) => {
                                                             const value = e.target.value;
-
-                                                            // Validasi input: hanya 0–100
-                                                            if (
-                                                                value === '' ||
-                                                                (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)
-                                                            ) {
+                                                            if (value === '' || (/^\d+$/.test(value) && Number(value) >= 0 && Number(value) <= 100)) {
                                                                 const newData = [...variantData];
                                                                 const percentValue = parseInt(value, 10) || 0;
-                                                                const priceValue =
-                                                                    parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
-
+                                                                const priceValue = parseFloat(String(newData[index]?.price).replace(/[^0-9]/g, '')) || 0;
                                                                 let newDiscountPrice = '';
+
                                                                 if (priceValue > 0 && percentValue > 0) {
-                                                                    newDiscountPrice = String(
-                                                                        priceValue - priceValue * (percentValue / 100)
-                                                                    );
+                                                                    newDiscountPrice = String(priceValue - (priceValue * (percentValue / 100)));
                                                                 }
 
                                                                 newData[index] = {
@@ -735,12 +813,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                                     discount: newDiscountPrice,
                                                                 };
                                                                 setVariantData(newData);
-
-                                                                // Cek apakah ada opsi yang cocok
-                                                                const hasMatch = discountOptions.some((opt) =>
-                                                                    opt.toString().includes(value)
-                                                                );
-                                                                setShowPercentSuggestIndex(hasMatch ? index : null);
+                                                                // ... sisa logika suggestion
                                                             }
                                                         }}
                                                         onFocus={(e) => {
@@ -817,8 +890,41 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                         type="text"
                                                         placeholder="Harga"
                                                         className="w-full p-1 placeholder:text-[#AAAAAA] text-[15px] focus:outline-none focus:ring-0 focus:border-none"
-                                                        value={formatRupiahNoRPHarga(roundedVariant)}
+                                                        // Gunakan rowData.discount langsung agar user bisa mengetik
+                                                        value={formatRupiahNoRPHarga(rowData.discount || '')}
 
+                                                        // onChange hanya untuk update sementara
+                                                        onChange={(e) => {
+                                                            const newData = [...variantData];
+                                                            const rawValue = String(e.target.value).replace(/[^0-9]/g, '');
+                                                            newData[index] = { ...rowData, discount: rawValue };
+                                                            setVariantData(newData);
+                                                        }}
+
+                                                        // onBlur untuk kalkulasi final
+                                                        onBlur={() => {
+                                                            const newData = [...variantData];
+                                                            const currentDiscountValue = parseFloat(rowData.discount) || 0;
+                                                            const originalPrice = parseFloat(String(rowData.price).replace(/[^0-9]/g, '')) || 0;
+
+                                                            // 1. Bulatkan nilai
+                                                            const roundedDiscount = roundLastThreeDigitsToNearestHundred(currentDiscountValue);
+                                                            let newPercent = '0';
+
+                                                            // 2. Hitung persen baru
+                                                            if (originalPrice > 0 && roundedDiscount > 0 && roundedDiscount < originalPrice) {
+                                                                const calculatedPercent = ((originalPrice - roundedDiscount) / originalPrice) * 100;
+                                                                newPercent = String(Math.round(calculatedPercent));
+                                                            }
+
+                                                            // Update data untuk baris ini dengan nilai final
+                                                            newData[index] = {
+                                                                ...rowData,
+                                                                discount: String(roundedDiscount),
+                                                                discountPercent: newPercent,
+                                                            };
+                                                            setVariantData(newData);
+                                                        }}
                                                     />
                                                 </div>
                                             </td>
