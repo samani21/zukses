@@ -3,8 +3,6 @@ import { Plus, X, Move, Trash2, ImageIcon, Image } from 'lucide-react';
 import { formatRupiahNoRP, formatRupiahNoRPHarga } from 'components/Rupiah';
 import { Variation, VariantRowData } from 'types/product';
 import { TipKey } from './tipsStore';
-import { createPortal } from 'react-dom';
-
 // Letakkan semua prop yang dibutuhkan dalam sebuah interface
 interface ProductSalesSectionProps {
     setTipKey: (key: TipKey) => void;
@@ -84,9 +82,9 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         handleOptionChange, showOptionSuggestIndex, setShowOptionSuggestIndex, optionSuggestions,
         handleDragStart, handleDrop, handleDeleteOption, handleAddVariation,
         globalPrice, setGlobalPrice, globalStock, setGlobalStock, globalDiscountPercent, setGlobalDiscountPercent,
-        showPercentSuggest, setShowPercentSuggest, discountOptions, globalDiscount, errors,
+        setShowPercentSuggest, discountOptions, globalDiscount, errors,
         variantData, setVariantData, handleVariantImageUpload, handleRemoveVariantImage, applyGlobalToAll,
-        showPercentSuggestIndex, setShowPercentSuggestIndex, dropdownPosition, setDropdownPosition,
+        setShowPercentSuggestIndex, setDropdownPosition,
         minOrder, setMinOrder, maxOrder, setMaxOrder,
         globalWeight, setGlobalWeight, globalWidth, setGlobalWidth, globalLength, setGlobalLength, globalHeight, setGlobalHeight,
         applyDimensionToAll, showDimensionTable, setShowDimensionTable, setSizeGuide, showSizeGuide, setGlobalDiscount
@@ -420,26 +418,6 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                     }}
                                                     onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
                                                 />
-                                                {showPercentSuggest && (
-                                                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
-                                                        {discountOptions
-                                                            .filter(
-                                                                (opt) =>
-                                                                    opt.toString().includes(globalDiscountPercent) &&
-                                                                    opt.toString() !== globalDiscountPercent
-                                                            )
-                                                            .map((opt) => (
-                                                                <div
-                                                                    key={opt}
-                                                                    className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                                                    onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
-                                                                >
-                                                                    {opt}%
-                                                                </div>
-                                                            ))}
-                                                    </div>
-                                                )}
-                                                %
                                             </div>
                                         </div>
                                     </div>
@@ -574,26 +552,6 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                     onBlur={() => setTimeout(() => setShowPercentSuggest(false), 200)}
                                 />
 
-                                {showPercentSuggest && (
-                                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-md max-h-[150px] overflow-auto">
-                                        {discountOptions
-                                            .filter(
-                                                (opt) =>
-                                                    opt.toString().includes(globalDiscountPercent) &&
-                                                    opt.toString() !== globalDiscountPercent
-                                            )
-                                            .map((opt) => (
-                                                <div
-                                                    key={opt}
-                                                    className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                                    onMouseDown={() => setGlobalDiscountPercent(opt.toString())}
-                                                >
-                                                    {opt}%
-                                                </div>
-                                            ))}
-                                    </div>
-                                )}
-                                %
                             </div>
                         </div>
                         <div className="col-span-12 sm:col-span-2 w-full">
@@ -873,57 +831,6 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                         }}
                                                         onBlur={() => setTimeout(() => setShowPercentSuggestIndex(null), 200)}
                                                     />
-
-                                                    {showPercentSuggestIndex === index &&
-                                                        createPortal(
-                                                            <div
-                                                                className="bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
-                                                                style={{
-                                                                    position: 'fixed',
-                                                                    top: `${dropdownPosition.top + 4}px`,
-                                                                    left: `${dropdownPosition.left}px`,
-                                                                    width: `${dropdownPosition.width}px`,
-                                                                    zIndex: 9999,
-                                                                }}
-                                                            >
-                                                                {discountOptions
-                                                                    .filter(
-                                                                        (opt) =>
-                                                                            opt.toString().includes(rowData.discountPercent || '') &&
-                                                                            opt.toString() !== rowData.discountPercent
-                                                                    )
-                                                                    .map((opt) => (
-                                                                        <div
-                                                                            key={opt}
-                                                                            className="px-3 py-2 text-[14px] text-[#333] hover:bg-gray-100 cursor-pointer"
-                                                                            onMouseDown={() => {
-                                                                                const newData = [...variantData];
-                                                                                const priceValue =
-                                                                                    parseFloat(
-                                                                                        String(newData[index]?.price).replace(/[^0-9]/g, '')
-                                                                                    ) || 0;
-                                                                                const newDiscountPrice =
-                                                                                    priceValue > 0
-                                                                                        ? String(priceValue - priceValue * (opt / 100))
-                                                                                        : '';
-                                                                                const currentDiscountValue = parseFloat(newDiscountPrice) || 0;
-                                                                                const roundedDiscount = roundLastThreeDigitsToNearestHundred(currentDiscountValue);
-                                                                                newData[index] = {
-                                                                                    ...rowData,
-                                                                                    discountPercent: opt.toString(),
-                                                                                    discount: String(roundedDiscount),
-                                                                                };
-                                                                                setVariantData(newData);
-                                                                                setShowPercentSuggestIndex(null);
-                                                                            }}
-                                                                        >
-                                                                            {opt}%
-                                                                        </div>
-                                                                    ))}
-                                                            </div>,
-                                                            document.body
-                                                        )}
-                                                    %
                                                 </div>
 
                                             </td>
