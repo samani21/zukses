@@ -366,7 +366,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             Stok
                                         </label>
                                         <div className="flex items-center border border-[#AAAAAA] bg-white rounded-r-[5px]">
-                                            <input type="number" placeholder="Stock" className="w-24 px-3 h-[40px] py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]"
+                                            <input type="number" placeholder="Stock" className="w-full px-3 h-[40px] py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA] no-spinner"
                                                 value={globalStock}
                                                 onChange={(e) => setGlobalStock(e.target.value)} />
                                         </div>
@@ -379,7 +379,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             <div className="relative border border-[#AAAAAA] rounded-[5px] flex px-2 items-center">
                                                 <input
                                                     type="number"
-                                                    placeholder="Diskon (%)"
+                                                    placeholder="Diskon"
                                                     className="w-full px-3 py-2 focus:outline-none h-[40px] no-spinner"
                                                     value={globalDiscountPercent}
                                                     onChange={(e) => {
@@ -523,7 +523,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                 Stok
                             </label>
                             <div className="flex items-center border border-[#AAAAAA] h-[40px] bg-white rounded-r-[5px]">
-                                <input type="number" placeholder="Stock" className="w-24 px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA]" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
+                                <input type="number" placeholder="Stock" className="w-full px-3 py-2 border-0 focus:ring-0 focus:outline-none placeholder:text-[#AAAAAA] no-spinner" value={globalStock} onChange={(e) => setGlobalStock(e.target.value)} />
                             </div>
                         </div>
                         <div className="col-span-12 sm:col-span-3 w-1/2">
@@ -532,7 +532,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                             <div className="relative border border-[#AAAAAA] rounded-[5px] h-[40px] flex items-center px-2">
                                 <input
                                     type="number"
-                                    placeholder="Diskon (%)"
+                                    placeholder="Diskon"
                                     className="w-full px-3 py-2   focus:outline-none no-spinner "
                                     value={globalDiscountPercent}
                                     onChange={(e) => {
@@ -809,7 +809,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                 <input
                                                     type="number"
                                                     placeholder="Stock"
-                                                    className="w-full p-1 border border-[#AAAAAA] h-[40px]  rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0"
+                                                    className="w-full p-1 border border-[#AAAAAA] h-[40px]  rounded-[5px] placeholder:text-[#AAAAAA] text-[15px] text-center focus:outline-none focus:ring-0 no-spinner"
                                                     value={rowData.stock}
                                                     onChange={(e) => {
                                                         const newData = [...variantData];
@@ -825,11 +825,11 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                             </td>
                                             <td className="px-4 py-4 border border border-[#AAAAAA] h-[40px]  text-center align-middle" width={155}>
                                                 {/* Wrapper untuk input, tidak perlu 'relative' lagi tapi tidak apa-apa jika ada */}
-                                                <div>
+                                                <div className='border border border-[#AAAAAA] h-[40px]  rounded-[5px] text-[14px] text-center flex items-center px-2'>
                                                     <input
                                                         type="number"
-                                                        placeholder="Diskon (%)"
-                                                        className="w-full p-2 border border border-[#AAAAAA] h-[40px]  rounded-[5px] text-[14px] text-center focus:outline-none no-spinner"
+                                                        placeholder="Diskon"
+                                                        className="w-full p-2  focus:outline-none no-spinner"
                                                         value={rowData.discountPercent || ''}
                                                         onChange={(e) => {
                                                             const value = e.target.value;
@@ -923,6 +923,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
                                                             </div>,
                                                             document.body
                                                         )}
+                                                    %
                                                 </div>
 
                                             </td>
