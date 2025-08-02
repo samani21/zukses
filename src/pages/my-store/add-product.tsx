@@ -1081,7 +1081,7 @@ const AddProduct: NextPage = () => {
               validationStatus={validationStatus}
             />
 
-            <div className="lg:col-span-2 space-y-8 ">
+            <div className="lg:col-span-2 space-y-8 mt-1">
               <ProductInfoSection
                 setTipKey={setTipKey}
                 selectedImages={selectedImages}
@@ -1166,6 +1166,7 @@ const AddProduct: NextPage = () => {
                 tempCategory={tempCategory}
                 setSizeGuide={setSizeGuide}
                 showSizeGuide={showSizeGuide}
+                setGlobalDiscount={setGlobalDiscount}
               />
               <ProductDeliveryInfoSection
                 setTipKey={setTipKey}
