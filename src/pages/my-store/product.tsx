@@ -318,27 +318,26 @@ const PageContent: NextPage = () => {
                                 {!loading && paginatedProducts.length === 0 && <div className="text-center p-8 text-[#333333]">Produk tidak ditemukan.</div>}
                                 {!loading && paginatedProducts.map((product) => {
                                     const combinations = (product.combinations ?? []) as ProductVariantCombination[];
-                                    if (combinations.length === 0) return null;
+                                    const hasCombinations = combinations.length > 0;
 
-                                    // Sekarang aman untuk akses discount_price, price, dll
-                                    const sorted = [...combinations].sort(
-                                        (a, b) => Number(a.price) - Number(b.price)
-                                    );
+                                    const sorted = hasCombinations
+                                        ? [...combinations].sort((a, b) => Number(a.price) - Number(b.price))
+                                        : [];
 
-                                    const minPrice = Number(sorted[0]?.price ?? 0);
-                                    const maxPrice = Number(sorted[sorted.length - 1]?.price ?? 0);
+                                    const minPrice = hasCombinations ? Number(sorted[0]?.price ?? 0) : Number(product.price ?? 0);
+                                    const maxPrice = hasCombinations ? Number(sorted[sorted.length - 1]?.price ?? 0) : Number(product.price ?? 0);
 
-                                    // Ambil hanya discount_price yang valid (bertipe number setelah di-cast)
-                                    const validDiscounts = combinations
-                                        .map((c) => Number(c.discount_price))
-                                        .filter((dp) => !isNaN(dp));
+                                    const validDiscounts = hasCombinations
+                                        ? combinations.map((c) => Number(c.discount_price)).filter((dp) => !isNaN(dp))
+                                        : [Number(product.discount_price ?? 0)];
 
-                                    const minDiscount = Math.min(...validDiscounts);
-                                    const maxDiscount = Math.max(...validDiscounts);
+                                    const minDiscount = validDiscounts.length > 0 ? Math.min(...validDiscounts) : 0;
+                                    const maxDiscount = validDiscounts.length > 0 ? Math.max(...validDiscounts) : 0;
 
-                                    const maxDiscountPercent = Math.max(
-                                        ...combinations.map((c) => c.discount_percent ?? 0)
-                                    );
+                                    const maxDiscountPercent = hasCombinations
+                                        ? Math.max(...combinations.map((c) => c.discount_percent ?? 0))
+                                        : (product.discount_percent ?? 0);
+
 
                                     return (
                                         <div key={product.id} className="md:p-4 md:p-0 md:grid md:grid-cols-12 md:gap-4 md:px-0 md:py-4 items-start text-sm text-gray-800 shadow-[1px_1px_10px_rgba(0,0,0,0.08)] bg-white border border-[#DCDCDC] rounded-[8px] ">
@@ -402,7 +401,9 @@ const PageContent: NextPage = () => {
                                                 <p className='text-[#666666] text-[13px] line-through' style={{
                                                     lineHeight: "115%"
                                                 }}>
-                                                    {formatRupiah(minPrice)} - {formatRupiah(maxPrice)}
+                                                    {minPrice === maxPrice
+                                                        ? (minPrice > 0 ? formatRupiah(minPrice) : '-')
+                                                        : `${formatRupiah(minPrice)} - ${formatRupiah(maxPrice)}`}
                                                 </p>
                                             </div>
                                             <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.stock}</div>

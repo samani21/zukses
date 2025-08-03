@@ -68,6 +68,8 @@ export type Product = {
     category_name: string;
     is_used: number;
     price: number;
+    discount_price: number;
+    discount_percent: number;
     stock: number;
     sales: number;
     desc: string;

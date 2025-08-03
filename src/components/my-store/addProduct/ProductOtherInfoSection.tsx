@@ -28,15 +28,16 @@ interface ProductOtherInfoSectionProps {
     isVoucher: boolean
     setIsVoucher: (val: boolean) => void
     voucher: string
+    used: string
     setVoucher: (val: string) => void
 }
 
 const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
     const {
-        setTipKey, isCodEnabled, setIsCodEnabled, isUsed, setIsUsed,
+        setTipKey, isCodEnabled, setIsCodEnabled, setIsUsed,
         sku, setSku, schedule, setScheduleDate, validateScheduleDate, scheduleError,
         errors, sectionRefs, setShippingCost, shippingCost, subsidy, setSubsidy,
-        isVoucher, setIsVoucher, voucher, setVoucher
+        isVoucher, setIsVoucher, voucher, setVoucher, used
     } = props;
     useEffect(() => {
         if (shippingCost != 'Ongkos kirim disubsidi Penjual') {
@@ -50,12 +51,11 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
     }, [isVoucher])
     return (
         <div id="informasi-lainnya-section" ref={sectionRefs} className="mb-6 space-y-6 border border-[#DCDCDC] py-6 rounded-[5px] px-8">
-
             <div id="informasi-lainnya-section">
                 <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Lainnya</h1>
                 <div className='space-y-6'>
                     <div onMouseEnter={() => setTipKey('condition')} onMouseLeave={() => setTipKey('default')}>
-                        <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required defaultValue={isUsed === '1' ? 'Bekas Dipakai' : 'Baru'} onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')} />
+                        <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required defaultValue={used} onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')} />
                     </div>
                     <div onMouseEnter={() => setTipKey('condition')} onMouseLeave={() => setTipKey('default')}>
                         <RadioGroup label="Ongkos Kirim" name="condition" options={['Normal', 'Ongkos kirim ditanggung Penjual', 'Ongkos kirim disubsidi Penjual']} defaultValue={subsidy ? "Ongkos kirim disubsidi Penjual" : shippingCost} onChange={(value) => setShippingCost(value)} />
