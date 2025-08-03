@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import DateTimePicker from 'components/DateTimePicker';
 import { RadioGroup } from './FormInputs';
 import { TipKey } from './tipsStore';
@@ -38,7 +38,16 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
         errors, sectionRefs, setShippingCost, shippingCost, subsidy, setSubsidy,
         isVoucher, setIsVoucher, voucher, setVoucher
     } = props;
-
+    useEffect(() => {
+        if (shippingCost != 'Ongkos kirim disubsidi Penjual') {
+            setSubsidy('')
+        }
+    }, [shippingCost])
+    useEffect(() => {
+        if (!isVoucher) {
+            setVoucher('')
+        }
+    }, [isVoucher])
     return (
         <div id="informasi-lainnya-section" ref={sectionRefs} className="mb-6 space-y-6 border border-[#DCDCDC] py-6 rounded-[5px] px-8">
 
@@ -49,7 +58,7 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         <RadioGroup label="Kondisi" name="condition" options={['Baru', 'Bekas Dipakai']} required defaultValue={isUsed === '1' ? 'Bekas Dipakai' : 'Baru'} onChange={(value) => setIsUsed(value === 'Bekas Dipakai' ? '1' : '0')} />
                     </div>
                     <div onMouseEnter={() => setTipKey('condition')} onMouseLeave={() => setTipKey('default')}>
-                        <RadioGroup label="Ongkos Kirim" name="condition" options={['Normal', 'Ongkos kirim ditanggung Penjual', 'Ongkos kirim disubsidi Penjual']} defaultValue={shippingCost} onChange={(value) => setShippingCost(value)} />
+                        <RadioGroup label="Ongkos Kirim" name="condition" options={['Normal', 'Ongkos kirim ditanggung Penjual', 'Ongkos kirim disubsidi Penjual']} defaultValue={subsidy ? "Ongkos kirim disubsidi Penjual" : shippingCost} onChange={(value) => setShippingCost(value)} />
                         <div className='ml-7'>
                             <label className="block text-[14px] font-bold text-[#333333] mb-2 mt-1">Subsidi Ongkir</label>
                             <div className='flex items-center gap-4'>

@@ -877,16 +877,16 @@ const AddProduct: NextPage = () => {
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
-          // router.push('/my-store/product')
-          // localStorage.removeItem('EditProduct');
+          router.push('/my-store/product')
+          localStorage.removeItem('EditProduct');
         }
       } else {
         const res = await Post<Response>('zukses', `product`, formData);
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-          // router.push('/my-store/product');
-          // localStorage.removeItem('EditProduct');
+          router.push('/my-store/product');
+          localStorage.removeItem('EditProduct');
         }
       }
     } catch (error) {
@@ -1018,6 +1018,17 @@ const AddProduct: NextPage = () => {
             setGlobalLength(data.delivery?.length || '');
             setGlobalWidth(data.delivery?.width || '');
             setGlobalHeight(data.delivery?.height || '');
+          }
+          if (data?.delivery?.service_ids) {
+            const parsedIds: number[] = JSON.parse(data?.delivery?.service_ids);
+            setCourierServicesIds(parsedIds)
+          }
+          if (data?.delivery?.subsidy) {
+            setSubsidy(data?.delivery?.subsidy)
+          }
+          if (data?.voucher) {
+            setIsVoucher(true);
+            setVoucher(data?.voucher)
           }
         } catch (err) {
           console.error('Failed to parse EditProduct from localStorage', err);
@@ -1179,6 +1190,7 @@ const AddProduct: NextPage = () => {
                 sectionRefs={sectionRefs['informasi-pengiriman-section']}
                 shopProfil={shopProfil}
                 setCourierServicesIds={setCourierServicesIds}
+                courierServicesIds={courierServicesIds}
                 errors={errors}
                 setIdAddress={setIdAddress}
               />

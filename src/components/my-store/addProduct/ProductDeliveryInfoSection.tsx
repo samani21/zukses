@@ -73,12 +73,13 @@ interface ProductDeliveryInfoSectionProps {
     sectionRefs: React.RefObject<HTMLDivElement | null>;
     shopProfil?: ShopData | null;
     setCourierServicesIds: (val: number[]) => void;
+    courierServicesIds: number[];
     errors: { [key: string]: string };
 }
 
 const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     const {
-        setTipKey, isHazardous, setIsHazardous, isProductPreOrder, setIsProductPreOrder, sectionRefs, shopProfil, setCourierServicesIds, errors, setIdAddress
+        setTipKey, isHazardous, setIsHazardous, isProductPreOrder, setIsProductPreOrder, sectionRefs, shopProfil, setCourierServicesIds, errors, setIdAddress, courierServicesIds
     } = props;
     const [showModal, setShowModal] = useState(false);
     const [dataAddress, setDataAddress] = useState<Address | null>(null);
@@ -90,7 +91,6 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     const [isAdd, setIsAdd] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<number>(0);
     console.log(openDelete)
-    const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
 
     const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<{
@@ -181,9 +181,6 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
             setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
         }
     };
-    useEffect(() => {
-        setCourierServicesIds(selectedServiceIds)
-    }, [selectedServiceIds]);
     return (
         <div id="informasi-pengiriman-section" ref={sectionRefs} className="mb-6 space-y-6 border border-[#DCDCDC] py-6 rounded-[5px] px-8">
             <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Pengiriman</h1>
@@ -259,12 +256,13 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                             lineHeight: "108%"
                         }}>Kurir Toko</p>
                         <div>
-                            <input type="checkbox" className="toggle-checkbox" checked={selectedServiceIds.includes(0)}
+                            <input type="checkbox" className="toggle-checkbox" checked={courierServicesIds?.includes(0)}
                                 onChange={(e) => {
                                     const isChecked = e.target.checked;
-                                    setSelectedServiceIds((prev) =>
-                                        isChecked ? [...prev, 0] : prev.filter((id) => id !== 0)
+                                    setCourierServicesIds(
+                                        isChecked ? [...courierServicesIds, 0] : courierServicesIds?.filter((id) => id !== 0)
                                     );
+
                                 }} />
                         </div>
                     </div>
@@ -305,21 +303,16 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
 
                                         <div className="flex items-center space-x-3">
                                             <input type="checkbox" className="toggle-checkbox"
-                                                checked={courier.services?.every(srv => selectedServiceIds.includes(Number(srv.id)))}
+                                                checked={courier.services?.every(srv => courierServicesIds?.includes(Number(srv.id)))}
                                                 onChange={(e) => {
                                                     const isChecked = e.target.checked;
                                                     const serviceIds = courier.services?.map(s => Number(s.id)) || [];
 
-                                                    setSelectedServiceIds((prev) => {
-                                                        if (isChecked) {
-                                                            // Gabungkan semua ID, hindari duplikat
-                                                            const merged = [...new Set([...prev, ...serviceIds])];
-                                                            return merged;
-                                                        } else {
-                                                            // Hapus semua service id dari courier tersebut
-                                                            return prev.filter((id) => !serviceIds.includes(id));
-                                                        }
-                                                    });
+                                                    const updatedServiceIds = isChecked
+                                                        ? [...new Set([...courierServicesIds, ...serviceIds])] // tambahkan
+                                                        : courierServicesIds?.filter((id) => !serviceIds.includes(id)); // hapus
+
+                                                    setCourierServicesIds(updatedServiceIds);
                                                 }} />
                                         </div>
                                     </summary>

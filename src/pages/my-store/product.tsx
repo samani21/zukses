@@ -4,29 +4,15 @@ import React, { useEffect, useState, useMemo, JSX } from 'react';
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import { useRouter } from 'next/router';
 import { ListboxDropdown } from 'components/ListboxDropdown';
+import Get from 'services/api/Get';
+import { Response } from 'services/api/types';
+import { Product, ProductVariantCombination, VarianPrice } from 'components/my-store/product/type';
+import Snackbar from 'components/Snackbar';
+import Loading from 'components/Loading';
+import DeleteProductModal from 'components/my-store/product/DeleteProductModal';
+import Delete from 'services/api/Delete';
+import { AxiosError } from 'axios';
 
-
-// const DeleteProductModal = ({ isOpen, onClose, onConfirm, productName }: { isOpen: boolean, onClose: () => void, onConfirm: () => void, productName: string }) => {
-//     if (!isOpen) return null;
-//     return (
-//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-//             <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-//                 <h3 className="text-lg font-bold">Hapus Item</h3>
-//                 <p className="my-4">Anda yakin ingin menghapus &ldquo;{productName}&ldquo;?</p>
-//                 <div className="flex justify-end gap-4">
-//                     <button onClick={onClose} className="px-4 py-2 rounded bg-gray-200 hover:bg-[#AAAAAA]">Batal</button>
-//                     <button onClick={onConfirm} className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600">Ya, Hapus</button>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-
-// --- Tipe Data ---
-type VarianPrice = { id: number; product_id: number; image: string; price: number | string; stock: number; variant_code?: string; name?: string; sales?: number; };
-type Product = { id: number; name: string; sku: string; price: number | string; stock: number; sales: number; image: string; is_cod_enabled?: number; variant_prices?: VarianPrice[]; };
-
-// --- Helper & Data Awal ---
 const formatRupiah = (price: number | string): JSX.Element | string => {
     if (typeof price === 'string' && price.includes(' - ')) {
         const [start, end] = price.split(' - ');
@@ -57,105 +43,6 @@ const formatRupiah = (price: number | string): JSX.Element | string => {
     }).format(Number(price));
 };
 
-const initialProducts: Product[] = [
-    {
-        id: 1,
-        name: 'Rak Bumbu Dapur Multifungsi 2 susun', sku: 'RBD-001', sales: 20, price: '301000 - 400000', stock: 52, image: '/image/image 13.png', is_cod_enabled: 1,
-        variant_prices: [
-            {
-                id: 101, product_id: 1,
-                name: 'Hijau', variant_code: 'HJ', price: 301000, stock: 12, sales: 5, image: '/image/image 13.png'
-            },
-            {
-                id: 102, product_id: 1,
-                name: 'Tosca', variant_code: 'TS', price: 400000, stock: 32, sales: 10, image: '/image/image 13.png'
-            },
-            {
-                id: 103, product_id: 1,
-                name: 'Kuning', variant_code: 'KN', price: 200000, stock: 8, sales: 5,
-                image: '/image/image 13.png',
-            },
-        ],
-    },
-    {
-        id: 2,
-        name: 'Panci Listrik Serbaguna', sku: 'PNC-002', sales: 55, price: 150000, stock: 120,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 3,
-        name: 'Blender Kapsul Portable', sku: 'BLN-003', sales: 120, price: 99000, stock: 80,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 4,
-        name: 'Set Spatula Silikon Tahan Panas', sku: 'SPT-004', sales: 75, price: '80000 - 120000', stock: 95,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: [
-            {
-                id: 401, product_id: 4,
-                name: 'Merah', variant_code: 'MR', price: 80000, stock: 45, sales: 30,
-                image: '/image/image 13.png',
-            },
-            {
-                id: 402, product_id: 4,
-                name: 'Hitam', variant_code: 'HT', price: 120000, stock: 50, sales: 45,
-                image: '/image/image 13.png',
-            },
-        ]
-    },
-    {
-        id: 5,
-        name: 'Timbangan Dapur Digital', sku: 'TMB-005', sales: 210, price: 55000, stock: 150,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 6,
-        name: 'Botol Minum Motivasi 2 Liter', sku: 'BTL-006', sales: 300, price: 45000, stock: 250,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 7,
-        name: 'Lampu Meja Belajar LED', sku: 'LMP-007', sales: 90, price: 75000, stock: 60,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 8,
-        name: 'Gantungan Baju Dinding', sku: 'GNT-008', sales: 150, price: 25000, stock: 300,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 9,
-        name: 'Sprei Set Katun Jepang', sku: 'SPR-009', sales: 40, price: 250000, stock: 50,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 10,
-        name: 'Bantal Leher Travel', sku: 'BNT-010', sales: 180, price: 35000, stock: 110,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 11,
-        name: 'Tas Ransel Laptop Anti Air', sku: 'TAS-011', sales: 65, price: 180000, stock: 70,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-    {
-        id: 12,
-        name: 'Mouse Wireless Silent Click', sku: 'MOU-012', sales: 250, price: 85000, stock: 130,
-        image: '/image/image 13.png',
-        is_cod_enabled: 1, variant_prices: []
-    },
-];
-
 
 const kategoriList = ['Semua Kategori', 'Elektronik', 'Pakaian', 'Makanan'];
 const urutanList = ['Terbaru', 'Terlama', 'Harga Terendah', 'Harga Tertinggi'];
@@ -163,21 +50,40 @@ const urutanList = ['Terbaru', 'Terlama', 'Harga Terendah', 'Harga Tertinggi'];
 const PageContent: NextPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
-    // const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
-    // const [itemToDelete, setItemToDelete] = useState<{ type: 'product' | 'variant'; data: Product | VarianPrice } | null>(null);
-
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState<boolean>(false);
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+    const [productToDeleteVariant, setProductToDeleteVariant] = useState<VarianPrice | null>(null);
     const [kategori, setKategori] = useState(kategoriList[0]);
     const [urutan, setUrutan] = useState(urutanList[0]);
-
+    console.log(productToDeleteVariant, productToDeleteVariant)
     const [expandedProductId, setExpandedProductId] = useState<number | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState('Semua');
     const ITEMS_PER_PAGE = 2;
     const router = useRouter();
+    const [snackbar, setSnackbar] = useState<{
+        message: string;
+        type?: 'success' | 'error' | 'info';
+        isOpen: boolean;
+    }>({ message: '', type: 'info', isOpen: false });
+    // const [products, setProducts] = useState<Products[] | null>(null);
+    const getProduct = async () => {
+        setLoading(true);
+        const res = await Get<Response>('zukses', `product/show`);
+        if (res?.status === 'success' && Array.isArray(res.data)) {
+            const data = res?.data as Product[];
+            setProducts(data);
+            console.log('data', data)
+        } else {
+            console.warn('Produk tidak ditemukan atau gagal diambil');
+        }
+        setLoading(false);
+    };
+
     useEffect(() => {
         setTimeout(() => {
-            setProducts(initialProducts);
+            getProduct();
             setLoading(false);
         }, 500);
     }, []);
@@ -273,6 +179,50 @@ const PageContent: NextPage = () => {
         return items;
     };
 
+    const handleOpenDeleteModal = (product: Product) => {
+        setProductToDelete(product);
+        setDeleteModalOpen(true);
+    };
+    const handleOpenDeleteModalVariant = (product: VarianPrice) => {
+        setProductToDeleteVariant(product);
+        setDeleteModalOpen(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setProductToDelete(null);
+        setDeleteModalOpen(false);
+    };
+
+    const handleDeleteProduct = async (): Promise<void> => {
+        try {
+            if (!productToDelete && !productToDeleteVariant) return;
+            if (productToDelete) {
+                setLoading(true);
+                const res = await Delete<Response>('zukses', `product/${productToDelete?.id}`);
+                setLoading(false);
+
+                if (res?.data?.status === 'success') {
+                    getProduct()
+                    setSnackbar({ message: `Produk "${productToDelete.name}" berhasil dihapus.`, type: 'success', isOpen: true });
+                    handleCloseDeleteModal();
+                }
+            } else if (productToDeleteVariant) {
+                setLoading(true);
+                const res = await Delete<Response>('zukses', `product/${productToDeleteVariant?.id}/variant`);
+                setLoading(false);
+
+                if (res?.data?.status === 'success') {
+                    getProduct()
+                    setSnackbar({ message: `Produk berhasil dihapus.`, type: 'success', isOpen: true });
+                    handleCloseDeleteModal();
+                }
+            }
+        } catch (err) {
+            setLoading(false);
+            const error = err as AxiosError<{ message?: string }>;
+            setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
+        }
+    };
 
     const mainTabs = [{ name: 'Semua' }, { name: 'Tayang', count: 100 }, { name: 'Perlu Tindakan', count: 10 }, { name: 'Sedang Ditinjau', count: 15 }, { name: 'Belum Ditampilkan', count: 2 },];
     const subTabs = [{ name: 'Semua', count: 90 }, { name: 'Perlu Perbaikan Data', count: 10 }, { name: 'Perlu Tambah Stock', count: 2 },];
@@ -366,132 +316,204 @@ const PageContent: NextPage = () => {
                             <div className="space-y-4">
                                 {loading && <div className="text-center p-8 text-[#333333]">Memuat produk...</div>}
                                 {!loading && paginatedProducts.length === 0 && <div className="text-center p-8 text-[#333333]">Produk tidak ditemukan.</div>}
-                                {!loading && paginatedProducts.map((product) => (
-                                    <div key={product.id} className="md:p-4 md:p-0 md:grid md:grid-cols-12 md:gap-4 md:px-0 md:py-4 items-start text-sm text-gray-800 shadow-[1px_1px_10px_rgba(0,0,0,0.08)] bg-white border border-[#DCDCDC] rounded-[8px] ">
-                                        <div className="col-span-12 md:col-span-4 h-full flex flex-col justify-between px-4">
-                                            <div className='flex items-start sm:items-start gap-4'>
-                                                <img src={product.image} alt={product.name} className="w-[67px] h-[67px] object-cover  flex-shrink-0 border-[#AAAAAA]" />
-                                                <div className="flex-grow">
-                                                    <p className="font-bold text-[#333333] text-[15px]" style={{
-                                                        lineHeight: "108%"
-                                                    }}>{product.name}</p>
-                                                    <p className="text-[13px] text-[#333333] mt-1">SKU Induk: <span className='font-bold text-[16px]'>{product.sku}</span></p>
+                                {!loading && paginatedProducts.map((product) => {
+                                    const combinations = (product.combinations ?? []) as ProductVariantCombination[];
+                                    if (combinations.length === 0) return null;
 
+                                    // Sekarang aman untuk akses discount_price, price, dll
+                                    const sorted = [...combinations].sort(
+                                        (a, b) => Number(a.price) - Number(b.price)
+                                    );
+
+                                    const minPrice = Number(sorted[0]?.price ?? 0);
+                                    const maxPrice = Number(sorted[sorted.length - 1]?.price ?? 0);
+
+                                    // Ambil hanya discount_price yang valid (bertipe number setelah di-cast)
+                                    const validDiscounts = combinations
+                                        .map((c) => Number(c.discount_price))
+                                        .filter((dp) => !isNaN(dp));
+
+                                    const minDiscount = Math.min(...validDiscounts);
+                                    const maxDiscount = Math.max(...validDiscounts);
+
+                                    const maxDiscountPercent = Math.max(
+                                        ...combinations.map((c) => c.discount_percent ?? 0)
+                                    );
+
+                                    return (
+                                        <div key={product.id} className="md:p-4 md:p-0 md:grid md:grid-cols-12 md:gap-4 md:px-0 md:py-4 items-start text-sm text-gray-800 shadow-[1px_1px_10px_rgba(0,0,0,0.08)] bg-white border border-[#DCDCDC] rounded-[8px] ">
+                                            <div className="col-span-12 md:col-span-4 h-full flex flex-col justify-between px-4">
+                                                <div className='flex items-start sm:items-start gap-4'>
+                                                    <img src={product.image} alt={product.name} className="w-[67px] h-[67px] object-cover  flex-shrink-0 border-[#AAAAAA]" />
+                                                    <div className="flex-grow">
+                                                        <p className="font-bold text-[#333333] text-[15px]" style={{
+                                                            lineHeight: "108%"
+                                                        }}>{product.name}</p>
+                                                        <p className="text-[13px] text-[#333333] mt-1">SKU Induk: <span className='font-bold text-[16px]'>{product.sku}</span></p>
+
+                                                    </div>
+                                                </div>
+                                                <div className='flex items-end pl-20'>
+                                                    {product.variant_prices && product.variant_prices.length > 0 && (
+                                                        <button onClick={() => toggleVariations(product.id)} className="text-[14px] font-bold text-[#555555] hover:text-gray-800 font-semibold flex items-center gap-1 mt-2">
+                                                            {expandedProductId === product.id ? 'Sembunyikan Variasi' : 'Lihat Variasi'}
+                                                            {expandedProductId === product.id ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
-                                            <div className='flex items-end pl-20'>
-                                                {product.variant_prices && product.variant_prices.length > 0 && (
-                                                    <button onClick={() => toggleVariations(product.id)} className="text-[14px] font-bold text-[#555555] hover:text-gray-800 font-semibold flex items-center gap-1 mt-2">
-                                                        {expandedProductId === product.id ? 'Sembunyikan Variasi' : 'Lihat Variasi'}
-                                                        {expandedProductId === product.id ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className="col-span-12 md:hidden mt-4 space-y-2 px-4">
-                                            <div className="flex justify-between border-t pt-2"><span className="font-semibold text-[#333333]">Harga</span><span>{formatRupiah(product.price)}</span></div>
-                                            <div className="flex justify-between"><span className="font-semibold text-[#333333]">Penjualan</span><span>{product.sales}</span></div>
-                                            <div className="flex justify-between"><span className="font-semibold text-[#333333]">Stok</span><span>{product.stock}</span></div>
-                                            <div className="flex justify-between items-center border-t pt-2">
-                                                <span className="font-semibold text-[#333333]">Aksi</span>
-                                                <div className="flex items-center gap-3">
-                                                    <button className="text-gray-400 cursor-not-allowed">Ubah</button>
-                                                    <button  className="text-red-600 hover:underline">Hapus</button>
+                                            <div className="col-span-12 md:hidden mt-4 space-y-2 px-4">
+                                                <div className="flex justify-between border-t pt-2"><span className="font-semibold text-[#333333]">Harga Diskon</span><span> {minDiscount === maxDiscount
+                                                    ? `${formatRupiah(minDiscount)}`
+                                                    : `${formatRupiah(minDiscount)} - ${formatRupiah(maxDiscount)}`}</span></div>
+                                                <div className="flex justify-between"><span className="font-semibold text-[#333333]">Harga</span><span className='line-through'>   {formatRupiah(minPrice)} - {formatRupiah(maxPrice)}</span></div>
+                                                <div className="flex justify-between"><span className="font-semibold text-[#333333]">Penjualan</span><span>{product.sales}</span></div>
+                                                <div className="flex justify-between"><span className="font-semibold text-[#333333]">Stok</span><span>{product.stock}</span></div>
+                                                <div className="flex justify-between items-center border-t pt-2">
+                                                    <span className="font-semibold text-[#333333]">Aksi</span>
+                                                    <div className="flex items-center gap-3">
+                                                        <button className="text-gray-400 cursor-not-allowed" onClick={() => {
+                                                            router.push('/my-store/add-product?type=edit')
+                                                            localStorage.setItem('EditProduct', JSON.stringify(product))
+                                                        }}>Ubah</button>
+                                                        <button className="text-red-600 hover:underline" onClick={() => handleOpenDeleteModal(product)}>Hapus</button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.sales}</div>
-                                        <div className="hidden md:block col-span-2 flex jusify-center ml-12 space-y-2 px-4">
-                                            <p className='text-[#333333] text-[16px]' style={{
-                                                lineHeight: "115%"
-                                            }}>
-                                                {formatRupiah(product.price)}
-                                            </p>
-                                            <p className='text-[#666666] text-[13   px] line-through' style={{
-                                                lineHeight: "115%"
-                                            }}>
-                                                {formatRupiah(product.price)}
-                                            </p>
-                                        </div>
-                                        <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.stock}</div>
-                                        <div className="hidden md:block col-span-3 text-left space-y-2 font-bold text-[12px] px-4">
-                                            <div className="text-[#F77000]">COD (Bayar ditempat)</div>
-                                            <div>
-                                                <span className="bg-[#FAD7D7] border-[#F02929] border text-center text-[#F02929] rounded-[10px] px-2 py-[2px]">Diskon 20%</span>
+                                            <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.sales | 0}</div>
+                                            <div className="hidden md:block col-span-2 flex jusify-center ml-12 space-y-2 px-4">
+                                                {/* <p className='text-[#333333] text-[16px]' style={{
+                                                    lineHeight: "115%"
+                                                }}>
+                                                    {formatRupiah(product.price)}
+                                                </p> */}
+                                                <p className='text-[#333333] text-[16px]' style={{
+                                                    lineHeight: "115%"
+                                                }}>
+                                                    {minDiscount === maxDiscount
+                                                        ? `${formatRupiah(minDiscount)}`
+                                                        : `${formatRupiah(minDiscount)} - ${formatRupiah(maxDiscount)}`}
+                                                </p>
+                                                {/* <p className='text-[#666666] text-[13   px] line-through' style={{
+                                                    lineHeight: "115%"
+                                                }}>
+                                                    {formatRupiah(product.price)}
+                                                </p> */}
+                                                <p className='text-[#666666] text-[13px] line-through' style={{
+                                                    lineHeight: "115%"
+                                                }}>
+                                                    {formatRupiah(minPrice)} - {formatRupiah(maxPrice)}
+                                                </p>
                                             </div>
-                                            <div>
-                                                <span className="bg-[#C8F7D4] border-[#388F4F] border text-center text-[#388F4F] rounded-[10px] px-2 py-[2px]">Voucher Rp.20.000</span>
+                                            <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.stock}</div>
+                                            <div className="hidden md:block col-span-3 text-left space-y-2 font-bold text-[12px] px-4">
+                                                {
+                                                    product?.is_cod_enabled ?
+                                                        <div className="text-[#F77000]">COD (Bayar ditempat)</div> : ''
+                                                }
+                                                {
+                                                    maxDiscountPercent ?
+                                                        <div>
+                                                            <span className="bg-[#FAD7D7] border-[#F02929] border text-center text-[#F02929] rounded-[10px] px-2 py-[2px]">Diskon {maxDiscountPercent}%</span>
+                                                        </div> : ''
+                                                }
+
+                                                {
+                                                    product?.voucher ?
+                                                        <div>
+                                                            <span className="bg-[#C8F7D4] border-[#388F4F] border text-center text-[#388F4F] rounded-[10px] px-2 py-[2px]">Voucher {formatRupiah(product?.voucher)}</span>
+                                                        </div> : ''
+                                                }
+                                                {
+                                                    product?.delivery?.subsidy ?
+                                                        <div>
+                                                            <span className="bg-[#FFF9BF] border-[#F77000] border text-center text-[#F77000] rounded-[10px] px-2 py-[2px]">Gratis Ongkir {formatRupiah(product?.delivery?.subsidy)}</span>
+                                                        </div> : ''
+                                                }
                                             </div>
-                                            <div>
-                                                <span className="bg-[#FFF9BF] border-[#F77000] border text-center text-[#F77000] rounded-[10px] px-2 py-[2px]">Gratis Ongkir Rp10.000</span>
-                                            </div>
-                                        </div>
-                                        <div className="hidden md:block col-span-1">
-                                            <div className="flex flex-col tracking-[-0.02em]">
-                                                <button className="text-[#333333] text-[16px] font-semibold cursor-not-allowed text-left">Ubah</button>
-                                                <button  className="text-[#333333] text-[16px] font-semibold hover:underline text-left">Hapus</button>
-                                            </div>
-                                        </div>
-                                        {expandedProductId === product.id && (
-                                            <>
-                                                <div className='col-span-1 border-t border-[#BBBBBBCC]/80' />
-                                                <div className="col-span-11 -ml-4 py-4 mt-4 md:mt-0 border-t border-[#BBBBBBCC]/80 ">
-                                                    <p className='text-[#333333] font-bold text-[16px]' style={{
-                                                        lineHeight: "108%"
-                                                    }}>Variasi Produk</p>
-                                                    {product.variant_prices?.map((variant) => (
-                                                        <div key={variant.id} className="md:grid md:grid-cols-11 md:gap-4 items-start text-sm text-gray-700  first:border-t-0 py-3">
-                                                            <div className="col-span-12 md:col-span-3 flex items-start gap-4 ">
-                                                                <img src={variant.image} alt={variant.name} className="w-[67px] h-[67px] object-cover rounded-md flex-shrink-0" />
-                                                                <div>
-                                                                    <p className="font-bold text-[#333333] text-[15px]" style={{
-                                                                        lineHeight: "108%"
-                                                                    }}>{variant.name}</p><p className="text-[13px] text-[#333333] mt-1">Kode: <span className='text-[16px] font-bold'>{variant.variant_code}</span></p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="md:hidden mt-3 space-y-2 text-[13px]">
-                                                                <div className="flex justify-between border-t pt-2"><span className="font-semibold text-[#333333]">Harga</span><span className="font-semibold">{formatRupiah(variant.price)}</span></div>
-                                                                <div className="flex justify-between"><span className="font-semibold text-[#333333]">Stok</span><span>{variant.stock}</span></div>
-                                                                <div className="flex justify-between border-t pt-2"><span className="font-semibold text-[#333333]">Aksi</span><button  className="text-red-600 hover:underline">Hapus</button></div>
-                                                            </div>
-                                                            <div className="hidden md:block col-span-1 ml-4 text-left text-[#333333] text-[14px] px-4">{variant.sales || 0}</div>
-                                                            <div className="hidden md:block col-span-2 flex jusify-center ml-12 space-y-2 px-6">
-                                                                <p className='text-[#333333] text-[16px]' style={{
-                                                                    lineHeight: "115%"
-                                                                }}>
-                                                                    {formatRupiah(variant.price)}
-                                                                </p>
-                                                                <p className='text-[#666666] text-[13   px] line-through' style={{
-                                                                    lineHeight: "115%"
-                                                                }}>
-                                                                    {formatRupiah(variant.price)}
-                                                                </p>
-                                                            </div>
-                                                            <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{variant.stock}</div>
-                                                            <div className="hidden md:block col-span-3 text-left space-y-2 font-bold text-[12px] px-4">
-                                                                <div className="text-[#F77000]">COD (Bayar ditempat)</div>
-                                                                <div>
-                                                                    <span className="bg-[#FAD7D7] border-[#F02929] border text-center text-[#F02929] rounded-[10px] px-2 py-[2px]">Diskon 20%</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="bg-[#C8F7D4] border-[#388F4F] border text-center text-[#388F4F] rounded-[10px] px-2 py-[2px]">Voucher Rp.20.000</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="bg-[#FFF9BF] border-[#F77000] border text-center text-[#F77000] rounded-[10px] px-2 py-[2px]">Gratis Ongkir Rp10.000</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="hidden md:block col-span-1">
-                                                                <div className="flex flex-col tracking-[-0.02em]">
-                                                                    <button  className="text-[#333333] text-[16px] font-semibold hover:underline text-left">Hapus</button>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                            <div className="hidden md:block col-span-1">
+                                                <div className="flex flex-col tracking-[-0.02em]">
+                                                    <button className="text-[#333333] text-[16px] font-semibold cursor-not-allowed text-left" onClick={() => {
+                                                        router.push('/my-store/add-product?type=edit')
+                                                        localStorage.setItem('EditProduct', JSON.stringify(product))
+                                                    }}>Ubah</button>
+                                                    <button className="text-[#333333] text-[16px] font-semibold hover:underline text-left" onClick={() => handleOpenDeleteModal(product)}>Hapus</button>
                                                 </div>
-                                            </>
-                                        )}
-                                    </div>
-                                ))}
+                                            </div>
+                                            {expandedProductId === product.id && (
+                                                <>
+                                                    <div className='col-span-1 border-t border-[#BBBBBBCC]/80' />
+                                                    <div className="col-span-11 -ml-4 py-4 mt-4 md:mt-0 border-t border-[#BBBBBBCC]/80 ">
+                                                        <p className='text-[#333333] font-bold text-[16px]' style={{
+                                                            lineHeight: "108%"
+                                                        }}>Variasi Produk</p>
+                                                        {product.combinations?.map((variant) => (
+                                                            <div key={variant.id} className="md:grid md:grid-cols-11 md:gap-4 items-start text-sm text-gray-700  first:border-t-0 py-3">
+                                                                <div className="col-span-12 md:col-span-3 flex items-start gap-4 ">
+                                                                    <img src={variant.image || product?.image} alt={Object.values(variant?.combination || {}).join('-')} className="w-[67px] h-[67px] object-cover rounded-md flex-shrink-0" />
+                                                                    <div>
+                                                                        <p className="font-bold text-[#333333] text-[15px]" style={{
+                                                                            lineHeight: "108%"
+                                                                        }}>{Object.values(variant?.combination || {}).join('-')}</p><p className="text-[13px] text-[#333333] mt-1">Kode: <span className='text-[16px] font-bold'>{Object.values(variant?.combination || {}).join('')}</span></p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="md:hidden mt-3 space-y-2 text-[13px]">
+                                                                    <div className="flex justify-between border-t pt-2"><span className="font-semibold text-[#333333]">Harga</span><span className="font-semibold">{formatRupiah(variant.price)}</span></div>
+                                                                    <div className="flex justify-between"><span className="font-semibold text-[#333333]">Stok</span><span>{variant.stock}</span></div>
+                                                                    <div className="flex justify-between border-t pt-2"><span className="font-semibold text-[#333333]">Aksi</span><button className="text-red-600 hover:underline" onClick={() => handleOpenDeleteModalVariant(variant)}>Hapus</button></div>
+                                                                </div>
+                                                                <div className="hidden md:block col-span-1 ml-4 text-left text-[#333333] text-[14px] px-4">{0}</div>
+                                                                <div className="hidden md:block col-span-2 flex jusify-center ml-12 space-y-2 px-6">
+                                                                    <p className='text-[#333333] text-[16px]' style={{
+                                                                        lineHeight: "115%"
+                                                                    }}>
+                                                                        {formatRupiah(variant.discount_price)}
+                                                                    </p>
+                                                                    <p className='text-[#666666] text-[13   px] line-through' style={{
+                                                                        lineHeight: "115%"
+                                                                    }}>
+                                                                        {formatRupiah(variant.price)}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{variant.stock}</div>
+                                                                <div className="hidden md:block col-span-3 text-left space-y-2 font-bold text-[12px] px-4">
+                                                                    {
+                                                                        product?.is_cod_enabled ?
+                                                                            <div className="text-[#F77000]">COD (Bayar ditempat)</div> : ''
+                                                                    }
+                                                                    {
+                                                                        variant?.discount_percent ?
+                                                                            <div>
+                                                                                <span className="bg-[#FAD7D7] border-[#F02929] border text-center text-[#F02929] rounded-[10px] px-2 py-[2px]">Diskon {variant?.discount_percent}%</span>
+                                                                            </div> : ''
+                                                                    }
+
+                                                                    {
+                                                                        product?.voucher ?
+                                                                            <div>
+                                                                                <span className="bg-[#C8F7D4] border-[#388F4F] border text-center text-[#388F4F] rounded-[10px] px-2 py-[2px]">Voucher {formatRupiah(product?.voucher)}</span>
+                                                                            </div> : ''
+                                                                    }
+                                                                    {
+                                                                        product?.delivery?.subsidy ?
+                                                                            <div>
+                                                                                <span className="bg-[#FFF9BF] border-[#F77000] border text-center text-[#F77000] rounded-[10px] px-2 py-[2px]">Gratis Ongkir {formatRupiah(product?.delivery?.subsidy)}</span>
+                                                                            </div> : ''
+                                                                    }
+                                                                </div>
+                                                                <div className="hidden md:block col-span-1">
+                                                                    <div className="flex flex-col tracking-[-0.02em]">
+                                                                        <button className="text-[#333333] text-[16px] font-semibold hover:underline text-left" onClick={() => handleOpenDeleteModalVariant(variant)}>Hapus</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                         {totalPages > 1 && (
@@ -532,6 +554,24 @@ const PageContent: NextPage = () => {
                 </div>
 
             </main >
+            {
+                snackbar.isOpen && (
+                    <Snackbar
+                        message={snackbar.message}
+                        type={snackbar.type}
+                        isOpen={snackbar.isOpen}
+                        onClose={() => setSnackbar((prev) => ({ ...prev, isOpen: false }))}
+                    />
+                )
+            }
+            {loading && <Loading />}
+
+            <DeleteProductModal
+                isOpen={isDeleteModalOpen}
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleDeleteProduct}
+                productName={productToDelete?.name || Object.values(productToDeleteVariant?.combination || {}).join('-') || ''}
+            />
         </div >
     );
 };
