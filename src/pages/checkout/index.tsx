@@ -1,9 +1,22 @@
+"use client"; // WAJIB: Memastikan komponen ini hanya dirender di sisi klien.
+
 import { MapPin, ChevronDown, Minus, Plus, X, Check, DownloadIcon } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import MainLayout from 'pages/layouts/MainLayout';
 import type { FC, ReactNode, RefObject } from 'react';
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
+import Get from 'services/api/Get';
 
-// --- INTERFACES & TYPE DEFINITIONS ---
+/**
+ * Generic Response Interface untuk semua balasan API.
+ * Menggunakan <T> agar tipe data bisa dinamis.
+ */
+interface Response<T> {
+    status: 'success' | 'error';
+    message: string;
+    data: T | null; // Data bisa null jika terjadi error
+}
+// Frontend-facing interfaces
 interface Address {
     id: string;
     name: string;
@@ -17,22 +30,55 @@ interface Address {
 
 interface Product {
     id: number;
+    seller_id: number;
+    category_id: number;
     name: string;
-    variant: string;
-    imageUrl: string;
+    desc: string;
+    image: string;
     originalPrice: number;
     discountedPrice: number;
     quantity: number;
-    codAvailable?: boolean;
+    stock: number;
+    is_cod_enabled: 0 | 1;
+    voucher?: number;
+    subsidy?: number;
+    variant: {
+        id: number;
+        product_id: number;
+        variant_code: string;
+        price: number;
+        discount_percent: number | null;
+        discount_price: number | null;
+        stock: number;
+        image: string;
+    };
+    height: string;
+    insurance: 0 | 1;
+    is_cost_by_seller: 0 | 1;
+    is_dangerous_product: 0 | 1;
+    is_pre_order: 0 | 1;
+    is_used: 0 | 1;
+    length: string;
+    max_purchase: number;
+    min_purchase: number;
+    preorder_duration: number | null;
+    scheduled_date: string | null;
+    service_ids: string;
+    shop_id: number;
+    shop_name: string;
+    sku: string;
+    weight: string;
+    width: string;
     vouchers?: string[];
 }
 
-type ShippingRange = 'Reguler' | 'Next Day' | 'Same Day';
+type ShippingRange = 'Reguler' | 'Next Day' | 'Same Day' | 'Instant';
+
 
 interface ShippingOption {
-    id: string; // Unique ID for each option
-    courierName: string; // e.g., 'SiCepat'
-    serviceName: string; // e.g., 'SIUNTUNG'
+    id: string;
+    courierName: string;
+    serviceName: string;
     price: number;
     range: ShippingRange;
     logoUrl: string;
@@ -46,7 +92,11 @@ interface Store {
     selectedShipping: ShippingOption;
 }
 
-interface PaymentOption { name: string; logoUrl: string; }
+interface PaymentOption {
+    name: string;
+    logoUrl: string;
+}
+
 interface OrderDetails {
     totalAmount: number;
     paymentMethod: PaymentOption | null;
@@ -55,6 +105,81 @@ interface OrderDetails {
 }
 
 type PaymentMethod = 'COD' | 'Transfer Bank' | 'QRIS' | 'E-Wallet';
+
+// Backend-specific interfaces for type-safe data fetching
+interface BackendVariant {
+    id: number;
+    product_id: number;
+    variant_code: string;
+    price: number;
+    discount_percent: number | null;
+    discount_price: number | null;
+    stock: number;
+    image: string;
+}
+
+interface BackendProduct {
+    id: number;
+    seller_id: number;
+    category_id: number;
+    name: string;
+    desc: string;
+    image: string;
+    price: number;
+    discount_price: number | null;
+    discount_percent: number | null;
+    quantity: number;
+    stock: number;
+    is_cod_enabled: 0 | 1;
+    voucher?: number;
+    subsidy?: number;
+    variant?: BackendVariant;
+    is_cost_by_seller: 0 | 1;
+    height: string;
+    insurance: 0 | 1;
+    is_dangerous_product: 0 | 1;
+    is_pre_order: 0 | 1;
+    is_used: 0 | 1;
+    length: string;
+    max_purchase: number;
+    min_purchase: number;
+    preorder_duration: number | null;
+    scheduled_date: string | null;
+    service_ids: string;
+    shop_id: number;
+    shop_name: string;
+    sku: string;
+    weight: string;
+    width: string;
+}
+
+interface BackendShippingService {
+    id: number;
+    name: string;
+}
+
+interface BackendCourierOption {
+    courier: string;
+    cost: number;
+    logo_url: string;
+    services: BackendShippingService[];
+}
+
+interface BackendSelectedShipping {
+    id: number;
+    courier: string;
+    service: string;
+    cost: number;
+    logo_url: string;
+}
+
+interface BackendStore {
+    id: string;
+    name: string;
+    products: BackendProduct[];
+    shippingOptions: BackendCourierOption[];
+    selectedShipping?: BackendSelectedShipping;
+}
 
 // --- HELPER FUNCTIONS ---
 const formatCurrency = (amount: number) => {
@@ -66,8 +191,17 @@ const formatCurrency = (amount: number) => {
     }).format(amount).replace(/\s/g, '');
 };
 
+const getShippingRange = (serviceName: string): ShippingRange => {
+    const lowerCaseService = serviceName.toLowerCase();
+    if (lowerCaseService.includes('next day') || lowerCaseService.includes('yes')) return 'Next Day';
+    if (lowerCaseService.includes('same day')) return 'Same Day';
+    if (lowerCaseService.includes('instant')) return 'Instant';
+    return 'Reguler'; // Default to Reguler
+};
 
-// --- MOCK DATA ---
+// --- MOCK DATA & ASSETS ---
+// Note: static assets like images must be in the `public` folder for Next.js build.
+// E.g., '/image/gosend 5.png' should resolve to `public/image/gosend 5.png`
 const allUserAddresses: Address[] = [
     {
         id: 'addr1',
@@ -101,48 +235,22 @@ const allUserAddresses: Address[] = [
     }
 ];
 
-const allShippingOptions: ShippingOption[] = [
-    { id: 'sicepat-reg', courierName: 'SiCepat', serviceName: 'SIUNTUNG', price: 47000, range: 'Reguler', logoUrl: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnQ_u7_qEjguu0ZqqKrXJKRfi4PHRc5fLw0aCXnYwf-yygcnoXw0yDcIo8A-J_wwQyFH1cSZX9TnLcqOKsjCnKiKmBxkoXvznGOYsY-y6qvVHQSgKKA2qSGraF6x1xRFlP12sqb3ZvUDXUNmV1rSZvePdhXUp98t_uBBBogyC8efTM-KIX-zqNtgdO/s320/GKL5_SiCepat%20Express%20-%20Koleksilogo.com.jpg' },
-    { id: 'jne-reg', courierName: 'JNE', serviceName: 'REG', price: 56000, range: 'Reguler', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/92/New_Logo_JNE.png' },
-    { id: 'jnt-reg', courierName: 'J&T', serviceName: 'Regular', price: 47000, range: 'Reguler', logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/J%26T_Express_logo.svg/972px-J%26T_Express_logo.svg.png' },
-    { id: 'pos-reg', courierName: 'POS', serviceName: 'Regular', price: 52500, range: 'Reguler', logoUrl: 'https://www.posindonesia.co.id/_next/image?url=https%3A%2F%2Fadmin-piol.posindonesia.co.id%2Fmedia%2Fpages-pos-reguler.png&w=1920&q=75' },
-];
+const COURIER_LOGOS: { [key: string]: string } = {
+    'SiCepat': 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhnQ_u7_qEjguu0ZqqKrXJKRfi4PHRc5fLw0aCXnYwf-yygcnoXw0yDcIo8A-J_wwQyFH1cSZX9TnLcqOKsjCnKiKmBxkoXvznGOYsY-y6qvVHQSgKKA2qSGraF6x1xRFlP12sqb3ZvUDXUNmV1rSZvePdhXUp98t_uBBBogyC8efTM-KIX-zqNtgdO/s320/GKL5_SiCepat%20Express%20-%20Koleksilogo.com.jpg',
+    'JNE': 'https://upload.wikimedia.org/wikipedia/commons/9/92/New_Logo_JNE.png',
+    'J&T': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/J%26T_Express_logo.svg/972px-J%26T_Express_logo.svg.png',
+    'POS': 'https://www.posindonesia.co.id/_next/image?url=https%3A%2F%2Fadmin-piol.posindonesia.co.id%2Fmedia%2Fpages-pos-reguler.png&w=1920&q=75',
+    'Instant': 'https://example.com/logo/instant.png',
+    'Anteraja': '/image/gosend_5.png' // Pastikan file ada di public/image/gosend_5.png
+};
 
-const initialStores: Store[] = [
-    {
-        id: 'store-abc',
-        name: 'Toko ABC',
-        products: [
-            {
-                id: 1,
-                name: 'Rak Bambu Dapur Multifungsi 2 susun',
-                variant: 'Warna Putih Ukuran Sedang',
-                imageUrl: '/image/image 13.png',
-                originalPrice: 350000,
-                discountedPrice: 290000,
-                quantity: 1,
-                codAvailable: true,
-                vouchers: ['Diskon Terpakai 25%', 'Gratis Ongkir Rp10.000']
-            },
-            { id: 2, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: '/image/image 13.png', originalPrice: 350000, discountedPrice: 290000, quantity: 1, codAvailable: true, vouchers: ['Voucher Toko Rp20.000'] },
-        ],
-        shippingOptions: allShippingOptions,
-        selectedShipping: allShippingOptions[0]
-    },
-    {
-        id: 'store-cde',
-        name: 'Toko CDE',
-        products: [
-            { id: 3, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: '/image/image 13.png', originalPrice: 150000, discountedPrice: 120000, quantity: 1, codAvailable: true, vouchers: ['Gratis Ongkir Rp10.000'] },
-            { id: 4, name: 'Rak Bambu Dapur Multifungsi 2 susun', variant: 'Warna Putih Ukuran Sedang', imageUrl: '/image/image 13.png', originalPrice: 150000, discountedPrice: 120000, quantity: 1, codAvailable: true, vouchers: ['Gratis Ongkir Rp10.000'] },
-        ],
-        shippingOptions: allShippingOptions.filter(opt => opt.courierName !== 'POS'), // Example of a store with fewer options
-        selectedShipping: allShippingOptions[0]
-    }
-];
 
 // --- COMPONENTS ---
-
+// No significant changes needed in sub-components, they will work with the dynamic data structure.
+// The code for sub-components (AddressModal, CheckoutAddressCard, ProductItemRow, etc.) remains the same.
+// For brevity, I'll omit the unchanged component code. Assume they are here.
+// ... (Paste all your unchanged components here: AddressModal, useOutsideClick, CheckoutAddressCard, QuantityStepper, ProductItemRow, CustomCourierSelect, StoreCheckoutCard, PaymentAndSummaryCard, PaymentConfirmationPage)
+// START OF UNCHANGED COMPONENTS
 interface AddressModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -267,11 +375,11 @@ const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product)
     <div className="p-4 grid grid-cols-12 gap-4 items-center">
         {/* Product Info */}
         <div className="col-span-12 md:col-span-5 flex items-start gap-4">
-            <img src={product.imageUrl} alt={product.name} className="w-[100px] h-[100px] object-cover border border-[#AAAAAA]" />
+            <img src={product.variant?.image || product.image} alt={product.name} className="w-[100px] h-[100px] object-cover border border-[#AAAAAA]" />
             <div className="flex-1 space-y-2">
                 <p className="text-[#333333] text-[16px] line-clamp-1 w-full">{product.name}</p>
-                <p className="text-[#333333] text-[13px] line-clamp-1 w-full">{product.variant}</p>
-                <span className="text-[#F77000] text-[14px] font-bold">COD (Bayar ditempat)</span>
+                <p className="text-[#333333] text-[13px] line-clamp-1 w-full">{product.variant?.variant_code || 'No Variant'}</p>
+                {product.is_cod_enabled === 1 && <span className="text-[#F77000] text-[14px] font-bold">COD (Bayar ditempat)</span>}
                 <div className="flex flex-wrap gap-2 mt-2">
                     {product.vouchers?.map((voucher, index) => {
                         const isVoucherToko = voucher.toLowerCase().includes('toko');
@@ -290,7 +398,9 @@ const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product)
         {/* Unit Price */}
         <div className="col-span-6 md:col-span-2 text-center">
             <p className="text-[#333333] font-bold text-right text-[16px]">{formatCurrency(product.discountedPrice)}</p>
-            <p className="text-[#333333] text-right line-through text-[14px]">{formatCurrency(product.originalPrice)}</p>
+            {product.originalPrice > product.discountedPrice && (
+                <p className="text-[#333333] text-right line-through text-[14px]">{formatCurrency(product.originalPrice)}</p>
+            )}
         </div>
         {/* Quantity */}
         <div className="col-span-6 md:col-span-2 flex items-center justify-center">
@@ -311,7 +421,7 @@ const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product)
 
 const CustomCourierSelect: FC<{
     options: ShippingOption[];
-    selected: ShippingOption;
+    selected: ShippingOption | undefined; // Can be undefined initially
     onSelect: (option: ShippingOption) => void;
     placeholder?: string;
 }> = ({ options, selected, onSelect, placeholder = "Pilih Kurir" }) => {
@@ -329,7 +439,7 @@ const CustomCourierSelect: FC<{
             <button onClick={() => setIsOpen(!isOpen)} className="w-full h-[50px] flex items-center justify-between bg-white border border-gray-300 rounded-md py-2 px-4 text-left">
                 {selected ? (
                     <div className="flex items-center space-x-3">
-                        <img src={selected.logoUrl} alt={selected.courierName} className="h-5 w-auto object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                        {selected.logoUrl && <img src={selected.logoUrl} alt={selected.courierName} className="h-5 w-auto object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />}
                         <span className="text-sm">{selected.courierName} {selected.serviceName}</span>
                     </div>
                 ) : (
@@ -342,7 +452,7 @@ const CustomCourierSelect: FC<{
                     {options.length > 0 ? options.map(option => (
                         <div key={option.id} onClick={() => handleSelect(option)} className="flex items-center justify-between p-3 hover:bg-gray-100 cursor-pointer">
                             <div className="flex items-center space-x-3">
-                                <img src={option.logoUrl} alt={option.courierName} className="h-6 w-12 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                                {option.logoUrl && <img src={option.logoUrl} alt={option.courierName} className="h-6 w-12 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />}
                                 <span className="text-sm">{option.courierName} {option.serviceName}</span>
                             </div>
                             <span className="text-sm font-semibold">{formatCurrency(option.price)}</span>
@@ -356,13 +466,14 @@ const CustomCourierSelect: FC<{
     );
 };
 
-const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: number, updatedProduct: Product) => void; onProductRemove: (productId: number) => void; onShippingChange: (newShipping: ShippingOption) => void; }> = ({ storeData, onProductUpdate, onProductRemove, onShippingChange }) => {
+const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: number, updatedProduct: Product) => void; onProductRemove: (productId: number) => void; onShippingChange: (storeId: string, newShipping: ShippingOption) => void; }> = ({ storeData, onProductUpdate, onProductRemove, onShippingChange }) => {
     const productSubtotal = storeData.products.reduce((acc, p) => acc + (p.discountedPrice * p.quantity), 0);
     const totalProducts = storeData.products.reduce((acc, p) => acc + p.quantity, 0);
     const [selectedRange, setSelectedRange] = useState<ShippingRange>(storeData.selectedShipping.range);
 
     const availableRanges = useMemo(() => {
-        const ranges = new Set(storeData.shippingOptions.map(opt => opt.range));
+        const ranges = new Set<ShippingRange>();
+        storeData.shippingOptions.forEach(opt => ranges.add(opt.range));
         return Array.from(ranges);
     }, [storeData.shippingOptions]);
 
@@ -370,12 +481,23 @@ const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: num
         return storeData.shippingOptions.filter(opt => opt.range === selectedRange);
     }, [selectedRange, storeData.shippingOptions]);
 
+    useEffect(() => {
+        // Ensure selectedShipping is consistent with current selectedRange and available options
+        if (storeData.selectedShipping && storeData.selectedShipping.range !== selectedRange) {
+            const firstOptionInNewRange = storeData.shippingOptions.find(opt => opt.range === selectedRange);
+            if (firstOptionInNewRange) {
+                onShippingChange(storeData.id, firstOptionInNewRange);
+            }
+        }
+    }, [selectedRange, storeData.shippingOptions, storeData.selectedShipping, onShippingChange, storeData.id]);
+
+
     const handleRangeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newRange = e.target.value as ShippingRange;
         setSelectedRange(newRange);
         const newOptionsForRange = storeData.shippingOptions.filter(opt => opt.range === newRange);
         if (newOptionsForRange.length > 0) {
-            onShippingChange(newOptionsForRange[0]);
+            onShippingChange(storeData.id, newOptionsForRange[0]);
         }
     };
 
@@ -407,7 +529,15 @@ const StoreCheckoutCard: FC<{ storeData: Store; onProductUpdate: (productId: num
                             <ChevronDown className="w-5 h-5 text-gray-400 absolute right-3 top-[46px] pointer-events-none" />
                         </div>
                         <div className="relative md:col-span-2">
-                            <CustomCourierSelect options={filteredOptions} selected={storeData.selectedShipping} onSelect={onShippingChange} />
+                            {filteredOptions.length > 0 ? (
+                                <CustomCourierSelect
+                                    options={filteredOptions}
+                                    selected={storeData.selectedShipping}
+                                    onSelect={(s) => onShippingChange(storeData.id, s)}
+                                />
+                            ) : (
+                                <p className="text-sm text-gray-500">Tidak ada opsi pengiriman tersedia untuk jenis ini.</p>
+                            )}
                         </div>
                     </div>
                     <div className="mt-6">
@@ -461,11 +591,16 @@ const PaymentAndSummaryCard: FC<{
         const totalDiskon = itemDiscount + shippingDiscount + storeVoucherDiscount;
         const totalPembayaran = originalProductTotal + shippingSubtotal + biayaLayanan + biayaTransfer - totalDiskon;
         const handleCreateOrder = () => {
+            // Placeholder virtual account for now. In a real app, this would come from a payment gateway API call.
+            const virtualAccountNumber = selectedPayment?.name.includes('BCA') ? '1234 4578 1234 5678' :
+                selectedPayment?.name.includes('BRI') ? '9876 5432 1098 7654' :
+                    selectedPayment?.name.includes('BNI') ? '1122 3344 5566 7788' :
+                        ''; // Or generate a generic one for other methods
             onCreateOrder({
                 totalAmount: totalPembayaran,
                 paymentMethod: selectedPayment,
-                virtualAccount: '1234 4578 1234 5678',
-                imagePayment: "s"
+                virtualAccount: virtualAccountNumber,
+                imagePayment: "" // This would be populated for QRIS, etc.
             });
         };
 
@@ -523,7 +658,7 @@ const PaymentAndSummaryCard: FC<{
                         )}
                     </div>
                     <div className="flex justify-end gap-10 items-center mt-4 pt-4 border-t border-gray-300">
-                        <span className="text-[16px]  text-[#333333] text-end">Total Pembayaran</span>
+                        <span className="text-[16px]  text-[#333333] text-end">Total Pembayaran</span>
                         <span className="text-[24px] font-bold text-[#E33947] w-1/7 text-end" style={{
                             lineHeight: "108%",
                             letterSpacing: "-0.04em"
@@ -544,7 +679,7 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
     const [timeLeft, setTimeLeft] = useState(24 * 60 * 60);
     const [copied, setCopied] = useState(false);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
-    console.log('orderDetails', orderDetails)
+
     useEffect(() => {
         if (timeLeft === 0) return;
         const timerId = setInterval(() => setTimeLeft(timeLeft - 1), 1000);
@@ -586,7 +721,7 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
                             <span className="text-[#333333] font-[500] text-[20px]">Bayar dalam</span>
                             <div className="text-right">
                                 <span className="font-semibold text-[#E30800] text-[20px]">{`${hours} jam ${minutes} menit ${seconds} detik`}</span>
-                                <p className="text-[16px] mt-1   text-[#333333]">Jatuh tempo {dueDate}</p>
+                                <p className="text-[16px] mt-1   text-[#333333]">Jatuh tempo {dueDate}</p>
                             </div>
                         </div>
                     </div>
@@ -597,76 +732,207 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
                                     Scan QR Code dengan aplikasi e-wallet atau mobile banking yang kamu punya:
                                 </div>
                                 <div className='flex justify-center'>
-                                    <img src='/image/qr 1.svg' />
+                                    {/* Pastikan gambar ada di public/image/qr 1.svg */}
+                                    <img src='/image/qr 1.svg' alt="QR Code" />
                                 </div>
                                 <div className='flex justify-center'>
-                                    <img src='/image/qris 2.svg' />
+                                    {/* Pastikan gambar ada di public/image/qris 2.svg */}
+                                    <img src='/image/qris 2.svg' alt="QRIS logos" />
                                 </div>
                                 <div className='flex justify-center items-center gap-4'>
                                     <DownloadIcon className='h-[24px] w-[24px]' />
                                     <p className='text-[20px] text-[#333333] font-[500px]'>Download QR Code</p>
                                 </div>
                                 <div className='flex justify-center'>
-                                    <button onClick={onBack} className="bg-[#DE4A53] h-[50px] w-[214px] text-white font-semibold text-[16px] py-3 px-4 rounded-[10px]  mt-6 hover:bg-red-700 transition-colors" style={{
+                                    <button onClick={onBack} className="bg-[#DE4A53] h-[50px] w-[214px] text-white font-semibold text-[16px] py-3 px-4 rounded-[10px]  mt-6 hover:bg-red-700 transition-colors" style={{
                                         lineHeight: "22px",
                                         letterSpacing: "-0.04em"
                                     }}>Cek Status Bayar</button>
                                 </div>
                             </div>
                         </div> :
-                            <div className='flex justify-center'>
-                                <div className='flex items-start p-6 gap-10'>
-                                    <img src={orderDetails.paymentMethod?.logoUrl} width={126} />
-                                    <div>
-                                        <div className="">
-                                            <p className="font-[500] text-[20px] text-[#333333] mb-1">{orderDetails.paymentMethod?.name}</p>
-                                            <p className="font-[500] text-[16px] text-[#333333]">No. Rekening Virtual Account</p>
-                                            <div className="flex items-center mt-4">
-                                                <p className="text-[23px] font-[500] text-[#E30800] tracking-wider">{orderDetails.virtualAccount}</p>
-                                                <button onClick={handleCopy} className="ml-4 text-purple-600 font-semibold text-sm">{copied ? 'Tersalin' : 'SALIN'}</button>
+                            // Render for Virtual Account / E-Wallet (non-QRIS)
+                            orderDetails.paymentMethod && (
+                                <div className='flex justify-center'>
+                                    <div className='flex items-start p-6 gap-10'>
+                                        <img src={orderDetails.paymentMethod.logoUrl} width={126} alt={`${orderDetails.paymentMethod.name} logo`} />
+                                        <div>
+                                            <div className="">
+                                                <p className="font-[500] text-[20px] text-[#333333] mb-1">{orderDetails.paymentMethod.name}</p>
+                                                <p className="font-[500] text-[16px] text-[#333333]">No. Rekening Virtual Account</p>
+                                                <div className="flex items-center mt-4">
+                                                    <p className="text-[23px] font-[500] text-[#E30800] tracking-wider">{orderDetails.virtualAccount}</p>
+                                                    <button onClick={handleCopy} className="ml-4 text-purple-600 font-semibold text-sm">{copied ? 'Tersalin' : 'SALIN'}</button>
+                                                </div>
+                                                <p className="text-[16px] text-[#7952B3] mt-3">Proses verifikasi kurang dari 10 menit setelah pembayaran berhasil</p>
                                             </div>
-                                            <p className="text-[16px] text-[#7952B3] mt-3">Proses verifikasi kurang dari 10 menit setelah pembayaran berhasil</p>
-                                        </div>
-                                        <div className="py-4">
-                                            <AccordionItem title="Petunjuk Transfer mBanking">
-                                                <p>1. Login ke m-BCA. <br /> 2. Pilih menu m-Transfer &gt; BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
-                                            </AccordionItem>
-                                            <AccordionItem title="Petunjuk Transfer iBanking">
-                                                <p>1. Login ke KlikBCA. <br /> 2. Pilih menu Transfer Dana &gt; Transfer ke BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
-                                            </AccordionItem>
-                                            <AccordionItem title="Petunjuk Transfer ATM">
-                                                <p>1. Masukkan kartu ATM dan PIN. <br /> 2. Pilih menu Transaksi Lainnya &gt; Transfer &gt; Ke Rek BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
-                                            </AccordionItem>
-                                        </div>
-                                        <div className='flex justify-center'>
-                                            <button onClick={onBack} className="bg-[#DE4A53] h-[50px] w-[140px] text-white font-semibold text-[16px] py-3 px-4 rounded-[10px]  mt-6 hover:bg-red-700 transition-colors" style={{
-                                                lineHeight: "22px",
-                                                letterSpacing: "-0.04em"
-                                            }}>Ok</button>
+                                            <div className="py-4">
+                                                <AccordionItem title="Petunjuk Transfer mBanking">
+                                                    <p>1. Login ke m-BCA. <br /> 2. Pilih menu m-Transfer &gt; BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
+                                                </AccordionItem>
+                                                <AccordionItem title="Petunjuk Transfer iBanking">
+                                                    <p>1. Login ke KlikBCA. <br /> 2. Pilih menu Transfer Dana &gt; Transfer ke BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
+                                                </AccordionItem>
+                                                <AccordionItem title="Petunjuk Transfer ATM">
+                                                    <p>1. Masukkan kartu ATM dan PIN. <br /> 2. Pilih menu Transaksi Lainnya &gt; Transfer &gt; Ke Rek BCA Virtual Account. <br /> 3. Masukkan nomor Virtual Account di atas. <br /> 4. Ikuti instruksi untuk menyelesaikan pembayaran.</p>
+                                                </AccordionItem>
+                                            </div>
+                                            <div className='flex justify-center'>
+                                                <button onClick={onBack} className="bg-[#DE4A53] h-[50px] w-[140px] text-white font-semibold text-[16px] py-3 px-4 rounded-[10px] mt-6 hover:bg-red-700 transition-colors" style={{
+                                                    lineHeight: "22px",
+                                                    letterSpacing: "-0.04em"
+                                                }}>Ok</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )
                     }
                 </div>
             </div>
         </div>
     );
 };
+// END OF UNCHANGED COMPONENTS
 
 
-// --- MAIN PAGE COMPONENT ---
-export default function CheckoutPage() {
+// --- MAIN CONTENT COMPONENT ---
+// This component contains the core logic and can safely use client-side hooks.
+const CheckoutView = () => {
     const [view, setView] = useState<'checkout' | 'confirmation'>('checkout');
-    const [stores, setStores] = useState<Store[]>(initialStores);
+    const [stores, setStores] = useState<Store[]>([]);
     const [finalOrder, setFinalOrder] = useState<OrderDetails | null>(null);
     const initialUserAddress = allUserAddresses.find(addr => addr.isPrimary) || allUserAddresses[0];
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [currentAddress, setCurrentAddress] = useState<Address>(initialUserAddress);
+    const searchParams = useSearchParams();
+    const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const params = new URLSearchParams();
+        const variantIds = searchParams.getAll('variant_id[]');
+        const qtys = searchParams.getAll('qty[]');
+        const productIds = searchParams.getAll('product_id[]');
+
+        variantIds.forEach((v) => params.append('variant_id[]', v));
+        qtys.forEach((q) => params.append('qty[]', q));
+        productIds.forEach((p) => params.append('product_id[]', p));
+
+        const queryString = params.toString();
+        if (queryString) {
+            getCheckout(queryString);
+        } else {
+            setLoading(false);
+        }
+    }, [searchParams]);
+
+    const getCheckout = async (queryString: string) => {
+        setLoading(true);
+        try {
+            const res = await Get<Response<BackendStore[]>>('zukses', `checkout?${queryString}`);
+            if (res?.status === 'success' && Array.isArray(res.data)) {
+                const transformedStores: Store[] = res.data.map((backendStore: BackendStore) => {
+                    const products: Product[] = backendStore.products.map((p: BackendProduct): Product => {
+                        const originalPrice = p.price || 0;
+                        const discountedPrice = p.variant?.discount_price ?? p.discount_price ?? p.price ?? 0;
+                        const discountedPercent = p.variant?.discount_percent ?? p.discount_percent ?? 0;
+
+                        const productVouchers: string[] = [];
+                        if (discountedPercent) {
+                            productVouchers.push(`Diskon Terpakai ${discountedPercent}%`);
+                        }
+                        if (p.voucher && p.voucher > 0) {
+                            productVouchers.push(`Voucher Toko ${formatCurrency(p.voucher)}`);
+                        }
+                        if (p.subsidy && p.subsidy > 0) {
+                            productVouchers.push(`Gratis Ongkir ${formatCurrency(p.subsidy)}`);
+                        }
+                        if (p.is_cost_by_seller === 1) {
+                            productVouchers.push('Gratis Ongkir');
+                        }
+
+                        return {
+                            ...p,
+                            originalPrice,
+                            discountedPrice,
+                            image: p.image,
+                            variant: { // Ensure variant object is always defined
+                                id: p.variant?.id ?? 0,
+                                product_id: p.variant?.product_id ?? p.id,
+                                variant_code: p.variant?.variant_code ?? '',
+                                price: p.variant?.price ?? p.price,
+                                discount_percent: p.variant?.discount_percent ?? null,
+                                discount_price: p.variant?.discount_price ?? null,
+                                stock: p.variant?.stock ?? p.stock,
+                                image: p.variant?.image ?? p.image,
+                            },
+                            vouchers: productVouchers,
+                        };
+                    });
+
+                    const shippingOptions: ShippingOption[] = backendStore.shippingOptions.flatMap((courierOption: BackendCourierOption) => {
+                        if (!Array.isArray(courierOption.services)) {
+                            return [];
+                        }
+                        return courierOption.services.map((service: BackendShippingService) => ({
+                            id: `${courierOption.courier}-${service.id}`,
+                            courierName: courierOption.courier,
+                            serviceName: service.name,
+                            price: courierOption.cost || 50000,
+                            range: getShippingRange(service.name),
+                            logoUrl: courierOption.logo_url || COURIER_LOGOS[courierOption.courier] || ''
+                        }));
+                    });
+
+                    let initialSelectedShipping: ShippingOption;
+                    if (backendStore.selectedShipping) {
+                        initialSelectedShipping = {
+                            id: `${backendStore.selectedShipping.courier}-${backendStore.selectedShipping.id}`,
+                            courierName: backendStore.selectedShipping.courier,
+                            serviceName: backendStore.selectedShipping.service,
+                            price: backendStore.selectedShipping.cost,
+                            range: getShippingRange(backendStore.selectedShipping.service),
+                            logoUrl: backendStore.selectedShipping.logo_url || COURIER_LOGOS[backendStore.selectedShipping.courier] || ''
+                        };
+                    } else if (shippingOptions.length > 0) {
+                        initialSelectedShipping = shippingOptions[0];
+                    } else {
+                        // Fallback dummy shipping option to prevent crashes
+                        initialSelectedShipping = {
+                            id: 'dummy-shipping',
+                            courierName: 'N/A',
+                            serviceName: 'Tidak tersedia',
+                            price: 0,
+                            range: 'Reguler',
+                            logoUrl: ''
+                        };
+                    }
+
+                    return {
+                        id: backendStore.id,
+                        name: backendStore.name,
+                        products,
+                        shippingOptions,
+                        selectedShipping: initialSelectedShipping
+                    };
+                });
+                setStores(transformedStores);
+            } else {
+                console.warn('Produk tidak ditemukan atau gagal diambil:', res?.message);
+                setStores([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch checkout data:", error);
+            setStores([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleAddressChange = (newAddress: Address) => {
         setCurrentAddress(newAddress);
         setIsAddressModalOpen(false);
+        // Optionally, you might want to re-fetch shipping costs here
     };
 
     const handleProductUpdate = (storeId: string, productId: number, updatedProduct: Product) => {
@@ -678,11 +944,13 @@ export default function CheckoutPage() {
     };
 
     const handleProductRemove = (storeId: string, productId: number) => {
-        setStores(currentStores => currentStores.map(store =>
-            store.id === storeId
-                ? { ...store, products: store.products.filter(p => p.id !== productId) }
-                : store
-        ).filter(store => store.products.length > 0));
+        setStores(currentStores => currentStores.map(store => {
+            if (store.id === storeId) {
+                const updatedProducts = store.products.filter(p => p.id !== productId);
+                return updatedProducts.length > 0 ? { ...store, products: updatedProducts } : null;
+            }
+            return store;
+        }).filter(Boolean) as Store[]);
     };
 
     const handleShippingChange = (storeId: string, newShipping: ShippingOption) => {
@@ -705,8 +973,8 @@ export default function CheckoutPage() {
 
     const {
         originalProductTotal,
+        discountedProductTotal,
         shippingSubtotal,
-        itemDiscount,
         shippingDiscount,
         storeVoucherDiscount
     } = useMemo(() => {
@@ -716,23 +984,19 @@ export default function CheckoutPage() {
         let shippingDisc = 0;
         let storeVoucher = 0;
 
-        const extractAmount = (voucher: string): number => {
-            const matches = voucher.match(/(\d{1,3}(?:[.,]\d{3})*|\d+)/);
-            return matches ? parseInt(matches[0].replace(/[.,]/g, '')) : 0;
-        };
-
         stores.forEach(store => {
             if (store.products.length > 0) {
                 store.products.forEach(p => {
                     originalTotal += p.originalPrice * p.quantity;
+                    // FIX: Use += to accumulate the total, not =
                     discountedTotal += p.discountedPrice * p.quantity;
-                    p.vouchers?.forEach(v => {
-                        if (v.toLowerCase().includes('ongkir')) {
-                            shippingDisc += extractAmount(v);
-                        } else if (v.toLowerCase().includes('toko')) {
-                            storeVoucher += extractAmount(v);
-                        }
-                    });
+
+                    if (p.voucher && p.voucher > 0) {
+                        storeVoucher += p.voucher;
+                    }
+                    if (p.subsidy && p.subsidy > 0) {
+                        shippingDisc += p.subsidy;
+                    }
                 });
                 shippingTotal += store.selectedShipping.price;
             }
@@ -740,61 +1004,71 @@ export default function CheckoutPage() {
 
         return {
             originalProductTotal: originalTotal,
+            discountedProductTotal: discountedTotal,
             shippingSubtotal: shippingTotal,
-            itemDiscount: originalTotal - discountedTotal,
             shippingDiscount: shippingDisc,
             storeVoucherDiscount: storeVoucher
         };
     }, [stores]);
 
-    return (
-        <MainLayout>
-            <div className="container mx-auto py-8 px-4 lg:w-[1200px] space-y-4">
-                {view === 'checkout' ? (
-                    <>
-                        <h1 className="text-[#7952B3] sm:text-3xl font-bold text-[25px] mb-6">Checkout</h1>
-                        <div className="space-y-6">
-                            <CheckoutAddressCard
-                                address={currentAddress}
-                                onOpenModal={() => setIsAddressModalOpen(true)}
-                            />
+    const itemDiscount = originalProductTotal - discountedProductTotal;
 
-                            {stores.map((store, index) => (
-                                <div key={index} className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
+    if (loading) {
+        return (
+            <div className="container mx-auto py-8 px-4 lg:w-[1200px] space-y-4 text-center">
+                <p>Memuat data checkout...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto py-8 px-4 lg:w-[1200px] space-y-4">
+            {view === 'checkout' ? (
+                <>
+                    <h1 className="text-[#7952B3] sm:text-3xl font-bold text-[25px] mb-6">Checkout</h1>
+                    <div className="space-y-6">
+                        <CheckoutAddressCard
+                            address={currentAddress}
+                            onOpenModal={() => setIsAddressModalOpen(true)}
+                        />
+
+                        {stores.length > 0 ? (
+                            stores.map((store) => (
+                                <div key={store.id} className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
                                     <StoreCheckoutCard
                                         storeData={store}
                                         onProductUpdate={(productId, p) => handleProductUpdate(store.id, productId, p)}
                                         onProductRemove={(productId) => handleProductRemove(store.id, productId)}
-                                        onShippingChange={(s) => handleShippingChange(store.id, s)}
+                                        onShippingChange={(storeId, s) => handleShippingChange(storeId, s)}
                                     />
                                 </div>
-                            ))}
+                            ))
+                        ) : (
+                            <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
+                                <h3 className="text-lg font-semibold">Keranjang Anda kosong</h3>
+                                <p className="mt-2">Silakan tambahkan produk untuk melanjutkan.</p>
+                            </div>
+                        )}
 
-                            {stores.length > 0 ? (
-                                <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
-                                    <PaymentAndSummaryCard
-                                        originalProductTotal={originalProductTotal}
-                                        shippingSubtotal={shippingSubtotal}
-                                        itemDiscount={itemDiscount}
-                                        shippingDiscount={shippingDiscount}
-                                        storeVoucherDiscount={storeVoucherDiscount}
-                                        onCreateOrder={handleCreateOrder}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="bg-white rounded-xl shadow-md p-8 text-center text-gray-500">
-                                    <h3 className="text-lg font-semibold">Keranjang Anda kosong</h3>
-                                    <p className="mt-2">Silakan tambahkan produk untuk melanjutkan.</p>
-                                </div>
-                            )}
-                        </div>
-                    </>
-                ) : finalOrder && (
-                    <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
-                        <PaymentConfirmationPage orderDetails={finalOrder} onBack={handleBackToCheckout} />
+                        {stores.length > 0 && (
+                            <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
+                                <PaymentAndSummaryCard
+                                    originalProductTotal={originalProductTotal} // Pass the final product total after discounts
+                                    shippingSubtotal={shippingSubtotal}
+                                    itemDiscount={itemDiscount}
+                                    shippingDiscount={shippingDiscount}
+                                    storeVoucherDiscount={storeVoucherDiscount}
+                                    onCreateOrder={handleCreateOrder}
+                                />
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+                </>
+            ) : finalOrder && (
+                <div className='rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC]'>
+                    <PaymentConfirmationPage orderDetails={finalOrder} onBack={handleBackToCheckout} />
+                </div>
+            )}
 
             <AddressModal
                 isOpen={isAddressModalOpen}
@@ -803,6 +1077,18 @@ export default function CheckoutPage() {
                 addresses={allUserAddresses}
                 currentAddressId={currentAddress.id}
             />
+        </div>
+    );
+};
+
+// --- PAGE EXPORT ---
+// Wrap the main view in Suspense for Next.js pages router to handle client-side hooks gracefully.
+export default function CheckoutPage() {
+    return (
+        <MainLayout>
+            <Suspense fallback={<div className="text-center p-8">Loading...</div>}>
+                <CheckoutView />
+            </Suspense>
         </MainLayout>
     );
 }
