@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { RadioGroup } from './FormInputs';
 import { TipKey } from './tipsStore';
 import { formatRupiahNoRP } from 'components/Rupiah';
+import { Check } from 'lucide-react';
 
 interface ProductOtherInfoSectionProps {
     setTipKey: (key: TipKey) => void;
@@ -72,8 +73,19 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         </div>
                     </div>
                     <div className="flex items-start space-x-3 p-3 rounded-md pl-0 pb-0">
-                        <input id="voucher" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isVoucher}
-                            onChange={(e) => setIsVoucher(e.target.checked)} />
+                        <label className="inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={isVoucher}
+                                onChange={(e) => setIsVoucher(e.target.checked)}
+                                className="peer hidden"
+                                id="voucher"
+                            />
+                            <span className={`w-6 h-6 rounded-lg border-2 border-[#52357B] bg-[#E7D6FF] flex items-center justify-center`}>
+                                {isVoucher ? <Check size={16} strokeWidth={4} /> : ''}
+
+                            </span>
+                        </label>
                         <label htmlFor="voucher" className="font-bold text-[16px] text-[#333333] cursor-pointer">Aktifkan Voucher Toko</label>
                     </div>
                     <div className='-mt-4'>
@@ -95,8 +107,20 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                     <div onMouseEnter={() => setTipKey('cod')} onMouseLeave={() => setTipKey('default')}>
                         <label className="text-[#333333] font-bold text-[16px]">Pembayaran di Tempat (COD)</label>
                         <div className="flex items-start space-x-3 p-3 rounded-md">
-                            <input id="cod" type="checkbox" className="h-5 w-5 accent-[#52357B] text-white focus:ring-[#52357B]" checked={isCodEnabled === '1'}
-                                onChange={(e) => setIsCodEnabled(e.target.checked ? '1' : '0')} />
+                            <label className="inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={isCodEnabled === '1'}
+                                    onChange={(e) => setIsCodEnabled(e.target.checked ? '1' : '0')}
+                                    className="peer hidden"
+                                    id="cod"
+                                />
+                                <span className={`w-6 h-6 rounded-lg border-2 border-[#52357B] bg-[#E7D6FF] flex items-center justify-center`}>
+                                    {isCodEnabled === '1' ? <Check size={16} strokeWidth={4} /> : ''}
+
+                                </span>
+                            </label>
+
                             <div className='mt-[-5px]'>
                                 <label htmlFor="cod" className="font-bold text-[15px] text-[#333333] cursor-pointer">Aktifkan COD</label>
                                 <p className="text-[14px] text-[#333333]">Izinkan pembeli untuk membayar secara tunai saat produk diterima.</p>

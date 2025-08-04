@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import MapWithDraggableSvgPinDisable from 'components/MapWithDraggableSvgPinDisable';
-import { AddLocation, LocationContainer, SwitchContainer, WrapperInput } from 'components/Profile/AddressComponent';
+import { AddLocation, LocationContainer, WrapperInput } from 'components/Profile/AddressComponent';
 import ModalMaps from 'pages/user-profile-old/Components/ModalMaps';
-import { Checkbox, IconButton, Switch, TextField } from '@mui/material';
+import { Box, Checkbox, IconButton, TextField } from '@mui/material';
 import { GoogleMapsProvider } from 'components/GoogleMapsProvider';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AutocompleteAddress from 'components/AutocompleteAddress/AutocompleteAddress';
 import { getLatLngFromNominatim } from 'components/userProfile/getLatLngFromNominatim';
 import { XMarkIcon } from 'components/userProfile/Icon';
+import { CheckIcon } from 'lucide-react';
 type FormData = {
     name: string;
     phone: string;
@@ -392,32 +393,38 @@ const AddAddressShopModal = ({ setOpenModalAddAdress, handleAdd, editData, setOp
                                     </LocationContainer>}
                                 </div>
                                 <div className='flex items-center' onClick={() => handleChange('isPrivate', !formData.isPrivate)}>
-                                    <SwitchContainer>
-                                        <Checkbox
-                                            checked={formData.isPrivate}
-                                            // onChange={(e) => handleChange('isPrivate', e.target.checked)}
-                                            sx={{
-                                                color: '#52357B',
-                                                '&.Mui-checked': {
-                                                    color: '#52357B',
-                                                },
-                                            }}
-                                        />
-                                    </SwitchContainer>
-                                    <SwitchContainer className='mobile'>
-                                        <Switch
-                                            checked={formData.isPrivate}
-                                            // onChange={(e) => handleChange('isPrivate', e.target.checked)}
-                                            sx={{
-                                                '& .MuiSwitch-switchBase.Mui-checked': {
-                                                    color: '#52357B',
-                                                    '& + .MuiSwitch-track': {
-                                                        backgroundColor: '#52357B',
-                                                    },
-                                                },
-                                            }}
-                                        />
-                                    </SwitchContainer>
+                                    <Checkbox
+                                        checked={formData.isPrivate}
+                                        // onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                                        icon={
+                                            <Box
+                                                sx={{
+                                                    width: 24,
+                                                    height: 24,
+                                                    borderRadius: '8px',
+                                                    backgroundColor: '#E7D6FF',
+                                                    border: '3px solid #52357B',
+                                                }}
+                                            />
+                                        }
+                                        checkedIcon={
+                                            <Box
+                                                sx={{
+                                                    width: 24,
+                                                    height: 24,
+                                                    borderRadius: '8px',
+                                                    backgroundColor: '#E7D6FF',
+                                                    border: '3px solid #52357B',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                }}
+                                            >
+                                                <CheckIcon size={16} color='#52357B' strokeWidth={4} />
+                                            </Box>
+                                        }
+                                    />
+
                                     <p className='text-[16px] font-semibold text-[#333333] cursor-pointer'>Tetapkan sebagai alamat utama</p>
                                 </div>
                                 <div className='flex items-center justify-end gap-2'>

@@ -389,7 +389,7 @@ const ShoppingCartPage: React.FC = () => {
                                     }}>Hemat {formatCurrency(cartSummary.totalSavings)}</p>
                                 )}
                             </div>
-                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors" onClick={() => router.push('/checkout')}>
+                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors" onClick={() => router.push('/checkout?variant_id[]=175&qty[]=2&product_id[]=84&variant_id[]=152&qty[]=1&product_id[]=78')}>
                                 Beli ({cartSummary.selectedProductsCount})
                             </button>
                         </div>

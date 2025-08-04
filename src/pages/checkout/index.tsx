@@ -192,10 +192,10 @@ const formatCurrency = (amount: number) => {
 };
 
 const getShippingRange = (serviceName: string): ShippingRange => {
-    const lowerCaseService = serviceName.toLowerCase();
-    if (lowerCaseService.includes('next day') || lowerCaseService.includes('yes')) return 'Next Day';
-    if (lowerCaseService.includes('same day')) return 'Same Day';
-    if (lowerCaseService.includes('instant')) return 'Instant';
+    const lowerCaseService = serviceName?.toLowerCase();
+    if (lowerCaseService?.includes('next day') || lowerCaseService?.includes('yes')) return 'Next Day';
+    if (lowerCaseService?.includes('same day')) return 'Same Day';
+    if (lowerCaseService?.includes('instant')) return 'Instant';
     return 'Reguler'; // Default to Reguler
 };
 
@@ -382,8 +382,8 @@ const ProductItemRow: FC<{ product: Product; onUpdate: (updatedProduct: Product)
                 {product.is_cod_enabled === 1 && <span className="text-[#F77000] text-[14px] font-bold">COD (Bayar ditempat)</span>}
                 <div className="flex flex-wrap gap-2 mt-2">
                     {product.vouchers?.map((voucher, index) => {
-                        const isVoucherToko = voucher.toLowerCase().includes('toko');
-                        const isGratisOngkir = voucher.toLowerCase().includes('ongkir');
+                        const isVoucherToko = voucher?.toLowerCase()?.includes('toko');
+                        const isGratisOngkir = voucher?.toLowerCase()?.includes('ongkir');
                         const bgColor = isVoucherToko ? 'bg-[#3EA65A]' : isGratisOngkir ? 'bg-[#F7C800]' : 'bg-[#F74F4F]';
                         const textColor = isVoucherToko ? 'text-white' : isGratisOngkir ? 'text-black' : 'text-white';
                         return (
@@ -592,9 +592,9 @@ const PaymentAndSummaryCard: FC<{
         const totalPembayaran = originalProductTotal + shippingSubtotal + biayaLayanan + biayaTransfer - totalDiskon;
         const handleCreateOrder = () => {
             // Placeholder virtual account for now. In a real app, this would come from a payment gateway API call.
-            const virtualAccountNumber = selectedPayment?.name.includes('BCA') ? '1234 4578 1234 5678' :
-                selectedPayment?.name.includes('BRI') ? '9876 5432 1098 7654' :
-                    selectedPayment?.name.includes('BNI') ? '1122 3344 5566 7788' :
+            const virtualAccountNumber = selectedPayment?.name?.includes('BCA') ? '1234 4578 1234 5678' :
+                selectedPayment?.name?.includes('BRI') ? '9876 5432 1098 7654' :
+                    selectedPayment?.name?.includes('BNI') ? '1122 3344 5566 7788' :
                         ''; // Or generate a generic one for other methods
             onCreateOrder({
                 totalAmount: totalPembayaran,

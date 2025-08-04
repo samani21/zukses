@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
-import { X } from 'lucide-react';
-import { Checkbox, Switch } from '@mui/material';
-import { SwitchContainer } from 'components/Profile/AddressComponent';
+import { CheckIcon, X } from 'lucide-react';
+import { Box, Checkbox } from '@mui/material';
 import BankListbox from './BankListbox';
 
 type Banks = {
@@ -179,28 +178,37 @@ const AddBankAccountModal = ({ onClose, handleAdd, editBank }: Props) => {
                     </div>
 
                     <div className='flex items-center px-4 mt-[-15px]' onClick={() => setIsPrimary(prev => !prev)}>
-                        <SwitchContainer>
-                            <Checkbox
-                                checked={isPrimary}
-                                // onChange={(e) => setIsPrimary(e.target.checked)}
-                                sx={{
-                                    color: '#52357B',
-                                    '&.Mui-checked': { color: '#52357B' },
-                                }}
-                            />
-                        </SwitchContainer>
-                        <SwitchContainer className='mobile'>
-                            <Switch
-                                checked={isPrimary}
-                                // onChange={(e) => setIsPrimary(e.target.checked)}
-                                sx={{
-                                    '& .MuiSwitch-switchBase.Mui-checked': {
-                                        color: '#52357B',
-                                        '& + .MuiSwitch-track': { backgroundColor: '#52357B' },
-                                    },
-                                }}
-                            />
-                        </SwitchContainer>
+                        <Checkbox
+                            checked={isPrimary}
+                            // onChange={(e) => handleChange('isPrivate', e.target.checked)}
+                            icon={
+                                <Box
+                                    sx={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '8px',
+                                        backgroundColor: '#E7D6FF',
+                                        border: '3px solid #52357B',
+                                    }}
+                                />
+                            }
+                            checkedIcon={
+                                <Box
+                                    sx={{
+                                        width: 24,
+                                        height: 24,
+                                        borderRadius: '8px',
+                                        backgroundColor: '#E7D6FF',
+                                        border: '3px solid #52357B',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <CheckIcon size={16} color='#52357B' strokeWidth={4} />
+                                </Box>
+                            }
+                        />
                         <p className='text-[16px] font-semibold text-[#333333] cursor-pointer'>Tetapkan sebagai alamat utama</p>
                     </div>
 

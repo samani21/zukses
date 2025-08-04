@@ -316,36 +316,37 @@ input.no-spinner {
 }
 
 .toggle-checkbox {
-  width: 46px; /* 40px */
-  height: 26px; /* 20px */
+  width: 46px;
+  height: 26px;
   appearance: none;
-  background-color: #D1D5DB; /* gray-300 */
+  background-color: #D1D5DB;
   border-radius: 9999px;
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid #9CA3AF; /* gray-400 */
-}
-
-.toggle-checkbox:checked {
-  background-color: #6871F1; /* blue-purple */
-  border: 2px solid #303BD1; /* darker blue border */
+  border: 2px solid #A1A1A1;
+  padding: 0;
 }
 
 .toggle-checkbox::before {
   content: "";
   position: absolute;
-  top: 2.5px;
-  left: 0px;
-  width: 18px;
-  height: 18px;
+  top: 3px;
+  left: 4px;
+  width: 16px; /* lebih kecil dari sebelumnya */
+  height: 16px;
   background: white;
   border-radius: 9999px;
-  transition: transform 0.2s ease;
+  transition: left 0.2s ease;
   box-shadow: 0 0 0 1px #9CA3AF;
 }
 
+.toggle-checkbox:checked {
+  background-color: #6871F1;
+  border-color: #303BD1;
+}
+
 .toggle-checkbox:checked::before {
-  transform: translateX(20px);
+  left: 23px; /* disesuaikan agar tetap ada jarak dari kanan */
   box-shadow: 0 0 0 1px #303BD1;
 }
