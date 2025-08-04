@@ -122,7 +122,7 @@ const AddProduct: NextPage = () => {
   const [globalHeight, setGlobalHeight] = useState('');
   const [preOrderDuration, setPreOrderDuration] = useState<number>();
   const [sku, setSku] = useState('');
-  const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
+  const [scheduleDate, setScheduleDate] = useState<Date | null>(new Date());
   const [schedule, setSchedule] = useState<string | ''>('');
   const [scheduleError, setScheduleError] = useState('');
   const [isHazardous, setIsHazardous] = useState('0');

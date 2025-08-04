@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import DateTimePicker from 'components/DateTimePicker';
 import { RadioGroup } from './FormInputs';
 import { TipKey } from './tipsStore';
 import { formatRupiahNoRP } from 'components/Rupiah';
@@ -35,7 +34,7 @@ interface ProductOtherInfoSectionProps {
 const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
     const {
         setTipKey, isCodEnabled, setIsCodEnabled, setIsUsed,
-        sku, setSku, schedule, scheduleError,
+        sku, setSku, scheduleError,
         errors, sectionRefs, setShippingCost, shippingCost, subsidy, setSubsidy,
         isVoucher, setIsVoucher, voucher, setVoucher, used
     } = props;
@@ -106,18 +105,18 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         </div>
                     </div>
                     <div className="relative" id="schedule" onMouseEnter={() => setTipKey('schedule')} onMouseLeave={() => setTipKey('default')}>
-                        <label className="text-[#333333] font-bold text-[16px]">Jadwal Ditampilkan <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span></label>
+                        {/* <label className="text-[#333333] font-bold text-[16px]">Jadwal Ditampilkan <span className='bg-[#FACACA] p-1 px-3 rounded-full text-[#C71616] text-[10px] ml-3 tracking-[0]'>Wajib</span></label> */}
                         <div className='mt-2'>
-                            <DateTimePicker
+                            {/* <DateTimePicker
                                 value={schedule ? new Date(schedule.replace(' ', 'T')) : new Date()}
                                 onChange={() => {
                                     // setScheduleDate(date);
                                     // validateScheduleDate(date);
                                 }}
-                            />
+                            /> */}
                         </div>
                         {scheduleError && <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>{scheduleError}</div>}
-                        {errors.schedule ? <div className="text-red-500 text-sm mt-1">{errors?.schedule}</div> : <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan</div>}
+                        {/* {errors.schedule ? <div className="text-red-500 text-sm mt-1">{errors?.schedule}</div> : <div className='w-[508px] text-[14px] text-[#FF0000] mt-1'>Jadwal yang dibuat melebihi rentang yang diperbolehkan. Rentang waktu: 1 jam setelah waktu saat ini - 90 hari ke depan</div>} */}
                     </div>
                 </div>
             </div>
