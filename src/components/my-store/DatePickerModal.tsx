@@ -53,8 +53,8 @@ const DatePickerModal: React.FC<{
     const handleMainPresetClick = (preset: string) => {
         setActivePreset(preset);
         const refDate = new Date(viewDate);
-        let start = new Date(refDate);
-        let end = new Date(refDate);
+        const start = new Date(refDate);
+        const end = new Date(refDate);
 
         setViewMode('days'); // Default to day view
 
@@ -175,7 +175,7 @@ const DatePickerModal: React.FC<{
                         {['Per Hari', 'Per Minggu', 'Per Bulan', 'Custom Tanggal'].map(preset =>
                             <button key={preset} onClick={() => handleMainPresetClick(preset)}
                                 className={`w-full text-left p-2 text-[#555] rounded-md text-[14px] font-medium flex justify-between items-center ${activePreset === preset ? 'bg-blue-100 text-blue-500' : 'hover:bg-[gray-100]'}`}>
-                                {preset} <ChevronRight size={16} strokeWidth={3}/>
+                                {preset} <ChevronRight size={16} strokeWidth={3} />
                             </button>
                         )}
                     </div>
