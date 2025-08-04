@@ -70,8 +70,8 @@ const NavItem = ({ item, isCollapsed }: { item: NavItemData; isCollapsed: boolea
         <Link
             href={item.href}
             title={isCollapsed ? item.title : undefined}
-            className={`flex items-center px-4 py-2.5 rounded-[5px] text-[14px] transition-colors duration-200
-        ${item.active ? 'bg-[#EFEFFD] text-[#22268B] font-bold border-[#CED0E5] border' : 'text-[#3D3D4E] hover:bg-purple-100'}
+            className={`flex items-center px-4 py-2.5 rounded-[5px] text-[#3D3D4E] text-[14px]  transition-colors font-semibold duration-200
+        ${item.active ? 'bg-[#EFEFFD] text-[#22268B] font-bold border-[#CED0E5] border' : ' hover:bg-purple-100'}
         ${isCollapsed ? 'justify-center' : ''}`}
         >
             {isCollapsed && (
