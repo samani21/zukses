@@ -51,7 +51,7 @@ const PerformanceMetric: React.FC<PerformanceMetricProps> = ({ title, value, cha
 const PageContent: NextPage = () => {
     return (
         <div>
-            <div className=" bg-slate-50 font-sans text-gray-800">
+            <div className="font-sans text-gray-800">
                 <main className="">
                     {/* Header */}
                     <div className="mb-6 border border-[#D2D4D8] bg-[#F3F5F7] p-4 px-6 rounded-[8px] flex items-start justify-between  mb-8">
