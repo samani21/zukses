@@ -60,7 +60,7 @@ const PageContent: NextPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState('Semua');
-    const ITEMS_PER_PAGE = 2;
+    const ITEMS_PER_PAGE = 10;
     const router = useRouter();
     const [snackbar, setSnackbar] = useState<{
         message: string;
@@ -313,7 +313,7 @@ const PageContent: NextPage = () => {
                                 </div>
 
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-4 mb-6">
                                 {loading && <div className="text-center p-8 text-[#333333]">Memuat produk...</div>}
                                 {!loading && paginatedProducts.length === 0 && <div className="text-center p-8 text-[#333333]">Produk tidak ditemukan.</div>}
                                 {!loading && paginatedProducts.map((product) => {
@@ -328,7 +328,9 @@ const PageContent: NextPage = () => {
                                     const maxPrice = hasCombinations ? Number(sorted[sorted.length - 1]?.price ?? 0) : Number(product.price ?? 0);
 
                                     const validDiscounts = hasCombinations
-                                        ? combinations.map((c) => Number(c.discount_price)).filter((dp) => !isNaN(dp))
+                                        ? combinations
+                                            .map((c) => Number(c.discount_price))
+                                            .filter((dp) => !isNaN(dp) && dp > 0) // hanya ambil yang > 0
                                         : [Number(product.discount_price ?? 0)];
 
                                     const minDiscount = validDiscounts.length > 0 ? Math.min(...validDiscounts) : 0;
