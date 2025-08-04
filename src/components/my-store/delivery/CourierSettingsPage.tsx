@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, FC, ReactNode, useEffect } from 'react';
-import { Square } from 'lucide-react';
+import { Check, Square } from 'lucide-react';
 import { ShopData } from '../ShopProfileContext';
 import Post from 'services/api/Post';
 import { Response } from 'services/api/types';
@@ -38,10 +38,8 @@ interface Courier {
 
 // --- Komponen Ikon Centang Kustom ---
 const CustomCheckIcon: FC<{ className?: string }> = ({ className = '' }) => (
-    <div className={`flex items-center justify-center w-[21px]h-[21px] bg-[#6871F1] ${className}`}>
-        <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
+    <div className={`flex items-center justify-center border-2 border-[#52357B] rounded-[8px] w-[21px] h-[21px] bg-[#E7D6FF] ${className}`}>
+        <Check size={14} strokeWidth={4} color='#52357B' />
     </div>
 );
 

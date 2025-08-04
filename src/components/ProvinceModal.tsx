@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -106,13 +106,27 @@ function ProvinceModal({
                                     className={`flex items-center space-x-3 cursor-pointer ${disableOthers ? 'opacity-40 cursor-not-allowed' : ''
                                         }`}
                                 >
-                                    <input
+                                    {/* <input
                                         type="checkbox"
                                         checked={checked}
                                         onChange={() => handleCheckboxChange(province)}
                                         disabled={disableOthers}
                                         className="h-5 w-5 rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] flex-shrink-0"
-                                    />
+                                    /> */}
+                                    <label className="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={() => handleCheckboxChange(province)}
+                                            disabled={disableOthers}
+                                            className="peer hidden"
+                                            id="cod"
+                                        />
+                                        <span className={`w-6 h-6 rounded-lg border-2 border-[#52357B] bg-[#E7D6FF] flex items-center justify-center`}>
+                                            {checked ? <Check size={16} strokeWidth={4} /> : ''}
+
+                                        </span>
+                                    </label>
                                     <span className="text-gray-700">{province}</span>
                                 </label>
                             );
