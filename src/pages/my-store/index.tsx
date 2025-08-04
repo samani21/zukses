@@ -54,7 +54,7 @@ const PageContent: NextPage = () => {
             <div className="font-sans text-gray-800">
                 <main className="">
                     {/* Header */}
-                    <div className="mb-6 border border-[#D2D4D8] bg-[#F3F5F7] p-4 px-6 rounded-[8px] flex items-start justify-between  mb-8">
+                    <div className="border border-[#D2D4D8] bg-[#F3F5F7] p-4 px-6 rounded-[8px] flex items-start justify-between  mb-[25px]">
                         <div>
                             <h1 className="text-[28px] text-[#333333] font-[800] tracking-[-0.02em]">Dashboard</h1>
                             <p className="text-[#444444] mt-4 text-[14px]" style={{
@@ -92,7 +92,7 @@ const PageContent: NextPage = () => {
                         </div>
 
                         {/* Grid Metrik Performa */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-8 p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-8 p-6 sm:mb-[20px]">
                             <PerformanceMetric title="Penjualan" value="Rp1.750.000" change="45,32%" changeColorClass="text-orange-500" />
                             <PerformanceMetric title="Pesanan" value="15" change="120%" changeColorClass="text-orange-500" />
                             <PerformanceMetric title="Konversi Pesanan" value="85%" change="45,32%" changeColorClass="text-orange-500" />
