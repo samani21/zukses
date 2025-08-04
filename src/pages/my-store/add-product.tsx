@@ -131,7 +131,7 @@ const AddProduct: NextPage = () => {
   const [isProductPreOrder, setIsProductPreOrder] = useState('0');
   const [isUsed, setIsUsed] = useState('0');
   const [isCodEnabled, setIsCodEnabled] = useState('0');
-  console.log('isUsed', isUsed)
+  console.log('isProductPreOrder', isProductPreOrder)
   //pembelian
   const [minOrder, setMinOrder] = useState<number>(1);
   const [maxOrder, setMaxOrder] = useState<number>(1000);
@@ -696,7 +696,7 @@ const AddProduct: NextPage = () => {
         }
       }
     }
-    if (isProductPreOrder) {
+    if (isProductPreOrder != '0') {
       if (!preOrderDuration) newErrors.preOrderDuration = 'Lama pre order wajib diisi';
     }
     if (shippingCost === 'Ongkos kirim disubsidi Penjual') {
@@ -883,8 +883,10 @@ const AddProduct: NextPage = () => {
     if (sizeGuide) {
       formData.append('image_guide', sizeGuide);
     }
-    if (isProductPreOrder) {
+    if (isProductPreOrder == '1') {
       formData.append('preorder_duration', String(preOrderDuration));
+    } else {
+      formData.append('preorder_duration', String(0));
     }
 
     try {
@@ -976,7 +978,7 @@ const AddProduct: NextPage = () => {
           setMaxOrder(data.max_purchase || 1000);
           setIsUsed(String(data.is_used));
           setIsCodEnabled(String(data.is_cod_enabled || 0));
-          setIsProductPreOrder(String(data.delivery?.is_pre_order || 0));
+          setIsProductPreOrder(String(data.delivery?.is_pre_order));
           setIsHazardous(String(data.delivery?.is_dangerous_product));
           setCategory(data.category || '');
           setIdCategorie(data.category_id || undefined);

@@ -60,7 +60,7 @@ const PageContent: NextPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState('Semua');
-    const ITEMS_PER_PAGE = 2;
+    const ITEMS_PER_PAGE = 10;
     const router = useRouter();
     const [snackbar, setSnackbar] = useState<{
         message: string;
@@ -313,7 +313,7 @@ const PageContent: NextPage = () => {
                                 </div>
 
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-4 mb-6">
                                 {loading && <div className="text-center p-8 text-[#333333]">Memuat produk...</div>}
                                 {!loading && paginatedProducts.length === 0 && <div className="text-center p-8 text-[#333333]">Produk tidak ditemukan.</div>}
                                 {!loading && paginatedProducts.map((product) => {
@@ -409,7 +409,7 @@ const PageContent: NextPage = () => {
                                             <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.stock}</div>
                                             <div className="hidden md:block col-span-3 text-left space-y-2 font-bold text-[12px] px-4">
                                                 {
-                                                    product?.is_cod_enabled ?
+                                                    product?.is_cod_enabled  ?
                                                         <div className="text-[#F77000]">COD (Bayar ditempat)</div> : ''
                                                 }
                                                 {
