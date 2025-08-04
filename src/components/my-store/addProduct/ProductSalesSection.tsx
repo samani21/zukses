@@ -62,6 +62,7 @@ interface ProductSalesSectionProps {
     setSizeGuide: Dispatch<SetStateAction<File | null>>;
     showSizeGuide: boolean
     setGlobalDiscount: (val: string) => void;
+    urlSizeGuide: string | null;
 }
 function roundLastThreeDigitsToNearestHundred(value: number): number {
     const lastThree = value % 1000;
@@ -87,7 +88,7 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         setShowPercentSuggestIndex, setDropdownPosition,
         minOrder, setMinOrder, maxOrder, setMaxOrder,
         globalWeight, setGlobalWeight, globalWidth, setGlobalWidth, globalLength, setGlobalLength, globalHeight, setGlobalHeight,
-        applyDimensionToAll, showDimensionTable, setShowDimensionTable, setSizeGuide, showSizeGuide, setGlobalDiscount
+        applyDimensionToAll, showDimensionTable, setShowDimensionTable, setSizeGuide, showSizeGuide, setGlobalDiscount, urlSizeGuide
     } = props;
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -154,6 +155,9 @@ const ProductSalesSection = (props: ProductSalesSectionProps) => {
         }
     }, [globalDiscount]);
 
+    useEffect(() => {
+        setPreviewUrl(urlSizeGuide)
+    }, [urlSizeGuide])
     return (
         <div id="informasi-penjualan-section" className='border border-[#DCDCDC] py-6 rounded-[5px] space-y-4 px-8'>
 

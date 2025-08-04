@@ -4,6 +4,7 @@ import ImageLightbox from './ImageLightbox';
 import { Product, Thumbnail, variant } from 'components/types/Product';
 import { Check } from 'lucide-react';
 import { formatRupiahNoRP } from 'components/Rupiah';
+import { useRouter } from 'next/router';
 
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -30,6 +31,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [quantity, setQuantity] = useState<number>(1);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
+    const router = useRouter()
     const [activeSelections, setActiveSelections] = useState<Record<number, string>>({});
     const allImages = useMemo(() => {
         // ... (logika `allImages` tidak berubah)
@@ -304,6 +306,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     };
 
 
+    const handleBuyNow = () => {
+        // Cek jika produk memiliki varian
+        if (product.variants && product.variants.length > 0) {
+            // Cek jika varian aktif sudah terpilih (artinya semua opsi sudah diisi)
+            if (activeVariant) {
+                console.log("Membeli Varian:", {
+                    variantId: activeVariant.id,
+                    details: activeVariant,
+                    quantity: quantity
+                });
+                router?.push(`/checkout?variant_id[]=${activeVariant.id}&qty[]=${quantity}&product_id[]=${product?.id}`)
+            } else {
+                // Jika varian belum lengkap terpilih
+                alert("Silakan lengkapi semua pilihan varian terlebih dahulu.");
+            }
+        } else {
+            // Jika produk tidak punya varian
+            router?.push(`/checkout?qty[]=${quantity}&product_id[]=${product?.id}`)
+        }
+    };
+
+
     return (
         <>
             <div className="bg-white rounded-[5px] md:p-4 text-sm border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
@@ -443,7 +467,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                 <span>Keranjang</span>
                             </button>
-                            <button className="w-full bg-[#DE4A53] py-2 px-3 text-white text-[16px] font-semibold flex items-center justify-center gap-2 hover:bg-[#6e1017]/80">
+                            <button onClick={handleBuyNow} className="w-full bg-[#DE4A53] py-2 px-3 text-white text-[16px] font-semibold flex items-center justify-center gap-2 hover:bg-[#6e1017]/80">
                                 <span>Beli Sekarang</span>
                             </button>
                         </div>

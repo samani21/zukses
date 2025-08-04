@@ -38,6 +38,15 @@ async function convertImageUrlToFile(url: string): Promise<File | null> {
   }
 }
 
+type ProductMedia = {
+  id: number;
+  product_id: number;
+  ordinal: number;
+  type: string;
+  url: string;
+  created_at: string;
+  updated_at: string;
+};
 
 const AddProduct: NextPage = () => {
   const shopProfil = useShopProfile();
@@ -65,6 +74,7 @@ const AddProduct: NextPage = () => {
   const [sizeGuide, setSizeGuide] = useState<File | null>(null); //foto produk promosi
   const [urlpromoImage, setUrlPromoImage] = useState<string>(''); //foto produk promosi
   const [urlvideoFile, setUrlVideoFile] = useState<string | null>(null); //video produk
+  const [urlSizeGuide, setUrlSizeGuide] = useState<string | null>(null); //video produk
   const [videoFile, setVideoFile] = useState<File | null>(null); //video produk
   const [category, setCategory] = useState('');
   const discountOptions = Array.from({ length: 14 }, (_, i) => (i + 1) * 5);
@@ -110,15 +120,18 @@ const AddProduct: NextPage = () => {
   const [globalLength, setGlobalLength] = useState('');
   const [globalWidth, setGlobalWidth] = useState('');
   const [globalHeight, setGlobalHeight] = useState('');
+  const [preOrderDuration, setPreOrderDuration] = useState<number>();
   const [sku, setSku] = useState('');
   const [scheduleDate, setScheduleDate] = useState<Date | null>(null);
   const [schedule, setSchedule] = useState<string | ''>('');
   const [scheduleError, setScheduleError] = useState('');
   const [isHazardous, setIsHazardous] = useState('0');
+  const [hazardous, setHazardous] = useState<string>('Tidak');
+  const [used, setUsed] = useState<string>('Baru');
   const [isProductPreOrder, setIsProductPreOrder] = useState('0');
   const [isUsed, setIsUsed] = useState('0');
   const [isCodEnabled, setIsCodEnabled] = useState('0');
-
+  console.log('isUsed', isUsed)
   //pembelian
   const [minOrder, setMinOrder] = useState<number>(1);
   const [maxOrder, setMaxOrder] = useState<number>(1000);
@@ -166,8 +179,9 @@ const AddProduct: NextPage = () => {
   ];
 
   // Ekstrak kategori utama (bagian sebelum " > ")
-  const mainCategory = tempCategory?.split('>')[0].trim() || '';
-  const showSizeGuide = requiredCategories.includes(mainCategory);
+
+  const [showSizeGuide, setShowSizeGuide] = useState<boolean>(false);
+  console.log('showSizeGuide', showSizeGuide)
   useEffect(() => {
     // 1. Temukan kontainer yang bisa di-scroll berdasarkan ID
     const scrollContainer = document.getElementById('main-scroll-container');
@@ -204,6 +218,12 @@ const AddProduct: NextPage = () => {
     };
   }, []); // Dependency array kosong sudah benar
 
+
+  useEffect(() => {
+    const mainCategory = tempCategory?.split('>')[0].trim() || '';
+    const SizeGuide = requiredCategories.includes(mainCategory);
+    setShowSizeGuide(SizeGuide)
+  }, [tempCategory])
   const handleNavigate = (id: string) => {
     const element = document.getElementById(id);
     setActiveSection(id)
@@ -676,14 +696,19 @@ const AddProduct: NextPage = () => {
         }
       }
     }
+    if (isProductPreOrder) {
+      if (!preOrderDuration) newErrors.preOrderDuration = 'Lama pre order wajib diisi';
+    }
     if (shippingCost === 'Ongkos kirim disubsidi Penjual') {
-      if (!subsidy.trim()) newErrors.subsidy = 'Subsidi ongkir wajib diisi';
+      if (!String(subsidy ?? "").trim()) newErrors.subsidy = 'Subsidi ongkir wajib diisi';
     }
     if (showSizeGuide) {
-      if (!sizeGuide) newErrors.sizeGuide = 'Gambar panduan ukuran wajib diisi';
+      if (!urlSizeGuide) {
+        if (!sizeGuide) newErrors.sizeGuide = 'Gambar panduan ukuran wajib diisi';
+      }
     }
     if (isVoucher) {
-      if (!voucher.trim()) newErrors.voucher = 'Voucher wajib diisi';
+      if (!String(voucher ?? "").trim()) newErrors.voucher = 'Voucher wajib diisi';
     }
     if (courierServicesIds?.length < 1) newErrors.courier = 'Kurir wajib dipilih';
     if (!schedule.trim()) newErrors.schedule = 'Jadwal wajib dipilih';
@@ -828,7 +853,7 @@ const AddProduct: NextPage = () => {
         formData.append('discount', '0');
       }
     }
-
+    formData.append('showSizeGuide', String(showSizeGuide ? 1 : 0));
     // Berat & Dimensi
     formData.append('packageDimensions', JSON.stringify({
       length: globalLength,
@@ -842,13 +867,13 @@ const AddProduct: NextPage = () => {
       'Negara Asal': "indonesia",
     }));
     if (shippingCost === 'Ongkos kirim disubsidi Penjual') {
-      formData.append('subsidy', subsidy.replace(/\./g, ''));
+      formData.append('subsidy', String(subsidy).replace(/\./g, ''));
     } else {
       formData.append('subsidy', '0');
 
     }
     if (isVoucher) {
-      formData.append('voucher', voucher.replace(/\./g, ''));
+      formData.append('voucher', String(voucher).replace(/\./g, ''));
     } else {
       formData.append('voucher', '0');
 
@@ -857,6 +882,9 @@ const AddProduct: NextPage = () => {
     formData.append('id_address', idAddress ?? '');
     if (sizeGuide) {
       formData.append('image_guide', sizeGuide);
+    }
+    if (isProductPreOrder) {
+      formData.append('preorder_duration', String(preOrderDuration));
     }
 
     try {
@@ -877,16 +905,16 @@ const AddProduct: NextPage = () => {
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil diperbarui!', type: 'success', isOpen: true });
-          // router.push('/my-store/product')
-          // localStorage.removeItem('EditProduct');
+          router.push('/my-store/product')
+          localStorage.removeItem('EditProduct');
         }
       } else {
         const res = await Post<Response>('zukses', `product`, formData);
         if (res?.data?.status === 'success') {
           setLoading(false);
           setSnackbar({ message: 'Produk berhasil disimpan!', type: 'success', isOpen: true });
-          // router.push('/my-store/product');
-          // localStorage.removeItem('EditProduct');
+          router.push('/my-store/product');
+          localStorage.removeItem('EditProduct');
         }
       }
     } catch (error) {
@@ -946,10 +974,10 @@ const AddProduct: NextPage = () => {
           setCountryOrigin(origin);
           setMinOrder(data.min_purchase || 1);
           setMaxOrder(data.max_purchase || 1000);
-          setIsUsed(String(data.is_used || 0));
+          setIsUsed(String(data.is_used));
           setIsCodEnabled(String(data.is_cod_enabled || 0));
           setIsProductPreOrder(String(data.delivery?.is_pre_order || 0));
-          setIsHazardous(String(data.delivery?.is_dangerous_product || 0));
+          setIsHazardous(String(data.delivery?.is_dangerous_product));
           setCategory(data.category || '');
           setIdCategorie(data.category_id || undefined);
           setSelectedImages(
@@ -957,11 +985,14 @@ const AddProduct: NextPage = () => {
               .filter((m: MediaItem) => m.type === 'image')
               .map((m: MediaItem) => m.url)
           );
-          setVideoFile(
-            data.media
-              .filter((m: MediaItem) => m.type === 'video')
-              .map((m: MediaItem) => m.url)
-          );
+          const urlVideo = data?.media?.find((item: ProductMedia) => item.type === "video");
+          if (urlVideo) {
+            setVideoFile(
+              data.media
+                .filter((m: MediaItem) => m.type === 'video')
+                .map((m: MediaItem) => m.url)
+            );
+          }
           setUrlVideoFile(data.media
             .filter((m: MediaItem) => m.type === 'video')
             .map((m: MediaItem) => m.url))
@@ -1019,6 +1050,37 @@ const AddProduct: NextPage = () => {
             setGlobalWidth(data.delivery?.width || '');
             setGlobalHeight(data.delivery?.height || '');
           }
+          if (data?.delivery?.service_ids) {
+            const parsedIds: number[] = JSON.parse(data?.delivery?.service_ids);
+            setCourierServicesIds(parsedIds)
+          }
+          if (data?.delivery?.is_pre_order) {
+            setPreOrderDuration(data?.delivery?.preorder_duration)
+          }
+          if (data?.delivery?.subsidy) {
+            setSubsidy(data?.delivery?.subsidy)
+          }
+          if (data?.voucher) {
+            setIsVoucher(true);
+            setVoucher(data?.voucher)
+          }
+
+          const imageGuide = data?.media?.find((item: ProductMedia) => item.type === "image_guide");
+
+          if (imageGuide?.url) {
+            setShowSizeGuide(true)
+            setUrlSizeGuide(imageGuide?.url)
+          }
+          if (!isHazardous) {
+            setHazardous('Tidak');
+          } else {
+            setHazardous('Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar');
+          }
+          if (!isUsed) {
+            setUsed('Baru');
+          } else {
+            setUsed('Bekas Dipakai');
+          }
         } catch (err) {
           console.error('Failed to parse EditProduct from localStorage', err);
         }
@@ -1060,6 +1122,7 @@ const AddProduct: NextPage = () => {
 
     setVariantData(updated);
   };
+
   return (
     <>
       <div className="min-h-screen font-sans mt-[-10px]">
@@ -1167,6 +1230,7 @@ const AddProduct: NextPage = () => {
                 setSizeGuide={setSizeGuide}
                 showSizeGuide={showSizeGuide}
                 setGlobalDiscount={setGlobalDiscount}
+                urlSizeGuide={urlSizeGuide}
               />
               <ProductDeliveryInfoSection
                 setTipKey={setTipKey}
@@ -1179,8 +1243,12 @@ const AddProduct: NextPage = () => {
                 sectionRefs={sectionRefs['informasi-pengiriman-section']}
                 shopProfil={shopProfil}
                 setCourierServicesIds={setCourierServicesIds}
+                courierServicesIds={courierServicesIds}
                 errors={errors}
                 setIdAddress={setIdAddress}
+                preOrderDuration={preOrderDuration}
+                setPreOrderDuration={setPreOrderDuration}
+                hazardous={hazardous}
               />
               <ProductOtherInfoSection
                 setTipKey={setTipKey}
@@ -1207,6 +1275,7 @@ const AddProduct: NextPage = () => {
                 setIsVoucher={setIsVoucher}
                 voucher={voucher}
                 setVoucher={setVoucher}
+                used={used}
               />
               <div className="bg-white flex justify-between items-center sticky bottom-0 p-4" style={{
                 boxShadow: '1px 1px 10px rgba(0, 0, 0, 0.25)'

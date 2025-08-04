@@ -66,6 +66,7 @@ interface ProductDeliveryInfoSectionProps {
     isHazardous: string;
     setIsHazardous: (val: string) => void;
     isCodEnabled: string;
+    hazardous: string;
     setIsCodEnabled: (val: string) => void;
     isProductPreOrder: string;
     setIsProductPreOrder: (val: string) => void;
@@ -73,12 +74,15 @@ interface ProductDeliveryInfoSectionProps {
     sectionRefs: React.RefObject<HTMLDivElement | null>;
     shopProfil?: ShopData | null;
     setCourierServicesIds: (val: number[]) => void;
+    courierServicesIds: number[];
     errors: { [key: string]: string };
+    preOrderDuration?: number
+    setPreOrderDuration: (val: number) => void
 }
 
 const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     const {
-        setTipKey, isHazardous, setIsHazardous, isProductPreOrder, setIsProductPreOrder, sectionRefs, shopProfil, setCourierServicesIds, errors, setIdAddress
+        setTipKey, setIsHazardous, isProductPreOrder, setIsProductPreOrder, sectionRefs, shopProfil, setCourierServicesIds, errors, setIdAddress, courierServicesIds, preOrderDuration, setPreOrderDuration, hazardous
     } = props;
     const [showModal, setShowModal] = useState(false);
     const [dataAddress, setDataAddress] = useState<Address | null>(null);
@@ -90,7 +94,6 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
     const [isAdd, setIsAdd] = useState<boolean>(false);
     const [openDelete, setOpenDelete] = useState<number>(0);
     console.log(openDelete)
-    const [selectedServiceIds, setSelectedServiceIds] = useState<number[]>([]);
 
     const [openModalAddAddress, setOpenModalAddAdress] = useState<boolean>(false);
     const [snackbar, setSnackbar] = useState<{
@@ -181,9 +184,6 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
             setSnackbar({ message: error.response?.data?.message || 'Terjadi kesalahan', type: 'error', isOpen: true });
         }
     };
-    useEffect(() => {
-        setCourierServicesIds(selectedServiceIds)
-    }, [selectedServiceIds]);
     return (
         <div id="informasi-pengiriman-section" ref={sectionRefs} className="mb-6 space-y-6 border border-[#DCDCDC] py-6 rounded-[5px] px-8">
             <h1 className="font-bold text-[20px] text-[#483AA0] mb-4">Informasi Pengiriman</h1>
@@ -192,12 +192,12 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                     label="Produk Berbahaya?"
                     name="dangerous"
                     options={['Tidak', 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar']}
-                    defaultValue={isHazardous === '1' ? 'Mengandung Baterai / Magnet / Cairan / Bahan Mudah Terbakar' : 'Tidak'}
+                    defaultValue={hazardous}
                     onChange={(value) => setIsHazardous(value === 'Tidak' ? '0' : '1')}
                 />
             </div>
             <div onMouseEnter={() => setTipKey('preorder')} onMouseLeave={() => setTipKey('default')}>
-                <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} defaultValue={isProductPreOrder === '1' ? 'Ya' : 'Tidak'} onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')} />
+                <RadioGroup label="Pre Order" name="preorder" options={['Tidak', 'Ya']} defaultValue={preOrderDuration ? "Ya" : "Tidak"} onChange={(value) => setIsProductPreOrder(value === 'Ya' ? '1' : '0')} />
             </div>
             <p className='text-[#333333] text-[14px] -mt-4'>Kirimkan produk dalam 2 hari (tidak termasuk hari Sabtu, Minggu, libur nasional dan non-operasional jasa kirim).</p>
             <div className='-mt-4'>
@@ -213,7 +213,8 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                                 name="preorderDuration"
                                 min={3}
                                 max={30}
-                                defaultValue={5}
+                                value={preOrderDuration}
+                                onChange={(e) => setPreOrderDuration(Number(e?.target?.value))}
                                 className="no-spinner border border-[#AAAAAA] w-[57px] h-[40px] text-center rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
                             />
 
@@ -223,6 +224,7 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                         </div>
                     </>
                 )}
+                {errors.preOrderDuration && <div className="text-red-500 text-sm mt-1">{errors?.preOrderDuration}</div>}
             </div>
 
             <section className='border border-[#DCDCDC] tracking-[-0.02em] p-4 mt-8'>
@@ -259,12 +261,13 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
                             lineHeight: "108%"
                         }}>Kurir Toko</p>
                         <div>
-                            <input type="checkbox" className="toggle-checkbox" checked={selectedServiceIds.includes(0)}
+                            <input type="checkbox" className="toggle-checkbox" checked={courierServicesIds?.includes(0)}
                                 onChange={(e) => {
                                     const isChecked = e.target.checked;
-                                    setSelectedServiceIds((prev) =>
-                                        isChecked ? [...prev, 0] : prev.filter((id) => id !== 0)
+                                    setCourierServicesIds(
+                                        isChecked ? [...courierServicesIds, 0] : courierServicesIds?.filter((id) => id !== 0)
                                     );
+
                                 }} />
                         </div>
                     </div>
@@ -305,21 +308,16 @@ const ProductDeliveryInfoSection = (props: ProductDeliveryInfoSectionProps) => {
 
                                         <div className="flex items-center space-x-3">
                                             <input type="checkbox" className="toggle-checkbox"
-                                                checked={courier.services?.every(srv => selectedServiceIds.includes(Number(srv.id)))}
+                                                checked={courier.services?.every(srv => courierServicesIds?.includes(Number(srv.id)))}
                                                 onChange={(e) => {
                                                     const isChecked = e.target.checked;
                                                     const serviceIds = courier.services?.map(s => Number(s.id)) || [];
 
-                                                    setSelectedServiceIds((prev) => {
-                                                        if (isChecked) {
-                                                            // Gabungkan semua ID, hindari duplikat
-                                                            const merged = [...new Set([...prev, ...serviceIds])];
-                                                            return merged;
-                                                        } else {
-                                                            // Hapus semua service id dari courier tersebut
-                                                            return prev.filter((id) => !serviceIds.includes(id));
-                                                        }
-                                                    });
+                                                    const updatedServiceIds = isChecked
+                                                        ? [...new Set([...courierServicesIds, ...serviceIds])] // tambahkan
+                                                        : courierServicesIds?.filter((id) => !serviceIds.includes(id)); // hapus
+
+                                                    setCourierServicesIds(updatedServiceIds);
                                                 }} />
                                         </div>
                                     </summary>
