@@ -35,18 +35,18 @@ export default function DateTimePicker({
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const pickerRef = useRef<flatpickr.Instance | null>(null);
+
   useEffect(() => {
     if (!inputRef.current) return;
-    if (pickerRef.current) {
-      pickerRef.current.destroy(); // Destroy jika sebelumnya sudah ada
-    }
+    if (pickerRef.current) pickerRef.current.destroy();
+
     const instance = flatpickr(inputRef.current, {
       locale: customIndonesianLocale,
       enableTime: true,
       dateFormat: 'd F Y, H:i',
       defaultDate: value ?? undefined,
       minDate: new Date(),
-      // minDate: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      
       onReady(selectedDates, dateStr, instance) {
         const calendarContainer = instance.calendarContainer;
         if (calendarContainer.querySelector('.picker-content-wrapper')) return;
@@ -59,14 +59,14 @@ export default function DateTimePicker({
         customTimePicker.className = 'custom-time-picker';
         customTimePicker.innerHTML = `
           <div class="time-wheel-column" id="hour-wheel">
-              <div class="wheel-arrow" data-action="hour-up">▲</div>
-              <div class="wheel-values" id="hour-values"></div>
-              <div class="wheel-arrow" data-action="hour-down">▼</div>
+            <div class="wheel-arrow" data-action="hour-up">▲</div>
+            <div class="wheel-values" id="hour-values"></div>
+            <div class="wheel-arrow" data-action="hour-down">▼</div>
           </div>
           <div class="time-wheel-column" id="minute-wheel">
-              <div class="wheel-arrow" data-action="minute-up">▲</div>
-              <div class="wheel-values" id="minute-values"></div>
-              <div class="wheel-arrow" data-action="minute-down">▼</div>
+            <div class="wheel-arrow" data-action="minute-up">▲</div>
+            <div class="wheel-values" id="minute-values"></div>
+            <div class="wheel-arrow" data-action="minute-down">▼</div>
           </div>
         `;
 
@@ -75,20 +75,21 @@ export default function DateTimePicker({
         const confirmButton = document.createElement('button');
         confirmButton.className = 'custom-confirm-button';
         confirmButton.textContent = 'Konfirmasi';
-        confirmButton.addEventListener('click', () => instance.close());
+        confirmButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          instance.close();
+        });
         confirmWrapper.appendChild(confirmButton);
 
         const contentWrapper = document.createElement('div');
         contentWrapper.className = 'picker-content-wrapper';
         contentWrapper.appendChild(calendarPart);
         contentWrapper.appendChild(customTimePicker);
-
         calendarContainer.appendChild(contentWrapper);
         calendarContainer.appendChild(confirmWrapper);
 
         const monthNav = calendarContainer.querySelector('.flatpickr-months')!;
         monthNav.innerHTML = '';
-
         const customTitle = document.createElement('span');
         customTitle.className = 'custom-month-title';
 
@@ -96,19 +97,23 @@ export default function DateTimePicker({
           const arrow = document.createElement('span');
           arrow.className = 'custom-arrow';
           arrow.textContent = text;
-          arrow.addEventListener('click', action);
+          arrow.addEventListener('click', (e) => {
+            e.stopPropagation();
+            action();
+            updateUI();
+          });
           return arrow;
         };
 
         const leftArrowGroup = document.createElement('div');
         leftArrowGroup.className = 'arrow-group';
-        leftArrowGroup.appendChild(createArrow('«', () => instance.changeYear(-1)));
-        leftArrowGroup.appendChild(createArrow('<', () => instance.changeMonth(-1)));
+        leftArrowGroup.appendChild(createArrow('«', () => instance.changeYear(instance.currentYear - 1)));
+        leftArrowGroup.appendChild(createArrow('<', () => instance.changeMonth(instance.currentMonth - 1)));
 
         const rightArrowGroup = document.createElement('div');
         rightArrowGroup.className = 'arrow-group';
-        rightArrowGroup.appendChild(createArrow('>', () => instance.changeMonth(1)));
-        rightArrowGroup.appendChild(createArrow('»', () => instance.changeYear(1)));
+        rightArrowGroup.appendChild(createArrow('>', () => instance.changeMonth(instance.currentMonth + 1)));
+        rightArrowGroup.appendChild(createArrow('»', () => instance.changeYear(instance.currentYear + 1)));
 
         monthNav.appendChild(leftArrowGroup);
         monthNav.appendChild(customTitle);
@@ -147,33 +152,34 @@ export default function DateTimePicker({
         };
 
         customTimePicker.addEventListener('click', (e) => {
+          e.stopPropagation();
           const target = e.target as HTMLElement;
           const action = target.dataset.action;
           if (!action) return;
           const [unit, direction] = action.split('-');
           const amount = direction === 'up' ? -1 : 1;
-          const newDate = new Date(instance.selectedDates[0] || instance.now);
+          const newDate = new Date(instance.selectedDates[0] || new Date());
           if (unit === 'hour') newDate.setHours(newDate.getHours() + amount);
           if (unit === 'minute') newDate.setMinutes(newDate.getMinutes() + amount);
           instance.setDate(newDate, true);
+          setTimeout(() => updateUI(), 0);
         });
 
-        // Scroll mouse (wheel)
         const addScrollEvent = (id: string, unit: 'hour' | 'minute') => {
           const wheel = calendarContainer.querySelector(id);
           if (!wheel) return;
           wheel.addEventListener('wheel', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             const delta = (e as WheelEvent).deltaY;
-            const newDate = new Date(instance.selectedDates[0] || instance.now);
+            const newDate = new Date(instance.selectedDates[0] || new Date());
             if (unit === 'hour') newDate.setHours(newDate.getHours() + (delta > 0 ? 1 : -1));
             if (unit === 'minute') newDate.setMinutes(newDate.getMinutes() + (delta > 0 ? 1 : -1));
             instance.setDate(newDate, true);
+            setTimeout(() => updateUI(), 0);
           }, { passive: false });
-
         };
 
-        // Drag mouse ke atas/bawah
         const addDragEvent = (id: string, unit: 'hour' | 'minute') => {
           const wheel = calendarContainer.querySelector(id) as HTMLElement;
           if (!wheel) return;
@@ -183,24 +189,23 @@ export default function DateTimePicker({
           let lastChangeTime = 0;
 
           wheel.addEventListener('mousedown', (e) => {
+            e.preventDefault();
             isDragging = true;
             startY = e.clientY;
             lastChangeTime = Date.now();
-            e.preventDefault();
           });
 
           document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
 
             const deltaY = e.clientY - startY;
-
             if (Math.abs(deltaY) > 30 || Date.now() - lastChangeTime > 100) {
-              const newDate = new Date(instance.selectedDates[0] || instance.now);
+              const newDate = new Date(instance.selectedDates[0] || new Date());
               const direction = deltaY > 0 ? 1 : -1;
               if (unit === 'hour') newDate.setHours(newDate.getHours() + direction);
               if (unit === 'minute') newDate.setMinutes(newDate.getMinutes() + direction);
               instance.setDate(newDate, true);
-
+              setTimeout(() => updateUI(), 0);
               startY = e.clientY;
               lastChangeTime = Date.now();
             }
@@ -222,12 +227,13 @@ export default function DateTimePicker({
 
         updateUI();
       },
-      onChange: function (selectedDates) {
+      onChange: (selectedDates) => {
         if (selectedDates[0]) {
           onChange(selectedDates[0]);
         }
       },
     });
+
     pickerRef.current = instance;
 
     return () => {
