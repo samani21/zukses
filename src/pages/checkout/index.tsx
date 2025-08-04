@@ -6,12 +6,15 @@ import MainLayout from 'pages/layouts/MainLayout';
 import type { FC, ReactNode, RefObject } from 'react';
 import { useState, useMemo, useEffect, useRef, Suspense } from 'react';
 import Get from 'services/api/Get';
+import Post from 'services/api/Post';
+import { getUserInfo } from 'services/api/redux/action/AuthAction';
+import { Response } from 'services/api/types';
 
 /**
- * Generic Response Interface untuk semua balasan API.
+ * Generic ResponseT Interface untuk semua balasan API.
  * Menggunakan <T> agar tipe data bisa dinamis.
  */
-interface Response<T> {
+interface ResponseT<T> {
     status: 'success' | 'error';
     message: string;
     data: T | null; // Data bisa null jika terjadi error
@@ -560,13 +563,15 @@ const PaymentAndSummaryCard: FC<{
     shippingDiscount: number;
     storeVoucherDiscount: number;
     onCreateOrder: (details: OrderDetails) => void;
+    isSubmitting: boolean;
 }> = ({
     originalProductTotal,
     shippingSubtotal,
     itemDiscount,
     shippingDiscount,
     storeVoucherDiscount,
-    onCreateOrder
+    onCreateOrder,
+    isSubmitting
 }) => {
         const [activeTab, setActiveTab] = useState<PaymentMethod>('Transfer Bank');
         const [selectedPayment, setSelectedPayment] = useState<PaymentOption | null>(null);
@@ -667,7 +672,13 @@ const PaymentAndSummaryCard: FC<{
                     {
                         selectedPayment &&
                         <div className='flex justify-end'>
-                            <button onClick={handleCreateOrder} className="w-[297px] bg-[#563D7C] text-white font-semibold text-[18px] py-3 px-4 mt-6 hover:bg-purple-700 transition-colors">Buat Pesanan</button>
+                            <button
+                                onClick={handleCreateOrder}
+                                disabled={isSubmitting} // <-- 3. Tambahkan atribut disabled
+                                className="w-[297px] bg-[#563D7C] text-white font-semibold text-[18px] py-3 px-4 mt-6 hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed" // <-- 4. (Opsional) Tambah style untuk disabled
+                            >
+                                {isSubmitting ? 'Memproses...' : 'Buat Pesanan'} {/* 5. Ubah teks saat loading */}
+                            </button>
                         </div>
                     }
                 </div>
@@ -795,7 +806,15 @@ const PaymentConfirmationPage: FC<{ orderDetails: OrderDetails; onBack: () => vo
 };
 // END OF UNCHANGED COMPONENTS
 
-
+interface User {
+    name?: string;
+    email?: string;
+    whatsapp?: string;
+    id?: number;
+    username?: string;
+    image?: string;
+    role?: string;
+}
 // --- MAIN CONTENT COMPONENT ---
 // This component contains the core logic and can safely use client-side hooks.
 const CheckoutView = () => {
@@ -807,6 +826,14 @@ const CheckoutView = () => {
     const [currentAddress, setCurrentAddress] = useState<Address>(initialUserAddress);
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState<boolean>(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
+    useEffect(() => {
+        const currentUser = getUserInfo();
+        if (currentUser) {
+            setUser(currentUser);
+        }
+    }, []);
 
     useEffect(() => {
         const params = new URLSearchParams();
@@ -825,11 +852,27 @@ const CheckoutView = () => {
             setLoading(false);
         }
     }, [searchParams]);
-
+    const getBankCode = (paymentName: string | undefined): string => {
+        if (!paymentName) return '';
+        const lowerCaseName = paymentName.toLowerCase();
+        if (lowerCaseName.includes('bca')) return 'bca';
+        if (lowerCaseName.includes('bri')) return 'bri';
+        if (lowerCaseName.includes('bni')) return 'bni';
+        if (lowerCaseName.includes('qris')) return 'qris';
+        // Tambahkan pemetaan lain jika perlu
+        return 'other';
+    };
+    const cleanPhoneNumber = (phone: string): string => {
+        let cleaned = phone.replace(/\D/g, ''); // Hapus semua selain angka
+        if (cleaned.startsWith('62')) {
+            cleaned = '0' + cleaned.substring(2); // Ganti 62 di depan dengan 0
+        }
+        return cleaned;
+    };
     const getCheckout = async (queryString: string) => {
         setLoading(true);
         try {
-            const res = await Get<Response<BackendStore[]>>('zukses', `checkout?${queryString}`);
+            const res = await Get<ResponseT<BackendStore[]>>('zukses', `checkout?${queryString}`);
             if (res?.status === 'success' && Array.isArray(res.data)) {
                 const transformedStores: Store[] = res.data.map((backendStore: BackendStore) => {
                     const products: Product[] = backendStore.products.map((p: BackendProduct): Product => {
@@ -961,11 +1004,58 @@ const CheckoutView = () => {
         ));
     };
 
-    const handleCreateOrder = (details: OrderDetails) => {
-        setFinalOrder(details);
-        setView('confirmation');
-    };
 
+    const handleCreateOrder = async (details: OrderDetails) => {
+        if (isSubmitting) return; // Mencegah klik ganda
+
+        setIsSubmitting(true); // Mulai proses pengiriman
+
+        try {
+            // 1. Siapkan data 'items' dari state 'stores'
+            const items = stores.flatMap(store =>
+                store.products.map(p => ({
+                    product_id: p.id,
+                    variant_id: p.variant?.id || null, // Kirim null jika tidak ada variant_id
+                    qty: p.quantity,
+                    price: p.discountedPrice // Gunakan harga diskon
+                }))
+            );
+
+            // 2. Siapkan payload akhir sesuai format yang diinginkan
+            const payload = {
+                customer_name: currentAddress.name,
+                customer_email: user?.email,
+                customer_phone: cleanPhoneNumber(currentAddress.phone),
+                bank: getBankCode(details.paymentMethod?.name),
+                items: items,
+                totalAmount: details?.totalAmount
+            };
+
+            console.log("Mengirim payload:", payload);
+
+            const response = await Post<Response>('zukses', 'pay-va', payload);
+
+            if (response) {
+                console.log("Pesanan berhasil dibuat:", response, details);
+                setFinalOrder({
+                    imagePayment: "",
+                    paymentMethod: details?.paymentMethod,
+                    totalAmount: details?.totalAmount,
+                    virtualAccount: String(response?.data?.va_number)
+                }); // Anda mungkin ingin menambahkan data dari 'response' ke 'finalOrder'
+                setView('confirmation');
+            } else {
+                // Jika gagal (response null), tampilkan pesan error
+                alert("Gagal membuat pesanan. Silakan coba lagi.");
+            }
+
+        } catch (error) {
+            console.error("Error saat membuat pesanan:", error);
+            alert("Terjadi kesalahan. Silakan periksa konsol untuk detail.");
+        } finally {
+            setIsSubmitting(false); // Selesaikan proses pengiriman
+        }
+    };
     const handleBackToCheckout = () => {
         setView('checkout');
         setFinalOrder(null);
@@ -1059,6 +1149,7 @@ const CheckoutView = () => {
                                     shippingDiscount={shippingDiscount}
                                     storeVoucherDiscount={storeVoucherDiscount}
                                     onCreateOrder={handleCreateOrder}
+                                    isSubmitting={isSubmitting}
                                 />
                             </div>
                         )}
