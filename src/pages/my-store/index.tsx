@@ -80,8 +80,8 @@ const PageContent: NextPage = () => {
                     </div>
 
                     {/* Kartu Performa Toko */}
-                    <div className="bg-white rounded-[8px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-[#BBBBBBCC] p-6">
+                    <div className="bg-white rounded-[8px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DFDFDF]">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-[#BBBBBBCC]/80 p-6">
                             <div className='md:flex items-end gap-4'>
                                 <h3 className="text-[23px] text-[#444444] font-bold" style={{
                                     lineHeight: '110%'
