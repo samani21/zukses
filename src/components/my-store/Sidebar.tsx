@@ -57,6 +57,11 @@ const sidebarNavItems: NavItemData[] = [
         ],
     },
     {
+        title: 'Statistik',
+        icon: Home,
+        href: '/my-store/statistic',
+    },
+    {
         title: 'Data Penjualan',
         icon: LineChart,
         href: '#',
