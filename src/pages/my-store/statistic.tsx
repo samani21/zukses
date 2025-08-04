@@ -30,7 +30,7 @@ const dummyStats: StatCardData[] = [
 ];
 
 const StatCard = ({ title, value, description }: Omit<StatCardData, 'category' | 'paymentType'>) => (
-    <div className="bg-white p-4 rounded-[20px] border border-[#DCDCDC] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
+    <div className="bg-white p-4 rounded-[20px] border border-[#DCDCDC] h-[150px] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
         <div className='py-2'>
             <div className="flex justify-between items-start">
                 <h3 className="text-[20px] font-bold text-[#333333]">{title}</h3>
@@ -39,7 +39,7 @@ const StatCard = ({ title, value, description }: Omit<StatCardData, 'category' |
                 </div>
             </div>
             <p className="text-[14px] text-[#333333] ">{description}</p>
-            <p className="text-[16px] font-bold text-[#333333] mt-10">
+            <p className="text-[16px] font-bold text-[#333333] pt-9">
                 {
                     title !== 'Produk Dilihat' && title !== 'Toko Dikunjungi' && "Rp "
                 }<span className='text-[25px] font-bold text-[#333333]'>{value}</span></p>
@@ -68,10 +68,12 @@ const PageContent: NextPage = () => {
         });
         return [...transactionStats, ...otherStats];
     }, [activeTab, appliedDate]);
-
+    const handleReset = () => {
+        setAppliedDate({ start: null, end: null })
+    }
     return (
         <>
-            <div className=" border border-[#D2D4D8] bg-[#F3F5F7] p-4 px-6 rounded-[8px] flex items-start justify-between mb-6">
+            <div className=" border border-[#D2D4D8] bg-[#F3F5F7] p-4 px-6 rounded-[8px] flex items-start justify-between ">
                 <div>
                     <h1 className="text-[28px] text-[#333333] font-[800] tracking-[-0.02em]">Statistik</h1>
                     <p className="text-[#444444] mt-4 text-[14px]" style={{
@@ -81,31 +83,36 @@ const PageContent: NextPage = () => {
                     </p>
                 </div>
             </div>
-            <div className="max-w-7xl mx-auto rounded-[5px] p-4 sm:p-0 bg-[#FFFFFF] border border-[#DCDCDC] shadow-[1px_1px_1px_rgba(0,0,0,0.08)] mb-6">
-                <div className="flex flex-wrap items-center justify-between gap-4 sm:p-6 sm:px-8 mb-8 md:mb-0">
-                    <button
-                        onClick={() => setModalOpen(true)}
-                        className="flex items-center bg-[#FFFFFF] w-full md:w-1/3 border border-[#AAAAAA] rounded-[5px] px-3 py-2 text-sm text-gray-600 h-[40px] text-left"
-                    >
-                        <div className='flex items-center w-full'>
-                            <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
-                            <span className="text-[#777777] text-[14px] mr-2 hidden sm:inline">Periode Tanggal |</span>
-                        </div>
-                        <div className='text-center w-full text-[14px] text-[#333333]'>
-                            {appliedDate?.start ? (
-                                appliedDate.end ? (
-                                    <>
-                                        {format(appliedDate.start, "dd MMM yyyy", { locale: id })} - {format(appliedDate.end, "dd MMM yyyy", { locale: id })}
-                                    </>
+            <div className="max-w-7xl mx-auto rounded-[5px] p-4 sm:p-0">
+                <div className="flex flex-wrap items-center justify-between gap-4 sm:p-6 sm:px-0 mb-8 md:mb-0">
+                    <div className='sm:flex w-full space-y-2  sm:w-1/2 gap-2'>
+                        <button
+                            onClick={() => setModalOpen(true)}
+                            className="flex items-center bg-[#FFFFFF]  border border-[#AAAAAA] rounded-[5px] px-3 py-2 text-sm text-gray-600 h-[40px] text-left gap-2 w-full sm:w-[350px]"
+                        >
+                            <div className='flex items-center'>
+                                <CalendarIcon className="w-4 h-4 mr-2 text-gray-400" />
+                                <span className="text-[#777777] text-[14px]hidden sm:inline">Periode Tanggal |</span>
+                            </div>
+                            <div className='text-center text-[14px] text-[#333333]'>
+                                {appliedDate?.start ? (
+                                    appliedDate.end ? (
+                                        <>
+                                            {format(appliedDate.start, "dd MMM yyyy", { locale: id })} - {format(appliedDate.end, "dd MMM yyyy", { locale: id })}
+                                        </>
+                                    ) : (
+                                        format(appliedDate.start, "dd MMM yyyy", { locale: id })
+                                    )
                                 ) : (
-                                    format(appliedDate.start, "dd MMM yyyy", { locale: id })
-                                )
-                            ) : (
-                                <span>Pilih Tanggal</span>
-                            )}
-                        </div>
-                    </button>
-                    <div className="flex items-center sm:p-0 sm:px-8" style={{ lineHeight: "115%" }}>
+                                    <span>Pilih Tanggal</span>
+                                )}
+                            </div>
+                        </button>
+                        <button className='h-[40px] px-8 bg-[#FFFFFF] rounded-[5px] border border-[#52357B] text-[#333333] font-bold text-[14px]' onClick={handleReset}>
+                            Reset
+                        </button>
+                    </div>
+                    <div className="flex items-center justify-end sm:p-0" style={{ lineHeight: "115%" }}>
                         {tabs.map((tab) => (
                             <button key={tab} onClick={() => setActiveTab(tab)} className={`px-3 h-[40px] sm:px-8 py-2 text-[14px] transition-colors focus:outline-none ${activeTab === tab ? 'border-2 border-[#845FF5] text-[#845FF5] bg-[#E9E2FF] font-bold' : 'text-[#333333] border border-[#CCCCCC] hover:text-gray-700 font-medium'}`}>
                                 {tab}
@@ -116,7 +123,7 @@ const PageContent: NextPage = () => {
 
 
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:p-0 ">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:p-0 sm:mb-[20px]">
                 {filteredStats.map((stat, index) => (
                     <StatCard key={index} title={stat.title} value={stat.value} description={stat.description} />
                 ))}
