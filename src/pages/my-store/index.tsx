@@ -19,7 +19,7 @@ type PerformanceMetricProps = {
 
 // Komponen untuk kartu statistik individual (Pesanan, Bayar, Kirim, dll.)
 const StatCard: React.FC<StatCardProps> = ({ value, label, className }) => (
-    <div className={`relative  rounded-[12px] h-[170px] ${className} flex flex-col justify-between`}>
+    <div className={`relative  rounded-[12px] h-[150px] ${className} flex flex-col justify-between`}>
         <div className='flex items-start justify-between'>
             <div className='text-[#FFFFFF] p-4 px-6 space-y-1' style={{
                 lineHeight: "100%"
@@ -31,7 +31,7 @@ const StatCard: React.FC<StatCardProps> = ({ value, label, className }) => (
                 <ArrowUpRight size={27} color='#EEEEEE' />
             </div>
         </div>
-        <p className="text-[46px] font-[900] p-6">{value}</p>
+        <p className="text-[46px] font-[600] p-6">{value}</p>
     </div>
 );
 

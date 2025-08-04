@@ -66,7 +66,7 @@ const sidebarNavItems: NavItemData[] = [
         icon: LineChart,
         href: '#',
         children: [
-            { title: 'Penjualan Saya', icon: Wallet, href: '#' },
+            { title: 'Penjualan Saya', icon: Wallet, href: '/my-store/my-salles' },
             { title: 'Belum Bayar', icon: Wallet, href: '#' },
             { title: 'Perlu Dikirim', icon: Package, href: '#' },
             { title: 'Dikirim', icon: Package, href: '#' },
