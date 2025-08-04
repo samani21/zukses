@@ -35,7 +35,7 @@ interface ProductOtherInfoSectionProps {
 const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
     const {
         setTipKey, isCodEnabled, setIsCodEnabled, setIsUsed,
-        sku, setSku, schedule, setScheduleDate, validateScheduleDate, scheduleError,
+        sku, setSku, schedule, scheduleError,
         errors, sectionRefs, setShippingCost, shippingCost, subsidy, setSubsidy,
         isVoucher, setIsVoucher, voucher, setVoucher, used
     } = props;
@@ -110,9 +110,9 @@ const ProductOtherInfoSection = (props: ProductOtherInfoSectionProps) => {
                         <div className='mt-2'>
                             <DateTimePicker
                                 value={schedule ? new Date(schedule.replace(' ', 'T')) : new Date()}
-                                onChange={(date) => {
-                                    setScheduleDate(date);
-                                    validateScheduleDate(date);
+                                onChange={() => {
+                                    // setScheduleDate(date);
+                                    // validateScheduleDate(date);
                                 }}
                             />
                         </div>
