@@ -43,10 +43,11 @@ const ProductNav = ({ activeSection, onNavigate, validationStatus }: ProductNavP
                         <li key={index}>
                             <button
                                 onClick={() => onNavigate(item.id)}
-                                className={`w-full text-left px-4 py-2 ${index == 0 ? 'rounded-t-[10px]' : index === navItems?.length - 1 ? "rounded-b-[10px]" : ""} text-[14px] flex justify-between items-center transition-colors duration-200 ${isActive
-                                    ? 'bg-[#52357B] text-white text-[14px] font-bold'
-                                    : 'text-[#444444] text-[14px] hover:bg-gray-100'
+                                className={`w-full text-left px-4 py-2 ${index == 0 ? 'rounded-t-[10px]' : index === navItems?.length - 1 ? "rounded-b-[10px]" : ""} text-[14px] flex justify-between items-center transition-colors duration-200 font-medium ${isActive
+                                    ? 'bg-[#52357B] text-white'
+                                    : 'text-[#444444] hover:bg-gray-100'
                                     }`}
+
                                 style={{
                                     lineHeight: "120%",
                                     letterSpacing: "-0.02em"
