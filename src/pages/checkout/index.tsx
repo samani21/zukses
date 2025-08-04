@@ -588,7 +588,7 @@ const PaymentAndSummaryCard: FC<{
 
         const biayaLayanan = 2500;
         const biayaTransfer = 4000;
-        const totalDiskon = itemDiscount + shippingDiscount + storeVoucherDiscount;
+        const totalDiskon = itemDiscount + shippingDiscount;
         const totalPembayaran = originalProductTotal + shippingSubtotal + biayaLayanan + biayaTransfer - totalDiskon;
         const handleCreateOrder = () => {
             // Placeholder virtual account for now. In a real app, this would come from a payment gateway API call.
@@ -995,7 +995,7 @@ const CheckoutView = () => {
                         storeVoucher += p.voucher;
                     }
                     if (p.subsidy && p.subsidy > 0) {
-                        shippingDisc += p.subsidy;
+                        shippingDisc += Number(p.subsidy);
                     }
                 });
                 shippingTotal += store.selectedShipping.price;
