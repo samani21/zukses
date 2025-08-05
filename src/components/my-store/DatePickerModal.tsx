@@ -41,23 +41,36 @@ const DatePickerModal: React.FC<{
     if (!isOpen) return null;
 
     const handleDateClick = (day: Date) => {
-        // Jika preset "Per Hari", pilih 1 hari
+        // Ganti bulan jika klik tanggal dari bulan lain
+        const clickedMonth = day.getMonth();
+        const currentViewMonth = viewDate.getMonth();
+        const clickedYear = day.getFullYear();
+        const currentViewYear = viewDate.getFullYear();
+
+        if (clickedMonth !== currentViewMonth || clickedYear !== currentViewYear) {
+            setViewDate(new Date(day)); // Pindahkan kalender ke bulan tanggal yang diklik
+        }
+
+        // Preset Per Hari
         if (activePreset === 'Per Hari') {
             setStartDate(startOfDay(day));
             setEndDate(endOfDay(day));
             return;
         }
 
-        // Jika preset "Per Minggu", pilih 7 hari ke belakang dari tanggal yang diklik
+        // Preset Per Minggu
         if (activePreset === 'Per Minggu') {
-            const start = startOfDay(subDays(day, 6));
-            const end = endOfDay(day);
+            const dayOfWeek = day.getDay(); // 0 = Min
+            const start = startOfDay(new Date(day));
+            start.setDate(day.getDate() - dayOfWeek); // ke Minggu
+            const end = endOfDay(new Date(start));
+            end.setDate(start.getDate() + 6); // ke Sabtu
             setStartDate(start);
             setEndDate(end);
             return;
         }
 
-        // Selain itu, anggap Custom Tanggal
+        // Custom Tanggal
         setActivePreset('Custom Tanggal');
 
         if (!startDate || (startDate && endDate)) {
@@ -147,33 +160,67 @@ const DatePickerModal: React.FC<{
     };
 
     const renderCalendar = () => {
-        const year = viewDate.getFullYear(); const month = viewDate.getMonth();
-        const totalDays = new Date(year, month + 1, 0).getDate();
-        const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const days = [];
-        const firstDay = firstDayOfMonth === 0 ? 0 : firstDayOfMonth;
+        const year = viewDate.getFullYear();
+        const month = viewDate.getMonth();
 
-        for (let i = 0; i < firstDay; i++) days.push(<div key={`pad-${i}`} className="w-10 h-10"></div>);
-        for (let i = 1; i <= totalDays; i++) {
-            const dayDate = new Date(year, month, i);
-            const isStart = startDate && dayDate.getTime() === startOfDay(startDate).getTime();
-            const isEnd = endDate && dayDate.getTime() === startOfDay(endDate).getTime();
-            const isInRange = startDate && endDate && dayDate > startDate && dayDate < endDate;
-            const isHoveringInRange = startDate && !endDate && hoverDate && dayDate > startDate && dayDate <= hoverDate;
-            days.push(
-                <button key={i} onClick={() => handleDateClick(dayDate)} onMouseEnter={() => setHoverDate(dayDate)} onMouseLeave={() => setHoverDate(null)}
+        const firstDayOfMonth = new Date(year, month, 1);
+        const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 = Minggu
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const prevMonth = new Date(year, month - 1, 1);
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+        const calendarDays = [];
+
+        // Hitung tanggal dari bulan sebelumnya yang ditampilkan
+        const leadingDays = firstDayOfWeek;
+        for (let i = leadingDays - 1; i >= 0; i--) {
+            const date = new Date(year, month - 1, daysInPrevMonth - i);
+            calendarDays.push({ date, isOtherMonth: true });
+        }
+
+        // Tanggal bulan ini
+        for (let i = 1; i <= daysInMonth; i++) {
+            const date = new Date(year, month, i);
+            calendarDays.push({ date, isOtherMonth: false });
+        }
+
+        // Tambah tanggal dari bulan berikutnya jika grid belum penuh
+        const trailingDays = 42 - calendarDays.length;
+        for (let i = 1; i <= trailingDays; i++) {
+            const date = new Date(year, month + 1, i);
+            calendarDays.push({ date, isOtherMonth: true });
+        }
+
+        return calendarDays.map(({ date, isOtherMonth }, idx) => {
+            const isStart = startDate && date.getTime() === startOfDay(startDate).getTime();
+            const isEnd = endDate && date.getTime() === startOfDay(endDate).getTime();
+            const isInRange = startDate && endDate && date > startDate && date < endDate;
+            const isHoveringInRange = startDate && !endDate && hoverDate && date > startDate && date <= hoverDate;
+
+            return (
+                <button
+                    key={idx}
+                    onClick={() => handleDateClick(date)}
+                    onMouseEnter={() => setHoverDate(date)}
+                    onMouseLeave={() => setHoverDate(null)}
                     className={`w-10 h-10 flex items-center justify-center text-sm transition-colors relative
-                        ${(isInRange || isHoveringInRange) ? 'bg-yellow-100 rounded-full' : ''}
-                        ${!isStart && !isEnd && !isInRange && !isHoveringInRange ? 'hover:bg-gray-100 rounded-full' : ''}
-                    `}>
-                    <span className={`z-10 w-full h-full flex items-center justify-center rounded-full ${(isStart || isEnd) ? 'bg-yellow-400' : ''}`}>
-                        {i}
+                    ${isOtherMonth ? 'text-gray-400' : ''}
+                    ${(isInRange || isHoveringInRange) ? 'bg-yellow-100 rounded-full' : ''}
+                    ${!isStart && !isEnd && !isInRange && !isHoveringInRange ? 'hover:bg-gray-100 rounded-full' : ''}
+                `}
+                >
+                    <span
+                        className={`z-10 w-full h-full flex items-center justify-center rounded-full
+                    ${(isStart || isEnd) ? 'bg-yellow-400 text-white' : ''}
+                `}>
+                        {date.getDate()}
                     </span>
                 </button>
             );
-        }
-        return days;
+        });
     };
+
 
     const renderMonthView = () => {
         const months = Array.from({ length: 12 }, (_, i) =>
