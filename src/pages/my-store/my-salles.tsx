@@ -403,7 +403,7 @@ const MySallesPage: NextPage = () => {
                         </div>
 
                     </div>
-                    <div className='space-y-6 mt-6 '>
+                    <div className='space-y-[10px] mt-[10px] '>
                         <div className="hidden lg:flex  px-6 py-3 h-[50px]  bg-white rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#dcdcdc] text-[16px] font-bold text-[#333333]">
                             <div className="w-[40%]">Produk</div>
                             <div className="w-[60%] flex">

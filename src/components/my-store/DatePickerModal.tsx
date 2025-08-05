@@ -41,14 +41,38 @@ const DatePickerModal: React.FC<{
     if (!isOpen) return null;
 
     const handleDateClick = (day: Date) => {
+        // Jika preset "Per Hari", pilih 1 hari
+        if (activePreset === 'Per Hari') {
+            setStartDate(startOfDay(day));
+            setEndDate(endOfDay(day));
+            return;
+        }
+
+        // Jika preset "Per Minggu", pilih 7 hari ke belakang dari tanggal yang diklik
+        if (activePreset === 'Per Minggu') {
+            const start = startOfDay(subDays(day, 6));
+            const end = endOfDay(day);
+            setStartDate(start);
+            setEndDate(end);
+            return;
+        }
+
+        // Selain itu, anggap Custom Tanggal
         setActivePreset('Custom Tanggal');
+
         if (!startDate || (startDate && endDate)) {
-            setStartDate(day); setEndDate(null);
+            setStartDate(day);
+            setEndDate(null);
         } else if (startDate && !endDate) {
-            if (day < startDate) { setEndDate(startDate); setStartDate(day); }
-            else { setEndDate(day); }
+            if (day < startDate) {
+                setEndDate(startDate);
+                setStartDate(day);
+            } else {
+                setEndDate(day);
+            }
         }
     };
+
 
     const handleMainPresetClick = (preset: string) => {
         setActivePreset(preset);
@@ -85,8 +109,10 @@ const DatePickerModal: React.FC<{
         const today = new Date();
         let start = startOfDay(today);
         let end = endOfDay(today);
+
         switch (preset) {
-            case 'Hari ini': break;
+            case 'Hari ini':
+                break;
             case 'Kemarin':
                 start = startOfDay(subDays(today, 1));
                 end = endOfDay(subDays(today, 1));
@@ -102,8 +128,12 @@ const DatePickerModal: React.FC<{
                 end = endOfMonth(today);
                 break;
         }
-        setStartDate(start); setEndDate(end); setViewDate(start);
+
+        setStartDate(start);
+        setEndDate(end);
+        setViewDate(start);
         setViewMode('days');
+        setActivePreset(preset); // <--- ini penting
     };
 
     const handleMonthClick = (monthIndex: number) => {
@@ -185,13 +215,15 @@ const DatePickerModal: React.FC<{
                                 <button
                                     key={preset}
                                     onClick={() => handleSecondaryPresetClick(preset)}
-                                    className="text-[14px] text-center border border-gray-300 rounded-full py-2 px-4 hover:bg-gray-50 whitespace-nowrap"
+                                    className={`text-[14px] text-center border rounded-full py-2 px-4 whitespace-nowrap transition
+                    ${activePreset === preset
+                                            ? 'bg-yellow-400 text-white border-yellow-500'
+                                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'}`}
                                 >
                                     {preset}
                                 </button>
                             )}
                         </div>
-
                     </div>
                 </div>
                 <div className="p-6 flex-1">
