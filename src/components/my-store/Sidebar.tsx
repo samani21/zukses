@@ -81,7 +81,7 @@ const sidebarNavItems: NavItemData[] = [
         href: '#',
         children: [
             { title: 'Penghasilan Saya', icon: Wallet, href: '/my-store/my-income' },
-            { title: 'Saldo Saya', icon: Wallet, href: '#' },
+            { title: 'Saldo Saya', icon: Wallet, href: '/my-store/my-balance' },
         ],
     },
 ];
