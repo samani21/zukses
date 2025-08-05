@@ -4,6 +4,7 @@ import { ChevronDown, Calendar, Check, Search, ArrowLeft, ArrowRight } from 'luc
 import MyStoreLayout from 'pages/layouts/MyStoreLayout';
 import DatePickerModal from 'components/my-store/DatePickerModal';
 import { Listbox, Transition } from '@headlessui/react';
+import { useRouter } from 'next/router';
 
 // --- PERUBAHAN 1: Tipe Data Variasi Dinamis ---
 // Tipe data untuk setiap atribut variasi (misal: { name: 'Warna', value: 'Merah' })
@@ -231,18 +232,22 @@ const Pagination: React.FC<{
     );
 };
 
-// Komponen Halaman Utama (Tidak ada perubahan signifikan pada logika)
-const MySallesPage: NextPage = () => {
+type Props = {
+    tab?: string;
+};
+
+export const MySallesPage: NextPage<Props> = ({ tab }) => {
     const TABS = ['Semua', 'Belum Bayar', 'Perlu Dikirim', 'Dikirim', 'Selesai', 'Dibatalkan', 'Pengembalian'];
     const SEARCH_OPTIONS = ['Nama Produk', 'Nomor Pesanan'];
     const SHIPPING_OPTIONS = ['Semua Jasa Kirim', 'JNT Standar', 'SiCepat REG', 'JNE OKE', 'JNT Express'];
-    const [activeTab, setActiveTab] = useState('Semua');
+    const [activeTab, setActiveTab] = useState(tab);
     const [searchType, setSearchType] = useState('Nama Produk');
     const [searchTerm, setSearchTerm] = useState('');
     const [shippingFilter, setShippingFilter] = useState('Semua Jasa Kirim');
     const [dateRange, setDateRange] = useState<{ start: Date | null, end: Date | null }>({
         start: null, end: null
     });
+    const router = useRouter();
     const [isDatePickerOpen, setDatePickerOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 20;
@@ -287,6 +292,35 @@ const MySallesPage: NextPage = () => {
         return 'Pilih Periode Tanggal';
     }, [dateRange]);
 
+    const handleTabs = (tab: string) => {
+        switch (tab) {
+            case 'Semua':
+                router?.push('/my-store/my-salles');
+                break;
+            case 'Belum Bayar':
+                router?.push('/my-store/my-salles/not-paid');
+                break;
+            case 'Perlu Dikirim':
+                router?.push('/my-store/my-salles/not-sent');
+                break;
+            case 'Dikirim':
+                router?.push('/my-store/my-salles/sent');
+                break;
+            case 'Selesai':
+                router?.push('/my-store/my-salles/finished');
+                break;
+            case 'Dibatalkan':
+                router?.push('/my-store/my-salles/cancel');
+                break;
+            case 'Pengembalian':
+                router?.push('/my-store/my-salles/return');
+                break;
+            default:
+                console.warn('Tab tidak dikenali:', tab);
+                break;
+        }
+    };
+
     return (
         <main>
             <DatePickerModal isOpen={isDatePickerOpen} onClose={() => setDatePickerOpen(false)} onApply={setDateRange} initialRange={dateRange} />
@@ -306,7 +340,11 @@ const MySallesPage: NextPage = () => {
                         <div className="border-b border-[#BBBBBBCC]/80 px-12">
                             <nav className="-mb-px flex space-x-6 overflow-x-auto no-scrollbar">
                                 {TABS.map(tab => (
-                                    <button key={tab} onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
+                                    <button key={tab} onClick={() => {
+                                        handleTabs(tab);
+                                        setCurrentPage(1);
+
+                                    }}
                                         className={`whitespace-nowrap py-4 px-1 border-b-3 text-[16px] ${activeTab === tab ? 'border-[#BB2C31] font-bold text-[#BB2C31]' : 'border-transparent text-[#333333] hover:text-gray-700 hover:border-gray-300'}`}>
                                         {tab}
                                     </button>
@@ -433,7 +471,7 @@ const MySallesPage: NextPage = () => {
 export default function MySalles() {
     return (
         <MyStoreLayout>
-            <MySallesPage />
+            <MySallesPage tab={'Semua'} />
         </MyStoreLayout>
     );
 }
