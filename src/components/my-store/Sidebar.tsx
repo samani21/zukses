@@ -67,12 +67,12 @@ const sidebarNavItems: NavItemData[] = [
         href: '#',
         children: [
             { title: 'Penjualan Saya', icon: Wallet, href: '/my-store/my-salles' },
-            { title: 'Belum Bayar', icon: Wallet, href: '#' },
-            { title: 'Perlu Dikirim', icon: Package, href: '#' },
-            { title: 'Dikirim', icon: Package, href: '#' },
-            { title: 'Selesai', icon: Package, href: '#' },
-            { title: 'Dibatalkan', icon: Package, href: '#' },
-            { title: 'Pengembalian', icon: Package, href: '#' },
+            { title: 'Belum Bayar', icon: Wallet, href: '/my-store/my-salles/not-paid' },
+            { title: 'Perlu Dikirim', icon: Package, href: '/my-store/my-salles/not-sent' },
+            { title: 'Dikirim', icon: Package, href: '/my-store/my-salles/sent' },
+            { title: 'Selesai', icon: Package, href: '/my-store/my-salles/finished' },
+            { title: 'Dibatalkan', icon: Package, href: '/my-store/my-salles/cancel' },
+            { title: 'Pengembalian', icon: Package, href: '/my-store/my-salles/return' },
         ],
     },
     {
