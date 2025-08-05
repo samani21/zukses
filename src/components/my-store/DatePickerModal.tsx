@@ -167,7 +167,6 @@ const DatePickerModal: React.FC<{
         const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 = Minggu
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        const prevMonth = new Date(year, month - 1, 1);
         const daysInPrevMonth = new Date(year, month, 0).getDate();
 
         const calendarDays = [];
