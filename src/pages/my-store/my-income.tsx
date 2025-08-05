@@ -782,9 +782,8 @@ const IncomeView: React.FC<{ onShowDetail: (transaction: Transaction) => void }>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mt-6">
                 {dummyStats.map((stat, index) => (<StatCard key={index} {...stat} />))}
             </div>
-            <div className="p-4 sm:p-0 rounded-lg shadow-md mt-8 bg-white rounded-[8px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#dcdcdc]">
-                <h2 className="text-[17px] font-bold text-[#333] border-b border-[#BBBBBB] p-4 px-8">Rincian Penghasilan</h2>
-                <div className='px-8 grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6'>
+            <div className="p-4 sm:p-0">
+                <div className=' grid grid-cols-1 lg:grid-cols-3 gap-4 mt-6'>
                     <div className='space-x-2 lg-col-span-1' style={{
                         lineHeight: "115%"
                     }}>
@@ -805,12 +804,9 @@ const IncomeView: React.FC<{ onShowDetail: (transaction: Transaction) => void }>
                             </button>
                         </div>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-800 mt-4">Penghasilan di {activeTab} </h3>
-                    <div className="text-[14px] font-bold tracking-[-0.02em] text-[#333]">
-                        {allTransactions?.length} Transaksi
-                    </div>
                 </div>
-                <div className="overflow-x-auto px-8 py-6">
+                <h3 className="text-lg font-semibold text-gray-800 mt-4">Penghasilan di {activeTab} <span className='text-[14px] font-bold tracking-[-0.02em] text-[#333] ml-8'>{allTransactions?.length} Transaksi</span> </h3>
+                <div className="overflow-x-auto py-6">
                     <table className="w-full text-left min-w-[800px]">
                         <thead className="bg-[#F3F5F7]">
                             <tr className="border border-[#DDDDDD]" style={{
