@@ -69,9 +69,14 @@ export default function MyStoreLayout({ children }: { children: React.ReactNode 
                 />
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Header setMobileOpen={setMobileOpen} shopProfil={shopProfil} />
-                    <main id="main-scroll-container" className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 md:pt-4 md:pb-0">
+                    <main id="main-scroll-container" className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8 md:pt-4 md:pb-8">
                         {children}
                     </main>
+                    <div className='bg-[#238744] h-[60px] font-semibold text-white text-[14px] flex items-center px-8' style={{
+                        lineHeight: "22px"
+                    }}>
+                        @2025, PT. Zukses Digital Indonesia. All Rights Reserved.
+                    </div>
                 </div>
             </div>
             {loading && <Loading />}
