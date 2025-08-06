@@ -98,7 +98,7 @@ function ProductPromo({ products }: NewProductProps) {
                     {/* Product Grid - Scrollable on mobile */}
                     <div
                         ref={scrollContainerRef}
-                        className="flex gap-4 pb-4 -mx-4 px-4 overflow-x-auto scrollbar-hide"
+                        className="flex gap-4 pb-4 -mx-4 px-4 pl-0 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
                             <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border border-[#DEDEDE] bg-white rounded-[15px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
@@ -112,14 +112,30 @@ function ProductPromo({ products }: NewProductProps) {
                             }}>
                                 <div className='grid grid-cols-4'>
                                     <div className="col-span-2 relative w-[160px] overflow-hidden">
-                                        <img
-                                            src={product.image}
-                                            alt={product.name}
-                                            className="md:w-[160px] md:h-[160px]  object-cover"
-                                            onError={(e) => {
-                                                (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
-                                            }}
-                                        />
+                                        <div className='relative'>
+                                            <div className="absolute top-3 left-0 -right-0 flex flex-col z-10 gap-1">
+                                                {
+                                                    product?.discount_percent ?
+                                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
+                                                            <span className='bg-[#F94D63]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                                        </div> : ''
+                                                }
+                                                {
+                                                    product?.delivery?.subsidy ?
+                                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
+                                                            <span className='bg-[#388F4F]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                                        </div> : ''
+                                                }
+                                            </div>
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                className="md:w-[160px] md:h-[160px]  object-cover"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="col-span-2 space-y-1 pt-1 -ml-1">
                                         <p className="text-[14px] md:text-[14px] text-dark line-clamp-2 h-8.5 text-[#111111]" style={{ lineHeight: '17px' }}>
@@ -132,12 +148,14 @@ function ProductPromo({ products }: NewProductProps) {
                                                 letterSpacing: "-0.04em"
                                             }}>Rp300.000</p> */}
                                         </div>
-                                        <div className='flex'>
+                                        {/* <div className='flex'>
                                             {
                                                 product?.discount_percent ?
                                                     <div className='bg-[#FAD7D7] border border-[#F02929] h-[20px] text-[10px] font-[700] text-[10px] text-[#F02929]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px] mr-2' style={{ letterSpacing: "-0.04em" }}>
                                                         Diskon {product?.discount_percent}%
-                                                    </div> : ''
+                                                    </div> : <div className=' h-[20px] '>
+
+                                                    </div>
                                             }
                                             {
                                                 product?.delivery?.subsidy ?
@@ -145,7 +163,7 @@ function ProductPromo({ products }: NewProductProps) {
                                                         Gratis Ongkir
                                                     </div> : ''
                                             }
-                                        </div>
+                                        </div> */}
                                         <div className="flex items-center gap-2  justify-start text-xs text-gray-500 mt-2" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                             <div className='flex items-center' style={{ lineHeight: "22px" }}>
                                                 <StarIcon className="w-[16px] h-[16px] text-yellow-400" />

@@ -411,7 +411,7 @@ const PageContent: NextPage = () => {
                                             <div className="hidden md:block col-span-1 text-left text-[#333333] text-[14px] px-4">{product.stock}</div>
                                             <div className="hidden md:block col-span-3 text-left space-y-2 font-bold text-[12px] px-4">
                                                 {
-                                                    product?.is_cod_enabled ?
+                                                    Number(product?.is_cod_enabled) ?
                                                         <div className="text-[#F77000]">COD (Bayar ditempat)</div> : ''
                                                 }
                                                 {
