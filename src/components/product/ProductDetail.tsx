@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
-import { Media, Product, Thumbnail, variant } from 'components/types/Product';
+import { Product, Thumbnail, variant } from 'components/types/Product';
 import { Check, ChevronRightIcon, MinusCircle, PlusCircle } from 'lucide-react';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import { useRouter } from 'next/router';
@@ -373,12 +373,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
     }
-    const hasImageGuide = !!product?.media?.some((item: Media) => item.type === 'image_guide');
+    // const hasImageGuide = !!product?.media?.some((item: Media) => item.type === 'image_guide');
 
     return (
         <>
-            <div className=" md:p-4 text-sm">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div className=" text-sm">
+                <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
                     <ProductGallery
                         images={allImages}
                         videoProduct={videoProduct}
@@ -387,8 +387,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         onImageClick={handleImageClick}
                         product={product}
                     />
-                    <div className="hidden md:block lg:col-span-3 mt-2">
-                        <h1 className="text-base text-[22px] font-[700] text-[#333333] tracking-[-0.02em]">{product?.name}</h1>
+                    <div className="hidden md:block lg:col-span-4 space-y-4">
+                        <h1 className="text-[22px] font-[700] text-[#333333] tracking-[-0.02em]">{product?.name}</h1>
                         {/* <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
                             <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
                                 <div className=" flex items-center">
@@ -399,14 +399,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
                             </div>
                         </div> */}
-                        <div className="bg-gray-50 rounded-md my-2 space-y-2">
-                            <div className="">
+                        <div className="bg-gray-50 rounded-md space-y-2">
+                            <div className="space-y-2">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
-                                <div className="text-[#F75B00] text-[30px] font-[700]">{renderPriceDiscountDisplay()}</div>
+                                <div className="text-[#F94D63] text-[30px] font-[700]">{renderPriceDiscountDisplay()}</div>
                                 {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() && (
                                     <div className='flex items-center gap-4'>
                                         <div className=''>
-                                            <span className='bg-[#FAD7D7] border border-[#F02929] text-[#F02929] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
+                                            <span className='bg-[#FAD7D7] border border-[#F02929] text-[#F02929] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
                                         </div>
                                         <div className="text-[#888888] text-[21px] font-[400] line-through">{renderPriceDisplay()}</div>
                                     </div>
@@ -484,23 +484,23 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             {
                                 product?.voucher &&
                                 <div className=''>
-                                    <span className='bg-[#C8F7D4] border border-[#388F4F] text-[#388F4F] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Voucher {formatRupiah(product?.voucher)}</span>
+                                    <span className='bg-[#C8F7D4] h-[25px]  border border-[#388F4F] text-[#388F4F] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Voucher {formatRupiah(product?.voucher)}</span>
                                 </div>
                             }
                             {
                                 product?.delivery.subsidy &&
                                 <div className=''>
-                                    <span className='bg-[#FFF9BF] border border-[#F77000] text-[#F77000] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Gratis Ongkir    {formatRupiah(product?.delivery.subsidy)}</span>
+                                    <span className='bg-[#FFF9BF]  h-[25px] border border-[#F77000] text-[#F77000] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Gratis Ongkir    {formatRupiah(product?.delivery.subsidy)}</span>
                                 </div>
                             }
                         </div>
                         {
                             Number(product?.is_cod_enabled) ? <p className='text-[#F77000] font-bold text-[14px] mb-2'>COD (Bayar ditempat)</p> : ''
                         }
-                        <p className='tracking-[-0.02em] text-[#555555] text-[16px] py-4'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
-                        <div className="space-y-4 w-1/2">
+                        <p className='tracking-[-0.02em] text-[#555555] text-[16px] pt-2'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
+                        <div className="space-y-5 w-1/2">
                             {product?.variant_prices.map((group) =>
-                                <div key={group.id}>
+                                <div key={group.id} className='space-y-2'>
                                     <p className="text-[#555555] text-[16px] font-medium tracking-[-0.02em]">
                                         Pilih <span className="text-[#09824C] font-bold ml-3">{group.variant}</span>
                                     </p>
@@ -547,18 +547,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                                             }
                                                         }}
 
-                                                        className={`border text-[14px] font-[500] flex items-center gap-1 ${activeSelections[group.id] === option
-                                                            ? 'border-[#09824C] bg-[#09824C] text-white py-0.5 pr-[3px] pl-[3px]'
+                                                        className={`border text-[14px] font-[500] flex items-center  ${activeSelections[group.id] === option
+                                                            ? 'border-none text-white p-'
                                                             : 'border-[#bbb] bg-white text-black py-1 px-4'}`}
                                                         style={{
                                                             letterSpacing: "-0.04em"
                                                         }}
                                                     >
-                                                        {activeSelections[group.id] === option ? <Check className='h-20px w-20px' /> : option}
+                                                        {activeSelections[group.id] === option ?
+                                                            <div className='bg-[#09824C] h-[35px] flex items-center px-2 border border-[#09824C]'>
+                                                                <Check className='h-[20px] w-[20px]' />
+                                                            </div> : option}
                                                         {activeSelections[group.id] === option &&
-                                                            <div className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] p-4 py-1">
+                                                            <span className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] border border-[#09824C]  h-[35px] flex items-center px-4">
                                                                 {option}
-                                                            </div>}
+                                                            </span>}
                                                     </button>
                                                 )
                                             );
@@ -571,12 +574,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                     </div> */}
                                 </div>)}
 
-                            {hasImageGuide &&
+                            {/* {hasImageGuide &&
                                 <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center'>
                                     Lihat Panduan Ukuran
                                     <ChevronRightIcon />
                                 </div>
-                            }
+                            } */}
+                            <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center'>
+                                Lihat Panduan Ukuran
+                                <ChevronRightIcon />
+                            </div>
                             {activeSelectionsArray.length > 0 && (
                                 <div className="tracking-[-0.02em]" style={{
                                     lineHeight: "150%"
@@ -611,7 +618,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                         <div className='tracking-[-0.02em]' style={{
                             lineHeight: "160%"
                         }}>
-                            <p className='text-[22px] font-bold pb-4'>Deskripsi Produk</p>
+                            <p className='text-[22px] font-bold pb-6'>Deskripsi Produk</p>
                             <div>
                                 <div
                                     ref={descRef}
@@ -622,7 +629,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 />
                                 {showButton && (
                                     <button
-                                        className="mt-2 text-[16px] text-[#09824C] font-bold"
+                                        className="mt-6 text-[16px] text-[#09824C] font-bold"
                                         onClick={() => setExpanded(prev => !prev)}
                                     >
                                         {expanded ? 'Lihat lebih sedikit' : 'Lihat lebih banyak'}

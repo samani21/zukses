@@ -90,8 +90,8 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     };
 
     return (
-        <div className="lg:col-span-2 w-full md:px-0">
-            <div className="mb-2 relative group overflow-hidden w-full max-w-[420px] mx-auto">
+        <div className="lg:col-span-2 w-full md:px-0" >
+            <div className="mb-2 relative group overflow-hidden w-full max-w-[420px] ">
                 <div
                     className="flex transition-transform duration-300 ease-in-out"
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -179,7 +179,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                             <button
                                 key={thumb.id}
                                 onClick={() => setActiveIndex(index)}
-                                className={`flex-shrink-0 w-[20%] border-3 rounded-[8px]  transition-colors ${activeIndex === index ? 'border-[#DE4A53]' : 'border-transparent'}`}
+                                className={`flex-shrink-0 w-[75px] border-3 rounded-[8px]  transition-colors ${activeIndex === index ? 'border-[#DE4A53]' : 'border-transparent'}`}
                             >
                                 <img
                                     src={thumb.url.replace('600x400', '100x100')}
@@ -232,8 +232,8 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         <span>Bagikan Link</span>
                     </button>
                 </div>
-                <div className='bg-[#F1F5F9] rounded-[10px] mt-4'>
-                    <div className='flex justify-between items-center border-b border-[#C5D7E9] p-6'>
+                <div className='bg-[#F1F5F9] rounded-[10px] h-[165px] mt-4'>
+                    <div className='flex justify-between items-center border-b border-[#C5D7E9] p-3 px-6'>
                         <div className='flex items-center gap-4'>
                             <img className='border border-[#BBBBBB] rounded-full w-[70px] h-[70px] bg-white' src={product?.seller?.avatarUrl} />
                             <div>
@@ -252,13 +252,13 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                             <p className='text-[#333333] text-[17px] text-center tracking-[-0.02em] font-bold'>284</p>
                         </div>
                     </div>
-                    <div className='p-6 flex items-center justify-center gap-4  '>
-                        <button className='bg-[#C4EDDD] h-[50px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C]' style={{
+                    <div className='p-3 px-6  flex items-center justify-center gap-4  '>
+                        <button className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C]' style={{
                             lineHeight: "22px"
                         }}>
                             Chat Penjual
                         </button>
-                        <button className='bg-[#09824C] h-[50px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff]' style={{
+                        <button className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff]' style={{
                             lineHeight: "22px"
                         }}>
                             Kunjungi Toko
