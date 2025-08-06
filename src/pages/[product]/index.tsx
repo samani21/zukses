@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
-import SellerInfo from 'components/product/SellerInfo';
-import ProductSpecification from 'components/product/ProductSpecification';
-import ProductReviews from 'components/product/ProductReviews';
 import { Product } from 'components/types/Product';
 import { ArrowLeft, Search, Share2 } from 'lucide-react';
 import Get from 'services/api/Get';
@@ -14,6 +11,7 @@ import OtherProduct from 'components/OtherProduct';
 import ProductWithCategories from 'components/ProductWithCategories';
 import VariantModal from 'components/product/VariantModal';
 import { useRouter } from 'next/router';
+import ProductReviewsPage from 'components/product/Comment';
 
 
 
@@ -129,17 +127,17 @@ const ProductPage = () => {
 
                     {
                         detailProduct &&
-                        <div className='space-y-4'>
+                        <div className='space-y-6'>
                             <ProductDetail product={detailProduct} />
-                            <div className='hidden md:block'>
+                            {/* <div className='hidden md:block'>
                                 <SellerInfo seller={detailProduct?.seller} />
-                            </div>
-                            <div className='hidden'>
+                            </div> */}
+                            {/* <div className='hidden'>
                                 <ProductSpecification specifications={detailProduct.specifications} />
                             </div>
-                          
+                           */}
                             <div className='hidden md:block'>
-                                <ProductReviews reviews={detailProduct.reviews} productRating={detailProduct.rating} />
+                                <ProductReviewsPage/>
                             </div>
                             {
                                 otherProducts &&

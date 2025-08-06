@@ -13,68 +13,125 @@ interface ProductWithCategoriesProps {
 }
 
 function ProductWithCategories({ products, idProduct }: ProductWithCategoriesProps) {
-    const router = useRouter()
+    const router = useRouter();
+    function formatLocation(location: string) {
+        return location
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
     return (
         <div className="container mx-auto px-0 mb-24">
             {products?.length > 0 && products?.some(product => product.id != idProduct) &&
-                <h2 className="text-[#111111] text-[13px] md:text-[16px] text-dark mb-[10px] mt-[10px] md:text-[#333333] font-semibold px-4 md:px-0">Produk Sejenis</h2>
+                <h2 className="text-[22px] text-[#333333] mb-[40px]   font-[900] px-4 md:px-0 tracking-[-0.03em]" style={{
+                    lineHeight: "17px"
+                }}>Produk Sejenis</h2>
             }
 
             <div className="px-4 md:px-0 grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
-                {products?.map(product => (
+                {products?.map((product, index) => (
                     product.id != idProduct &&
                     <a
-                        key={product.id}
-                        className="bg-white cursor-pointer w-full h-full overflow-hidden group lg:w-[190px] lg:h-[342px] border border-[#DDDDDD]"
+                        key={index}
+                        className="bg-white cursor-pointer w-full h-[311px] rounded-[15px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
-                                // ganti spasi ATAU karakter “/” dengan "-"
                                 .replace(/[\s/]+/g, '-')
-                                // hapus tanda minus ganda di tengah/tengah akhir, opsional
                                 .replace(/-+/g, '-')
                                 .replace(/^-|-$/g, '');
-                            router?.push(`/${slug}`)
+                            router?.push(`/${slug}`);
                             localStorage.setItem('product', JSON.stringify(product));
                         }}
                         style={{
                             letterSpacing: "-0.03em"
                         }}
                     >
+                        {/* Bungkus gambar dan label dalam container relatif */}
+                        <div className="relative">
+                            {/* Label Gratis Ongkir & Voucher */}
+                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-1.5">
+                                {
+                                    product?.discount_percent ?
+                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
+                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[12px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                        </div> : ''
+                                }
+                                {
+                                    product?.delivery?.subsidy ?
+                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
+                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[12px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                        </div> : ''
+                                }
+                            </div>
 
-                        <img src={product.image} alt={product.name} className="md:w-[190px] md:h-[190px] group-hover:opacity-90" onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk'; }} />
-                        <div className="p-2 ">
+                            {/* Gambar produk */}
+                            <img
+                                src={product.image}
+                                alt={product.name}
+                                className="md:w-[190px] md:h-[190px] rounded-t-[10px] object-center"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
+                                }}
+                            />
+                        </div>
+
+                        {/* Informasi produk lainnya */}
+                        <div className="p-2">
                             <p
-                                className="text-[12px] md:text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]"
-                                style={{ lineHeight: '17px' }}
+                                className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                                style={{
+                                    lineHeight: '17px',
+                                    minHeight: '17px', // setara 2 baris
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                }}
                             >
                                 {product.name}
                             </p>
+                            <div className='flex gap-2 items-center'>
+                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F94D63] bg-[#FFF7F7] border border-[#F94D63] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
+                                                          lineHeight: "22px",
+                                                          letterSpacing: "-0.04em"
+                                                      }}>Rp300.000</p> */}
+                            </div>
 
-                            <p className="text-[14px] md:text-[16px] font-semibold mt-1 text-[#CD0030]">{formatRupiah(product.price)}</p>
-                            <div className='flex justify-left items-center mt-1 gap-2'>
-                                {product.is_cod_enabled ? <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
-                                    <p className="text-[12px] text-white font-bold">
-                                        COD
-                                    </p>
-                                </div> : ''}
-                                <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
-                                    <p className="text-[12px] text-white font-bold">
-                                        -31%
-                                    </p>
+                            {/* <div className='flex justify-left items-center  gap-2'>
+                                                      {product.is_cod_enabled && (
+                                                          <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
+                                                              <p className="text-[12px] text-white font-bold">COD</p>
+                                                          </div>
+                                                      )}
+                                                      <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
+                                                          <p className="text-[12px] text-white font-bold">-31%</p>
+                                                      </div>
+                                                  </div> */}
+
+                            <div className="flex items-start gap-1 justify-between text-xs text-gray-500 " style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
+                                <div className='flex items-center' style={{ lineHeight: "22px" }}>
+                                    <StarIcon className="w-[16px] h-[16px] text-yellow-400" />
+                                    <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
+                                    <span className='ml-2 text-[12px] mt-1 text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
                                 </div>
+                                {
+                                    product?.voucher ?
+                                        <div className={`bg-[#E7F2FF] mt-2 text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
+                                            Voucher
+                                        </div> : ''
+                                }
                             </div>
-                            <div className="flex items-center text-xs text-gray-500 mt-1"
-                                style={{
-                                    letterSpacing: "-0.04em",
-                                    lineHeight: "22px"
-                                }}>
-                                <StarIcon className="w-5 h-5 text-yellow-400" />
-                                <span className='text-[12px] font-semibold text-[#555555]'>{product.rating || 4.9}</span> <span className='ml-2 text-[12px] mt-[-1px] text-[#555555]'>{product.sold || " 1000"}+ terjual</span>
-                            </div>
-                            <p className="text-[12px] text-[#333333] ">{product?.seller?.location}</p>
+
+                            <p className="text-[10px] text-[#555555] -mt-2" style={{
+                                lineHeight: "22px",
+                                letterSpacing: "-0.04em"
+                            }}>{formatLocation(product?.seller?.location)}</p>
                         </div>
                     </a>
+
                 ))}
             </div>
         </div >

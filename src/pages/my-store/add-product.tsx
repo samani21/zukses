@@ -72,6 +72,7 @@ const AddProduct: NextPage = () => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);  //foto produk 1-10
   const [promoImage, setPromoImage] = useState<File | null>(null); //foto produk promosi
   const [sizeGuide, setSizeGuide] = useState<File | null>(null); //foto produk promosi
+  console.log('sizeGuide', sizeGuide)
   const [urlpromoImage, setUrlPromoImage] = useState<string>(''); //foto produk promosi
   const [urlvideoFile, setUrlVideoFile] = useState<string | null>(null); //video produk
   const [urlSizeGuide, setUrlSizeGuide] = useState<string | null>(null); //video produk
@@ -181,7 +182,6 @@ const AddProduct: NextPage = () => {
   // Ekstrak kategori utama (bagian sebelum " > ")
 
   const [showSizeGuide, setShowSizeGuide] = useState<boolean>(false);
-  console.log('showSizeGuide', showSizeGuide)
   useEffect(() => {
     // 1. Temukan kontainer yang bisa di-scroll berdasarkan ID
     const scrollContainer = document.getElementById('main-scroll-container');
