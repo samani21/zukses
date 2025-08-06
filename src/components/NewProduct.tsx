@@ -75,17 +75,17 @@ function NewProduct({ products, selectedCategory }: NewProductProps) {
                         {/* Bungkus gambar dan label dalam container relatif */}
                         <div className="relative">
                             {/* Label Gratis Ongkir & Voucher */}
-                            <div className="absolute top-3 left-0 -right-0 flex flex-col z-10 gap-1">
+                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-2">
                                 {
                                     product?.discount_percent ?
                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                            <span className='bg-[#F94D63]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[12px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
                                         </div> : ''
                                 }
                                 {
                                     product?.delivery?.subsidy ?
                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                            <span className='bg-[#388F4F]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[12px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
                                         </div> : ''
                                 }
                             </div>
@@ -103,27 +103,37 @@ function NewProduct({ products, selectedCategory }: NewProductProps) {
 
                         {/* Informasi produk lainnya */}
                         <div className="p-2">
-                            <p className="text-[12px] md:text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]" style={{ lineHeight: '17px' }}>
+                            <p
+                                className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                                style={{
+                                    lineHeight: '17px',
+                                    minHeight: '17px', // setara 2 baris
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                }}
+                            >
                                 {product.name}
                             </p>
                             <div className='flex gap-2 items-center'>
                                 <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
-                                                 lineHeight: "22px",
-                                                 letterSpacing: "-0.04em"
-                                             }}>Rp300.000</p> */}
+                                        lineHeight: "22px",
+                                        letterSpacing: "-0.04em"
+                                    }}>Rp300.000</p> */}
                             </div>
 
                             {/* <div className='flex justify-left items-center  gap-2'>
-                                             {product.is_cod_enabled && (
-                                                 <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
-                                                     <p className="text-[12px] text-white font-bold">COD</p>
-                                                 </div>
-                                             )}
-                                             <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
-                                                 <p className="text-[12px] text-white font-bold">-31%</p>
-                                             </div>
-                                         </div> */}
+                                    {product.is_cod_enabled && (
+                                        <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
+                                            <p className="text-[12px] text-white font-bold">COD</p>
+                                        </div>
+                                    )}
+                                    <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
+                                        <p className="text-[12px] text-white font-bold">-31%</p>
+                                    </div>
+                                </div> */}
 
                             <div className="flex items-start gap-1 justify-between text-xs text-gray-500 " style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                 <div className='flex items-center' style={{ lineHeight: "22px" }}>

@@ -113,17 +113,17 @@ function ProductPromo({ products }: NewProductProps) {
                                 <div className='grid grid-cols-4'>
                                     <div className="col-span-2 relative w-[160px] overflow-hidden">
                                         <div className='relative'>
-                                            <div className="absolute top-3 left-0 -right-0 flex flex-col z-10 gap-1">
+                                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-2">
                                                 {
                                                     product?.discount_percent ?
                                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                                            <span className='bg-[#F94D63]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[12px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
                                                         </div> : ''
                                                 }
                                                 {
                                                     product?.delivery?.subsidy ?
                                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                                            <span className='bg-[#388F4F]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[12px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
                                                         </div> : ''
                                                 }
                                             </div>
@@ -138,11 +138,21 @@ function ProductPromo({ products }: NewProductProps) {
                                         </div>
                                     </div>
                                     <div className="col-span-2 space-y-1 pt-1 -ml-1">
-                                        <p className="text-[14px] md:text-[14px] text-dark line-clamp-2 h-8.5 text-[#111111]" style={{ lineHeight: '17px' }}>
+                                        <p
+                                            className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                                            style={{
+                                                lineHeight: '17px',
+                                                minHeight: '17px', // setara 2 baris
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                            }}
+                                        >
                                             {product.name}
                                         </p>
                                         <div className='flex gap-2 items-center'>
-                                            <p className="text-[12px] md:text-[14px] font-bold mt-1 mb-1 text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                            <p className="text-[12px] md:text-[14px] font-bold mt-1 text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-full" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
                                             {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
                                                 lineHeight: "22px",
                                                 letterSpacing: "-0.04em"
@@ -164,16 +174,15 @@ function ProductPromo({ products }: NewProductProps) {
                                                     </div> : ''
                                             }
                                         </div> */}
-                                        <div className="flex items-center gap-2  justify-start text-xs text-gray-500 mt-2" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
+                                        <div className="flex items-center gap-2  justify-start text-xs text-gray-500" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                             <div className='flex items-center' style={{ lineHeight: "22px" }}>
                                                 <StarIcon className="w-[16px] h-[16px] text-yellow-400" />
                                                 <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
                                                 <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
                                             </div>
-
                                             {
                                                 product?.voucher ?
-                                                    <div className={`border bg-[#FFF9BF] border-[#F77000] text-[#F77000] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
+                                                    <div className={`bg-[#E7F2FF] mt-2 text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
                                                         Voucher
                                                     </div> : ''
                                             }

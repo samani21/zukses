@@ -78,17 +78,17 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         {/* Bungkus gambar dan label dalam container relatif */}
                         <div className="relative">
                             {/* Label Gratis Ongkir & Voucher */}
-                            <div className="absolute top-3 left-0 -right-0 flex flex-col z-10 gap-1">
+                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-2">
                                 {
                                     product?.discount_percent ?
                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                            <span className='bg-[#F94D63]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[12px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
                                         </div> : ''
                                 }
                                 {
                                     product?.delivery?.subsidy ?
                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                            <span className='bg-[#388F4F]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[12px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
                                         </div> : ''
                                 }
                             </div>
@@ -106,7 +106,17 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
 
                         {/* Informasi produk lainnya */}
                         <div className="p-2">
-                            <p className="text-[12px] md:text-[14px] w-full text-dark line-clamp-2 h-8.5 text-[#111111]" style={{ lineHeight: '17px' }}>
+                            <p
+                                className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                                style={{
+                                    lineHeight: '17px',
+                                    minHeight: '17px', // setara 2 baris
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                }}
+                            >
                                 {product.name}
                             </p>
                             <div className='flex gap-2 items-center'>
