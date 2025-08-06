@@ -64,7 +64,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         <Header />
                     </div>
             }
-            <main className="md:block container mx-auto mb-4">
+            <main className="md:block container mx-auto mb-4 mt-2">
                 <div className="rounded-lg">
                     {children}
                 </div>

@@ -147,9 +147,9 @@ const Home: React.FC<HomeLayoutProps> = () => {
         <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
-        <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px] mt-[28px]">
+        {/* <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px] mt-[28px]">
           <Welcome />
-        </main>
+        </main> */}
         <div className='hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>
