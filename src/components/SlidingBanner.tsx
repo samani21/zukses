@@ -154,7 +154,7 @@ const SlidingBanner: FC<SlidingBannerProps> = ({
                             <img
                                 src={b.src}
                                 alt={b.alt}
-                                className={`w-full h-40 md:h-56 object-cover shadow
+                                className={`w-full h-40 md:h-[223px] md:w-[397px] object-cover shadow
                   transition-opacity duration-500 ease-in-out rounded-[15px]
                   ${i === currentIndex ? 'opacity-100' : 'opacity-100'}`}
                                 draggable={false}
