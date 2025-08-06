@@ -78,7 +78,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         {/* Bungkus gambar dan label dalam container relatif */}
                         <div className="relative">
                             {/* Label Gratis Ongkir & Voucher */}
-                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-2">
+                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-1.5">
                                 {
                                     product?.discount_percent ?
                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
@@ -97,7 +97,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                             <img
                                 src={product.image}
                                 alt={product.name}
-                                className="md:w-[190px] md:h-[190px] rounded-[10px] object-cover"
+                                className="md:w-[190px] md:h-[190px] rounded-t-[10px] object-center"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
                                 }}
@@ -120,7 +120,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                                 {product.name}
                             </p>
                             <div className='flex gap-2 items-center'>
-                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F70000] bg-[#FFF7F7] border border-[#F70000] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"

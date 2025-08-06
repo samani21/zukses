@@ -377,7 +377,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
 
     return (
         <>
-            <div className="bg-white rounded-[5px] md:p-4 text-sm border border-[#DDDDDD] shadow-[1px_1px_10px_rgba(0,0,0,0.08)]">
+            <div className=" md:p-4 text-sm">
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <ProductGallery
                         images={allImages}

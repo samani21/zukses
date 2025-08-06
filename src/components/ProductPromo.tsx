@@ -88,7 +88,7 @@ function ProductPromo({ products }: NewProductProps) {
                     {showLeftArrow && (
                         <button
                             onClick={() => handleArrowClick('left')}
-                            className="absolute left-5 top-[45%] -translate-y-1/2 z-10 bg-[#E7F2FF] h-[40px] w-[40px]  p-2 rounded-full shadow-md cursor-pointer hidden lg:flex items-center justify-center hover:bg-gray-100 transition-all -ml-4"
+                            className="absolute left-5 top-[40%] -translate-y-1/2 z-10 bg-[#E7F2FF] h-[40px] w-[40px]  p-2 rounded-full shadow-md cursor-pointer hidden lg:flex items-center justify-center hover:bg-gray-100 transition-all -ml-4"
                             aria-label="Scroll left"
                         >
                             <ChevronLeft className="text-[#1073F7]" size={28} strokeWidth={3} />
@@ -101,7 +101,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 pl-0 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border border-[#DEDEDE] bg-white rounded-[15px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 h-[137px] sm:w-48 md:w-[332px] border border-[#DEDEDE] bg-white rounded-[15px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
@@ -110,10 +110,10 @@ function ProductPromo({ products }: NewProductProps) {
                                 router?.push(`/${slug}`);
                                 localStorage.setItem('product', JSON.stringify(product));
                             }}>
-                                <div className='grid grid-cols-4'>
-                                    <div className="col-span-2 relative w-[160px] overflow-hidden">
+                                <div className='grid grid-cols-7'>
+                                    <div className="col-span-3 relative w-[160px] overflow-hidden">
                                         <div className='relative'>
-                                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-2">
+                                            <div className="absolute top-4 left-1 -right-0 flex flex-col z-10 gap-1.5">
                                                 {
                                                     product?.discount_percent ?
                                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
@@ -130,35 +130,36 @@ function ProductPromo({ products }: NewProductProps) {
                                             <img
                                                 src={product.image}
                                                 alt={product.name}
-                                                className="md:w-[160px] md:h-[160px]  object-cover"
+                                                className="md:w-[136px] md:h-[136px]  object-cover"
                                                 onError={(e) => {
                                                     (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
                                                 }}
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-span-2 space-y-1 pt-1 -ml-1">
-                                        <p
-                                            className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
-                                            style={{
-                                                lineHeight: '17px',
-                                                minHeight: '17px', // setara 2 baris
-                                                display: '-webkit-box',
-                                                WebkitLineClamp: 2,
-                                                WebkitBoxOrient: 'vertical',
-                                                overflow: 'hidden',
-                                            }}
-                                        >
-                                            {product.name}
-                                        </p>
-                                        <div className='flex gap-2 items-center'>
-                                            <p className="text-[12px] md:text-[14px] font-bold mt-1 text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-full" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
-                                            {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
+                                    <div className="col-span-4 px-2 pt-1 -ml-1">
+                                        <div className=' space-y-2 '>
+                                            <p
+                                                className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                                                style={{
+                                                    lineHeight: '17px',
+                                                    minHeight: '17px', // setara 2 baris
+                                                    display: '-webkit-box',
+                                                    WebkitLineClamp: 2,
+                                                    WebkitBoxOrient: 'vertical',
+                                                    overflow: 'hidden',
+                                                }}
+                                            >
+                                                {product.name}
+                                            </p>
+                                            <div className='flex gap-2 items-center'>
+                                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F70000] bg-[#FFF7F7] border border-[#F70000] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                                {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
                                                 lineHeight: "22px",
                                                 letterSpacing: "-0.04em"
                                             }}>Rp300.000</p> */}
-                                        </div>
-                                        {/* <div className='flex'>
+                                            </div>
+                                            {/* <div className='flex'>
                                             {
                                                 product?.discount_percent ?
                                                     <div className='bg-[#FAD7D7] border border-[#F02929] h-[20px] text-[10px] font-[700] text-[10px] text-[#F02929]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px] mr-2' style={{ letterSpacing: "-0.04em" }}>
@@ -174,18 +175,19 @@ function ProductPromo({ products }: NewProductProps) {
                                                     </div> : ''
                                             }
                                         </div> */}
-                                        <div className="flex items-center gap-2  justify-start text-xs text-gray-500" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
-                                            <div className='flex items-center' style={{ lineHeight: "22px" }}>
-                                                <StarIcon className="w-[16px] h-[16px] text-yellow-400" />
-                                                <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
-                                                <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
+                                            <div className="flex items-end gap-2  justify-start text-xs text-gray-500" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
+                                                <div className='flex items-center' style={{ lineHeight: "22px" }}>
+                                                    <StarIcon className="w-[16px] h-[16px] text-[#FFB200]" />
+                                                    <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
+                                                    <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
+                                                </div>
+                                                {
+                                                    product?.voucher ?
+                                                        <div className={`bg-[#E7F2FF] text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
+                                                            Voucher
+                                                        </div> : ''
+                                                }
                                             </div>
-                                            {
-                                                product?.voucher ?
-                                                    <div className={`bg-[#E7F2FF] mt-2 text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
-                                                        Voucher
-                                                    </div> : ''
-                                            }
                                         </div>
                                         <p className="text-[12px] text-[#555555] -mt-1" style={{
                                             lineHeight: "22px",

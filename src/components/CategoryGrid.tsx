@@ -74,7 +74,7 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto scroll-smooth scrollbar-hide"
                 >
-                    <div className="flex flex-row md:grid md:grid-rows-1 md:grid-flow-col gap-2 px-2 md:px-0 gap-5">
+                    <div className="flex flex-row md:grid md:grid-rows-1 md:grid-flow-col gap-2 md:px-0 gap-5">
                         {categories.map((category, index) => {
                             const bgColors = ['#E9E2FF', '#C4EDDD', '#FFDFDF', '#F4EFC0', '#CCEAFF'];
                             const borderColors = ['#845FF5', '#4FBD92', '#FF6363', '#E0CE1B', '#3D98D9'];
@@ -82,8 +82,8 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                             const borderColor = borderColors[index % borderColors.length];
 
                             return (
-                                <div className='text-center h-[110px]' key={index}>
-                                    <div className='flex items-center justify-center'>
+                                <div className='text-left h-[110px]' key={index}>
+                                    <div className='flex items-center justify-left'>
                                         <div className='w-[70px] h-[70px] rounded-full flex flex-col items-center justify-start w-24 text-center group'
                                             style={{
                                                 backgroundColor: bgColor,

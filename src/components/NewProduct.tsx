@@ -75,7 +75,7 @@ function NewProduct({ products, selectedCategory }: NewProductProps) {
                         {/* Bungkus gambar dan label dalam container relatif */}
                         <div className="relative">
                             {/* Label Gratis Ongkir & Voucher */}
-                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-2">
+                            <div className="absolute top-5 left-1 -right-0 flex flex-col z-10 gap-1.5">
                                 {
                                     product?.discount_percent ?
                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
@@ -94,7 +94,7 @@ function NewProduct({ products, selectedCategory }: NewProductProps) {
                             <img
                                 src={product.image}
                                 alt={product.name}
-                                className="md:w-[190px] md:h-[190px] rounded-[10px] object-cover"
+                                className="md:w-[190px] md:h-[190px] rounded-t-[10px] object-cover"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
                                 }}
@@ -117,23 +117,23 @@ function NewProduct({ products, selectedCategory }: NewProductProps) {
                                 {product.name}
                             </p>
                             <div className='flex gap-2 items-center'>
-                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F70000] bg-[#FFF7F7] border border-[#F70000] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
-                                        lineHeight: "22px",
-                                        letterSpacing: "-0.04em"
-                                    }}>Rp300.000</p> */}
+                                                 lineHeight: "22px",
+                                                 letterSpacing: "-0.04em"
+                                             }}>Rp300.000</p> */}
                             </div>
 
                             {/* <div className='flex justify-left items-center  gap-2'>
-                                    {product.is_cod_enabled && (
-                                        <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
-                                            <p className="text-[12px] text-white font-bold">COD</p>
-                                        </div>
-                                    )}
-                                    <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
-                                        <p className="text-[12px] text-white font-bold">-31%</p>
-                                    </div>
-                                </div> */}
+                                             {product.is_cod_enabled && (
+                                                 <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
+                                                     <p className="text-[12px] text-white font-bold">COD</p>
+                                                 </div>
+                                             )}
+                                             <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
+                                                 <p className="text-[12px] text-white font-bold">-31%</p>
+                                             </div>
+                                         </div> */}
 
                             <div className="flex items-start gap-1 justify-between text-xs text-gray-500 " style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                 <div className='flex items-center' style={{ lineHeight: "22px" }}>
