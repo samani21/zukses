@@ -795,7 +795,7 @@ const AddProduct: NextPage = () => {
 
         const warna = combinations[colorIndex]?.color;
         const ukuran = combinations[colorIndex]?.sizes?.[sizeIndex];
-
+        console.log('warna', warna, '-', ukuran)
         // Tambahkan kombinasi jika nama variasi dan nilai tersedia
         if (variations[0] && warna) combination[variations[0].name] = warna;
         if (variations[1] && ukuran) combination[variations[1].name] = ukuran;
@@ -813,7 +813,7 @@ const AddProduct: NextPage = () => {
           combination,
           price: variant?.price?.replace(/\./g, ''),
           stock: variant.stock,
-          sku: variant.stock, // sementara pakai stock sebagai sku
+          sku: `${warna} - ${ukuran}`, // sementara pakai stock sebagai sku
           image: variant.image instanceof File
             ? { preview: URL.createObjectURL(variant.image) }
             : null,
@@ -888,6 +888,7 @@ const AddProduct: NextPage = () => {
     } else {
       formData.append('preorder_duration', String(0));
     }
+    console.log('formData', formData)
 
     try {
       if (idProduct) {
