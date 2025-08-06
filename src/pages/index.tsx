@@ -9,7 +9,6 @@ import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
 import { Product } from 'components/types/Product';
 import Loading from 'components/my-store/addProduct/Loading';
-import Welcome from 'components/Welcome';
 import { useRouter } from 'next/router';
 import NewProduct from 'components/NewProduct';
 import ProductPromo from 'components/ProductPromo';
