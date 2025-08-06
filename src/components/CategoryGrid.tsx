@@ -1,15 +1,5 @@
+import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import React, { useRef, useState, useEffect } from 'react';
-const ChevronRightIcon = () => (
-    <svg className="w-[20px] h-[20px] text-white hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
-    </svg>
-);
-
-const ChevronLeftIcon = () => (
-    <svg className="w-[20px] h-[20px] text-white hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
-    </svg>
-);
 
 // --- Komponen Grid Kategori ---
 interface Category {
@@ -73,9 +63,9 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: -scrollByAmount, behavior: 'smooth' });
                         }}
-                        className="absolute w-[40px] h-[40px]  top-[55px] left-4 transform -translate-y-1/2 bg-[#9C9C9C]  rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
+                        className="absolute w-[40px] h-[40px]  top-[50px] left-5 transform -translate-y-1/2 bg-[#E7F2FF]  rounded-full p-1 shadow-md  hover:bg-blue/60 hidden md:flex items-center justify-center group-hover:opacity-1430 "
                     >
-                        <ChevronLeftIcon />
+                        <ChevronLeftIcon size={26} color='#1073F7' />
                     </button>
                 )}
 
@@ -139,9 +129,9 @@ function CategoryGrid({ categories, onCategorySelect }: CategoryGridProps) {
                         onClick={() => {
                             scrollContainerRef.current?.scrollBy({ left: scrollByAmount, behavior: 'smooth' });
                         }}
-                        className="absolute w-[40px] h-[40px] top-[55px] right-4 transform -translate-y-1/2 bg-[#9C9C9C] rounded-full p-1 shadow-md  hover:bg-black/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
+                        className="absolute w-[40px] h-[40px] top-[50px] right-5 transform -translate-y-1/2 bg-[#E7F2FF] rounded-full p-1 shadow-md  hover:bg-blue/60 hidden md:flex items-center justify-center group-hover:opacity-100 "
                     >
-                        <ChevronRightIcon />
+                        <ChevronRightIcon size={26} color='#1073F7' />
                     </button>
                 )}
             </div>
