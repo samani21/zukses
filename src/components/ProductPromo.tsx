@@ -63,9 +63,16 @@ function ProductPromo({ products }: NewProductProps) {
             });
         }
     };
+    function formatLocation(location: string) {
+        return location
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
 
     return (
-        <div className=" font-sans">
+        <div className="">
             <div className="flex justify-between items-center">
                 <h2 className="hidden md:block text-[22px] text-dark mb-[20px] mt-[10px] text-[#09824C] font-[900] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Super Promo</h2>
                 <a href="#" className="flex items-center text-[14px] font-bold text-[#1073F7] hover:text-gray-900 transition-colors">
@@ -94,7 +101,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border-[#DEDEDE] bg-white border border-gray-200 rounded-lg  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border border-[#DEDEDE] bg-white rounded-[15px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
@@ -126,12 +133,18 @@ function ProductPromo({ products }: NewProductProps) {
                                             }}>Rp300.000</p> */}
                                         </div>
                                         <div className='flex'>
-                                            <div className='bg-[#FAD7D7] border border-[#F02929] h-[20px] text-[10px] font-[700] text-[10px] text-[#F02929]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px] mr-2' style={{ letterSpacing: "-0.04em" }}>
-                                                Diskon 20%
-                                            </div>
-                                            <div className='bg-[#C8F7D4] h-[20px] text-[10px] font-[700] text-[10px] border-[#388F4F] border text-[#388F4F]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px]' style={{ letterSpacing: "-0.04em" }}>
-                                                Gratis Ongkir
-                                            </div>
+                                            {
+                                                product?.discount_percent ?
+                                                    <div className='bg-[#FAD7D7] border border-[#F02929] h-[20px] text-[10px] font-[700] text-[10px] text-[#F02929]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px] mr-2' style={{ letterSpacing: "-0.04em" }}>
+                                                        Diskon {product?.discount_percent}%
+                                                    </div> : ''
+                                            }
+                                            {
+                                                product?.delivery?.subsidy ?
+                                                    <div className='bg-[#C8F7D4] h-[20px] text-[10px] font-[700] text-[10px] border-[#388F4F] border text-[#388F4F]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px]' style={{ letterSpacing: "-0.04em" }}>
+                                                        Gratis Ongkir
+                                                    </div> : ''
+                                            }
                                         </div>
                                         <div className="flex items-center gap-2  justify-start text-xs text-gray-500 mt-2" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                             <div className='flex items-center' style={{ lineHeight: "22px" }}>
@@ -139,14 +152,18 @@ function ProductPromo({ products }: NewProductProps) {
                                                 <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
                                                 <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
                                             </div>
-                                            <div className={`border bg-[#FFF9BF] border-[#F77000] text-[#F77000] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
-                                                Voucher
-                                            </div>
+
+                                            {
+                                                product?.voucher ?
+                                                    <div className={`border bg-[#FFF9BF] border-[#F77000] text-[#F77000] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
+                                                        Voucher
+                                                    </div> : ''
+                                            }
                                         </div>
                                         <p className="text-[12px] text-[#555555] -mt-1" style={{
                                             lineHeight: "22px",
                                             letterSpacing: "-0.04em"
-                                        }}>{product?.seller?.location}</p>
+                                        }}>{formatLocation(product?.seller?.location)}</p>
                                     </div>
                                 </div>
                             </div>

@@ -122,12 +122,12 @@ function ProvinceModal({
                                             className="peer hidden"
                                             id="cod"
                                         />
-                                        <span className={`w-6 h-6 rounded-lg border-2 border-[#52357B] bg-[#E7D6FF] flex items-center justify-center`}>
+                                        <span className={`${checked ? 'w-[26px] h-[26px] rounded-[8px] border-2 border-[#52357B] bg-[#E7D6FF]' : 'w-[26px] h-[26px] border-2 border-[#000]'} flex items-center justify-center`}>
                                             {checked ? <Check size={16} strokeWidth={4} /> : ''}
 
                                         </span>
                                     </label>
-                                    <span className="text-gray-700">{province}</span>
+                                    <span className="text-[#333333] font-bold text-[16px] tracking-[-0.05em]">{province}</span>
                                 </label>
                             );
                         })}

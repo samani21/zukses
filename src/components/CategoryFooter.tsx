@@ -19,12 +19,12 @@ const ListColumn: FC<ListColumnProps> = ({ title, items }) => (
   <div>
     {/* Bagian ini memastikan ada ruang untuk judul, menjaga semua list tetap sejajar */}
     <div className="h-8">
-      {title && <h4 className="font-semibold text-[16px] text-[#333333]" style={{ lineHeight: "22px", letterSpacing: "-0.04em" }}>{title}</h4>}
+      {title && title != "Zukses" && <h4 className="font-semibold text-[21px] text-[#0D915E]" style={{ lineHeight: "22px", letterSpacing: "-0.04em" }}>{title}</h4>}
     </div>
     <ul className="space-y-2 text-xs text-gray-600">
       {items.map((item) => (
         <li key={item}>
-          <a href="#" className="text-[#238744] text-[14px] hover:underline" style={{ lineHeight: "25px", letterSpacing: "-0.02em" }}>{item}</a>
+          <a href="#" className="text-[#0D915E] font-bold text-[14px] hover:underline" style={{ lineHeight: "25px", letterSpacing: "-0.02em" }}>{item}</a>
         </li>
       ))}
     </ul>
@@ -34,7 +34,6 @@ const ListColumn: FC<ListColumnProps> = ({ title, items }) => (
 // Komponen Footer Utama
 const CategoryFooter: FC = () => {
   const [category, setCategory] = useState<ListColumnProps[]>([]);
-  console.log('category', category)
   const getCategory = async () => {
     // setLoading(true);
     const res = await Get<Response>('zukses', `category/list-array`);
@@ -69,7 +68,7 @@ const CategoryFooter: FC = () => {
 
             {/* Kolom Kanan: Logo, Download, dan Kontak */}
             <div className="space-y-6">
-              <h2 className="text-[35px] font-bold text-[#7952B3]" style={{
+              <h2 className="text-[35px] font-semibold text-[#1073F7]" style={{
                 letterSpacing: "-0.03em"
               }}>zukses</h2>
 

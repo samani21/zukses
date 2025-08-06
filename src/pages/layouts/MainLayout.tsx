@@ -89,13 +89,13 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         </div>
                     </div>
                 </div>
-                <div className='py-4 bg-[#E4FFE0]'>
-                    <main className="container mx-auto md:px-4 lg:w-[1200px] lg:px-[0px] bg-[#E4FFE0]">
+                <div className='py-4 bg-[#C4EDDD]'>
+                    <main className="container mx-auto md:px-4 lg:w-[1200px] lg:px-[0px] bg-[#C4EDDD]">
                         <CategoryFooter />
                     </main>
 
                 </div>
-                <div className="border-t border-[#ddddddd] py-4 bg-[#238744] text-white">
+                <div className=" py-4 bg-[#0D915E] text-white">
                     <p className="text-center text-[15px] font-semibold" style={{
                         lineHeight: "22px",
                         letterSpacing: "-0.04em"

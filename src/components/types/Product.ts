@@ -65,6 +65,20 @@ export interface VariantPrices {
     variant: string;
     options: [];
 }
+export interface Delivery {
+    id: number;
+    adservice_idsdress_shop_id: number;
+    height: number;
+    insurance: number;
+    is_cost_by_seller: number;
+    is_dangerous_product: number;
+    is_pre_order: number;
+    preorder_duration: number;
+    service_ids: string;
+    subsidy: number;
+    weight: number;
+    width: number;
+}
 
 export type Product = {
     name: string;
@@ -91,5 +105,8 @@ export type Product = {
     reviews: Review[];
     media: Media[];
     variant_prices: VariantPrices[];
+    discount_percent: number;
+    delivery: Delivery;
+    voucher: number
 };
 

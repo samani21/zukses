@@ -22,15 +22,25 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
     const list = [
         'Produk Terbaru', 'Terpopuler', 'Brand'
     ]
+    function formatLocation(location: string) {
+        return location
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    }
+
+    // Dalam komponen JSX:
+
 
     return (
         <div className="container mx-auto px-0">
             <div className='flex items-center justify-between'>
                 <h2 className="hidden md:block text-[22px] text-dark mb-[20px] mt-[10px] text-[#09824C] font-[900] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Rekomendasi untuk Anda</h2>
-                <a href="#" className="flex items-center text-[14px] font-bold text-[#555555] hover:text-gray-900 transition-colors">
-                    Lihat Lebih Banyak
-                    <ChevronDown className="w-4 h-4 ml-1" />
-                </a>
+                 <a href="#" className="flex items-center text-[14px] font-bold text-[#1073F7] hover:text-gray-900 transition-colors">
+                                  Lihat Lebih Banyak
+                                  <ChevronDown className="w-4 h-4 ml-1" size={12} strokeWidth={3} />
+                              </a>
             </div>
             <div className="md:hidden flex overflow-x-auto scroll-smooth scrollbar-hide pl-2">
                 <div className='flex flex-row md:grid md:grid-rows-1 md:grid-flow-col gap-2 px-2 md:px-0'>
@@ -51,7 +61,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                 {filteredProducts?.slice(0, 6).map((product, index) => (
                     <a
                         key={product.id}
-                        className="bg-white cursor-pointer w-full h-full rounded-[15px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
+                        className="bg-white cursor-pointer w-full h-[311px] rounded-[15px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
                         onClick={() => {
                             const slug = product.name
                                 .toLowerCase()
@@ -68,13 +78,19 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                         {/* Bungkus gambar dan label dalam container relatif */}
                         <div className="relative">
                             {/* Label Gratis Ongkir & Voucher */}
-                            <div className="absolute top-1.5 left-0 -right-0 flex justify-between z-10">
-                                <button className='bg-[#F02929]  px-2 py-1 text-[10px] font-[900] text-[10px] text-white rounded-r-full' style={{ letterSpacing: "-0.04em" }}>
-                                    Diskon 20%
-                                </button>
-                                <button className='bg-[#388F4F] px-2 py-1 text-[10px] font-[900] text-[10px] text-white rounded-l-full' style={{ letterSpacing: "-0.04em" }}>
-                                    Gratis Ongkir
-                                </button>
+                            <div className="absolute top-3 left-0 -right-0 flex flex-col z-10 gap-1">
+                                {
+                                    product?.discount_percent ?
+                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
+                                            <span className='bg-[#F94D63]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                        </div> : ''
+                                }
+                                {
+                                    product?.delivery?.subsidy ?
+                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
+                                            <span className='bg-[#388F4F]   font-[700] text-[12px] text-white rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                        </div> : ''
+                                }
                             </div>
 
                             {/* Gambar produk */}
@@ -94,14 +110,14 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                                 {product.name}
                             </p>
                             <div className='flex gap-2 items-center'>
-                                <p className="text-[14px] md:text-[16px] font-semibold mt-1 text-[#CD0030]">{formatRupiah(product.price)}</p>
-                                <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
+                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
-                                }}>Rp300.000</p>
+                                }}>Rp300.000</p> */}
                             </div>
 
-                            <div className='flex justify-left items-center mt-1 gap-2'>
+                            {/* <div className='flex justify-left items-center  gap-2'>
                                 {product.is_cod_enabled && (
                                     <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
                                         <p className="text-[12px] text-white font-bold">COD</p>
@@ -110,23 +126,26 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                                 <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
                                     <p className="text-[12px] text-white font-bold">-31%</p>
                                 </div>
-                            </div>
+                            </div> */}
 
-                            <div className="flex items-center gap-1 justify-between text-xs text-gray-500 mt-1" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
+                            <div className="flex items-start gap-1 justify-between text-xs text-gray-500 " style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                 <div className='flex items-center' style={{ lineHeight: "22px" }}>
                                     <StarIcon className="w-[16px] h-[16px] text-yellow-400" />
                                     <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
-                                    <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
+                                    <span className='ml-2 text-[12px] mt-1 text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
                                 </div>
-                                <div className={`border ${(index + 1) % 5 === 0 ? 'bg-[#FFF9BF] border-[#F77000] text-[#F77000]' : 'bg-[#C8F7D4] border-[#388F4F] text-[#388F4F]'} rounded-[10px] font-bold text-[10px] px-1`}>
-                                    Voucher
-                                </div>
+                                {
+                                    product?.voucher ?
+                                        <div className={`bg-[#E7F2FF] mt-2 text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
+                                            Voucher
+                                        </div> : ''
+                                }
                             </div>
 
-                            <p className="text-[12px] text-[#555555]" style={{
+                            <p className="text-[10px] text-[#555555] -mt-2" style={{
                                 lineHeight: "22px",
                                 letterSpacing: "-0.04em"
-                            }}>{product?.seller?.location}</p>
+                            }}>{formatLocation(product?.seller?.location)}</p>
                         </div>
                     </a>
 
