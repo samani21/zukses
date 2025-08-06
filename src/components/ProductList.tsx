@@ -120,7 +120,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
                                 {product.name}
                             </p>
                             <div className='flex gap-2 items-center'>
-                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F70000] bg-[#FFF7F7] border border-[#F70000] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F94D63] bg-[#FFF7F7] border border-[#F94D63] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
