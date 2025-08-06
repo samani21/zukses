@@ -67,10 +67,10 @@ function ProductPromo({ products }: NewProductProps) {
     return (
         <div className=" font-sans">
             <div className="flex justify-between items-center">
-                <h2 className="hidden md:block text-[20px] text-dark mb-[20px] mt-[10px] text-[#333333] font-bold">Super Promo</h2>
-                <a href="#" className="flex items-center text-[14px] font-bold text-[#555555] hover:text-gray-900 transition-colors">
+                <h2 className="hidden md:block text-[22px] text-dark mb-[20px] mt-[10px] text-[#09824C] font-[900] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Super Promo</h2>
+                <a href="#" className="flex items-center text-[14px] font-bold text-[#1073F7] hover:text-gray-900 transition-colors">
                     Lihat Lebih Banyak
-                    <ChevronDown className="w-4 h-4 ml-1" />
+                    <ChevronDown className="w-4 h-4 ml-1" size={12} strokeWidth={3} />
                 </a>
             </div>
             <div className="container mx-auto px-4 py-4 pt-0">
@@ -81,10 +81,10 @@ function ProductPromo({ products }: NewProductProps) {
                     {showLeftArrow && (
                         <button
                             onClick={() => handleArrowClick('left')}
-                            className="absolute left-0 top-[45%] -translate-y-1/2 z-10 bg-[#E9E2FF] h-[40px] w-[40px]  p-2 rounded-full shadow-md cursor-pointer hidden lg:flex items-center justify-center hover:bg-gray-100 transition-all -ml-4"
+                            className="absolute left-5 top-[45%] -translate-y-1/2 z-10 bg-[#E7F2FF] h-[40px] w-[40px]  p-2 rounded-full shadow-md cursor-pointer hidden lg:flex items-center justify-center hover:bg-gray-100 transition-all -ml-4"
                             aria-label="Scroll left"
                         >
-                            <ChevronLeft className="w-[20px] h-[20px] text-[#845FF5]" strokeWidth={3} />
+                            <ChevronLeft className="text-[#1073F7]" size={28} strokeWidth={3} />
                         </button>
                     )}
 
@@ -94,7 +94,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border-[#DEDEDE] bg-white border border-gray-200 rounded-lg  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 sm:w-48 md:w-[347px] border-[#DEDEDE] bg-white border border-gray-200 rounded-lg  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
@@ -119,19 +119,19 @@ function ProductPromo({ products }: NewProductProps) {
                                             {product.name}
                                         </p>
                                         <div className='flex gap-2 items-center'>
-                                            <p className="text-[12px] md:text-[14px] font-bold mt-1 mb-1 text-[#CD0030]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
-                                            <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
+                                            <p className="text-[12px] md:text-[14px] font-bold mt-1 mb-1 text-[#F74B00] bg-[#FFF7F7] border border-[#F74B00] p-1 px-3 rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                            {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
                                                 lineHeight: "22px",
                                                 letterSpacing: "-0.04em"
-                                            }}>Rp300.000</p>
+                                            }}>Rp300.000</p> */}
                                         </div>
-                                        <div>
-                                            <button className='bg-[#FAD7D7] border border-[#F02929] px-2 py-1 text-[10px] font-[900] text-[10px] text-[#F02929] rounded-full mr-2' style={{ letterSpacing: "-0.04em" }}>
+                                        <div className='flex'>
+                                            <div className='bg-[#FAD7D7] border border-[#F02929] h-[20px] text-[10px] font-[700] text-[10px] text-[#F02929]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px] mr-2' style={{ letterSpacing: "-0.04em" }}>
                                                 Diskon 20%
-                                            </button>
-                                            <button className='bg-[#C8F7D4] px-2 py-1 text-[10px] font-[900] text-[10px] border-[#388F4F] border text-[#388F4F] rounded-full' style={{ letterSpacing: "-0.04em" }}>
+                                            </div>
+                                            <div className='bg-[#C8F7D4] h-[20px] text-[10px] font-[700] text-[10px] border-[#388F4F] border text-[#388F4F]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px]' style={{ letterSpacing: "-0.04em" }}>
                                                 Gratis Ongkir
-                                            </button>
+                                            </div>
                                         </div>
                                         <div className="flex items-center gap-2  justify-start text-xs text-gray-500 mt-2" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                             <div className='flex items-center' style={{ lineHeight: "22px" }}>
@@ -139,7 +139,7 @@ function ProductPromo({ products }: NewProductProps) {
                                                 <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
                                                 <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
                                             </div>
-                                            <div className={`border ${(index + 1) % 5 === 0 ? 'bg-[#FFF9BF] border-[#F77000] text-[#F77000]' : 'bg-[#C8F7D4] border-[#388F4F] text-[#388F4F]'} rounded-[10px] font-bold text-[10px] px-1`}>
+                                            <div className={`border bg-[#FFF9BF] border-[#F77000] text-[#F77000] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
                                                 Voucher
                                             </div>
                                         </div>
@@ -157,14 +157,14 @@ function ProductPromo({ products }: NewProductProps) {
                     {showRightArrow && (
                         <button
                             onClick={() => handleArrowClick('right')}
-                            className="absolute right-0 top-[45%] -translate-y-1/2 z-10 bg-[#E9E2FF] h-[40px] w-[40px] p-2 rounded-full shadow-md cursor-pointer hidden lg:flex items-center justify-center hover:bg-gray-100 transition-all -mr-4"
+                            className="absolute right-5 top-[45%] -translate-y-1/2 z-10 bg-[#E7F2FF] h-[40px] w-[40px] p-2 rounded-full shadow-md cursor-pointer hidden lg:flex items-center justify-center hover:bg-gray-100 transition-all -mr-4"
                             aria-label="Scroll right"
                             style={{
                                 width: "40px",
                                 height: "40px"
                             }}
                         >
-                            <ChevronRight className="w-[20px] h-[20px] text-[#845FF5]" strokeWidth={3} />
+                            <ChevronRight className="text-[#1073F7]" size={28} strokeWidth={3} />
                         </button>
                     )}
                 </section>
