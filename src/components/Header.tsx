@@ -267,7 +267,7 @@ const Header = () => {
                             </div>
                         </div>
                         <div className="flex items-center gap-4 container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] mt-[-3px] justify-between">
-                            <Link href={'/'} className=" cursor-pointer shrink-0 w-[125px] mt-[0px] mr-7 text-[#1073F7] font-[500] text-[40px]" style={{ letterSpacing: "-0.05em" }}>Zukses</Link>
+                            <Link href={'/'} className=" cursor-pointer shrink-0 w-[125px] mt-[0px] mr-7 text-[#1073F7] font-[500] text-[40px]" style={{ letterSpacing: "-0.05em" }}>zukses</Link>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-9 mt-1.5'>
                                     <div className="flex items-start justify-between gap-3 w-full">
