@@ -11,7 +11,8 @@ export type variant = {
     image: string;
     price: number
     discount_price: number
-    discount_percent: number
+    discount_percent: number;
+    stock: number,
 };
 
 export interface SellerStats {
@@ -107,6 +108,7 @@ export type Product = {
     variant_prices: VariantPrices[];
     discount_percent: number;
     delivery: Delivery;
-    voucher: number
+    voucher: number;
+    stock: number;
 };
 

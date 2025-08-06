@@ -3,7 +3,6 @@ import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
 import SellerInfo from 'components/product/SellerInfo';
 import ProductSpecification from 'components/product/ProductSpecification';
-import ProductDescription from 'components/product/ProductDescription';
 import ProductReviews from 'components/product/ProductReviews';
 import { Product } from 'components/types/Product';
 import { ArrowLeft, Search, Share2 } from 'lucide-react';
@@ -138,7 +137,7 @@ const ProductPage = () => {
                             <div className='hidden'>
                                 <ProductSpecification specifications={detailProduct.specifications} />
                             </div>
-                            <ProductDescription description={detailProduct.desc} />
+                          
                             <div className='hidden md:block'>
                                 <ProductReviews reviews={detailProduct.reviews} productRating={detailProduct.rating} />
                             </div>
