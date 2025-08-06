@@ -57,7 +57,7 @@ function NewProduct({ products, selectedCategory }: NewProductProps) {
             <div className="px-4 md:px-0 grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {filteredProducts?.slice(0, 6).map((product, index) => (
                     <a
-                        key={product.id}
+                        key={index}
                         className="bg-white cursor-pointer w-full h-[311px] rounded-[15px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
                         onClick={() => {
                             const slug = product.name
