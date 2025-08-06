@@ -9,7 +9,6 @@ import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
 import { Product } from 'components/types/Product';
 import Loading from 'components/my-store/addProduct/Loading';
-import Welcome from 'components/Welcome';
 import { useRouter } from 'next/router';
 import NewProduct from 'components/NewProduct';
 import ProductPromo from 'components/ProductPromo';
@@ -147,9 +146,9 @@ const Home: React.FC<HomeLayoutProps> = () => {
         <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px]">
           <SlidingBanner banners={sampleBanners} autoPlayInterval={3000} />
         </main>
-        <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px] mt-[28px]">
+        {/* <main className="hidden md:block md:mx-auto lg:w-[1200px] px-[0px] mt-[28px]">
           <Welcome />
-        </main>
+        </main> */}
         <div className='hidden'>
           <UserGreeting isLoggedIn={isLoggedIn} userName={user ? user?.name : ''} />
         </div>

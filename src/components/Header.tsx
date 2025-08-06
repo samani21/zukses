@@ -5,6 +5,7 @@ import ProvinceModal from './ProvinceModal';
 import { useRouter } from 'next/router';
 import { motion, AnimatePresence } from "framer-motion";
 import Link from 'next/link';
+import { Search } from 'lucide-react';
 // --- Komponen Ikon (Tidak ada perubahan) ---
 const SearchIcon = ({ className }: { className?: string }) => (
     <svg className={className || "w-5 h-5 text-gray-500"} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -246,14 +247,14 @@ const Header = () => {
             <header className="h-[60px] md:h-[104px] text-white sticky top-0 z-40 bg-white md:border-b border-[#EEEEEE]">
                 <div className="hidden md:block">
                     <div className="flex flex-col">
-                        <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[30px]">
+                        <div className="items-center text-xs mb-3 bg-[#F2F4F7] py-[5px] h-[34px]">
                             <div className="container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] flex justify-between">
-                                <Link href={'/'} className="text-[14px] font-[500] text-[#555555] hover:underline">Download aplikasinya di Playstore</Link>
+                                <Link href={'/'} className="text-[14px] font-[500] text-[#333333] hover:underline tracking-[-0.02em]">Download aplikasinya di Playstore</Link>
                                 <div className="flex items-center gap-4 font-medium">
                                     {isLoggedIn ? (
                                         <div className="flex items-center gap-6">
-                                            <Link href={'/my-store'} className="font-[500] hover:underline cursor-pointer text-[14px] text-[#555555] ">Toko Saya</Link>
-                                            <Link href={'/user-profile/profil'} className="font-[500] text-[14px] text-[#555555]  hover:underline cursor-pointer text-right">{userName}</Link>
+                                            <Link href={'/my-store'} className="bg-[#DDEAF8] px-3 py-1 rounded-[10px] text-[#1073F7] text-[12px] tracking-[-0.02em] font-bold">Toko Saya</Link>
+                                            <Link href={'/user-profile/profil'} className="bg-[#DDEAF8] px-3 py-1 rounded-[10px] text-[#1073F7] text-[12px] tracking-[-0.02em] font-bold">{userName}</Link>
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
@@ -265,30 +266,40 @@ const Header = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-8 container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] mt-[-3px] justify-between">
-                            <Link href={'/'} className="text-[40px] font-bold cursor-pointer shrink-0 text-[#4A52B2] w-[102px] mt-[0px] mr-7" style={{ letterSpacing: "-0.05em" }}>Zukses</Link>
+                        <div className="flex items-center gap-4 container mx-auto lg:w-[1200px] md:px-4 lg:px-[0px] mt-[-3px] justify-between">
+                            <Link href={'/'} className=" cursor-pointer shrink-0 w-[125px] mt-[0px] mr-7 text-[#1073F7] font-[500] text-[40px]" style={{ letterSpacing: "-0.05em" }}>Zukses</Link>
                             <div ref={searchContainerRef} className="flex-grow relative">
                                 <div className='flex items-center justify-between gap-9 mt-1.5'>
                                     <div className="flex items-start justify-between gap-3 w-full">
                                         <div className="w-full">
-                                            <div className='relative flex-grow border border-[0.5px] border-[#555555] rounded-[5px]'>
-                                                <input type="text" placeholder="Cari di Zukses" value={searchTerm} onFocus={() => { setIsSearchFocused(true); setDropdownMode('history'); }} onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }} onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }} className="rounded-[5px] w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[16px] placeholder:text-[#777777]" style={{ letterSpacing: "-0.05em" }} />
+                                            <div className='relative flex-grow border border-[#B4BCCA] rounded-[5px]'>
+                                                <input type="text" placeholder="Cari di Zukses" value={searchTerm} onFocus={() => { setIsSearchFocused(true); setDropdownMode('history'); }} onChange={(e) => { const newTerm = e.target.value; setSearchTerm(newTerm); setDropdownMode(newTerm.trim() === '' ? 'history' : 'suggestions'); }} onKeyDown={(e) => { if (e.key === 'Enter') handleSearch(); }} className="rounded-[5px] w-full pl-4 pr-12 h-[40px] py-2.5 text-gray-900 bg-white font-[500] border-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-[16px] placeholder:text-[#777777]" style={{ letterSpacing: "-0.05em" }} />
                                                 <div className="absolute inset-y-0 right-0 flex items-center p-[2px]">
-                                                    <button onClick={handleSearch} className="h-[36px] w-[57.9px] bg-[#01BDA4] flex items-center justify-center rounded-[5px]" title="Cari">
-                                                        <SearchIcon className="w-[24px] h-[24px] text-white" />
+                                                    <button onClick={handleSearch} className="h-[35px] w-[57.9px] bg-[#1073F7] flex items-center justify-center rounded-[5px]" title="Cari">
+                                                        <Search size={15} color='#fff' strokeWidth={2.5} />
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className='flex items-center w-[400px] justify-between gap-4'>
                                             <div className='flex items-center jutify-left gap-3'>
-                                                <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md pr-0" title="Filter Provinsi"><img src='/icon/filter-dark.svg' width={25} /></button>
-                                                <Link href={'/favorite'} className="relative inline-block"><button className="p-2 rounded-md pr-0" ><img src="/icon/heart.svg" width={25} /></button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span></Link>
+                                                <button onClick={() => setProvinceModalOpen(true)} className="p-2 rounded-md pr-0" title="Filter Provinsi">
+                                                    <img src='/icon/filter-dark.svg' width={25} />
+                                                </button>
+                                                <Link href={'/favorite'} className="relative inline-block">
+                                                    <button className="p-2 rounded-md pr-0" >
+                                                        <img src="/icon/heart.svg" width={25} />
+                                                    </button>
+                                                    <span className="absolute bottom-[18.5px] left-5.5 w-2 h-2 bg-red-500 rounded-full border border-white">
+                                                    </span>
+                                                </Link>
                                                 <Link href={'/user-profile/chat'}>
                                                     <div className="relative inline-block">
                                                         <button className="p-2 rounded-md pr-0">
                                                             <img src='/icon/message.svg' width={25} />
-                                                        </button><span className="absolute bottom-6 left-6 w-2.5 h-2.5 bg-red-500 rounded-full border border-white"></span>
+                                                        </button>
+                                                        <span className="absolute bottom-[18.5px] left-8 w-2 h-2 bg-red-500 rounded-full border border-white">
+                                                        </span>
                                                     </div>
                                                 </Link>
 
@@ -300,7 +311,7 @@ const Header = () => {
                                                     <button className="p-2 rounded-md pr-0" onClick={() => router.push('/cart')}>
                                                         <img src="/icon/shopping-cart.svg" width={25} />
                                                     </button>
-                                                    <span onClick={() => router.push('/cart')} className="absolute bottom-5 left-4 bg-red-500 px-2 text-[14px] rounded-[10px] border border-white font-semibold cursor-pointer">
+                                                    <span onClick={() => router.push('/cart')} className="absolute bottom-5 left-4 bg-red-500 px-2 text-[10px] rounded-[5px] border border-white font-semibold cursor-pointer h-[19px] w-[29px] flex items-center justify-center">
                                                         {totalCartItems}
                                                     </span>
                                                     {isCartPopupVisible && (
@@ -312,7 +323,7 @@ const Header = () => {
 
 
                                             </div>
-                                            <button className="p-2 rounded-md bg-[#4A52B2] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya" onClick={() => router.push('/user-profile/profil')}>Akun Saya</button>
+                                            <button className="rounded-md h-[34px] bg-[#1073F7] text-[13px] w-[90px] font-semibold text-white" title="Toko Saya" onClick={() => router.push('/user-profile/profil')}>Akun Saya</button>
                                         </div>
                                     </div>
                                 </div>
