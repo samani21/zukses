@@ -113,17 +113,21 @@ function ProductPromo({ products }: NewProductProps) {
                                 <div className='grid grid-cols-7'>
                                     <div className="col-span-3 relative w-[160px] overflow-hidden">
                                         <div className='relative'>
-                                            <div className="absolute top-4 left-1 -right-0 flex flex-col z-10 gap-1.5">
+                                            <div className="absolute top-0 left-1 -right-0 flex flex-col z-10 space-y-[1px]  pt-[7px]">
                                                 {
                                                     product?.discount_percent ?
-                                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[11px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                                        <div className='flex items-center h-[20px]' style={{ letterSpacing: "-0.04em" }}>
+                                                            <span className='bg-[#FAD7D7] text-[#F02929] h-[20px] font-[600] text-[12px] rounded-r-full px-[5px] py-[3px] flex items-center' style={{
+                                                                border: '0.5px solid #F02929'
+                                                            }}>Diskon {product?.discount_percent}%</span>
                                                         </div> : ''
                                                 }
                                                 {
                                                     product?.delivery?.subsidy ?
-                                                        <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[11px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                                        <div className='flex items-center h-[20px]' style={{ letterSpacing: "-0.04em" }}>
+                                                            <span className='bg-[#C8F7D4] text-[#388F4F] h-[20px] font-[600] text-[12px] rounded-r-full px-[5px] py-[3px] flex items-center' style={{
+                                                                border: '0.5px solid #388F4F'
+                                                            }}>Gratis Ongkir</span>
                                                         </div> : ''
                                                 }
                                             </div>
@@ -153,7 +157,10 @@ function ProductPromo({ products }: NewProductProps) {
                                                 {product.name}
                                             </p>
                                             <div className='flex gap-2 items-center'>
-                                                <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] border-[0.5px] border-[#F94D63] py-[3px] px-[8px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                                <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] py-[3px] px-[8px] rounded-[12px]" style={{
+                                                    lineHeight: "18px",
+                                                    border: "0.5px solid #F94D63"
+                                                }}>{formatRupiah(product.price)}</p>
                                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
                                                 lineHeight: "22px",
                                                 letterSpacing: "-0.04em"
