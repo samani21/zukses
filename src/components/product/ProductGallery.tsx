@@ -90,7 +90,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     };
 
     return (
-        <div className="lg:col-span-3 md:w-[420px] md:px-0" >
+        <div className="lg:col-span-3 md:max-w-[420px] md:px-0" >
             <div className="mb-2 relative group overflow-hidden w-full ">
                 <div
                     className="flex transition-transform duration-300 ease-in-out"
@@ -127,7 +127,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                             <img
                                 src={media.url}
                                 alt={media.alt}
-                                className="w-full md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none"
+                                className="w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none"
                                 onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
                             />
                         </div>
@@ -146,7 +146,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
             <div className="relative">
                 <div
                     ref={thumbnailContainerRef}
-                    className="flex space-x-1 overflow-x-auto p-1 scroll-smooth no-scrollbar relative pl-0"
+                    className="flex space-x-3 overflow-x-auto p-1 scroll-smooth no-scrollbar relative pl-0"
                 >
                     {/* {previewVideo ? videoProduct.map((thumb, index) => (
                         <button
@@ -184,7 +184,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                                 <img
                                     src={thumb.url.replace('600x400', '100x100')}
                                     alt={thumb.alt}
-                                    className="w-full h-auto rounded-[8px]"
+                                    className="w-[75px] h-auto rounded-[5px]"
                                 />
                             </button>
                         ))

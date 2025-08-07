@@ -70,7 +70,6 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isReplyVisible, setIsReplyVisible] = useState(true);
     const isLongComment = review.comment.length > 150;
-
     return (
         <div className="py-6 px-4  last:border-b-0">
             <div className="flex items-start space-x-4">
@@ -83,7 +82,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
                         <StarIcon size={24} color='#F74B00' strokeWidth={2.5} />
                         {review.rating}/2
                     </div>
-                    <p className="text-[14px] mt-1">{review.date} | Variasi: {review.variant}</p>
+                    <p className="text-[14px] text-[#000000] mt-1">{review.date} | Variasi: {review.variant}</p>
                     <p className="text-[14px] tracking-[-0.02em] mt-2" style={{
                         lineHeight: '137%'
                     }}>
@@ -97,14 +96,17 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
                     {review.images.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-2">
                             {review.images.map((img, index) => (
-                                <img key={index} src={img} alt={`Ulasan gambar ${index + 1}`} className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-md" />
+                                <img key={index} src={img} alt={`Ulasan gambar ${index + 1}`} className="w-[64px] h-[64px] md:w-[64px] md:h-[64px] border border-[#DDDDDD] object-cover " />
                             ))}
                         </div>
                     )}
-                    <button onClick={() => setIsReplyVisible(!isReplyVisible)} className="flex items-center gap-1 text-[#09824C] font-bold text-[16px] mt-3 ml-auto">
-                        {isReplyVisible ? 'Tutup Balasan' : 'Lihat Balasan'}
-                        {isReplyVisible ? <ChevronUp size={20} strokeWidth={2} /> : <ChevronDown size={20} strokeWidth={2} />}
-                    </button>
+                    {
+                        review.reply &&
+                        <button onClick={() => setIsReplyVisible(!isReplyVisible)} className="flex items-center gap-1 text-[#09824C] font-bold text-[14px] mt-3 ml-auto">
+                            {isReplyVisible ? 'Tutup Balasan' : 'Lihat Balasan'}
+                            {isReplyVisible ? <ChevronUp size={18} strokeWidth={2} /> : <ChevronDown size={18} strokeWidth={2} />}
+                        </button>
+                    }
                     {review.reply && (
                         <>
                             {isReplyVisible && (
@@ -117,7 +119,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
                                             <p className="font-bold text-[17px] tracking-[-0.02em] text-[#333333] mt-3">{review.reply.seller}
                                                 <span className="text-[#06894E] ml-4">Penjual</span>
                                             </p>
-                                            <p className="text-[14px] mt-3">{review.date} | Variasi: {review.variant}</p>
+                                            <p className="text-[14px] text-[#000000] mt-3">{review.date} | Variasi: {review.variant}</p>
                                         </div>
                                         <div
                                             className='text-[14px] tracking-[-0.02em] mt-2'
@@ -167,7 +169,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
     const pageNumbers = getPageNumbers();
 
     return (
-        <nav className="flex items-center justify-left pl-17 flex-wrap gap-2 mt-8">
+        <nav className="flex items-center justify-left pl-17 flex-wrap gap-2">
             {pageNumbers.map((page, index) => (
                 <React.Fragment key={index}>
                     {page === '...' ? (
@@ -235,7 +237,7 @@ export default function ProductReviewsPage() {
     ];
 
     return (
-        <div className="mt-16">
+        <div className="mt-8">
             <div className="max-w-7xl mx-auto bg-white border border-[#DDDDDD] rounded-[8px] shadow-sm overflow-hidden">
                 <div className="p-6">
                     <h1 className="text-[20px] font-semibold text-[#333333]">Ulasan Pembeli</h1>
@@ -244,7 +246,7 @@ export default function ProductReviewsPage() {
                     {/* Sidebar Filter */}
                     <aside className="w-full md:w-1/4 lg:w-1/5 p-6 border-b md:border-b-0 md:border-r border-[#DDDDDD]">
                         <div className="mb-6">
-                            <h2 className="font-semibold text-gray-700">Penilaian Produk</h2>
+                            <h2 className="font-bold text-[#333333]">Penilaian Produk</h2>
                             <div className="flex items-center gap-2 mt-2">
                                 <StarIcon size={32} strokeWidth={2} color='#F74B00' />
                                 <span className="text-[17px] font-bold text-[#333333] tracking-[-0.02em]">{overallRating}/5</span>
@@ -252,14 +254,14 @@ export default function ProductReviewsPage() {
                             </div>
                         </div>
                         <div className='pt-4 px-6'>
-                            <h3 className="font-bold text-center text-[#333333] tracking-[-0.02em] mb-3">Filter Ulasan</h3>
-                            <div className="flex flex-wrap md:flex-col gap-2 space-y-2 mt-6">
+                            <h3 className="font-bold text-center text-[#333333] tracking-[-0.02em] mb-4">Filter Ulasan</h3>
+                            <div className="flex flex-wrap md:flex-col gap-2 space-y-2 ">
                                 {filterButtons.map(filter => (
                                     <button
                                         key={filter.value}
                                         onClick={() => handleFilterChange(filter.value)}
                                         className={cn(
-                                            "w-full px-4 py-2 rounded-[10px] border border-[#0D915E] text-[15px] text-[#333333] transition-colors",
+                                            "w-full px-4 py-2 rounded-[10px] border border-[#0D915E] font-[500] text-[15px] text-[#333333] transition-colors",
                                             activeFilter === filter.value
                                                 ? "bg-[#0D915E] font-bold text-white"
                                                 : "bg-[#C4EDDD] "

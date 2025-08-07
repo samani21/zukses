@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import React, { useEffect, useState, useRef } from 'react';
 
 // --- Ikon SVG (tidak ada perubahan) ---
@@ -95,96 +96,104 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
         setCurrentIndex(index);
     };
     return (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full" onClick={onClose}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full w-full" onClick={onClose}>
             <div
-                className="relative w-full h-full max-w-5xl max-h-[95vh] flex bg-gray-900 text-white overflow-hidden"
+                className="relative w-full h-full  max-h-[95vh] rounded-[8px]  bg-white text-white overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Main Image Viewer */}
-                <div className="flex-grow h-full flex w-full items-center justify-center relative p-4 bg-white md:w-[calc(100%-380px)]">
-                    <button onClick={handlePrev} className="absolute left-0 text-white p-2 bg-black/40 hover:bg-black/60 transition-colors z-10" aria-label="Gambar sebelumnya">
-                        <ChevronLeftIcon className="w-8 h-8" />
-                    </button>
-                    <div className='flex items-center justify-center w-full h-full'>
-                        {images[currentIndex].url.endsWith('.mp4') ? (
-                            <video
-                                key={images[currentIndex].id} // Tambahkan key untuk re-render video
-                                src={images[currentIndex].url}
-                                controls
-                                autoPlay
-                                className="max-w-full max-h-full object-contain select-none"
-                            />
-                        ) : (
-                            <img
-                                src={images[currentIndex].url}
-                                alt={images[currentIndex].alt}
-                                className="max-w-full max-h-full object-contain select-none"
-                            />
-                        )}
-                    </div>
-                    <button onClick={handleNext} className="absolute right-0 text-white p-2 bg-black/40 hover:bg-black/60 transition-colors z-10" aria-label="Gambar berikutnya">
-                        <ChevronRightIcon className="w-8 h-8" />
-                    </button>
-                </div>
-
-                {/* Sidebar with Thumbnails */}
-                <div className="hidden md:flex flex-col w-[380px] bg-white text-black p-4">
-                    <h2 className="text-[17px] font-[500] text-[#333333] pb-3 mb-4 mt-4">
+                <div className='p-[20px]  flex justify-between'>
+                    <h5 className="font-[800] text-[20px] text-[#080808]  line-clamp-1" style={{
+                        lineHeight: "26px",
+                        letterSpacing: "-0.01em"
+                    }}>
                         {productName}
-                    </h2>
-
-                    {/* 4. Lampirkan ref ke div ini */}
-                    <div
-                        ref={thumbnailContainerRef}
-                        className="flex-grow overflow-y-auto grid grid-cols-3 gap-3 p-1 no-scrollbar bg-white"
-                    >
-                        {images.map((img, index) => (
-                            <button
-                                key={img.id}
-                                onClick={() => handleThumbnailClick(index)}
-                                className="bg-white relative aspect-square"
-                                ref={(el) => { thumbnailRefs.current[index] = el; }}
-                            >
-                                {img.url.endsWith('.mp4') ? (
-                                    <>
-                                        <video
-                                            src={img.url}
-                                            className={`w-full h-full object-cover border-2 transition-all duration-200 ${currentIndex === index ? 'border-purple-600' : 'border-transparent hover:border-gray-300'}`}
-                                            muted
-                                            playsInline
-                                            preload="metadata"
-                                        />
-                                        {/* Video Play Icon Overlay */}
-                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                                            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <img
-                                        src={img.url}
-                                        alt={img.alt}
-                                        className={`w-full h-full object-cover border-2 transition-all duration-200 ${currentIndex === index ? 'border-purple-600 scale-105' : 'border-transparent hover:border-gray-300'}`}
-                                    />
-                                )}
-                            </button>
-                        ))}
+                    </h5>
+                    <X color='#2E3137' size={30} />
+                </div>
+                <div className='flex w-full'>
+                    <div className="flex-grow h-full flex w-full items-center justify-center relative p-4 bg-white md:w-[calc(100%-380px)]">
+                        <button onClick={handlePrev} className="absolute left-0 text-white p-2 bg-black/40 hover:bg-black/60 transition-colors z-10" aria-label="Gambar sebelumnya">
+                            <ChevronLeftIcon className="w-8 h-8" />
+                        </button>
+                        <div className='flex items-center justify-center w-full h-full'>
+                            {images[currentIndex].url.endsWith('.mp4') ? (
+                                <video
+                                    key={images[currentIndex].id} // Tambahkan key untuk re-render video
+                                    src={images[currentIndex].url}
+                                    controls
+                                    autoPlay
+                                    className="max-w-full max-h-full object-contain select-none"
+                                />
+                            ) : (
+                                <img
+                                    src={images[currentIndex].url}
+                                    alt={images[currentIndex].alt}
+                                    className="max-w-full max-h-full object-contain select-none"
+                                />
+                            )}
+                        </div>
+                        <button onClick={handleNext} className="absolute right-0 text-white p-2 bg-black/40 hover:bg-black/60 transition-colors z-10" aria-label="Gambar berikutnya">
+                            <ChevronRightIcon className="w-8 h-8" />
+                        </button>
                     </div>
 
-                    <div className="mt-auto pt-4 flex">
-                        {onViewVideo && (
-                            <button
-                                onClick={onViewVideo}
-                                className="w-full text-center py-2.5 px-4 bg-[#F6E9F0] text-[#563D7C] border border-[#563D7C80]/50 font-semibold hover:bg-purple-50 transition-colors text-[14px]"
-                            >
-                                Lihat Video
-                            </button>
-                        )}
-                        <button
-                            onClick={onClose}
-                            className="w-full text-center py-2.5 px-4 bg-[#563D7C] text-white font-semibold hover:bg-purple-700 transition-colors text-[14px]"
+                    {/* Sidebar with Thumbnails */}
+                    <div className="hidden md:flex flex-col w-[380px] bg-white text-black p-4">
+
+
+                        {/* 4. Lampirkan ref ke div ini */}
+                        <div
+                            ref={thumbnailContainerRef}
+                            className="flex-grow overflow-y-auto grid grid-cols-3 gap-3 p-1 no-scrollbar bg-white"
                         >
-                            Tutup
-                        </button>
+                            {images.map((img, index) => (
+                                <button
+                                    key={img.id}
+                                    onClick={() => handleThumbnailClick(index)}
+                                    className="bg-white relative aspect-square"
+                                    ref={(el) => { thumbnailRefs.current[index] = el; }}
+                                >
+                                    {img.url.endsWith('.mp4') ? (
+                                        <>
+                                            <video
+                                                src={img.url}
+                                                className={`w-full h-full object-cover border-2 transition-all duration-200 ${currentIndex === index ? 'border-purple-600' : 'border-transparent hover:border-gray-300'}`}
+                                                muted
+                                                playsInline
+                                                preload="metadata"
+                                            />
+                                            {/* Video Play Icon Overlay */}
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <img
+                                            src={img.url}
+                                            alt={img.alt}
+                                            className={`w-full h-full object-cover border-2 transition-all duration-200 ${currentIndex === index ? 'border-purple-600 scale-105' : 'border-transparent hover:border-gray-300'}`}
+                                        />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="mt-auto pt-4 flex">
+                            {onViewVideo && (
+                                <button
+                                    onClick={onViewVideo}
+                                    className="w-full text-center py-2.5 px-4 bg-[#F6E9F0] text-[#563D7C] border border-[#563D7C80]/50 font-semibold hover:bg-purple-50 transition-colors text-[14px]"
+                                >
+                                    Lihat Video
+                                </button>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="w-full text-center py-2.5 px-4 bg-[#563D7C] text-white font-semibold hover:bg-purple-700 transition-colors text-[14px]"
+                            >
+                                Tutup
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
