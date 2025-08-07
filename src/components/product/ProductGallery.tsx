@@ -134,8 +134,8 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         <div key={media.id} className="flex-shrink-0 w-full" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
                             <div
                                 key={media.id}
-                                className="flex-shrink-0 w-full overflow-hidden"
-                                style={{ cursor: zoomActive ? 'zoom-out' : isDragging ? 'grabbing' : 'grab' }}
+                                className="flex-shrink-0 w-full overflow-hidden rounded-[8px]"
+                                style={{ cursor: 'pointer' }}
                                 onMouseEnter={() => setZoomActive(true)}
                                 onMouseLeave={() => setZoomActive(false)}
                                 onMouseMove={handleMouseMove}
@@ -143,7 +143,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                                 <img
                                     src={media.url}
                                     alt={media.alt}
-                                    className={`w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none transition-transform duration-100`}
+                                    className={`w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] object-cover shadow-sm select-none transition-transform duration-100`}
                                     onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
                                     style={{
                                         transform: zoomActive ? 'scale(2)' : 'scale(1)',

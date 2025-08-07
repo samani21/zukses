@@ -1,18 +1,5 @@
-import { X } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, X } from 'lucide-react';
 import React, { useEffect, useState, useRef } from 'react';
-
-// --- Ikon SVG (tidak ada perubahan) ---
-const ChevronLeftIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-    </svg>
-);
-
-const ChevronRightIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-    </svg>
-);
 
 interface Thumbnail {
     id: number;
@@ -29,7 +16,7 @@ interface ImageLightboxProps {
     initialIndex?: number;
 }
 
-const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOpen, onClose, onViewVideo, initialIndex = 0 }) => {
+const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOpen, onClose, initialIndex = 0 }) => {
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     // 1. Buat ref untuk kontainer thumbnail
     const thumbnailContainerRef = useRef<HTMLDivElement>(null);
@@ -96,26 +83,33 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
         setCurrentIndex(index);
     };
     return (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full w-full" onClick={onClose}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full" onClick={onClose}>
             <div
-                className="relative w-full h-full  max-h-[95vh] rounded-[8px]  bg-white text-white overflow-hidden"
+                className="relative w-full h-[70vh] max-w-[90%] text-white"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className='p-[20px]  flex justify-between'>
-                    <h5 className="font-[800] text-[20px] text-[#080808]  line-clamp-1" style={{
-                        lineHeight: "26px",
-                        letterSpacing: "-0.01em"
-                    }}>
+                <div className='h-[10vh] bg-white flex justify-between p-4 px-8 rounded-t-[8px]'>
+                    <h5
+                        className="font-[800] text-[20px] w-[96%] text-[#080808] truncate"
+                        style={{
+                            lineHeight: "26px",
+                            letterSpacing: "-0.01em",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap"
+                        }}
+                    >
                         {productName}
                     </h5>
-                    <X color='#2E3137' size={30} />
+                    <X color='#2E3137' size={24} className='cursor-pointer' onClick={onClose} />
                 </div>
-                <div className='flex w-full'>
-                    <div className="flex-grow h-full flex w-full items-center justify-center relative p-4 bg-white md:w-[calc(100%-380px)]">
-                        <button onClick={handlePrev} className="absolute left-0 text-white p-2 bg-black/40 hover:bg-black/60 transition-colors z-10" aria-label="Gambar sebelumnya">
-                            <ChevronLeftIcon className="w-8 h-8" />
+
+                <div className='flex w-full max-h-[60vh] overflow-hidden rounded-b-[8px]'>
+                    <div className="col-span-3 flex-grow h-full flex w-1/2 items-center justify-center relative p-4 bg-white md:w-[calc(100%-380px)]">
+                        <button onClick={handlePrev} className="absolute left-4 text-white p-2 bg-white shadow-md rounded-full transition-colors z-10" aria-label="Gambar sebelumnya">
+                            <ChevronLeftIcon color='#888888' strokeWidth={2} />
                         </button>
-                        <div className='flex items-center justify-center w-full h-full'>
+                        <div className='flex items-center justify-center w-full h-[55vh]'>
                             {images[currentIndex].url.endsWith('.mp4') ? (
                                 <video
                                     key={images[currentIndex].id} // Tambahkan key untuk re-render video
@@ -132,19 +126,16 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                                 />
                             )}
                         </div>
-                        <button onClick={handleNext} className="absolute right-0 text-white p-2 bg-black/40 hover:bg-black/60 transition-colors z-10" aria-label="Gambar berikutnya">
-                            <ChevronRightIcon className="w-8 h-8" />
+                        <button onClick={handleNext} className="absolute right-4  p-2 bg-white shadow-md rounded-full transition-colors z-10" aria-label="Gambar berikutnya">
+                            <ChevronRightIcon color='#888888' strokeWidth={2} />
                         </button>
                     </div>
 
                     {/* Sidebar with Thumbnails */}
-                    <div className="hidden md:flex flex-col w-[380px] bg-white text-black p-4">
-
-
-                        {/* 4. Lampirkan ref ke div ini */}
+                    <div className="hidden md:flex flex-col w-1/2 bg-white text-black p-4">
                         <div
                             ref={thumbnailContainerRef}
-                            className="flex-grow overflow-y-auto grid grid-cols-3 gap-3 p-1 no-scrollbar bg-white"
+                            className="flex-grow overflow-y-auto grid grid-cols-5 gap-3 p-1 no-scrollbar bg-white"
                         >
                             {images.map((img, index) => (
                                 <button
@@ -157,13 +148,13 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                                         <>
                                             <video
                                                 src={img.url}
-                                                className={`w-full h-full object-cover border-2 transition-all duration-200 ${currentIndex === index ? 'border-purple-600' : 'border-transparent hover:border-gray-300'}`}
+                                                className={`w-full h-full object-cover border-2 rounded-[8px] transition-all duration-200 ${currentIndex === index ? 'border-green-600' : 'border-transparent hover:border-gray-300'}`}
                                                 muted
                                                 playsInline
                                                 preload="metadata"
                                             />
                                             {/* Video Play Icon Overlay */}
-                                            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                            <div className="absolute inset-0 flex items-center rounded-[8px] justify-center bg-black/30">
                                                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
                                             </div>
                                         </>
@@ -171,14 +162,14 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                                         <img
                                             src={img.url}
                                             alt={img.alt}
-                                            className={`w-full h-full object-cover border-2 transition-all duration-200 ${currentIndex === index ? 'border-purple-600 scale-105' : 'border-transparent hover:border-gray-300'}`}
+                                            className={`w-full h-full object-cover border-2 rounded-[8px] transition-all duration-200 ${currentIndex === index ? 'border-green-600 scale-105' : 'border-transparent hover:border-gray-300'}`}
                                         />
                                     )}
                                 </button>
                             ))}
                         </div>
 
-                        <div className="mt-auto pt-4 flex">
+                        {/* <div className="mt-auto pt-4 flex">
                             {onViewVideo && (
                                 <button
                                     onClick={onViewVideo}
@@ -193,7 +184,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                             >
                                 Tutup
                             </button>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
