@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
 import { Product } from 'components/types/Product';
@@ -25,7 +25,17 @@ const ProductPage = () => {
 
     const [openModalGuide, setOpenModalGuide] = useState<boolean>(false);
     const router = useRouter();
-
+    const [isSticky, setIsSticky] = useState(false);
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!titleRef.current) return;
+            const { top } = titleRef.current.getBoundingClientRect();
+            setIsSticky(top <= 64); // asumsi header tingginya 64px
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
     useEffect(() => {
         const dataString = localStorage.getItem('product');
         if (dataString) {
@@ -63,18 +73,17 @@ const ProductPage = () => {
     return (
         <div>
             <main className=" min-h-screen">
-                <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-       `}</style>
-                <div className='hidden md:block'>
-                    <Header />
-                </div>
+
+                <Header />
+                {isSticky && detailProduct && (
+                    <div className="fixed  left-0 w-full z-40 bg-white px-4 py-2 shadow-sm flex items-center justify-center ">
+                        <div className='w-[1200px] '>
+                            <h1 className="text-[14px] font-[700] text-[#333333] tracking-[-0.02em] truncate">
+                                {detailProduct.name}
+                            </h1>
+                        </div>
+                    </div>
+                )}
                 <div className='h-[50px] flex md:hidden items-center px-4 justify-between'>
                     <div
                         onClick={() => {
@@ -101,11 +110,11 @@ const ProductPage = () => {
                         className="hidden md:block text-sm text-gray-500 mb-4"
                         aria-label="Breadcrumb"
                     >
-                        <ol className="list-none p-0 inline-flex space-x-2 text-[16px] text-[#555555] max-w-full overflow-hidden">
-                            <li className="flex items-center max-w-[150px] truncate">
+                        <ol className="list-none p-0 inline-flex space-x-2 text-[12px] text-[#555555] max-w-full overflow-hidden tracking-[-0.03em]">
+                            <li className="flex items-center max-w-[150px]  ">
                                 <a
                                     href="#"
-                                    className="hover:underline truncate"
+                                    className="hover:underline  text-[#1073F7]"
                                     onClick={() => (router.push('/'))}
                                 >
                                     Zuksess
@@ -114,25 +123,25 @@ const ProductPage = () => {
                             {detailProduct?.category?.split(' > ').map((cat, index) => (
                                 <li
                                     key={index}
-                                    className="flex items-center max-w-[150px] truncate whitespace-nowrap"
+                                    className="flex items-center max-w-[150px]  text-[#1073F7]"
                                 >
-                                    <span className="mx-2">›</span>
+                                    <span className="mx-2 text-[20px] text-[#888888] mr-4">›</span>
                                     <a href="#" className="hover:underline truncate block">
                                         {cat}
                                     </a>
                                 </li>
                             ))}
-                            <li className="flex items-center max-w-[200px] truncate whitespace-nowrap">
-                                <span className="mx-2">›</span>
+                            <li className="flex items-center  truncate">
+                                <span className="mx-2 text-[20px] text-[#888888] mr-4">›</span>
                                 <span className="truncate block">{detailProduct?.name}</span>
                             </li>
                         </ol>
                     </nav>
-
+{}
                     {
                         detailProduct &&
                         <div className='space-y-6'>
-                            <ProductDetail product={detailProduct} openModalGuide={openModalGuide} setOpenModalGuide={setOpenModalGuide} />
+                            <ProductDetail product={detailProduct} openModalGuide={openModalGuide} setOpenModalGuide={setOpenModalGuide} titleRef={titleRef} />
                             {/* <div className='hidden md:block'>
                                 <SellerInfo seller={detailProduct?.seller} />
                             </div> */}

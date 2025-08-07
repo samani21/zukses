@@ -1,5 +1,4 @@
 import { Product } from 'components/types/Product';
-import { Star } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 
 const ChevronLeftIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
@@ -29,7 +28,7 @@ interface ProductGalleryProps {
     product: Product;
 }
 
-const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, setActiveIndex, onImageClick, product }) => {
+const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, setActiveIndex, onImageClick }) => {
     const thumbnailContainerRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState(0);
@@ -254,7 +253,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         <span>Bagikan Link</span>
                     </button>
                 </div> */}
-                <div className='bg-[#F1F5F9] rounded-[10px] h-[160px] mt-6'>
+                {/* <div className='bg-[#F1F5F9] rounded-[10px] h-[160px] mt-6'>
                     <div className='flex justify-between items-center  p-3 px-6'>
                         <div className='flex items-center gap-4'>
                             <img className='border border-[#BBBBBB] rounded-full w-[50px] h-[50px] bg-white' src={product?.seller?.avatarUrl} />
@@ -286,7 +285,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                             Kunjungi Toko
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
