@@ -386,7 +386,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                         onImageClick={handleImageClick}
                         product={product}
                     />
-                    <div className="hidden md:block lg:col-span-4 space-y-4 pl-4 ">
+                    <div className="hidden md:block lg:col-span-4 space-y-[16px] pl-4 ">
                         <h1 className="text-[22px] font-[700] text-[#333333] tracking-[-0.02em]">{product?.name}</h1>
                         {/* <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
                             <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
@@ -429,7 +429,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 </div>
                             </div> */}
                         </div>
-                        <div className='bg-[#F1F5F9] border-[#DADBDB] rounded-[10px] p-6 py-4 grid grid-cols-7'>
+                        <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-7 items-center px-6'>
                             <div className='col-span-3 space-y-1 tracking-[0]' style={{
                                 lineHeight: "100%"
                             }}>
@@ -501,100 +501,102 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 </div>
                                 : ''
                         }
-                        {
-                            Number(product?.is_cod_enabled) == 1 && <p className='text-[#F77000] font-bold text-[15px] '>COD (Bayar ditempat)</p>
-                        }
-                        <p className='tracking-[-0.02em] text-[#555555] text-[16px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
-                        <div className="space-y-4">
-                            {product?.variant_prices.map((group) =>
-                                <div key={group.id} className='space-y-2 w-[50%]'>
-                                    <p className="text-[#555555] text-[16px] font-medium tracking-[-0.02em]">
-                                        Pilih <span className="text-[#09824C] font-bold ">{group.variant}</span>
-                                    </p>
-                                    <div className="flex flex-wrap gap-2 mt-2">
-                                        {group?.options.map((option, idx) => {
-                                            return (
-                                                option !== "" && (
-                                                    <button
-                                                        key={idx}
-                                                        onClick={() => {
-                                                            const newSelections = {
-                                                                ...activeSelections,
-                                                                [group.id]: option
-                                                            };
+                        <div className='space-y-2 -mt-2'>
+                            {
+                                Number(product?.is_cod_enabled) == 1 && <p className='text-[#F77000] font-bold text-[15px] '>COD (Bayar ditempat)</p>
+                            }
+                            <p className='tracking-[-0.02em] text-[#555555] text-[16px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
+                            <div className="space-y-2">
+                                {product?.variant_prices.map((group) =>
+                                    <div key={group.id} className='space-y-2 w-[50%]'>
+                                        <p className="text-[#555555] text-[16px] font-medium tracking-[-0.02em]">
+                                            Pilih <span className="text-[#09824C] font-bold ">{group.variant}</span>
+                                        </p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {group?.options.map((option, idx) => {
+                                                return (
+                                                    option !== "" && (
+                                                        <button
+                                                            key={idx}
+                                                            onClick={() => {
+                                                                const newSelections = {
+                                                                    ...activeSelections,
+                                                                    [group.id]: option
+                                                                };
 
-                                                            const existingIdx = activeSelectionsArray.findIndex(sel => sel.groupId === String(group.id));
+                                                                const existingIdx = activeSelectionsArray.findIndex(sel => sel.groupId === String(group.id));
 
-                                                            const updatedSelections = [...activeSelectionsArray];
+                                                                const updatedSelections = [...activeSelectionsArray];
 
-                                                            const newSelection = {
-                                                                groupId: String(group.id),
-                                                                name: group.variant, // contoh: "Warna" atau "Ukuran"
-                                                                value: option         // contoh: "Hitam - Abu" atau "XL"
-                                                            };
+                                                                const newSelection = {
+                                                                    groupId: String(group.id),
+                                                                    name: group.variant, // contoh: "Warna" atau "Ukuran"
+                                                                    value: option         // contoh: "Hitam - Abu" atau "XL"
+                                                                };
 
-                                                            if (existingIdx > -1) {
-                                                                updatedSelections[existingIdx] = newSelection;
-                                                            } else {
-                                                                updatedSelections.push(newSelection);
-                                                            }
+                                                                if (existingIdx > -1) {
+                                                                    updatedSelections[existingIdx] = newSelection;
+                                                                } else {
+                                                                    updatedSelections.push(newSelection);
+                                                                }
 
-                                                            setActiveSelectionsArray(updatedSelections);
-                                                            setActiveSelections(newSelections);
+                                                                setActiveSelectionsArray(updatedSelections);
+                                                                setActiveSelections(newSelections);
 
-                                                            // Cek apakah semua kombinasi sudah dipilih
-                                                            const selectedLabels = Object.values(newSelections).join(" - ");
+                                                                // Cek apakah semua kombinasi sudah dipilih
+                                                                const selectedLabels = Object.values(newSelections).join(" - ");
 
-                                                            const matchedVariant = product?.variants?.find((v) =>
-                                                                v.combination_label === selectedLabels
-                                                            );
+                                                                const matchedVariant = product?.variants?.find((v) =>
+                                                                    v.combination_label === selectedLabels
+                                                                );
 
-                                                            if (matchedVariant) {
-                                                                handleVariantSelect(matchedVariant);
-                                                            }
-                                                        }}
+                                                                if (matchedVariant) {
+                                                                    handleVariantSelect(matchedVariant);
+                                                                }
+                                                            }}
 
-                                                        className={`border text-[14px] font-[500] h-[35px] flex items-center transition-all  ${activeSelections[group.id] === option
-                                                            ? 'border-none text-white '
-                                                            : 'border-[#bbb] bg-white text-black py-1 px-4'}`}
-                                                        style={{
-                                                            letterSpacing: "-0.04em"
-                                                        }}
-                                                    >
-                                                        {activeSelections[group.id] === option ?
-                                                            <div className='bg-[#09824C] h-[35px] flex items-center px-2 border border-[#09824C]'>
-                                                                <Check className='h-[20px] w-[20px]' />
-                                                            </div> : option}
-                                                        {activeSelections[group.id] === option &&
-                                                            <span className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] border border-[#09824C]  h-[35px] flex items-center px-4">
-                                                                {option}
-                                                            </span>}
-                                                    </button>
-                                                )
-                                            );
-                                        })}
+                                                            className={`border text-[14px] font-[500] h-[35px] flex items-center transition-all  ${activeSelections[group.id] === option
+                                                                ? 'border-none text-white '
+                                                                : 'border-[#bbb] bg-white text-black py-1 px-4'}`}
+                                                            style={{
+                                                                letterSpacing: "-0.04em"
+                                                            }}
+                                                        >
+                                                            {activeSelections[group.id] === option ?
+                                                                <div className='bg-[#09824C] h-[35px] flex items-center px-2 border border-[#09824C]'>
+                                                                    <Check className='h-[20px] w-[20px]' />
+                                                                </div> : option}
+                                                            {activeSelections[group.id] === option &&
+                                                                <span className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] border border-[#09824C]  h-[35px] flex items-center px-4">
+                                                                    {option}
+                                                                </span>}
+                                                        </button>
+                                                    )
+                                                );
+                                            })}
 
 
-                                    </div>
-                                    {/* <div className="mt-1 text-end">
+                                        </div>
+                                        {/* <div className="mt-1 text-end">
                                         <button className="text-[#4A52B2] text-[16px] font-bold text-right">Lihat Lebih Banyak</button>
                                     </div> */}
-                                </div>)}
+                                    </div>)}
 
-                            {hasImageGuide &&
-                                <div className='text-[16px] mt-6 font-bold text-[#DE4A53] flex gap-1 items-center cursor-pointer' onClick={() => setOpenModalGuide(true)}>
-                                    Lihat Panduan Ukuran
-                                    <ChevronRightIcon />
-                                </div>
-                            }
-                            {activeSelectionsArray.length > 0 && (
-                                <div className="tracking-[-0.02em] -mt-2 text-[16px]" style={{
-                                    lineHeight: "150%"
-                                }}>
-                                    <p className='text-[#555555] font-medium'>Variasi yang dipilih :</p>
-                                    <p className='font-bold text-[#09824C]'>{activeSelectionsArray.map(sel => `${sel.name} ${sel.value}`).join(', ')}</p>
-                                </div>
-                            )}
+                                {hasImageGuide &&
+                                    <div className='text-[16px] mt-6 font-bold text-[#DE4A53] flex gap-1 items-center cursor-pointer' onClick={() => setOpenModalGuide(true)}>
+                                        Lihat Panduan Ukuran
+                                        <ChevronRightIcon />
+                                    </div>
+                                }
+                                {activeSelectionsArray.length > 0 && (
+                                    <div className="tracking-[-0.02em] -mt-2 text-[16px]" style={{
+                                        lineHeight: "150%"
+                                    }}>
+                                        <p className='text-[#555555] font-medium'>Variasi yang dipilih :</p>
+                                        <p className='font-bold text-[#09824C]'>{activeSelectionsArray.map(sel => `${sel.name} ${sel.value}`).join(', ')}</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="grid md:flex items-center gap-4 ">
                             <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em]">Kuantitas</span>
@@ -625,7 +627,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             <div>
                                 <div
                                     ref={descRef}
-                                    className={`${expanded ? '' : 'line-clamp-6'} text-[#000000] text-[16px] tracking-[-0.02em]`}
+                                    className={`${expanded ? '' : 'line-clamp-6'} text-[#000000] text-[14px] tracking-[-0.02em]`}
                                     style={{
                                         lineHeight: "160%"
                                     }}

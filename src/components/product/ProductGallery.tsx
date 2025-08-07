@@ -37,6 +37,14 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     // const [previewVideo, setPreviewVideo] = useState<boolean>(false);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
+    const [zoomActive, setZoomActive] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const bounds = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - bounds.left) / bounds.width) * 100;
+        const y = ((e.clientY - bounds.top) / bounds.height) * 100;
+        setZoomPosition({ x, y });
+    };
 
     const updateArrowVisibility = () => {
         if (!thumbnailContainerRef.current) return;
@@ -124,12 +132,26 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
 
                     {images.map((media, index) => (
                         <div key={media.id} className="flex-shrink-0 w-full" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
-                            <img
-                                src={media.url}
-                                alt={media.alt}
-                                className="w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none"
-                                onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
-                            />
+                            <div
+                                key={media.id}
+                                className="flex-shrink-0 w-full overflow-hidden"
+                                style={{ cursor: zoomActive ? 'zoom-out' : isDragging ? 'grabbing' : 'grab' }}
+                                onMouseEnter={() => setZoomActive(true)}
+                                onMouseLeave={() => setZoomActive(false)}
+                                onMouseMove={handleMouseMove}
+                            >
+                                <img
+                                    src={media.url}
+                                    alt={media.alt}
+                                    className={`w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none transition-transform duration-100`}
+                                    onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
+                                    style={{
+                                        transform: zoomActive ? 'scale(2)' : 'scale(1)',
+                                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                    }}
+                                />
+                            </div>
+
                         </div>
                     ))}
                 </div>
@@ -224,7 +246,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                 } */}
 
 
-                <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-4 text-[#4A52B2]">
+                <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-6 text-[#4A52B2]">
                     <button className="w-full h-[37px] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
                         <span>Tambahkan ke Favorit</span>
                     </button>
@@ -232,24 +254,24 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         <span>Bagikan Link</span>
                     </button>
                 </div>
-                <div className='bg-[#F1F5F9] rounded-[10px] h-[165px] mt-4'>
-                    <div className='flex justify-between items-center border-b border-[#C5D7E9] p-3 px-6'>
+                <div className='bg-[#F1F5F9] rounded-[10px] h-[160px] mt-6'>
+                    <div className='flex justify-between items-center  p-3 px-6'>
                         <div className='flex items-center gap-4'>
                             <img className='border border-[#BBBBBB] rounded-full w-[70px] h-[70px] bg-white' src={product?.seller?.avatarUrl} />
                             <div>
                                 <p className='text-[#333333] font-bold text-[17px] tracking-[-0.02em]'>
                                     {product?.seller?.name}
                                 </p>
-                                <div className='flex items-center gap-2'>
-                                    <Star size={32} strokeWidth={2} color='#F74B00' />
-                                    <p className='tracking-[-0.02em] font-bold text-[17px]'>4.9/5</p>
-                                    <p className='tracking-[-0.03em] text-[#888888] '>(150 Ulasan)</p>
+                                <div className='flex items-end gap-2'>
+                                    <Star size={32} strokeWidth={"2px"} color='#F74B00' />
+                                    <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
+                                    <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
                                 </div>
                             </div>
                         </div>
                         <div className=''>
                             <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
-                            <p className='text-[#333333] text-[17px] text-center tracking-[-0.02em] font-bold'>284</p>
+                            <p className='text-[#333333] text-[17px] text-left tracking-[-0.02em] font-bold'>284</p>
                         </div>
                     </div>
                     <div className='p-3 px-6  flex items-center justify-center gap-4  '>
