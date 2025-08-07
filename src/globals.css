@@ -314,6 +314,13 @@ input.no-spinner::-webkit-inner-spin-button {
 input.no-spinner {
   -moz-appearance: textfield;
 }
+/* .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        } */
 
 .toggle-checkbox {
   width: 46px;

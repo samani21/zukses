@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect, useRef } from 'react';
 import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
 import { Media, Product, Thumbnail, variant } from 'components/types/Product';
-import { Check, ChevronRightIcon, MinusCircle, PlusCircle } from 'lucide-react';
+import { Check, ChevronRightIcon, MinusCircle, PlusCircle, Star } from 'lucide-react';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import { useRouter } from 'next/router';
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
@@ -22,11 +22,12 @@ interface ProductDetailProps {
     product: Product;
     openModalGuide: boolean;
     setOpenModalGuide: (value: boolean) => void;
+    titleRef: React.RefObject<HTMLHeadingElement | null>;
 }
 
 
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef }) => {
     const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState<number>(1);
@@ -40,6 +41,54 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     const [expanded, setExpanded] = useState(false);
     const [showButton, setShowButton] = useState(false);
     const descRef = useRef<HTMLDivElement>(null);
+    const detailContainerRef = useRef<HTMLDivElement>(null); // Ref untuk seluruh kontainer detail.
+    const galleryRef = useRef<HTMLDivElement>(null);
+
+    // STATE: Untuk mengontrol posisi galeri.
+    const [isSticky, setIsSticky] = useState(false); // Apakah galeri sedang melayang?
+    const [isAtBottom, setIsAtBottom] = useState(false); // Apakah galeri sudah mentok di bawah?
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!detailContainerRef.current || !galleryRef.current) return;
+
+            const detailRect = detailContainerRef.current.getBoundingClientRect();
+            const galleryHeight = galleryRef.current.offsetHeight;
+            const topOffset = 20;
+
+            const bottomLimit = detailRect.bottom - galleryHeight - topOffset;
+
+            // Kapan mulai sticky
+            setIsSticky(detailRect.top <= topOffset);
+
+            // Kapan berhenti sticky (saat akan menabrak elemen di bawah kontainer detail)
+            setIsAtBottom(bottomLimit <= 0);
+        };
+
+        // Daftarkan event listener saat komponen pertama kali dirender.
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Hapus event listener saat komponen dihancurkan untuk mencegah memory leak.
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+    const galleryContainerStyle: React.CSSProperties = useMemo(() => {
+        if (isAtBottom) {
+            return {
+                position: 'absolute',
+                bottom: '0px',
+            };
+        }
+        if (isSticky) {
+            return {
+                position: 'fixed',
+                top: '150px',
+            };
+        }
+        return {
+            position: 'relative',
+        };
+    }, [isSticky, isAtBottom]);
+
     useEffect(() => {
         if (descRef.current) {
             const lineHeight = parseFloat(getComputedStyle(descRef.current).lineHeight || '24');
@@ -374,20 +423,29 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
             .join(' ');
     }
     const hasImageGuide = !!product?.media?.some((item: Media) => item.type === 'image_guide');
+
     return (
-        <>
+        <div ref={detailContainerRef} className="relative">
             <div className=" text-sm">
-                <div className="grid grid-cols-1 md:flex gap-6">
-                    <ProductGallery
-                        images={allImages}
-                        videoProduct={videoProduct}
-                        activeIndex={activeImageIndex}
-                        setActiveIndex={setActiveImageIndex}
-                        onImageClick={handleImageClick}
-                        product={product}
-                    />
+                <div className="grid grid-cols-12 md:flex gap-6">
+                    <div className='min-w-[420px]' >
+                        <div ref={galleryRef} style={galleryContainerStyle}>
+                            <ProductGallery
+                                images={allImages}
+                                videoProduct={videoProduct}
+                                activeIndex={activeImageIndex}
+                                setActiveIndex={setActiveImageIndex}
+                                onImageClick={handleImageClick}
+                                product={product}
+                            />
+                        </div>
+                    </div>
                     <div className="hidden md:block lg:col-span-4 space-y-[16px] pl-4 ">
-                        <h1 className="text-[22px] font-[700] text-[#333333] tracking-[-0.02em]">{product?.name}</h1>
+                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#333333] tracking-[-0.02em]" style={{
+                            lineHeight: "28px",
+                        }}>
+                            {product?.name}
+                        </h1>
                         {/* <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
                             <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
                                 <div className=" flex items-center">
@@ -401,10 +459,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                         <div>
                             <div className="space-y-2 mt-6">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
-                      
-                                <span className='px-[15px] py-[8px] text-[30px] font-[800] text-[#F94D63] rounded-full border-4 border-[#F94D6380]/50'>
-                                    {renderPriceDiscountDisplay()}
-                                </span>
+
+                                <div className='inline-block px-[15px] py-[8px] text-[30px] font-[800]  text-[#F94D63] rounded-full border-4 border-[#F94D6380]/50 h-[52px]'>
+                                    <p className='leading-none'>{renderPriceDiscountDisplay()}</p>
+                                </div>
+
+
                                 {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() && (
                                     <div className='flex items-center gap-4 mt-8'>
                                         <div className=''>
@@ -660,6 +720,39 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 <span>Beli Sekarang</span>
                             </button>
                         </div>
+                        <div className='bg-[#F1F5F9] rounded-[10px] h-[94px] mt-6'>
+                            <div className='flex justify-between items-center  p-3 px-4'>
+                                <div className='flex items-center gap-4'>
+                                    <img className='border border-[#BBBBBB] rounded-full w-[50px] h-[50px] bg-white' src={product?.seller?.avatarUrl} />
+                                    <div>
+                                        <p className='text-[#333333] font-bold text-[17px] tracking-[-0.02em]'>
+                                            {product?.seller?.name}
+                                        </p>
+                                        <div className='flex items-end gap-2'>
+                                            <Star size={32} strokeWidth={"2px"} color='#F74B00' />
+                                            <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
+                                            <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className=''>
+                                    <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
+                                    <p className='text-[#333333] text-[17px] text-left tracking-[-0.02em] font-bold'>284</p>
+                                </div>
+                                <div className='p-3 px-6  flex items-center justify-center gap-4  '>
+                                    <button className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C]' style={{
+                                        lineHeight: "22px"
+                                    }}>
+                                        Chat Penjual
+                                    </button>
+                                    <button className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff]' style={{
+                                        lineHeight: "22px"
+                                    }}>
+                                        Kunjungi Toko
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div className='md:hidden px-4 space-y-2'>
                         <div className='flex items-center gap-4'>
@@ -749,7 +842,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                 // 👇 Hubungkan fungsi handleViewVideo, hanya jika ada video
                 onViewVideo={videoProduct.length > 0 ? handleViewVideo : undefined}
             />
-        </>
+        </div>
     );
 };
 
