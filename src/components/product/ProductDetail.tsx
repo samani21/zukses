@@ -429,18 +429,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 </div>
                             </div> */}
                         </div>
-                        <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-7 items-center px-6'>
-                            <div className='col-span-3 space-y-1 tracking-[0]' style={{
+                        <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-7 items-center px-6 gap-4'>
+                            <div className='col-span-3 space-y-1 tracking-[0] border-r border-[#CCCCCC] py-1' style={{
                                 lineHeight: "100%"
                             }}>
-                                <p className='text-[#555555] text-[12px] font-semibold'>
+                                <p className='text-[#555555] text-[12px]'>
                                     DIkirim dari
                                 </p>
-                                <p className='text-[13px] font-semibold text-[#06894E]'>
+                                <p className='text-[14px] font-semibold text-[#06894E]'>
                                     {formatLocation(product?.seller?.location)}
                                 </p>
                             </div>
-                            <div className='col-span-2 space-y-1'>
+                            <div className='col-span-2 space-y-1 pt-1 border-r border-[#CCCCCC]'>
                                 <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                     lineHeight: "100%"
                                 }}>
@@ -454,7 +454,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     </div>
                                 </div>
                             </div>
-                            <div className='flex justify-center'>
+                            <div className='flex justify-center pt-1 '>
                                 <div>
                                     <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                         lineHeight: "100%"
@@ -466,7 +466,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     </p>
                                 </div>
                             </div>
-                            <div className='flex justify-end'>
+                            <div className='flex justify-center pl-4 pt-1 border-l border-[#CCCCCC]'>
                                 <div>
                                     <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                         lineHeight: "100%"
