@@ -1,11 +1,10 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import ProductGallery from './ProductGallery';
 import ImageLightbox from './ImageLightbox';
-import { Product, Thumbnail, variant } from 'components/types/Product';
+import { Media, Product, Thumbnail, variant } from 'components/types/Product';
 import { Check, ChevronRightIcon, MinusCircle, PlusCircle } from 'lucide-react';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import { useRouter } from 'next/router';
-
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="21" r="1" />
@@ -21,11 +20,13 @@ const StarIcon = ({ className = "w-3.5 h-3.5 text-yellow-400" }: { className?: s
 );
 interface ProductDetailProps {
     product: Product;
+    openModalGuide: boolean;
+    setOpenModalGuide: (value: boolean) => void;
 }
 
 
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide }) => {
     const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState<number>(1);
@@ -39,7 +40,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     const [expanded, setExpanded] = useState(false);
     const [showButton, setShowButton] = useState(false);
     const descRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         if (descRef.current) {
             const lineHeight = parseFloat(getComputedStyle(descRef.current).lineHeight || '24');
@@ -373,8 +373,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
     }
-    // const hasImageGuide = !!product?.media?.some((item: Media) => item.type === 'image_guide');
-
+    const hasImageGuide = !!product?.media?.some((item: Media) => item.type === 'image_guide');
     return (
         <>
             <div className=" text-sm">
@@ -399,7 +398,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                 <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
                             </div>
                         </div> */}
-                        <div className="bg-gray-50 rounded-md space-y-2">
+                        <div className="-mt-2">
                             <div className="space-y-2">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
                                 <div className="text-[#F94D63] text-[30px] font-[700]">{renderPriceDiscountDisplay()}</div>
@@ -480,24 +479,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                             <span className="text-[#555555] text-[16px]  font-medium">Kondisi</span>
                             <span className="text-[#4A52B2] text-[16px] font-bold">{product?.is_used ? "Bekas dipakai" : "Baru"}</span>
                         </div> */}
-                        <div className='py-4 flex items-center gap-2'>
-                            {
-                                product?.voucher &&
-                                <div className=''>
-                                    <span className='bg-[#C8F7D4] h-[25px]  border border-[#388F4F] text-[#388F4F] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Voucher {formatRupiah(product?.voucher)}</span>
-                                </div>
-                            }
-                            {
-                                product?.delivery.subsidy &&
-                                <div className=''>
-                                    <span className='bg-[#FFF9BF]  h-[25px] border border-[#F77000] text-[#F77000] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Gratis Ongkir    {formatRupiah(product?.delivery.subsidy)}</span>
-                                </div>
-                            }
-                        </div>
                         {
-                            Number(product?.is_cod_enabled) ? <p className='text-[#F77000] font-bold text-[14px] mb-2'>COD (Bayar ditempat)</p> : ''
+                            product?.voucher || product?.delivery.subsidy ?
+                                <div className='py-2 flex items-center gap-2'>
+                                    {
+                                        product?.voucher &&
+                                        <div className=''>
+                                            <span className='bg-[#C8F7D4] h-[25px]  border border-[#388F4F] text-[#388F4F] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Voucher {formatRupiah(product?.voucher)}</span>
+                                        </div>
+                                    }
+                                    {
+                                        product?.delivery.subsidy &&
+                                        <div className=''>
+                                            <span className='bg-[#FFF9BF]  h-[25px] border border-[#F77000] text-[#F77000] rounded-[5px] px-2 py-1 text-[14px] font-bold'>Gratis Ongkir    {formatRupiah(product?.delivery.subsidy)}</span>
+                                        </div>
+                                    }
+                                </div>
+                                : ''
                         }
-                        <p className='tracking-[-0.02em] text-[#555555] text-[16px] pt-2'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
+                        {
+                            Number(product?.is_cod_enabled) == 1 && <p className='text-[#F77000] font-bold text-[14px] '>COD (Bayar ditempat)</p>
+                        }
+                        <p className='tracking-[-0.02em] text-[#555555] text-[16px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
                         <div className="space-y-5 w-1/2">
                             {product?.variant_prices.map((group) =>
                                 <div key={group.id} className='space-y-2'>
@@ -574,16 +577,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                                     </div> */}
                                 </div>)}
 
-                            {/* {hasImageGuide &&
-                                <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center'>
+                            {hasImageGuide &&
+                                <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center cursor-pointer' onClick={() => setOpenModalGuide(true)}>
                                     Lihat Panduan Ukuran
                                     <ChevronRightIcon />
                                 </div>
-                            } */}
-                            <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center'>
-                                Lihat Panduan Ukuran
-                                <ChevronRightIcon />
-                            </div>
+                            }
                             {activeSelectionsArray.length > 0 && (
                                 <div className="tracking-[-0.02em]" style={{
                                     lineHeight: "150%"
@@ -729,8 +728,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     </div>
                 </div>
             </div>
-
-
             <ImageLightbox
                 isOpen={isLightboxOpen}
                 onClose={() => setIsLightboxOpen(false)}

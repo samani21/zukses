@@ -12,6 +12,7 @@ import ProductWithCategories from 'components/ProductWithCategories';
 import VariantModal from 'components/product/VariantModal';
 import { useRouter } from 'next/router';
 import ProductReviewsPage from 'components/product/Comment';
+import ModalGuide from 'components/product/ModalGuide';
 
 
 
@@ -21,7 +22,10 @@ const ProductPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [detailProduct, setDetailProduct] = useState<Product | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+    const [openModalGuide, setOpenModalGuide] = useState<boolean>(false);
     const router = useRouter();
+
     useEffect(() => {
         const dataString = localStorage.getItem('product');
         if (dataString) {
@@ -58,7 +62,7 @@ const ProductPage = () => {
     }, [detailProduct]);
     return (
         <div>
-            <main className="bg-white-100 min-h-screen">
+            <main className=" min-h-screen">
                 <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
             display: none;
@@ -128,7 +132,7 @@ const ProductPage = () => {
                     {
                         detailProduct &&
                         <div className='space-y-6'>
-                            <ProductDetail product={detailProduct} />
+                            <ProductDetail product={detailProduct} openModalGuide={openModalGuide} setOpenModalGuide={setOpenModalGuide} />
                             {/* <div className='hidden md:block'>
                                 <SellerInfo seller={detailProduct?.seller} />
                             </div> */}
@@ -137,7 +141,7 @@ const ProductPage = () => {
                             </div>
                            */}
                             <div className='hidden md:block'>
-                                <ProductReviewsPage/>
+                                <ProductReviewsPage />
                             </div>
                             {
                                 otherProducts &&
@@ -172,6 +176,10 @@ const ProductPage = () => {
             {
                 isModalOpen && detailProduct &&
                 <VariantModal product={detailProduct} setIsModalOpen={setIsModalOpen} />
+            }
+            {
+                openModalGuide &&
+                <ModalGuide setOpenModalGuide={setOpenModalGuide} openModalGuide={openModalGuide} detailProduct={detailProduct} />
             }
         </div>
     );
