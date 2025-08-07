@@ -58,7 +58,7 @@ const CardProduct = ({ product, index }: Props) => {
                 <img
                     src={product.image}
                     alt={product.name}
-                    className="md:w-[190px] md:h-[190px] rounded-t-[10px] object-center"
+                    className="md:w-[190px] md:h-[190px] rounded-t-[8px] object-center"
                     onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://placehold.co/200x200?text=Produk';
                     }}
