@@ -173,12 +173,14 @@ const Pagination = ({ currentPage, totalPages, onPageChange }: PaginationProps) 
             {pageNumbers.map((page, index) => (
                 <React.Fragment key={index}>
                     {page === '...' ? (
-                        <span className="px-4 py-2 text-sm text-gray-500">...</span>
+                        <span className="px-4 py-2  font-bold text-[14px] tracking-[0] text-black" style={{
+                            lineHeight: '140%'
+                        }}>...</span>
                     ) : (
                         <button
                             onClick={() => onPageChange(page as number)}
                             className={cn(
-                                "px-4 py-2 text-[16px] font-medium rounded-lg transition-colors",
+                                "px-4 py-2 text-[16px] h-[32px] font-medium rounded-lg transition-colors",
                                 currentPage === page
                                     ? "bg-[#1073F7] text-[#F5F5F5]"
                                     : "bg-white text-[#1E1E1E] hover:bg-gray-100"
