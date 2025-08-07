@@ -246,7 +246,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                 } */}
 
 
-                <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-4 text-[#4A52B2]">
+                <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-6 text-[#4A52B2]">
                     <button className="w-full h-[37px] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
                         <span>Tambahkan ke Favorit</span>
                     </button>
@@ -254,24 +254,24 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                         <span>Bagikan Link</span>
                     </button>
                 </div>
-                <div className='bg-[#F1F5F9] rounded-[10px] h-[165px] mt-4'>
-                    <div className='flex justify-between items-center border-b border-[#C5D7E9] p-3 px-6'>
+                <div className='bg-[#F1F5F9] rounded-[10px] h-[160px] mt-6'>
+                    <div className='flex justify-between items-center  p-3 px-6'>
                         <div className='flex items-center gap-4'>
                             <img className='border border-[#BBBBBB] rounded-full w-[70px] h-[70px] bg-white' src={product?.seller?.avatarUrl} />
                             <div>
                                 <p className='text-[#333333] font-bold text-[17px] tracking-[-0.02em]'>
                                     {product?.seller?.name}
                                 </p>
-                                <div className='flex items-center gap-2'>
-                                    <Star size={32} strokeWidth={2} color='#F74B00' />
-                                    <p className='tracking-[-0.02em] font-bold text-[17px]'>4.9/5</p>
-                                    <p className='tracking-[-0.03em] text-[#888888] '>(150 Ulasan)</p>
+                                <div className='flex items-end gap-2'>
+                                    <Star size={32} strokeWidth={"2px"} color='#F74B00' />
+                                    <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
+                                    <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
                                 </div>
                             </div>
                         </div>
                         <div className=''>
                             <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
-                            <p className='text-[#333333] text-[17px] text-center tracking-[-0.02em] font-bold'>284</p>
+                            <p className='text-[#333333] text-[17px] text-left tracking-[-0.02em] font-bold'>284</p>
                         </div>
                     </div>
                     <div className='p-3 px-6  flex items-center justify-center gap-4  '>
