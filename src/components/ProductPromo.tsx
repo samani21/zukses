@@ -101,7 +101,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 pl-0 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 h-[137px] sm:w-48 md:w-[332px] border border-[#DEDEDE] bg-white rounded-[15px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 h-[137px] sm:w-48 md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
@@ -117,13 +117,13 @@ function ProductPromo({ products }: NewProductProps) {
                                                 {
                                                     product?.discount_percent ?
                                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[12px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
+                                                            <span className='bg-[#FAD7D7] border text-[#F02929]  font-[600] text-[11px] rounded-r-full px-2 py-0.5'>Diskon {product?.discount_percent}%</span>
                                                         </div> : ''
                                                 }
                                                 {
                                                     product?.delivery?.subsidy ?
                                                         <div className='flex items-center h-[22px]' style={{ letterSpacing: "-0.04em" }}>
-                                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[12px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
+                                                            <span className='bg-[#C8F7D4] text-[#388F4F]  font-[600] text-[11px] border rounded-r-full px-2 py-0.5'>Gratis Ongkir</span>
                                                         </div> : ''
                                                 }
                                             </div>
@@ -153,7 +153,7 @@ function ProductPromo({ products }: NewProductProps) {
                                                 {product.name}
                                             </p>
                                             <div className='flex gap-2 items-center'>
-                                                <p className="text-[12px] md:text-[14px] font-bold mt-1.5  text-[#F94D63] bg-[#FFF7F7] border border-[#F94D63] py-[3px] px-[12px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
+                                                <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] border-[0.5px] border-[#F94D63] py-[3px] px-[8px] rounded-[12px]" style={{ lineHeight: "18px" }}>{formatRupiah(product.price)}</p>
                                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
                                                 lineHeight: "22px",
                                                 letterSpacing: "-0.04em"
