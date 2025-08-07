@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import { Check, ChevronDown, MinusCircle, PlusCircle, ArrowLeft } from 'lucide-react';
 import MainLayout from 'pages/layouts/MainLayout';
 import { useRouter } from 'next/router';
 
@@ -232,32 +232,45 @@ const ShoppingCartPage: React.FC = () => {
         <MainLayout>
             <div className="container mx-auto py-8 lg:w-[1200px] space-y-4">
 
-                <h1 className="text-[#7952B3] text-[25px] font-bold">Keranjang Belanja</h1>
+                <div className='flex items-center gap-4'>
+                    <ArrowLeft size={32}/>
+                    <h1 className="text-[#333333] text-[24px] font-[800]">Keranjang Belanja</h1>
+                </div>
 
                 <div className="space-y-4 mt-8">
                     {stores.map(store => (
                         <div key={store.id} className="bg-white rounded-[5px] shadow-[1px_1px_10px_rgba(0,0,0,0.08)] border border-[#DCDCDC] overflow-hidden">
                             {/* Header Toko */}
                             <div className="p-4 border-b border-gray-200 grid grid-cols-12 gap-4 items-center">
-                                <div className='col-span-12 md:col-span-5 flex items-start gap-4'>
-                                    <input
-                                        type="checkbox"
-                                        className="h-[21px] w-[21px] rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
-                                        checked={store.selected}
-                                        onChange={(e) => handleStoreSelect(store.id, e.target.checked)}
-                                    />
-                                    <span className="font-semibold text-gray-800">{store.name}</span>
+                                <div className='col-span-12 md:col-span-6 flex items-center gap-4'>
+                                    <label className="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={store.selected}
+                                            onChange={(e) => handleStoreSelect(store.id, e.target.checked)}
+                                            className="peer hidden"
+                                        />
+                                        <span className={`${store.selected ? 'w-[26px] h-[26px] rounded-[8px] border-2 border-[#52357B] bg-[#E7D6FF]' : 'w-[26px] h-[26px] border-2 border-[#000]'} flex items-center justify-center`}>
+                                            {store.selected ? <Check size={16} strokeWidth={4} /> : ''}
+
+                                        </span>
+                                    </label>
+                                    <div>
+                                        <p className="font-semibold text-[#333333] text-[17px] tracking-[-0.03em]">{store.name}</p>
+                                        <p className='text-[#333333] text-[13px]'>Dikirim dari Kota Makassar</p>
+                                    </div>
+
                                 </div>
-                                <div className="col-span-6 md:col-span-2 text-center text-[16px] text-right font-semibold text-[#333333]">
+                                <div className="col-span-6 md:col-span-1 text-center text-[16px] -ml-4 text-right font-semibold text-[#333333] traclomg-[-0.02em]">
                                     Harga Satuan
                                 </div>
-                                <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333]">
+                                <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333] traclomg-[-0.02em]">
                                     Kuantitas
                                 </div>
-                                <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333]">
+                                <div className="col-span-6 md:col-span-2 text-center text-[16px] font-semibold text-[#333333] traclomg-[-0.02em]">
                                     Total Harga
                                 </div>
-                                <div className="col-span-6 md:col-span-1 text-center text-[16px] font-semibold text-[#333333]">
+                                <div className="col-span-6 md:col-span-1 text-center text-[16px] font-semibold text-[#333333] traclomg-[-0.02em]">
                                     Aksi
                                 </div>
                             </div>
@@ -265,21 +278,31 @@ const ShoppingCartPage: React.FC = () => {
                             {/* Produk dalam Toko */}
                             <div className="divide-y divide-gray-200">
                                 {store.products.map(product => (
-                                    <div key={product.id} className="p-4 grid grid-cols-12 gap-4 items-center">
+                                    <div key={product.id} className="p-4 grid grid-cols-12 gap-4 items-start">
                                         {/* Info Produk */}
-                                        <div className="col-span-12 md:col-span-5 flex items-start gap-4">
-                                            <input
-                                                type="checkbox"
-                                                className="h-[21px] w-[21px] rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer mt-1"
-                                                checked={product.selected}
-                                                onChange={(e) => handleProductSelect(store.id, product.id, e.target.checked)}
-                                            />
+                                        <div className="col-span-12 md:col-span-6 flex items-start gap-4">
+                                            <label className="inline-flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={product.selected}
+                                                    onChange={(e) => handleProductSelect(store.id, product.id, e.target.checked)}
+                                                    className="peer hidden"
+                                                />
+                                                <span className={`${product.selected ? 'w-[26px] h-[26px] rounded-[8px] border-2 border-[#52357B] bg-[#E7D6FF]' : 'w-[26px] h-[26px] border-2 border-[#000]'} flex items-center justify-center`}>
+                                                    {product.selected ? <Check size={16} strokeWidth={4} /> : ''}
+
+                                                </span>
+                                            </label>
                                             <img src={product.imageUrl} alt={product.name} className="w-[100px] h-[100px] object-cover border border-[#AAAAAA]" />
                                             <div className="flex-1 space-y-2">
                                                 <p className="text-[#333333] text-[16px] line-clamp-1 w-full" style={{
                                                     lineHeight: "108%",
                                                     letterSpacing: "-0.03em"
                                                 }}>{product.name}</p>
+                                                <div className='font-bold text-[15px] text-[#333333] flex items-center gap-1'>
+                                                    <p>Variasi</p>
+                                                    <ChevronDown size={20} />
+                                                </div>
                                                 <p className="text-[#333333] text-[13px] line-clamp-1 w-full" style={{
                                                     lineHeight: "108%",
                                                     letterSpacing: "-0.04em"
@@ -293,15 +316,18 @@ const ShoppingCartPage: React.FC = () => {
                                                     letterSpacing: "-0.04em",
                                                     lineHeight: "121%"
                                                 }}>
-                                                    <span className="text-[12px] text-white font-semibold bg-[#F74F4F] rounded-[5px] px-2 py-2">Diskon Terpakai {product.diskonTerpakai}</span>
+                                                    {/* <span className="text-[12px] text-white font-semibold bg-[#F74F4F] rounded-[5px] px-2 py-2">Diskon Terpakai {product.diskonTerpakai}</span>
                                                     <span className="text-[12px] text-black font-semibold bg-[#F7C800] rounded-[5px] px-2 py-2">Gratis Ongkir {product.gratisOngkir}</span>
-                                                    <span className="text-[12px] text-white font-semibold bg-[#3EA65A] rounded-[5px] px-2 py-2">Voucher Toko {product.voucherToko}</span>
+                                                    <span className="text-[12px] text-white font-semibold bg-[#3EA65A] rounded-[5px] px-2 py-2">Voucher Toko {product.voucherToko}</span> */}
+                                                    <span className='bg-[#FAD7D7] border-[#F02929] text-[#F02929] border rounded-[5px] px-[8px] text-[12px] font-bold h-[22px]'>Diskon {product.diskonTerpakai}</span>
+                                                    <span className='bg-[#C8F7D4] border-[#388F4F] text-[#388F4F] border rounded-[5px] px-[8px] text-[12px] font-bold h-[22px]'>Voucher {product.voucherToko}</span>
+                                                    <span className='bg-[#FFF9BF] border-[#F77000] text-[#F77000] border rounded-[5px] px-[8px] text-[12px] font-bold h-[22px]'>Gratis Ongkir {product.gratisOngkir}</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Harga Satuan */}
-                                        <div className="col-span-6 md:col-span-2 text-center" style={{
+                                        <div className="col-span-6 md:col-span-1 text-center" style={{
                                             lineHeight: "108%",
                                             letterSpacing: "-0.02em"
                                         }}>
@@ -311,13 +337,13 @@ const ShoppingCartPage: React.FC = () => {
 
                                         {/* Kuantitas */}
                                         <div className="col-span-6 md:col-span-2 flex items-center justify-center">
-                                            <div className="flex items-center border border-[#3EA65A] overflow-hidden">
-                                                <button className="h-8 w-8 flex items-center justify-center text-white bg-[#3EA65A] hover:bg-green-700 transition-colors" onClick={() => handleQuantityChange(store.id, product.id, product.quantity - 1)}>
-                                                    <Minus className="h-4 w-4" />
+                                            <div className="flex items-center overflow-hidden">
+                                                <button className="" onClick={() => handleQuantityChange(store.id, product.id, product.quantity - 1)}>
+                                                    <MinusCircle size={32} strokeWidth={3} color='#888888' />
                                                 </button>
-                                                <span className="px-4 text-center w-12 font-medium bg-white">{product.quantity}</span>
-                                                <button className="h-8 w-8 flex items-center justify-center text-white bg-[#3EA65A] hover:bg-green-700 transition-colors" onClick={() => handleQuantityChange(store.id, product.id, product.quantity + 1)}>
-                                                    <Plus className="h-4 w-4" />
+                                                <span className="px-4 text-center w-12 font-bold text-[21px] text-[#222222] bg-white">{product.quantity}</span>
+                                                <button className="" onClick={() => handleQuantityChange(store.id, product.id, product.quantity + 1)}>
+                                                    <PlusCircle size={32} color='#3EA65A' strokeWidth={3} />
                                                 </button>
                                             </div>
                                         </div>
@@ -327,7 +353,7 @@ const ShoppingCartPage: React.FC = () => {
                                             lineHeight: '108%',
                                             letterSpacing: "-0.02em"
                                         }}>
-                                            <span className="text-[#E33947] text-[18px] text-right font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
+                                            <span className="text-[#F75B00] text-[18px] text-right font-bold">{formatCurrency(product.discountedPrice * product.quantity)}</span>
                                         </div>
 
                                         {/* Aksi */}
@@ -335,7 +361,7 @@ const ShoppingCartPage: React.FC = () => {
                                             lineHeight: '108%',
                                             letterSpacing: "-0.02em"
                                         }}>
-                                            <button className="text-[#E33947] text-[14px] font-semibold hover:underline" onClick={() => handleDeleteProduct(store.id, product.id)}>
+                                            <button className="text-[#888888] text-[14px] hover:underline" onClick={() => handleDeleteProduct(store.id, product.id)}>
                                                 Hapus
                                             </button>
                                         </div>
@@ -350,13 +376,19 @@ const ShoppingCartPage: React.FC = () => {
                 <div className="sticky bottom-0 mt-6">
                     <div className="bg-white rounded-md shadow-sm p-4 flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-4 self-start md:self-center">
-                            <input
-                                id="selectAllFooter"
-                                type="checkbox"
-                                className="h-[21px] w-[21px] rounded border-gray-300 accent-[#52357B] focus:ring-[#52357B] cursor-pointer"
-                                checked={cartSummary.allSelected}
-                                onChange={(e) => handleSelectAll(e.target.checked)}
-                            />
+                            <label className="inline-flex items-center cursor-pointer">
+                                <input
+                                    id="selectAllFooter"
+                                    type="checkbox"
+                                    checked={cartSummary.allSelected}
+                                    onChange={(e) => handleSelectAll(e.target.checked)}
+                                    className="peer hidden"
+                                />
+                                <span className={`${cartSummary.allSelected ? 'w-[26px] h-[26px] rounded-[8px] border-2 border-[#52357B] bg-[#E7D6FF]' : 'w-[26px] h-[26px] border-2 border-[#000]'} flex items-center justify-center`}>
+                                    {cartSummary.allSelected ? <Check size={16} strokeWidth={4} /> : ''}
+
+                                </span>
+                            </label>
                             <label htmlFor="selectAllFooter" className="cursor-pointer text-[#333333] text-[16px] font-semibold" style={{
                                 letterSpacing: "-0.03em",
                                 lineHeight: '121%'
@@ -373,11 +405,11 @@ const ShoppingCartPage: React.FC = () => {
 
                         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
                             <div className="text-right">
-                                <div className="text-[#333333] text-[16px] font-semibold flex items-center gap-2" style={{
-                                    letterSpacing: "-0.03em",
+                                <div className="text-[#333333] text-[16px] font-bold flex items-center gap-2" style={{
+                                    letterSpacing: "-0.04em",
                                     lineHeight: '121%'
                                 }}>
-                                    Total ({cartSummary.selectedProductsCount} Produk): <p className="text-[#E75864] text-[25px] font-bold ml-2" style={{
+                                    Total ({cartSummary.selectedProductsCount} Produk): <p className="text-[#F75B00] text-[30px] font-bold ml-2" style={{
                                         letterSpacing: "-0.04em",
                                         lineHeight: '108%'
                                     }}>{formatCurrency(cartSummary.totalPrice)}</p>
@@ -389,7 +421,7 @@ const ShoppingCartPage: React.FC = () => {
                                     }}>Hemat {formatCurrency(cartSummary.totalSavings)}</p>
                                 )}
                             </div>
-                            <button className="bg-[#563D7C] hover:bg-purple-800 text-white font-semibold w-full md:w-48 py-3 rounded-md transition-colors" onClick={() => router.push('/checkout?variant_id[]=175&qty[]=2&product_id[]=84&variant_id[]=152&qty[]=1&product_id[]=78')}>
+                            <button className="bg-[#1073F7] h-[60px] hover:bg-purple-800 text-white font-bold text-[20px] w-[108px] md:w-48 py-3 rounded-md transition-colors" onClick={() => router.push('/checkout?variant_id[]=175&qty[]=2&product_id[]=84&variant_id[]=152&qty[]=1&product_id[]=78')}>
                                 Beli ({cartSummary.selectedProductsCount})
                             </button>
                         </div>
