@@ -37,6 +37,14 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     // const [previewVideo, setPreviewVideo] = useState<boolean>(false);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
+    const [zoomActive, setZoomActive] = useState(false);
+    const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const bounds = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - bounds.left) / bounds.width) * 100;
+        const y = ((e.clientY - bounds.top) / bounds.height) * 100;
+        setZoomPosition({ x, y });
+    };
 
     const updateArrowVisibility = () => {
         if (!thumbnailContainerRef.current) return;
@@ -124,12 +132,26 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
 
                     {images.map((media, index) => (
                         <div key={media.id} className="flex-shrink-0 w-full" style={{ cursor: isDragging ? 'grabbing' : 'grab' }}>
-                            <img
-                                src={media.url}
-                                alt={media.alt}
-                                className="w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none"
-                                onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
-                            />
+                            <div
+                                key={media.id}
+                                className="flex-shrink-0 w-full overflow-hidden"
+                                style={{ cursor: zoomActive ? 'zoom-out' : isDragging ? 'grabbing' : 'grab' }}
+                                onMouseEnter={() => setZoomActive(true)}
+                                onMouseLeave={() => setZoomActive(false)}
+                                onMouseMove={handleMouseMove}
+                            >
+                                <img
+                                    src={media.url}
+                                    alt={media.alt}
+                                    className={`w-full max-w-[420px] min-w-[420px] md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none transition-transform duration-100`}
+                                    onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
+                                    style={{
+                                        transform: zoomActive ? 'scale(2)' : 'scale(1)',
+                                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                    }}
+                                />
+                            </div>
+
                         </div>
                     ))}
                 </div>
