@@ -91,7 +91,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
 
     return (
         <div className="lg:col-span-2 w-full md:px-0" >
-            <div className="mb-2 relative group overflow-hidden w-full max-w-[420px] ">
+            <div className="mb-2 relative group overflow-hidden w-full ">
                 <div
                     className="flex transition-transform duration-300 ease-in-out"
                     style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -146,7 +146,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
             <div className="relative">
                 <div
                     ref={thumbnailContainerRef}
-                    className="flex space-x-1 overflow-x-auto p-1 scroll-smooth no-scrollbar relative"
+                    className="flex space-x-1 overflow-x-auto p-1 scroll-smooth no-scrollbar relative pl-0"
                 >
                     {/* {previewVideo ? videoProduct.map((thumb, index) => (
                         <button
