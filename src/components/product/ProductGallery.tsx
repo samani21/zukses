@@ -90,7 +90,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
     };
 
     return (
-        <div className="lg:col-span-2 w-full md:px-0" >
+        <div className="lg:col-span-3 md:w-[420px] md:px-0" >
             <div className="mb-2 relative group overflow-hidden w-full ">
                 <div
                     className="flex transition-transform duration-300 ease-in-out"
@@ -127,7 +127,7 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                             <img
                                 src={media.url}
                                 alt={media.alt}
-                                className="w-full md:w-[420px] h-full md:h-[420px] rounded-[8px] object-cover shadow-sm select-none"
+                                className="w-full md:w-[420px] h-[420px] md:h-[420px] rounded-[8px] object-cover shadow-sm select-none"
                                 onClick={() => !isDragging && dragOffset === 0 && onImageClick(index)}
                             />
                         </div>

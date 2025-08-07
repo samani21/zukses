@@ -377,7 +377,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     return (
         <>
             <div className=" text-sm">
-                <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+                <div className="grid grid-cols-1 md:flex gap-6">
                     <ProductGallery
                         images={allImages}
                         videoProduct={videoProduct}
@@ -386,7 +386,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                         onImageClick={handleImageClick}
                         product={product}
                     />
-                    <div className="hidden md:block lg:col-span-4 space-y-4">
+                    <div className="hidden md:block lg:col-span-4 space-y-4 ">
                         <h1 className="text-[22px] font-[700] text-[#333333] tracking-[-0.02em]">{product?.name}</h1>
                         {/* <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
                             <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
@@ -550,8 +550,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                             }
                                                         }}
 
-                                                        className={`border text-[14px] font-[500] flex items-center  ${activeSelections[group.id] === option
-                                                            ? 'border-none text-white p-'
+                                                        className={`border text-[14px] font-[500] h-[35px] flex items-center transition-all  ${activeSelections[group.id] === option
+                                                            ? 'border-none text-white '
                                                             : 'border-[#bbb] bg-white text-black py-1 px-4'}`}
                                                         style={{
                                                             letterSpacing: "-0.04em"
