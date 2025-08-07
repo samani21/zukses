@@ -85,10 +85,10 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full" onClick={onClose}>
             <div
-                className="relative w-full h-[70vh] max-w-[90%] text-white"
+                className="relative w-full h-[80vh] max-w-[90%] text-white"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className='h-[10vh] bg-white flex justify-between p-4 px-8 rounded-t-[8px]'>
+                <div className='h-[10vh] bg-white flex justify-between items-center  px-8 rounded-t-[8px]'>
                     <h5
                         className="font-[800] text-[20px] w-[96%] text-[#080808] truncate"
                         style={{
@@ -104,12 +104,14 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                     <X color='#2E3137' size={24} className='cursor-pointer' onClick={onClose} />
                 </div>
 
-                <div className='flex w-full max-h-[60vh] overflow-hidden rounded-b-[8px]'>
-                    <div className="col-span-3 flex-grow h-full flex w-1/2 items-center justify-center relative p-4 bg-white md:w-[calc(100%-380px)]">
-                        <button onClick={handlePrev} className="absolute left-4 text-white p-2 bg-white shadow-md rounded-full transition-colors z-10" aria-label="Gambar sebelumnya">
+                <div className='flex w-full max-h-[70vh] overflow-hidden bg-white rounded-b-[8px]'>
+                    <div className="col-span-3 flex-grow h-full flex w-1/2 items-center justify-center relative p-4 pt-0 bg-white md:w-[calc(100%-380px)]">
+                        <button onClick={handlePrev} className="absolute left-4 text-white w-[50px] h-[50px] p-3 bg-white  rounded-full transition-colors z-10" aria-label="Gambar sebelumnya" style={{
+                            boxShadow: "rgba(0, 0, 0, 0.12) 0px 2px 4px"
+                        }}>
                             <ChevronLeftIcon color='#888888' strokeWidth={2} />
                         </button>
-                        <div className='flex items-center justify-center w-full h-[55vh]'>
+                        <div className='flex items-center justify-center w-full h-[65vh]'>
                             {images[currentIndex].url.endsWith('.mp4') ? (
                                 <video
                                     key={images[currentIndex].id} // Tambahkan key untuk re-render video
@@ -126,16 +128,20 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
                                 />
                             )}
                         </div>
-                        <button onClick={handleNext} className="absolute right-4  p-2 bg-white shadow-md rounded-full transition-colors z-10" aria-label="Gambar berikutnya">
+                        <button onClick={handleNext} className="absolute right-4  w-[50px] h-[50px] p-3 bg-white  rounded-full transition-colors z-10" aria-label="Gambar berikutnya"
+                            style={{
+                                boxShadow: "rgba(0, 0, 0, 0.12) 0px 2px 4px"
+                            }}>
                             <ChevronRightIcon color='#888888' strokeWidth={2} />
                         </button>
                     </div>
 
                     {/* Sidebar with Thumbnails */}
-                    <div className="hidden md:flex flex-col w-1/2 bg-white text-black p-4">
+                    <div className="hidden md:flex flex-col w-1/2 bg-white text-black p-4 pt-0 h-[300px] ">
+                        <p className='mb-2 text-[14px] text-bold font-bold'>Gambar Barang </p>
                         <div
                             ref={thumbnailContainerRef}
-                            className="flex-grow overflow-y-auto grid grid-cols-5 gap-3 p-1 no-scrollbar bg-white"
+                            className="flex-grow overflow-y-auto grid grid-cols-3 gap-3  rounded-[8px] w-1/2"
                         >
                             {images.map((img, index) => (
                                 <button

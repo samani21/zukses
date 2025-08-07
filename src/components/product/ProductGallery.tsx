@@ -246,18 +246,18 @@ const ProductGallery: React.FC<ProductGalleryProps> = ({ images, activeIndex, se
                 } */}
 
 
-                <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-6 text-[#4A52B2]">
+                {/* <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-6 text-[#4A52B2]">
                     <button className="w-full h-[37px] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
                         <span>Tambahkan ke Favorit</span>
                     </button>
                     <button className="w-full bg-[#1073F7] h-[37px] rounded-[10px]  py-2 px-3 text-white text-[15px] font-bold  flex items-center justify-center gap-2 hover:bg-[#10326e]/80">
                         <span>Bagikan Link</span>
                     </button>
-                </div>
+                </div> */}
                 <div className='bg-[#F1F5F9] rounded-[10px] h-[160px] mt-6'>
                     <div className='flex justify-between items-center  p-3 px-6'>
                         <div className='flex items-center gap-4'>
-                            <img className='border border-[#BBBBBB] rounded-full w-[70px] h-[70px] bg-white' src={product?.seller?.avatarUrl} />
+                            <img className='border border-[#BBBBBB] rounded-full w-[50px] h-[50px] bg-white' src={product?.seller?.avatarUrl} />
                             <div>
                                 <p className='text-[#333333] font-bold text-[17px] tracking-[-0.02em]'>
                                     {product?.seller?.name}

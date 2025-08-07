@@ -398,12 +398,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
                             </div>
                         </div> */}
-                        <div className="-mt-3">
-                            <div className="space-y-2">
+                        <div>
+                            <div className="space-y-2 mt-6">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
-                                <div className="text-[#F94D63] text-[30px] font-[700]">{renderPriceDiscountDisplay()}</div>
+                      
+                                <span className='px-[15px] py-[8px] text-[30px] font-[800] text-[#F94D63] rounded-full border-4 border-[#F94D6380]/50'>
+                                    {renderPriceDiscountDisplay()}
+                                </span>
                                 {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() && (
-                                    <div className='flex items-center gap-4'>
+                                    <div className='flex items-center gap-4 mt-8'>
                                         <div className=''>
                                             <span className='bg-[#FAD7D7] border border-[#F02929] text-[#F02929] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
                                         </div>
@@ -466,7 +469,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     </p>
                                 </div>
                             </div>
-                            <div className='flex justify-center pl-4 pt-1 border-l border-[#CCCCCC]'>
+                            <div className='flex justify-center px-4 pt-1 border-l border-[#CCCCCC]'>
                                 <div>
                                     <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                         lineHeight: "100%"
@@ -505,11 +508,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             {
                                 Number(product?.is_cod_enabled) == 1 && <p className='text-[#F77000] font-bold text-[15px] '>COD (Bayar ditempat)</p>
                             }
-                            <p className='tracking-[-0.02em] text-[#555555] text-[16px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
+                            <p className='tracking-[-0.02em] text-[#555555] text-[14px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
                             <div className="space-y-2">
                                 {product?.variant_prices.map((group) =>
                                     <div key={group.id} className='space-y-2 w-[50%]'>
-                                        <p className="text-[#555555] text-[16px] font-medium tracking-[-0.02em]">
+                                        <p className="text-[#555555] text-[14px] font-medium tracking-[-0.02em]">
                                             Pilih <span className="text-[#09824C] font-bold ">{group.variant}</span>
                                         </p>
                                         <div className="flex flex-wrap gap-2 mt-2">
@@ -649,7 +652,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             lineHeight: "22px",
                             letterSpacing: "-0.04em"
                         }}>
-                            <button className="w-[240px] h-[50px] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[16px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
+                            <button className="mt-[5px] w-[240px] h-[50px] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[16px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
                                 <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                 <span>Masukkan Keranjang</span>
                             </button>
