@@ -17,6 +17,7 @@ import InfoZukses from 'components/InfoZukses';
 import Payment from 'components/Payment';
 import Delivery from 'components/Delivery';
 import CategoryFooter from 'components/CategoryFooter';
+import ModalChat from 'components/product/ModalChat';
 
 
 
@@ -31,6 +32,8 @@ const ProductPage = () => {
     const router = useRouter();
     const [isSticky, setIsSticky] = useState(false);
     const titleRef = useRef<HTMLHeadingElement>(null);
+
+    const [isChatModalOpen, setChatModalOpen] = useState<boolean>(false)
     useEffect(() => {
         const handleScroll = () => {
             if (!titleRef.current) return;
@@ -185,7 +188,8 @@ const ProductPage = () => {
                                 product={detailProduct}
                                 openModalGuide={openModalGuide}
                                 setOpenModalGuide={setOpenModalGuide}
-                                titleRef={titleRef} />
+                                titleRef={titleRef}
+                                setChatModalOpen={setChatModalOpen} />
                             {/* <div className='hidden md:block'>
                                 <SellerInfo seller={detailProduct?.seller} />
                             </div> */}
@@ -265,6 +269,7 @@ const ProductPage = () => {
                     </p>
                 </div>
             </div>
+            <ModalChat isOpen={isChatModalOpen} onClose={() => setChatModalOpen(false)} />
         </div>
     );
 };
