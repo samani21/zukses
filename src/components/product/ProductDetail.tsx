@@ -693,7 +693,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                         <span>Masukkan Keranjang</span>
                                     </button>
-                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-blue-500">
+                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-[#0251ba]">
                                         Beli Sekarang
                                     </button>
                                 </div>
