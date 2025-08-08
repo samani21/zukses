@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -42,8 +43,7 @@ function ModalChat({
                 className="relative "
                 onClick={e => e.stopPropagation()}
             >
-                <div className='bg-white w-[908px] h-[595px] shadow-2xl m-4 rounded-[10px]'>
-
+                <div className='bg-white w-[908px] h-[595px] shadow-2xl m-4 rounded-[10px] p-5'>
                 </div>
             </div>
         </div>,
