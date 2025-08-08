@@ -1,19 +1,8 @@
-import { FC, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
+import { FC } from "react";
 
 const ChatWindow: FC<{ isOpen: boolean; isFixed: boolean; onClose: () => void; chatRef: React.RefObject<HTMLDivElement | null> }> = ({ isOpen, isFixed, onClose, chatRef }) => {
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (chatRef.current && !chatRef.current.contains(event.target as Node)) {
-                onClose();
-            }
-        };
-        if (isOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isOpen, onClose, chatRef]);
+
 
     if (!isOpen) {
         return null;
@@ -21,12 +10,11 @@ const ChatWindow: FC<{ isOpen: boolean; isFixed: boolean; onClose: () => void; c
 
     const baseClasses = "w-[580px] h-[470px] rounded-md shadow-2xl bg-white border border-gray-500 flex flex-col transition-all shadow-[0px_2px_30px_0px_#98A3B4] duration-300";
     const fixedClasses = 'fixed bottom-5 right-5 z-50';
-    const absoluteClasses = 'absolute bottom-full right-0 mb-2 z-10';
-
     return (
-        <div ref={chatRef} className={`${baseClasses} ${isFixed ? fixedClasses : absoluteClasses}`}>
-            <div className="p-4 ">
-                <p className="font-semibold text-lg text-center text-gray-800">Chat dengan Penjual</p>
+        <div ref={chatRef} className={`${baseClasses} ${isFixed ? fixedClasses : fixedClasses}`}>
+            <div className="p-4 flex items-center justify-between w-full ">
+                <p className="font-semibold text-lg text-gray-800">Chat dengan Penjual</p>
+                <ChevronDown onClick={onClose}  className="cursor-pointer"/>
             </div>
             <div className="flex-grow bg-gray-50 p-2 overflow-y-auto">
                 <p className="text-sm text-gray-600 text-center mt-4">Mulai percakapan Anda...</p>
