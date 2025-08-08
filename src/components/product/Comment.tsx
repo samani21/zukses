@@ -265,8 +265,8 @@ export default function ProductReviewsPage() {
                                         className={cn(
                                             "w-full px-4 py-2 rounded-[10px] border border-[#0D915E] font-[500] text-[15px] text-[#333333] transition-colors",
                                             activeFilter === filter.value
-                                                ? "bg-[#0D915E] font-bold text-white"
-                                                : "bg-[#C4EDDD] "
+                                                ? "bg-[#0D915E] font-bold text-white hover:bg-green-600"
+                                                : "bg-[#C4EDDD] hover:bg-green-400"
                                         )}
                                     >
                                         {filter.label}

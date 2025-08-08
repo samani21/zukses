@@ -689,11 +689,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
                                 }}>
-                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
+                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-blue-100">
                                         <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                         <span>Masukkan Keranjang</span>
                                     </button>
-                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
+                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-blue-500">
                                         Beli Sekarang
                                     </button>
                                 </div>
@@ -706,7 +706,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                     {product?.seller?.name}
                                                 </p>
                                                 <div className='flex items-end gap-2'>
-                                                    <Star size={32} strokeWidth={"2px"} color='#F74B00' />
+                                                    <Star size={24} strokeWidth={"2px"} color='#F74B00' />
                                                     <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
                                                     <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
                                                 </div>
@@ -717,12 +717,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                             <p className='text-[#333333] text-[17px] text-left tracking-[-0.02em] font-bold'>284</p>
                                         </div>
                                         <div className='p-3 px-6  flex items-center justify-center gap-4  '>
-                                            <button className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C]' style={{
+                                            <button className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200' style={{
                                                 lineHeight: "22px"
                                             }}>
                                                 Chat Penjual
                                             </button>
-                                            <button className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff]' style={{
+                                            <button className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff] hover:bg-green-600' style={{
                                                 lineHeight: "22px"
                                             }}>
                                                 Kunjungi Toko
