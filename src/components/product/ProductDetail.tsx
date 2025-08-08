@@ -507,7 +507,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() && (
                                     <div className='flex items-center gap-2 mt-3'>
                                         <div className=''>
-                                            <span className='bg-[#FAD7D7] border border-[#F02929] text-[#F02929] rounded-[15px] px-[10px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
+                                            <span className='bg-[#F94D63] border border-[#F94D63] text-[#fff] rounded-[15px] px-[10px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
                                         </div>
                                         <div className="text-[#98A3B4] text-[14px] font-[700] line-through tracking-[-0.02em]">{renderPriceDisplay()}</div>
                                     </div>
@@ -570,7 +570,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         </div>
                                     </div>
                                 </div>
-                                <div className='space-y-2'>
+                                <div className='space-y-2 mt-[16px]'>
                                     {
                                         product?.voucher || product?.delivery.subsidy ?
                                             <div className='py-2 flex items-center gap-2'>
@@ -684,7 +684,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     )}
                                 </div>
                                 <div className="grid md:flex items-center gap-4 ">
-                                    <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em]">Kuantitas</span>
+                                    <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em] py-[5px]">Kuantitas</span>
                                     <button
                                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
                                         className=" hover:bg-gray-100"
@@ -703,7 +703,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     >
                                         <PlusCircle size={32} color='#3EA65A' strokeWidth={2} />
                                     </button>
-                                    <span className="text-[18px] font-[500] text-[#555555]">Tersedia {ProductStock()}</span>
+                                    <span className="text-[14px] font-[500] text-[#555555]">Tersedia {ProductStock()}</span>
                                 </div>
                                 <div className='tracking-[-0.02em]' style={{
                                     lineHeight: "160%"
@@ -731,15 +731,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     </div>
                                 </div>
 
-                                <div className=" hidden sm:flex items-center gap-3 " style={{
+                                <div className=" hidden sm:flex items-center gap-3 my-[24px]" style={{
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
                                 }}>
-                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-blue-100">
+                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[14px]  font-semibold flex items-center justify-center gap-2 hover:bg-blue-100">
                                         <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                         <span>Masukkan Keranjang</span>
                                     </button>
-                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-[#0251ba]">
+                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px]  font-semibold flex items-center justify-center gap-2 hover:bg-[#0251ba]">
                                         Beli Sekarang
                                     </button>
                                 </div>
@@ -778,13 +778,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                         {product.seller.name}
                                                     </p>
                                                     <div className='flex items-center gap-2'>
-                                                        <Star size={20} />
+                                                        <Star size={20} color='#F74B00' strokeWidth={2} />
                                                         <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
                                                         <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='border-r border-l px-4 border-[#CCCCCC] text-center'>
+                                            <div className='border-r border-l px-4 border-[#CCCCCC] text-left'>
                                                 <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
                                                 <p className='text-[#333333] text-[17px] tracking-[-0.02em] font-bold'>284</p>
                                             </div>
@@ -797,13 +797,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 />
                                                 <button
                                                     onClick={() => setChatOpen(!isChatOpen)}
-                                                    className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200 transition-colors duration-200'
+                                                    className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-semibold text-[#09824C] hover:bg-green-200 transition-colors duration-200'
                                                     style={{ lineHeight: "22px" }}
                                                 >
                                                     Chat Penjual
                                                 </button>
                                                 <button
-                                                    className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff] hover:bg-green-600 transition-colors duration-200'
+                                                    className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px]  font-semibold text-[#fff] hover:bg-green-600 transition-colors duration-200'
                                                     style={{ lineHeight: "22px" }}
                                                 >
                                                     Kunjungi Toko
