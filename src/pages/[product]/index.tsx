@@ -108,7 +108,7 @@ const ProductPage = () => {
                     </div>
                 </div>
                 <div className="container mx-auto md:p-2 md:p-4 md:px-0 w-[1200px] px-[0px]">
-                    <nav
+                    {/* <nav
                         className="hidden md:block text-sm text-gray-500 mb-4"
                         aria-label="Breadcrumb"
                     >
@@ -138,8 +138,7 @@ const ProductPage = () => {
                                 <span className="truncate block">{detailProduct?.name}</span>
                             </li>
                         </ol>
-                    </nav>
-                    { }
+                    </nav> */}
                     {
                         detailProduct &&
                         <div className='space-y-6'>
