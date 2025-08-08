@@ -23,16 +23,14 @@ interface ProductDetailProps {
     openModalGuide: boolean;
     setOpenModalGuide: (value: boolean) => void;
     titleRef: React.RefObject<HTMLHeadingElement | null>;
-    activeVariant: variant | null;
-    setActiveVariant: (val: variant) => void;
-    quantity: number
-    setQuantity: React.Dispatch<React.SetStateAction<number>>;
 }
 
 
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef, activeVariant, setActiveVariant, quantity, setQuantity }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef }) => {
+    const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
+    const [quantity, setQuantity] = useState<number>(1);
     const [isLightboxOpen, setIsLightboxOpen] = useState(false);
     const [lightboxInitialIndex, setLightboxInitialIndex] = useState(0);
     const router = useRouter()
