@@ -81,7 +81,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
         if (isSticky) {
             return {
                 position: 'fixed',
-                top: '150px',
+                top: '40px',
             };
         }
         return {

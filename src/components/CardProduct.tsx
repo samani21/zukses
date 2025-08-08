@@ -22,7 +22,7 @@ const CardProduct = ({ product, index }: Props) => {
     return (
         <a
             key={index}
-            className="bg-white cursor-pointer w-full h-[311px] rounded-[5px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
+            className="bg-white cursor-pointer w-full h-[311px] rounded-[5px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD] hover:border-[#5dd4ea] hover:border-2"
             onClick={() => {
                 const slug = product.name
                     .toLowerCase()
@@ -72,7 +72,7 @@ const CardProduct = ({ product, index }: Props) => {
             {/* Informasi produk lainnya */}
             <div className="p-2">
                 <p
-                    className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                    className="text-[12px] md:text-[12px] font-bold tracking-[-0.03em] text-[#111111] line-clamp-2"
                     style={{
                         lineHeight: '17px',
                         minHeight: '17px', // setara 2 baris
@@ -85,10 +85,11 @@ const CardProduct = ({ product, index }: Props) => {
                     {product.name}
                 </p>
                 <div className='flex gap-2 items-center'>
-                    <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] py-[3px] px-[8px] rounded-[12px]" style={{
+                    <div className='h-[24px] border-2 mt-1.5 border-[rgba(249,77,99,0.5)] bg-[#FFF7F7] px-[8px] py-[3px] rounded-[12px] tracking-[-0.03em] text-[14px] font-[800] text-[#F94D63] flex items-center' style={{
                         lineHeight: "18px",
-                        border: "2px solid #F94D63"
-                    }}>{formatRupiah(product.price)}</p>
+                    }}>
+                        {formatRupiah(product.price)}
+                    </div>
                     {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
                                             lineHeight: "22px",
                                             letterSpacing: "-0.04em"
@@ -120,10 +121,10 @@ const CardProduct = ({ product, index }: Props) => {
                     }
                 </div>
 
-                <p className="text-[10px] text-[#555555] -mt-2" style={{
+                <p className="text-[10px] text-[#06894E] font-bold -mt-2" style={{
                     lineHeight: "22px",
                     letterSpacing: "-0.04em"
-                }}>{formatLocation(product?.seller?.location)}</p>
+                }}>{formatLocation(product?.seller?.name)}</p>
             </div>
         </a>
     )

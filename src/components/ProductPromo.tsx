@@ -74,7 +74,7 @@ function ProductPromo({ products }: NewProductProps) {
     return (
         <div className="">
             <div className="flex justify-between items-center">
-                <h2 className="hidden md:block text-[22px] text-dark mb-[20px] mt-[10px] text-[#09824C] font-[900] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Super Promo</h2>
+                <h2 className="hidden md:block text-[22px] mb-[20px] mt-[10px] text-[#09824C] font-[800] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Super Promo</h2>
                 <a href="#" className="flex items-center text-[14px] font-bold text-[#1073F7] hover:text-gray-900 transition-colors">
                     Lihat Lebih Banyak
                     <ChevronDown className="w-4 h-4 ml-1" size={12} strokeWidth={3} />
@@ -101,7 +101,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 pl-0 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 h-[137px] sm:w-48 md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em]" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 h-[137px] shadow-[1px_1px_20px_rgba(0,0,0,0.08)]  md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em] hover:border-[#5dd4ea] hover:border-2" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
@@ -144,7 +144,7 @@ function ProductPromo({ products }: NewProductProps) {
                                     <div className="col-span-4 px-2 pt-1 -ml-1">
                                         <div className=' space-y-2 '>
                                             <p
-                                                className="text-[14px] md:text-[14px] text-[#111111] line-clamp-2"
+                                                className="text-[12px] md:text-[12px] font-bold tracking-[-0.03em] text-[#111111] line-clamp-2"
                                                 style={{
                                                     lineHeight: '17px',
                                                     minHeight: '17px', // setara 2 baris
@@ -157,10 +157,14 @@ function ProductPromo({ products }: NewProductProps) {
                                                 {product.name}
                                             </p>
                                             <div className='flex gap-2 items-center'>
-                                                <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] py-[3px] px-[8px] rounded-[12px]" style={{
+                                                {/* <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] py-[3px] px-[8px] rounded-[12px] border-2 border-[rgba(249,77,99,0.5)] tracking-[-0.03em]   " style={{
                                                     lineHeight: "18px",
-                                                    border: "2px solid #F94D63"
-                                                }}>{formatRupiah(product.price)}</p>
+                                                }}>{formatRupiah(product.price)}</p> */}
+                                                <div className='h-[24px] border-2 border-[rgba(249,77,99,0.5)] bg-[#FFF7F7] px-[8px] py-[3px] rounded-[12px] tracking-[-0.03em] text-[14px] font-[800] text-[#F94D63] flex items-center' style={{
+                                                    lineHeight: "18px",
+                                                }}>
+                                                    {formatRupiah(product.price)}
+                                                </div>
                                                 {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
                                                 lineHeight: "22px",
                                                 letterSpacing: "-0.04em"
@@ -196,10 +200,10 @@ function ProductPromo({ products }: NewProductProps) {
                                                 }
                                             </div>
                                         </div>
-                                        <p className="text-[12px] text-[#555555] -mt-1" style={{
+                                        <p className="text-[10px] text-[#06894E] font-bold " style={{
                                             lineHeight: "22px",
                                             letterSpacing: "-0.04em"
-                                        }}>{formatLocation(product?.seller?.location)}</p>
+                                        }}>{formatLocation(product?.seller?.name)}</p>
                                     </div>
                                 </div>
                             </div>

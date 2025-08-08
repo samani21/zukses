@@ -23,7 +23,7 @@ function ProductList({ products, selectedCategory }: ProductListProps) {
     return (
         <div className="container mx-auto px-0">
             <div className='flex items-center justify-between'>
-                <h2 className="hidden md:block text-[22px] text-dark mb-[20px] mt-[10px] text-[#09824C] font-[900] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Rekomendasi untuk Anda</h2>
+                <h2 className="hidden md:block text-[22px] mb-[20px] mt-[10px] text-[#09824C] font-[800] tracking-[-0.03em]" style={{ lineHeight: "17px" }}>Rekomendasi untuk Anda</h2>
                 <a href="#" className="flex items-center text-[14px] font-bold text-[#1073F7] hover:text-gray-900 transition-colors">
                     Lihat Lebih Banyak
                     <ChevronDown className="w-4 h-4 ml-1" size={12} strokeWidth={3} />
