@@ -22,12 +22,13 @@ interface ProductDetailProps {
     product: Product;
     openModalGuide: boolean;
     setOpenModalGuide: (value: boolean) => void;
+    setChatModalOpen: (value: boolean) => void;
     titleRef: React.RefObject<HTMLHeadingElement | null>;
 }
 
 
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef, setChatModalOpen }) => {
     const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState<number>(1);
@@ -449,8 +450,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             <div className="space-y-2">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
 
-                                <div className='text-black text-[30px] font-[800] tracking-[0]'>
-                                    <p className='leading-none'>{renderPriceDiscountDisplay()}</p>
+                                <div className='text-black text-[30px] font-[800]'>
+                                    <p className='leading-none tracking-[0.5px]'>{renderPriceDiscountDisplay()}</p>
                                 </div>
 
 
@@ -708,7 +709,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                             <p className='text-[#333333] text-[17px] text-left tracking-[-0.02em] font-bold'>284</p>
                                         </div>
                                         <div className='p-3 px-6  flex items-center justify-center gap-4  '>
-                                            <button className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200' style={{
+                                            <button onClick={() => setChatModalOpen(true)} className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200' style={{
                                                 lineHeight: "22px"
                                             }}>
                                                 Chat Penjual
