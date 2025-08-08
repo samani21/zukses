@@ -441,24 +441,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                         </div>
                     </div>
                     <div className="hidden md:block lg:col-span-4 space-y-2 pl-4 ">
-                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#000000] tracking-[-0.02em] line-clamp-2" >
+                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#000000] tracking-[-0.02em] line-clamp-2 tracking-[0]" >
                             {product?.name}
                         </h1>
-                        {/* <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
-                            <div className='bg-[#4A52B2] flex items-center px-6 py-2 gap-6'>
-                                <div className=" flex items-center">
-                                    <span className="text-blue-500 font-medium mr-1">{product?.rating?.toFixed(1)}</span>
-                                    <div className="flex items-center"><span className='text-[16px] font-bold text-white mr-2'>4.9</span>{Array.from({ length: 5 }).map((_, i) => <StarIcon key={i} />)}</div>
-                                </div>
-                                <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.reviewsCount || '1.8Rb'}</span> Penilaian</span>
-                                <span className="text-[14px] text-white"><span className='text-[16px] font-bold text-white mr-2'>{product?.soldCount || '3Rb+'}</span> Terjual</span>
-                            </div>
-                        </div> */}
+
                         <div className='space-y-8 mt-4'>
                             <div className="space-y-2">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
 
-                                <div className='text-black text-[30px] font-[800]'>
+                                <div className='text-black text-[30px] font-[800] tracking-[0]'>
                                     <p className='leading-none'>{renderPriceDiscountDisplay()}</p>
                                 </div>
 

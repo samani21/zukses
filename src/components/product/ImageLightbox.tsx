@@ -85,7 +85,13 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full" onClick={onClose}>
             <div
-                className="relative w-full h-full max-w-[90%] text-white"
+                className="relative text-white"
+                style={{
+                    width: 'calc(90% - 120px)',
+                    height: 'calc(100% - 20px)',
+                    maxWidth: '90%'
+                }}
+
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className='bg-white h-full rounded-[8px]'>
