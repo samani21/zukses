@@ -22,7 +22,7 @@ const CardProduct = ({ product, index }: Props) => {
     return (
         <a
             key={index}
-            className="bg-white cursor-pointer w-full h-[311px] rounded-[5px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD] hover:border-[#5dd4ea] hover:border-2"
+            className="bg-white cursor-pointer w-full h-[310px] rounded-[5px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
             onClick={() => {
                 const slug = product.name
                     .toLowerCase()
@@ -70,61 +70,72 @@ const CardProduct = ({ product, index }: Props) => {
             </div>
 
             {/* Informasi produk lainnya */}
-            <div className="p-2">
-                <p
-                    className="text-[12px] md:text-[12px] font-bold tracking-[-0.03em] text-[#111111] line-clamp-2"
-                    style={{
-                        lineHeight: '17px',
-                        minHeight: '17px', // setara 2 baris
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                    }}
-                >
-                    {product.name}
-                </p>
-                <div className='flex gap-2 items-center'>
-                    <div className='h-[24px] border-2 mt-1.5 border-[rgba(249,77,99,0.5)] bg-[#FFF7F7] px-[8px] py-[3px] rounded-[12px] tracking-[-0.03em] text-[14px] font-[800] text-[#F94D63] flex items-center' style={{
-                        lineHeight: "18px",
-                    }}>
-                        {formatRupiah(product.price)}
+            <div className="p-2 h-[120px] pb-1 flex flex-col justify-between">
+                <div className=' space-y-2 '>
+                    <p
+                        className="text-[12px] md:text-[12px] tracking-[-0.03em] text-[#111111] line-clamp-2"
+                        style={{
+                            lineHeight: '17px',
+                            minHeight: '17px', // setara 2 baris
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        {product.name}
+                    </p>
+                    <div className='flex gap-2 items-center'>
+                        {/* <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] py-[3px] px-[8px] rounded-[12px] border-2 border-[rgba(249,77,99,0.5)] tracking-[-0.03em]   " style={{
+                                                                lineHeight: "18px",
+                                                            }}>{formatRupiah(product.price)}</p> */}
+                        <div className='h-[24px] border-2 border-[#06894E4D] bg-[#fff] px-[8px] py-[3px] rounded-[12px] tracking-[-0.03em] text-[14px] font-[800] text-[#06894E] flex items-center' style={{
+                            lineHeight: "18px",
+                        }}>
+                            {formatRupiah(product.price)}
+                        </div>
+                        {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1 mb-1  line-through" style={{
+                                                            lineHeight: "22px",
+                                                            letterSpacing: "-0.04em"
+                                                        }}>Rp300.000</p> */}
                     </div>
-                    {/* <p className="text-[12px] md:text-[12px] text-[#555555] mt-1  line-through" style={{
-                                            lineHeight: "22px",
-                                            letterSpacing: "-0.04em"
-                                        }}>Rp300.000</p> */}
+                    {/* <div className='flex'>
+                                                        {
+                                                            product?.discount_percent ?
+                                                                <div className='bg-[#FAD7D7] border border-[#F02929] h-[20px] text-[10px] font-[700] text-[10px] text-[#F02929]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px] mr-2' style={{ letterSpacing: "-0.04em" }}>
+                                                                    Diskon {product?.discount_percent}%
+                                                                </div> : <div className=' h-[20px] '>
+            
+                                                                </div>
+                                                        }
+                                                        {
+                                                            product?.delivery?.subsidy ?
+                                                                <div className='bg-[#C8F7D4] h-[20px] text-[10px] font-[700] text-[10px] border-[#388F4F] border text-[#388F4F]  flex flex-col items-start justify-end px-2 pt-5 rounded-[3px]' style={{ letterSpacing: "-0.04em" }}>
+                                                                    Gratis Ongkir
+                                                                </div> : ''
+                                                        }
+                                                    </div> */}
+
                 </div>
-
-                {/* <div className='flex justify-left items-center  gap-2'>
-                                        {product.is_cod_enabled && (
-                                            <div className="mt-1 w-[48px] h-[24px] bg-[#F77000] flex justify-center items-center rounded-[10px]">
-                                                <p className="text-[12px] text-white font-bold">COD</p>
-                                            </div>
-                                        )}
-                                        <div className="mt-1 w-[48px] h-[24px] bg-[#DE4A53] flex justify-center items-center rounded-[10px]">
-                                            <p className="text-[12px] text-white font-bold">-31%</p>
-                                        </div>
-                                    </div> */}
-
-                <div className="flex items-start gap-1 justify-between text-xs text-gray-500 " style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
-                    <div className='flex items-center' style={{ lineHeight: "22px" }}>
-                        <StarIcon className="w-[16px] h-[16px] text-[#FFB200]" />
-                        <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
-                        <span className='ml-2 text-[12px] mt-1 text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
+                <div className=''>
+                    <div className="flex items-end gap-2  justify-start text-xs text-gray-500" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
+                        <div className='flex items-center' style={{ lineHeight: "22px" }}>
+                            <StarIcon className="w-[16px] h-[16px] text-[#FFB200]" />
+                            <span className='text-[12px] font-semibold text-[#555555] tracking-[-0.04em]'>{product.rating || 4.9}</span>
+                            <span className='ml-2 text-[12px] mt-[-1px] text-[#555555] tracking-[-0.04em]'>{product.sold || "1000"}+ terjual</span>
+                        </div>
+                        {
+                            product?.voucher ?
+                                <div className={`bg-[#E7F2FF] text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-center px-[8px] py-[4px]`}>
+                                    Voucher
+                                </div> : ''
+                        }
                     </div>
-                    {
-                        product?.voucher ?
-                            <div className={`bg-[#E7F2FF] mt-2 text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
-                                Voucher
-                            </div> : ''
-                    }
+                    <p className="text-[12px] text-[#06894E] -mt-1.5" style={{
+                        lineHeight: "22px",
+                        letterSpacing: "-0.04em"
+                    }}>{formatLocation(product?.seller?.name)}</p>
                 </div>
-
-                <p className="text-[10px] text-[#06894E] font-bold -mt-2" style={{
-                    lineHeight: "22px",
-                    letterSpacing: "-0.04em"
-                }}>{formatLocation(product?.seller?.name)}</p>
             </div>
         </a>
     )
