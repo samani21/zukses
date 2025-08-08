@@ -5,6 +5,7 @@ import { Media, Product, Thumbnail, variant } from 'components/types/Product';
 import { Check, ChevronRightIcon, MinusCircle, PlusCircle, Star } from 'lucide-react';
 import { formatRupiahNoRP } from 'components/Rupiah';
 import { useRouter } from 'next/router';
+import ChatWindow from './ChatWindow';
 const ShoppingCartIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="8" cy="21" r="1" />
@@ -56,14 +57,28 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     // Ref untuk mendeteksi klik di luar komponen.
     // Tipenya adalah HTMLDivElement karena kita akan menempelkannya ke div.
     const menuRef = useRef<HTMLDivElement>(null);
+    const [isChatOpen, setChatOpen] = useState(false);
+    const [isChatFixed, setChatFixed] = useState(false);
+
+    const containerRef = useRef<HTMLDivElement>(null);
     const chatRef = useRef<HTMLDivElement>(null);
 
-    // Fungsi untuk toggle menu (buka/tutup)
-    const toggleMenu = (): void => {
-        setMenuOpen(!isMenuOpen);
-    };
+    useEffect(() => {
+        const handleScroll = () => {
+            if (containerRef.current) {
+                // Jika bagian atas container sudah tidak terlihat, buat chat jadi fixed
+                if (containerRef.current.getBoundingClientRect().top <= 0) {
+                    setChatFixed(true);
+                } else {
+                    setChatFixed(false);
+                }
+            }
+        };
 
-    // useEffect untuk menambahkan event listener saat komponen dimuat
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     useEffect(() => {
         // Fungsi untuk menutup menu jika user mengklik di luar area menu
         // Memberikan tipe 'MouseEvent' pada parameter event.
@@ -474,7 +489,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                         </div>
                     </div>
                     <div className="hidden md:block lg:col-span-4 space-y-2 pl-4 ">
-                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#000000] tracking-[-0.02em] line-clamp-2 tracking-[0]" >
+                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#000000] tracking-[-0.02em] line-clamp-2 tracking-[0]" style={{
+                            lineHeight: '28px'
+                        }}>
                             {product?.name}
                         </h1>
 
@@ -499,173 +516,175 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             </div>
 
                             <div className='space-y-2'>
-                                <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-12
-                                 items-center pl-4 gap-4'>
-                                    <div>
-                                        <TruckIcon className='w-[32px] h-[32px]  text-[#06894E]' />
-                                    </div>
-                                    <div className='-ml-4 col-span-4 space-y-1 tracking-[0] border-r border-[#CCCCCC] py-1' style={{
-                                        lineHeight: "100%"
-                                    }}>
-                                        <p className='text-[#555555] text-[12px]'>
-                                            Dikirim dari
-                                        </p>
-                                        <p className='text-[14px] font-semibold text-[#06894E]'>
-                                            {formatLocation(product?.seller?.location)}
-                                        </p>
-                                    </div>
-                                    <div className='col-span-3 space-y-1 pt-1 border-r border-[#CCCCCC]'>
-                                        <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
-                                            lineHeight: "100%"
-                                        }}>
-                                            Penilaian :
-                                        </p>
-                                        <div className='flex items-start'>
-                                            <StarIcon className='w-[24px] text-[#F74B00]' />
-                                            <div className='flex items-center gap-1 -mt-0.5'>
-                                                <p className='font-bold text-[16px] text-[#333] tracking-[-0.02em]'>0/5</p>
-                                                <p className='text-[12px] text-[#888888] tracking-[-0.03em]'>(0 Ulasan)</p>
+                                    <div className='space-y-[15px]'>
+                                        <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-12
+                                    items-center pl-4 gap-4'>
+                                            <div>
+                                                <TruckIcon className='w-[32px] h-[32px]  text-[#06894E]' />
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className='col-span-2 flex justify-center pt-1 '>
-                                        <div>
-                                            <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
+                                            <div className='-ml-4 col-span-4 space-y-1 tracking-[0] border-r border-[#CCCCCC] py-1' style={{
                                                 lineHeight: "100%"
                                             }}>
-                                                Terjual
-                                            </p>
-                                            <p className='text-[#111111] text-[16px] font-bold'>
-                                                0
-                                            </p>
+                                                <p className='text-[#555555] text-[12px]'>
+                                                    Dikirim dari
+                                                </p>
+                                                <p className='text-[14px] font-semibold text-[#06894E]'>
+                                                    {formatLocation(product?.seller?.location)}
+                                                </p>
+                                            </div>
+                                            <div className='col-span-3 space-y-1 pt-1 border-r border-[#CCCCCC]'>
+                                                <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
+                                                    lineHeight: "100%"
+                                                }}>
+                                                    Penilaian :
+                                                </p>
+                                                <div className='flex items-start'>
+                                                    <StarIcon className='w-[24px] text-[#F74B00]' />
+                                                    <div className='flex items-center gap-1 -mt-0.5'>
+                                                        <p className='font-bold text-[16px] text-[#333] tracking-[-0.02em]'>0/5</p>
+                                                        <p className='text-[12px] text-[#888888] tracking-[-0.03em]'>(0 Ulasan)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='col-span-2 flex justify-center pt-1 '>
+                                                <div>
+                                                    <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
+                                                        lineHeight: "100%"
+                                                    }}>
+                                                        Terjual
+                                                    </p>
+                                                    <p className='text-[#111111] text-[16px] font-bold'>
+                                                        0
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className='col-span-2 flex justify-center text-center px-4 pt-1 border-l border-[#CCCCCC]'>
+                                                <div>
+                                                    <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
+                                                        lineHeight: "100%"
+                                                    }}>
+                                                        Stok
+                                                    </p>
+                                                    <p className='text-[#111111] text-[16px] font-bold'>
+                                                        15
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='space-y-[15px]'>
+                                            {
+                                                product?.voucher || product?.delivery.subsidy ?
+                                                    <div className='py-2 flex items-center gap-2'>
+                                                        {
+                                                            product?.voucher &&
+                                                            <div className=''>
+                                                                <span className='bg-[#C8F7D4] h-[25px]  border border-[#388F4F] text-[#388F4F] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Voucher {formatRupiah(product?.voucher)}</span>
+                                                            </div>
+                                                        }
+                                                        {
+                                                            product?.delivery.subsidy &&
+                                                            <div className=''>
+                                                                <span className='bg-[#FFF9BF]  h-[25px] border border-[#F77000] text-[#F77000] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Gratis Ongkir    {formatRupiah(product?.delivery.subsidy)}</span>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    : ''
+                                            }
+                                            {
+                                                Number(product?.is_cod_enabled) == 1 && <p className='text-[#F77000] font-bold text-[15px] '>COD (Bayar ditempat)</p>
+                                            }
+                                            <p className='tracking-[-0.02em] text-[#555555] text-[14px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
+                                            {product?.variant_prices.map((group) =>
+                                                <div key={group.id} className='space-y-2 w-[50%]'>
+                                                    <p className="text-[#555555] text-[14px] font-medium tracking-[-0.02em]">
+                                                        Pilih <span className="text-[#09824C] font-bold ">{group.variant}</span>
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-2 mt-2">
+                                                        {group?.options.map((option, idx) => {
+                                                            return (
+                                                                option !== "" && (
+                                                                    <button
+                                                                        key={idx}
+                                                                        onClick={() => {
+                                                                            const newSelections = {
+                                                                                ...activeSelections,
+                                                                                [group.id]: option
+                                                                            };
+
+                                                                            const existingIdx = activeSelectionsArray.findIndex(sel => sel.groupId === String(group.id));
+
+                                                                            const updatedSelections = [...activeSelectionsArray];
+
+                                                                            const newSelection = {
+                                                                                groupId: String(group.id),
+                                                                                name: group.variant, // contoh: "Warna" atau "Ukuran"
+                                                                                value: option         // contoh: "Hitam - Abu" atau "XL"
+                                                                            };
+
+                                                                            if (existingIdx > -1) {
+                                                                                updatedSelections[existingIdx] = newSelection;
+                                                                            } else {
+                                                                                updatedSelections.push(newSelection);
+                                                                            }
+
+                                                                            setActiveSelectionsArray(updatedSelections);
+                                                                            setActiveSelections(newSelections);
+
+                                                                            // Cek apakah semua kombinasi sudah dipilih
+                                                                            const selectedLabels = Object.values(newSelections).join(" - ");
+
+                                                                            const matchedVariant = product?.variants?.find((v) =>
+                                                                                v.combination_label === selectedLabels
+                                                                            );
+
+                                                                            if (matchedVariant) {
+                                                                                handleVariantSelect(matchedVariant);
+                                                                            }
+                                                                        }}
+
+                                                                        className={`border text-[14px] font-[500] h-[35px] flex items-center transition-all  ${activeSelections[group.id] === option
+                                                                            ? 'border-none text-white '
+                                                                            : 'border-[#bbb] bg-white text-black py-1 px-4'}`}
+                                                                        style={{
+                                                                            letterSpacing: "-0.04em"
+                                                                        }}
+                                                                    >
+                                                                        {activeSelections[group.id] === option ?
+                                                                            <div className='bg-[#09824C] h-[35px] flex items-center px-2 border border-[#09824C]'>
+                                                                                <Check className='h-[20px] w-[20px]' />
+                                                                            </div> : option}
+                                                                        {activeSelections[group.id] === option &&
+                                                                            <span className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] border border-[#09824C]  h-[35px] flex items-center px-4">
+                                                                                {option}
+                                                                            </span>}
+                                                                    </button>
+                                                                )
+                                                            );
+                                                        })}
+
+
+                                                    </div>
+                                                    {/* <div className="mt-1 text-end">
+                                            <button className="text-[#4A52B2] text-[16px] font-bold text-right">Lihat Lebih Banyak</button>
+                                        </div> */}
+                                                </div>)}
+
+                                            {hasImageGuide &&
+                                                <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center cursor-pointer' onClick={() => setOpenModalGuide(true)}>
+                                                    Lihat Panduan Ukuran
+                                                    <ChevronRightIcon />
+                                                </div>
+                                            }
+                                            {activeSelectionsArray.length > 0 && (
+                                                <div className="tracking-[-0.02em]  text-[16px]" style={{
+                                                    lineHeight: "150%"
+                                                }}>
+                                                    <p className='text-[#555555] font-medium'>Variasi yang dipilih :</p>
+                                                    <p className='font-bold text-[#09824C]'>{activeSelectionsArray.map(sel => `${sel.name} ${sel.value}`).join(', ')}</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className='col-span-2 flex justify-center text-center px-4 pt-1 border-l border-[#CCCCCC]'>
-                                        <div>
-                                            <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
-                                                lineHeight: "100%"
-                                            }}>
-                                                Stok
-                                            </p>
-                                            <p className='text-[#111111] text-[16px] font-bold'>
-                                                15
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className='space-y-4'>
-                                    {
-                                        product?.voucher || product?.delivery.subsidy ?
-                                            <div className='py-2 flex items-center gap-2'>
-                                                {
-                                                    product?.voucher &&
-                                                    <div className=''>
-                                                        <span className='bg-[#C8F7D4] h-[25px]  border border-[#388F4F] text-[#388F4F] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Voucher {formatRupiah(product?.voucher)}</span>
-                                                    </div>
-                                                }
-                                                {
-                                                    product?.delivery.subsidy &&
-                                                    <div className=''>
-                                                        <span className='bg-[#FFF9BF]  h-[25px] border border-[#F77000] text-[#F77000] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Gratis Ongkir    {formatRupiah(product?.delivery.subsidy)}</span>
-                                                    </div>
-                                                }
-                                            </div>
-                                            : ''
-                                    }
-                                    {
-                                        Number(product?.is_cod_enabled) == 1 && <p className='text-[#F77000] font-bold text-[15px] '>COD (Bayar ditempat)</p>
-                                    }
-                                    <p className='tracking-[-0.02em] text-[#555555] text-[14px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
-                                    {product?.variant_prices.map((group) =>
-                                        <div key={group.id} className='space-y-2 w-[50%]'>
-                                            <p className="text-[#555555] text-[14px] font-medium tracking-[-0.02em]">
-                                                Pilih <span className="text-[#09824C] font-bold ">{group.variant}</span>
-                                            </p>
-                                            <div className="flex flex-wrap gap-2 mt-2">
-                                                {group?.options.map((option, idx) => {
-                                                    return (
-                                                        option !== "" && (
-                                                            <button
-                                                                key={idx}
-                                                                onClick={() => {
-                                                                    const newSelections = {
-                                                                        ...activeSelections,
-                                                                        [group.id]: option
-                                                                    };
-
-                                                                    const existingIdx = activeSelectionsArray.findIndex(sel => sel.groupId === String(group.id));
-
-                                                                    const updatedSelections = [...activeSelectionsArray];
-
-                                                                    const newSelection = {
-                                                                        groupId: String(group.id),
-                                                                        name: group.variant, // contoh: "Warna" atau "Ukuran"
-                                                                        value: option         // contoh: "Hitam - Abu" atau "XL"
-                                                                    };
-
-                                                                    if (existingIdx > -1) {
-                                                                        updatedSelections[existingIdx] = newSelection;
-                                                                    } else {
-                                                                        updatedSelections.push(newSelection);
-                                                                    }
-
-                                                                    setActiveSelectionsArray(updatedSelections);
-                                                                    setActiveSelections(newSelections);
-
-                                                                    // Cek apakah semua kombinasi sudah dipilih
-                                                                    const selectedLabels = Object.values(newSelections).join(" - ");
-
-                                                                    const matchedVariant = product?.variants?.find((v) =>
-                                                                        v.combination_label === selectedLabels
-                                                                    );
-
-                                                                    if (matchedVariant) {
-                                                                        handleVariantSelect(matchedVariant);
-                                                                    }
-                                                                }}
-
-                                                                className={`border text-[14px] font-[500] h-[35px] flex items-center transition-all  ${activeSelections[group.id] === option
-                                                                    ? 'border-none text-white '
-                                                                    : 'border-[#bbb] bg-white text-black py-1 px-4'}`}
-                                                                style={{
-                                                                    letterSpacing: "-0.04em"
-                                                                }}
-                                                            >
-                                                                {activeSelections[group.id] === option ?
-                                                                    <div className='bg-[#09824C] h-[35px] flex items-center px-2 border border-[#09824C]'>
-                                                                        <Check className='h-[20px] w-[20px]' />
-                                                                    </div> : option}
-                                                                {activeSelections[group.id] === option &&
-                                                                    <span className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] border border-[#09824C]  h-[35px] flex items-center px-4">
-                                                                        {option}
-                                                                    </span>}
-                                                            </button>
-                                                        )
-                                                    );
-                                                })}
-
-
-                                            </div>
-                                            {/* <div className="mt-1 text-end">
-                                        <button className="text-[#4A52B2] text-[16px] font-bold text-right">Lihat Lebih Banyak</button>
-                                    </div> */}
-                                        </div>)}
-
-                                    {hasImageGuide &&
-                                        <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center cursor-pointer' onClick={() => setOpenModalGuide(true)}>
-                                            Lihat Panduan Ukuran
-                                            <ChevronRightIcon />
-                                        </div>
-                                    }
-                                    {activeSelectionsArray.length > 0 && (
-                                        <div className="tracking-[-0.02em]  text-[16px]" style={{
-                                            lineHeight: "150%"
-                                        }}>
-                                            <p className='text-[#555555] font-medium'>Variasi yang dipilih :</p>
-                                            <p className='font-bold text-[#09824C]'>{activeSelectionsArray.map(sel => `${sel.name} ${sel.value}`).join(', ')}</p>
-                                        </div>
-                                    )}
-                                </div>
                                 <div className="grid md:flex items-center gap-4 my-6 ">
                                     <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em]">Kuantitas</span>
                                     <button
@@ -771,9 +790,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
                                                 <p className='text-[#333333] text-[17px] tracking-[-0.02em] font-bold'>284</p>
                                             </div>
-                                            <div className='p-3 px-6 flex items-center justify-center gap-4'>
+                                            <div ref={containerRef} className='p-3 px-6 flex items-center justify-center gap-4 relative'>
+                                                <ChatWindow
+                                                    isOpen={isChatOpen}
+                                                    isFixed={isChatFixed && isChatOpen} 
+                                                    onClose={() => setChatOpen(false)}
+                                                    chatRef={chatRef}
+                                                />
                                                 <button
-                                                    onClick={toggleMenu}
+                                                    onClick={() => setChatOpen(!isChatOpen)}
                                                     className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200 transition-colors duration-200'
                                                     style={{ lineHeight: "22px" }}
                                                 >
@@ -887,7 +912,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                 // 👇 Hubungkan fungsi handleViewVideo, hanya jika ada video
                 onViewVideo={videoProduct.length > 0 ? handleViewVideo : undefined}
             />
-
         </div>
     );
 };
