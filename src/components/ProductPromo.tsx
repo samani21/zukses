@@ -101,7 +101,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 pl-0 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 h-[137px] shadow-[1px_1px_20px_rgba(0,0,0,0.08)]  md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em] hover:border-[#5dd4ea] hover:border-2" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 h-[137px] shadow-[1px_1px_20px_rgba(0,0,0,0.08)]  md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em] hover:border-[#06894E] hover:border-2" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')
@@ -141,10 +141,10 @@ function ProductPromo({ products }: NewProductProps) {
                                             />
                                         </div>
                                     </div>
-                                    <div className="col-span-4 px-2 pt-1 -ml-1">
-                                        <div className=' space-y-2 '>
+                                    <div className="col-span-4 px-2 pt-1 -ml-1  flex flex-col justify-between">
+                                        <div className=' space-y-1 '>
                                             <p
-                                                className="text-[12px] md:text-[12px] font-bold tracking-[-0.03em] text-[#111111] line-clamp-2"
+                                                className="text-[12px] md:text-[12px] tracking-[-0.03em] text-[#111111] line-clamp-2"
                                                 style={{
                                                     lineHeight: '17px',
                                                     minHeight: '17px', // setara 2 baris
@@ -160,7 +160,7 @@ function ProductPromo({ products }: NewProductProps) {
                                                 {/* <p className="text-[12px] md:text-[14px] font-[800] mt-1.5  text-[#F94D63] bg-[#FFF7F7] py-[3px] px-[8px] rounded-[12px] border-2 border-[rgba(249,77,99,0.5)] tracking-[-0.03em]   " style={{
                                                     lineHeight: "18px",
                                                 }}>{formatRupiah(product.price)}</p> */}
-                                                <div className='h-[24px] border-2 border-[rgba(249,77,99,0.5)] bg-[#FFF7F7] px-[8px] py-[3px] rounded-[12px] tracking-[-0.03em] text-[14px] font-[800] text-[#F94D63] flex items-center' style={{
+                                                <div className='h-[24px] border-2 border-[#06894E4D] bg-[#fff] px-[8px] py-[3px] rounded-[12px] tracking-[-0.03em] text-[14px] font-[800] text-[#06894E] flex items-center' style={{
                                                     lineHeight: "18px",
                                                 }}>
                                                     {formatRupiah(product.price)}
@@ -186,6 +186,9 @@ function ProductPromo({ products }: NewProductProps) {
                                                     </div> : ''
                                             }
                                         </div> */}
+
+                                        </div>
+                                        <div className='pb-1'>
                                             <div className="flex items-end gap-2  justify-start text-xs text-gray-500" style={{ letterSpacing: "-0.04em", lineHeight: "22px" }}>
                                                 <div className='flex items-center' style={{ lineHeight: "22px" }}>
                                                     <StarIcon className="w-[16px] h-[16px] text-[#FFB200]" />
@@ -194,16 +197,16 @@ function ProductPromo({ products }: NewProductProps) {
                                                 </div>
                                                 {
                                                     product?.voucher ?
-                                                        <div className={`bg-[#E7F2FF] text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-end px-2 pt-5`}>
+                                                        <div className={`bg-[#E7F2FF] text-[#1073F7] rounded-[3px] font-bold text-[10px] h-[20px] flex flex-col items-start justify-center px-[8px] py-[4px]`}>
                                                             Voucher
                                                         </div> : ''
                                                 }
                                             </div>
+                                            <p className="text-[12px] text-[#06894E] -mt-1.5" style={{
+                                                lineHeight: "22px",
+                                                letterSpacing: "-0.04em"
+                                            }}>{formatLocation(product?.seller?.name)}</p>
                                         </div>
-                                        <p className="text-[10px] text-[#06894E] font-bold " style={{
-                                            lineHeight: "22px",
-                                            letterSpacing: "-0.04em"
-                                        }}>{formatLocation(product?.seller?.name)}</p>
                                     </div>
                                 </div>
                             </div>

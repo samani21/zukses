@@ -440,10 +440,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             />
                         </div>
                     </div>
-                    <div className="hidden md:block lg:col-span-4 space-y-[16px] pl-4 ">
-                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#333333] tracking-[-0.02em]" style={{
-                            lineHeight: "28px",
-                        }}>
+                    <div className="hidden md:block lg:col-span-4 space-y-2 pl-4 ">
+                        <h1 ref={titleRef} className="text-[22px] font-[700] text-[#000000] tracking-[-0.02em] line-clamp-2" >
                             {product?.name}
                         </h1>
                         {/* <div className=" flex items-center flex-wrap gap-x-3 gap-y-1 mt-2 text-xs">
@@ -457,20 +455,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             </div>
                         </div> */}
                         <div>
-                            <div className="space-y-2 mt-6">
+                            <div className="space-y-2">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
 
-                                <div className='inline-block px-[15px] py-[8px] text-[30px] font-[800]  text-[#F94D63] rounded-full border-4 border-[#F94D6380]/50 h-[52px]'>
+                                <div className='text-black text-[30px] font-[800]'>
                                     <p className='leading-none'>{renderPriceDiscountDisplay()}</p>
                                 </div>
 
 
                                 {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() && (
-                                    <div className='flex items-center gap-4 mt-8'>
+                                    <div className='flex items-center gap-2 mt-3'>
                                         <div className=''>
-                                            <span className='bg-[#FAD7D7] border border-[#F02929] text-[#F02929] rounded-[5px] px-[8px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
+                                            <span className='bg-[#FAD7D7] border border-[#F02929] text-[#F02929] rounded-[15px] px-[10px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
                                         </div>
-                                        <div className="text-[#888888] text-[18px] font-[400] line-through tracking-[-0.02em]">{renderPriceDisplay()}</div>
+                                        <div className="text-[#98A3B4] text-[14px] font-[700] line-through tracking-[-0.02em]">{renderPriceDisplay()}</div>
                                     </div>
                                 )}
 
