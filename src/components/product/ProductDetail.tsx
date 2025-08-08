@@ -683,7 +683,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         </div>
                                     )}
                                 </div>
-                                <div className="grid md:flex items-center gap-4 my-6 ">
+                                <div className="grid md:flex items-center gap-4 ">
                                     <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em]">Kuantitas</span>
                                     <button
                                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
