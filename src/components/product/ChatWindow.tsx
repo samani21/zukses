@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { FC } from "react";
 
-const ChatWindow: FC<{ isOpen: boolean; isFixed: boolean; onClose: () => void; chatRef: React.RefObject<HTMLDivElement | null> }> = ({ isOpen, isFixed, onClose, chatRef }) => {
+const ChatWindow: FC<{ isOpen: boolean; isFixed: boolean; onClose: () => void; chatRef: React.RefObject<HTMLDivElement | null> }> = ({ isOpen, onClose, chatRef }) => {
 
 
     if (!isOpen) {
