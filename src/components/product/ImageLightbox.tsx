@@ -85,112 +85,97 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, productName, isOp
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4 h-full" onClick={onClose}>
             <div
-                className="relative w-full h-[85vh] max-w-[90%] text-white"
+                className="relative w-full h-full max-w-[90%] text-white"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className='h-[10vh] bg-white flex justify-between items-center  px-8 rounded-t-[8px]'>
-                    <h5
-                        className="font-[800] text-[20px] w-[96%] text-[#080808] truncate"
-                        style={{
-                            lineHeight: "26px",
-                            letterSpacing: "-0.01em",
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap"
-                        }}
-                    >
-                        {productName}
-                    </h5>
-                    <X color='#2E3137' size={24} className='cursor-pointer' onClick={onClose} />
-                </div>
-
-                <div className='flex w-full max-h-[75vh] overflow-hidden bg-white rounded-b-[8px]'>
-                    <div className="col-span-3 flex-grow h-full flex w-1/2 items-center justify-center relative p-4 pt-0 bg-white md:w-[calc(100%-380px)]">
-                        <button onClick={handlePrev} className="absolute left-4 text-white w-[50px] h-[50px] p-3 bg-white  rounded-full transition-colors z-10" aria-label="Gambar sebelumnya" style={{
-                            boxShadow: "rgba(0, 0, 0, 0.12) 0px 2px 4px"
-                        }}>
-                            <ChevronLeftIcon color='#888888' strokeWidth={2} />
-                        </button>
-                        <div className='flex items-center justify-center w-full h-[70vh]'>
-                            {images[currentIndex].url.endsWith('.mp4') ? (
-                                <video
-                                    key={images[currentIndex].id} // Tambahkan key untuk re-render video
-                                    src={images[currentIndex].url}
-                                    controls
-                                    autoPlay
-                                    className="max-w-full max-h-full object-contain select-none"
-                                />
-                            ) : (
-                                <img
-                                    src={images[currentIndex].url}
-                                    alt={images[currentIndex].alt}
-                                    className="max-w-full max-h-full object-contain select-none"
-                                />
-                            )}
-                        </div>
-                        <button onClick={handleNext} className="absolute right-4  w-[50px] h-[50px] p-3 bg-white  rounded-full transition-colors z-10" aria-label="Gambar berikutnya"
+                <div className='bg-white h-full rounded-[8px]'>
+                    <div className='flex items-center justify-between p-6'>
+                        <h5
+                            className="font-[800] text-[20px] w-[96%] text-[#080808] truncate"
                             style={{
+                                lineHeight: "26px",
+                                letterSpacing: "-0.01em",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap"
+                            }}
+                        >
+                            {productName}
+                        </h5>
+                        <X color='#2E3137' size={24} className='cursor-pointer' onClick={onClose} />
+                    </div>
+                    <div className='flex w-full l overflow-hidden bg-white rounded-b-[8px]'>
+                        <div className="col-span-3 flex-grow h-full flex w-1/2 items-center justify-center relative p-4 pt-0 bg-white md:w-[calc(100%-380px)]">
+                            <button onClick={handlePrev} className="absolute left-4 text-white w-[50px] h-[50px] p-3 bg-white  rounded-full transition-colors z-10" aria-label="Gambar sebelumnya" style={{
                                 boxShadow: "rgba(0, 0, 0, 0.12) 0px 2px 4px"
                             }}>
-                            <ChevronRightIcon color='#888888' strokeWidth={2} />
-                        </button>
-                    </div>
-
-                    {/* Sidebar with Thumbnails */}
-                    <div className="hidden md:flex flex-col w-1/2 bg-white text-black p-4 pt-0 h-[300px] ">
-                        <p className='mb-2 text-[14px] text-bold font-bold'>Gambar Barang </p>
-                        <div
-                            ref={thumbnailContainerRef}
-                            className="flex-grow overflow-y-auto overflow-x-hidden grid grid-cols-3 gap-3  rounded-[8px] w-1/2"
-                        >
-                            {images.map((img, index) => (
-                                <button
-                                    key={img.id}
-                                    onClick={() => handleThumbnailClick(index)}
-                                    className="bg-white relative aspect-square"
-                                    ref={(el) => { thumbnailRefs.current[index] = el; }}
-                                >
-                                    {img.url.endsWith('.mp4') ? (
-                                        <>
-                                            <video
-                                                src={img.url}
-                                                className={`w-full h-full object-cover border-2 rounded-[8px] transition-all duration-200 ${currentIndex === index ? 'border-green-600' : 'border-transparent hover:border-gray-300'}`}
-                                                muted
-                                                playsInline
-                                                preload="metadata"
-                                            />
-                                            {/* Video Play Icon Overlay */}
-                                            <div className="absolute inset-0 flex items-center rounded-[8px] justify-center bg-black/30">
-                                                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <img
-                                            src={img.url}
-                                            alt={img.alt}
-                                            className={`w-full h-full object-cover border-2 rounded-[8px] transition-all duration-200 ${currentIndex === index ? 'border-green-600 scale-105' : 'border-transparent hover:border-gray-300'}`}
-                                        />
-                                    )}
-                                </button>
-                            ))}
+                                <ChevronLeftIcon color='#888888' strokeWidth={2} />
+                            </button>
+                            <div className='flex items-center justify-center w-full h-[78vh]'>
+                                {images[currentIndex].url.endsWith('.mp4') ? (
+                                    <video
+                                        key={images[currentIndex].id} // Tambahkan key untuk re-render video
+                                        src={images[currentIndex].url}
+                                        controls
+                                        autoPlay
+                                        className="max-w-full max-h-full object-contain select-none"
+                                    />
+                                ) : (
+                                    <img
+                                        src={images[currentIndex].url}
+                                        alt={images[currentIndex].alt}
+                                        className="max-w-full max-h-full object-contain select-none"
+                                    />
+                                )}
+                            </div>
+                            <button onClick={handleNext} className="absolute right-4  w-[50px] h-[50px] p-3 bg-white  rounded-full transition-colors z-10" aria-label="Gambar berikutnya"
+                                style={{
+                                    boxShadow: "rgba(0, 0, 0, 0.12) 0px 2px 4px"
+                                }}>
+                                <ChevronRightIcon color='#888888' strokeWidth={2} />
+                            </button>
                         </div>
 
-                        {/* <div className="mt-auto pt-4 flex">
-                            {onViewVideo && (
-                                <button
-                                    onClick={onViewVideo}
-                                    className="w-full text-center py-2.5 px-4 bg-[#F6E9F0] text-[#563D7C] border border-[#563D7C80]/50 font-semibold hover:bg-purple-50 transition-colors text-[14px]"
+                        <div className="hidden md:flex flex-col w-1/2 text-black p-4 pt-0 max-h-[300px]">
+                            <p className='mb-2 text-[14px] text-bold font-bold'>Gambar Barang </p>
+                            <div className='w-1/2 overflow-y-auto overflow-x-hidden pb-2'>
+                                <div
+                                    ref={thumbnailContainerRef}
+                                    className="flex-grow grid grid-cols-3 gap-3  rounded-[8px]"
                                 >
-                                    Lihat Video
-                                </button>
-                            )}
-                            <button
-                                onClick={onClose}
-                                className="w-full text-center py-2.5 px-4 bg-[#563D7C] text-white font-semibold hover:bg-purple-700 transition-colors text-[14px]"
-                            >
-                                Tutup
-                            </button>
-                        </div> */}
+                                    {images.map((img, index) => (
+                                        <button
+                                            key={img.id}
+                                            onClick={() => handleThumbnailClick(index)}
+                                            className="bg-white relative aspect-square"
+                                            ref={(el) => { thumbnailRefs.current[index] = el; }}
+                                        >
+                                            {img.url.endsWith('.mp4') ? (
+                                                <>
+                                                    <video
+                                                        src={img.url}
+                                                        className={`w-full h-full object-cover border-2 rounded-[8px] transition-all duration-200 ${currentIndex === index ? 'border-green-600' : 'border-transparent hover:border-gray-300'}`}
+                                                        muted
+                                                        playsInline
+                                                        preload="metadata"
+                                                    />
+                                                    <div className="absolute inset-0 flex items-center rounded-[8px] justify-center bg-black/30">
+                                                        <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <img
+                                                    src={img.url}
+                                                    alt={img.alt}
+                                                    className={`w-full h-full object-cover border-2 rounded-[8px] transition-all duration-200 ${currentIndex === index ? 'border-green-600 scale-105' : 'border-transparent hover:border-gray-300'}`}
+                                                />
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
