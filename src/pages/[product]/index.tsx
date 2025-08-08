@@ -74,9 +74,11 @@ const ProductPage = () => {
         <div>
             <main className=" min-h-screen">
 
-                <Header />
+                <div className='hidden md:block'>
+                    <Header />
+                </div>
                 {isSticky && detailProduct && (
-                    <div className="fixed  left-0 w-full z-40 bg-white px-4 py-2 shadow-sm flex items-center justify-center ">
+                    <div className="fixed top-0 left-0 w-full z-40 bg-white px-4 py-2 shadow-sm flex items-center justify-center ">
                         <div className='w-[1200px] '>
                             <h1 className="text-[14px] font-[700] text-[#333333] tracking-[-0.02em] truncate">
                                 {detailProduct.name}
@@ -137,7 +139,7 @@ const ProductPage = () => {
                             </li>
                         </ol>
                     </nav>
-{}
+                    { }
                     {
                         detailProduct &&
                         <div className='space-y-6'>
