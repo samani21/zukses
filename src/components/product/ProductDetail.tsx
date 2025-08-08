@@ -18,17 +18,19 @@ const StarIcon = ({ className = "w-3.5 h-3.5 text-yellow-400" }: { className?: s
         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
     </svg>
 );
+const TruckIcon = ({ className = "w-3.5 h-3.5 text-yellow-400" }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" /><path d="M5 17.972c-1.097-.054-1.78-.217-2.268-.704s-.65-1.171-.704-2.268M9 18h6m4-.028c1.097-.054 1.78-.217 2.268-.704C22 16.535 22 15.357 22 13v-2h-4.7c-.745 0-1.117 0-1.418-.098a2 2 0 0 1-1.284-1.284C14.5 9.317 14.5 8.945 14.5 8.2c0-1.117 0-1.675-.147-2.127a3 3 0 0 0-1.926-1.926C11.975 4 11.417 4 10.3 4H2m0 4h6m-6 3h4" /><path d="M14.5 6h1.821c1.456 0 2.183 0 2.775.354c.593.353.938.994 1.628 2.276L22 11" /></g></svg>
+);
 interface ProductDetailProps {
     product: Product;
     openModalGuide: boolean;
     setOpenModalGuide: (value: boolean) => void;
-    setChatModalOpen: (value: boolean) => void;
     titleRef: React.RefObject<HTMLHeadingElement | null>;
 }
 
 
 
-const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef, setChatModalOpen }) => {
+const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuide, titleRef }) => {
     const [activeVariant, setActiveVariant] = useState<variant | null>(null);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [quantity, setQuantity] = useState<number>(1);
@@ -48,7 +50,37 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     // STATE: Untuk mengontrol posisi galeri.
     const [isSticky, setIsSticky] = useState(false); // Apakah galeri sedang melayang?
     const [isAtBottom, setIsAtBottom] = useState(false); // Apakah galeri sudah mentok di bawah?
+    // State untuk mengontrol visibilitas menu
+    const [isMenuOpen, setMenuOpen] = useState<boolean>(false);
 
+    // Ref untuk mendeteksi klik di luar komponen.
+    // Tipenya adalah HTMLDivElement karena kita akan menempelkannya ke div.
+    const menuRef = useRef<HTMLDivElement>(null);
+    const chatRef = useRef<HTMLDivElement>(null);
+
+    // Fungsi untuk toggle menu (buka/tutup)
+    const toggleMenu = (): void => {
+        setMenuOpen(!isMenuOpen);
+    };
+
+    // useEffect untuk menambahkan event listener saat komponen dimuat
+    useEffect(() => {
+        // Fungsi untuk menutup menu jika user mengklik di luar area menu
+        // Memberikan tipe 'MouseEvent' pada parameter event.
+        const handleClickOutside = (event: MouseEvent): void => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+
+        // Menambahkan event listener ke dokumen
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // Cleanup: hapus event listener saat komponen di-unmount
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
     useEffect(() => {
         const handleScroll = () => {
             if (!detailContainerRef.current || !galleryRef.current) return;
@@ -446,7 +478,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             {product?.name}
                         </h1>
 
-                        <div className='space-y-8 mt-4'>
+                        <div className='space-y-[20px] mt-4'>
                             <div className="space-y-2">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
 
@@ -467,18 +499,22 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             </div>
 
                             <div className='space-y-2'>
-                                <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-7 items-center px-6 gap-4'>
-                                    <div className='col-span-3 space-y-1 tracking-[0] border-r border-[#CCCCCC] py-1' style={{
+                                <div className='bg-[#F1F5F9] h-[54px] border border-[#DADBDB] rounded-[10px] grid grid-cols-12
+                                 items-center pl-4 gap-4'>
+                                    <div>
+                                        <TruckIcon className='w-[32px] h-[32px]  text-[#06894E]' />
+                                    </div>
+                                    <div className='-ml-4 col-span-4 space-y-1 tracking-[0] border-r border-[#CCCCCC] py-1' style={{
                                         lineHeight: "100%"
                                     }}>
                                         <p className='text-[#555555] text-[12px]'>
-                                            DIkirim dari
+                                            Dikirim dari
                                         </p>
                                         <p className='text-[14px] font-semibold text-[#06894E]'>
                                             {formatLocation(product?.seller?.location)}
                                         </p>
                                     </div>
-                                    <div className='col-span-2 space-y-1 pt-1 border-r border-[#CCCCCC]'>
+                                    <div className='col-span-3 space-y-1 pt-1 border-r border-[#CCCCCC]'>
                                         <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                             lineHeight: "100%"
                                         }}>
@@ -492,7 +528,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='flex justify-center pt-1 '>
+                                    <div className='col-span-2 flex justify-center pt-1 '>
                                         <div>
                                             <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                                 lineHeight: "100%"
@@ -504,7 +540,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                             </p>
                                         </div>
                                     </div>
-                                    <div className='flex justify-center px-4 pt-1 border-l border-[#CCCCCC]'>
+                                    <div className='col-span-2 flex justify-center text-center px-4 pt-1 border-l border-[#CCCCCC]'>
                                         <div>
                                             <p className='text-[#555555] text-[12px] font-semibold tracking-[0]' style={{
                                                 lineHeight: "100%"
@@ -677,6 +713,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         )}
                                     </div>
                                 </div>
+
                                 <div className=" hidden sm:flex items-center gap-3 " style={{
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
@@ -689,36 +726,66 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         Beli Sekarang
                                     </button>
                                 </div>
-                                <div className='bg-[#F1F5F9] border border-[#DADBDB] rounded-[10px] h-[80px] mt-6'>
-                                    <div className='flex justify-between items-center py-2 px-4'>
-                                        <div className='flex items-center gap-4'>
-                                            <img className='border border-[#BBBBBB] rounded-full w-[50px] h-[50px] bg-white' src={product?.seller?.avatarUrl} />
-                                            <div>
-                                                <p className='text-[#333333] font-bold text-[17px] tracking-[-0.02em]'>
-                                                    {product?.seller?.name}
-                                                </p>
-                                                <div className='flex items-end gap-2'>
-                                                    <Star size={24} strokeWidth={"2px"} color='#F74B00' />
-                                                    <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
-                                                    <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
+                                <div className="relative inline-block text-left w-full max-w-3xl" ref={chatRef}>
+
+                                    {/* Jendela Chat yang muncul di atas */}
+                                    {isMenuOpen && (
+                                        <div
+                                            className="origin-bottom-right absolute right-0 bottom-full mb-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                                            style={{ height: '460px', maxWidth: '560px', boxShadow: '0 2px 30px 0 #98A3B4' }}
+                                            role="menu"
+                                            aria-orientation="vertical"
+                                            aria-labelledby="menu-button"
+                                        >
+                                            <div className="p-4 h-full flex flex-col" role="none">
+                                                <p className="font-semibold text-lg text-center text-gray-700">Fitur Chat</p>
+                                                <div className="flex-grow bg-gray-50 rounded-md mt-2 p-2">
+                                                    <p className="text-sm text-gray-600">Konten chat akan ditampilkan di sini.</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className='border-r border-l px-4 border-[#CCCCCC] '>
-                                            <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
-                                            <p className='text-[#333333] text-[17px] text-left tracking-[-0.02em] font-bold'>284</p>
-                                        </div>
-                                        <div className='p-3 px-6  flex items-center justify-center gap-4  '>
-                                            <button onClick={() => setChatModalOpen(true)} className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200' style={{
-                                                lineHeight: "22px"
-                                            }}>
-                                                Chat Penjual
-                                            </button>
-                                            <button className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff] hover:bg-green-600' style={{
-                                                lineHeight: "22px"
-                                            }}>
-                                                Kunjungi Toko
-                                            </button>
+                                    )}
+
+                                    {/* Bilah Informasi Penjual */}
+                                    <div className='bg-[#F1F5F9] border border-[#DADBDB] rounded-[10px] w-full'>
+                                        <div className='flex justify-between items-center py-2 px-4'>
+                                            <div className='flex items-center gap-4'>
+                                                <img
+                                                    className='border border-[#BBBBBB] rounded-full w-[50px] h-[50px] bg-white object-cover'
+                                                    src={product.seller.avatarUrl}
+                                                    alt="Seller Avatar"
+                                                    onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/50x50/EFEFEF/333333?text=A'; }}
+                                                />
+                                                <div>
+                                                    <p className='text-[#333333] font-bold text-[17px] tracking-[-0.02em]'>
+                                                        {product.seller.name}
+                                                    </p>
+                                                    <div className='flex items-center gap-2'>
+                                                        <Star size={20} />
+                                                        <p className='tracking-[-0.02em] text-[#333333] font-bold text-[17px]'>4.9/5</p>
+                                                        <p className='tracking-[-0.03em] text-[#888888] text-[14px] '>(150 Ulasan)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className='border-r border-l px-4 border-[#CCCCCC] text-center'>
+                                                <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
+                                                <p className='text-[#333333] text-[17px] tracking-[-0.02em] font-bold'>284</p>
+                                            </div>
+                                            <div className='p-3 px-6 flex items-center justify-center gap-4'>
+                                                <button
+                                                    onClick={toggleMenu}
+                                                    className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#09824C] hover:bg-green-200 transition-colors duration-200'
+                                                    style={{ lineHeight: "22px" }}
+                                                >
+                                                    Chat Penjual
+                                                </button>
+                                                <button
+                                                    className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#fff] hover:bg-green-600 transition-colors duration-200'
+                                                    style={{ lineHeight: "22px" }}
+                                                >
+                                                    Kunjungi Toko
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -820,6 +887,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                 // 👇 Hubungkan fungsi handleViewVideo, hanya jika ada video
                 onViewVideo={videoProduct.length > 0 ? handleViewVideo : undefined}
             />
+
         </div>
     );
 };
