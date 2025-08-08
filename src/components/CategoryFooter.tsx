@@ -24,7 +24,7 @@ const ListColumn: FC<ListColumnProps> = ({ title, items }) => (
     <ul className="space-y-2 text-xs text-gray-600">
       {items.map((item) => (
         <li key={item}>
-          <a href="#" className="text-[#0D915E] font-bold text-[14px] hover:underline" style={{ lineHeight: "25px", letterSpacing: "-0.02em" }}>{item}</a>
+          <a href="#" className="text-[#0D915E] text-[14px] hover:underline" style={{ lineHeight: "25px", letterSpacing: "-0.02em" }}>{item}</a>
         </li>
       ))}
     </ul>
