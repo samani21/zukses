@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import ProductDetail from '../../components/product/ProductDetail';
 import Header from 'components/Header';
-import { Product } from 'components/types/Product';
-import { ArrowLeft, Search, Share2 } from 'lucide-react';
+import { Product, variant } from 'components/types/Product';
+import { ArrowLeft, Search, Share2, ShoppingCartIcon } from 'lucide-react';
 import Get from 'services/api/Get';
 import { Response } from 'services/api/types';
 
@@ -27,6 +27,8 @@ const ProductPage = () => {
     const router = useRouter();
     const [isSticky, setIsSticky] = useState(false);
     const titleRef = useRef<HTMLHeadingElement>(null);
+    const [activeVariant, setActiveVariant] = useState<variant | null>(null);
+    const [quantity, setQuantity] = useState<number>(1);
     useEffect(() => {
         const handleScroll = () => {
             if (!titleRef.current) return;
@@ -70,6 +72,29 @@ const ProductPage = () => {
         getProductIsCategorie();
         setLoading(false);
     }, [detailProduct]);
+    const handleBuyNow = () => {
+        // Cek jika produk memiliki varian
+        if (detailProduct) {
+
+            if (detailProduct.variants && detailProduct.variants.length > 0) {
+                // Cek jika varian aktif sudah terpilih (artinya semua opsi sudah diisi)
+                if (activeVariant) {
+                    console.log("Membeli Varian:", {
+                        variantId: activeVariant.id,
+                        details: activeVariant,
+                        quantity: quantity
+                    });
+                    router?.push(`/checkout?variant_id[]=${activeVariant.id}&qty[]=${quantity}&product_id[]=${detailProduct?.id}`)
+                } else {
+                    // Jika varian belum lengkap terpilih
+                    alert("Silakan lengkapi semua pilihan varian terlebih dahulu.");
+                }
+            } else {
+                // Jika produk tidak punya varian
+                router?.push(`/checkout?qty[]=${quantity}&product_id[]=${detailProduct?.id}`)
+            }
+        }
+    };
     return (
         <div>
             <main className=" min-h-screen">
@@ -79,10 +104,19 @@ const ProductPage = () => {
                 </div>
                 {isSticky && detailProduct && (
                     <div className="fixed top-0 left-0 w-full z-40 bg-white px-4 py-2 shadow-sm flex items-center justify-center ">
-                        <div className='w-[1200px] '>
-                            <h1 className="text-[14px] font-[700] text-[#333333] tracking-[-0.02em] truncate">
+                        <div className='w-[1200px] flex items-center justify-between gap-2'>
+                            <h1 className="text-[14px] font-[700] text-[#333333] tracking-[-0.02em] truncate ">
                                 {detailProduct.name}
                             </h1>
+                            <div className='flex items-center gap-2'>
+                                <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
+                                    <ShoppingCartIcon className='w-[24px] h-[24px]' />
+                                    <span>Masukkan Keranjang</span>
+                                </button>
+                                <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px] font-bold flex items-center justify-center gap-2 hover:bg-[#ccb5c1]/50">
+                                    Beli Sekarang
+                                </button>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -143,7 +177,15 @@ const ProductPage = () => {
                     {
                         detailProduct &&
                         <div className='space-y-6'>
-                            <ProductDetail product={detailProduct} openModalGuide={openModalGuide} setOpenModalGuide={setOpenModalGuide} titleRef={titleRef} />
+                            <ProductDetail
+                                product={detailProduct}
+                                openModalGuide={openModalGuide}
+                                setOpenModalGuide={setOpenModalGuide}
+                                titleRef={titleRef}
+                                activeVariant={activeVariant}
+                                setActiveVariant={setActiveVariant}
+                                quantity={quantity}
+                                setQuantity={setQuantity} />
                             {/* <div className='hidden md:block'>
                                 <SellerInfo seller={detailProduct?.seller} />
                             </div> */}
