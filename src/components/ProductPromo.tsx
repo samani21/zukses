@@ -101,7 +101,7 @@ function ProductPromo({ products }: NewProductProps) {
                         className="flex gap-4 pb-4 -mx-4 px-4 pl-0 overflow-x-auto scrollbar-hide"
                     >
                         {products.map((product, index) => (
-                            <div key={index} className="flex-shrink-0 w-40 h-[137px] shadow-[1px_1px_20px_rgba(0,0,0,0.08)]  md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em] hover:border-[#06894E] hover:border-2" onClick={() => {
+                            <div key={index} className="flex-shrink-0 w-40 h-[137px] shadow-[1px_1px_20px_rgba(0,0,0,0.08)]  md:w-[332px] border border-[#DEDEDE] bg-white rounded-[8px]  hover:shadow-lg transition-shadow duration-300 overflow-hidden group cursor-pointer tracking-[-0.03em] hover:border-[#06894E]" onClick={() => {
                                 const slug = product.name
                                     .toLowerCase()
                                     .replace(/[\s/]+/g, '-')

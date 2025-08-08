@@ -22,7 +22,7 @@ const CardProduct = ({ product, index }: Props) => {
     return (
         <a
             key={index}
-            className="bg-white cursor-pointer w-full h-[310px] rounded-[5px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD]"
+            className="bg-white cursor-pointer w-full h-[310px] rounded-[5px] overflow-hidden group lg:w-[190px]  border border-[#DDDDDD] hover:border-[#06894E]"
             onClick={() => {
                 const slug = product.name
                     .toLowerCase()
