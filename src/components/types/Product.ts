@@ -89,6 +89,7 @@ export type Product = {
     image: string;
     desc: string;
     price: number;
+    discount_price: number;
     rating: number;
     reviewsCount: number;
     soldCount: number;
