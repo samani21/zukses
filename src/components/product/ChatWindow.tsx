@@ -1,6 +1,6 @@
 import { formatRupiah } from "components/Rupiah";
 import { Product, Seller, variant } from "components/types/Product";
-import { ChevronDown, FileIcon, Image as ImageIcon, PlusCircle, ScrollText, SendHorizonal } from "lucide-react";
+import { ChevronDown, Image as ImageIcon, PlusCircle, ScrollText, SendHorizonal } from "lucide-react";
 import { FC, useState, useEffect, useRef } from "react";
 
 const BoxIcon = () => (
@@ -305,10 +305,10 @@ const ChatWindow: FC<{
                                                             </button>
                                                             <button
                                                                 className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
-                                                                // onClick={() => {
-                                                                //     document.getElementById("image-upload")?.click();
-                                                                //     setShowUploadMenu(false);
-                                                                // }}
+                                                            // onClick={() => {
+                                                            //     document.getElementById("image-upload")?.click();
+                                                            //     setShowUploadMenu(false);
+                                                            // }}
                                                             >
                                                                 <BoxIcon /> Produk
                                                             </button>
