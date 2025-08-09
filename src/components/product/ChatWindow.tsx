@@ -246,15 +246,15 @@ const ChatWindow: FC<{
                                     </div>
 
                                     <div className="p-3 bg-white space-y-2">
-                                        <div className="flex items-center gap-2">
+                                        <div className={`flex ${isMultiLine ? "items-end" : "items-center"} gap-2`}>
                                             {/* ICON PLUS */}
 
 
                                             {/* INPUT TEXT */}
                                             <div
-                                                className={`flex items-center justify-between w-full border border-[#CCCCCC] 
+                                                className={`flex justify-between w-full border border-[#CCCCCC] 
         p-2 focus-within:ring-2 focus-within:ring-green-500 px-4 transition-all
-        ${isMultiLine ? 'rounded-md' : 'rounded-full'}`}
+        ${isMultiLine ? 'rounded-md items-end' : 'rounded-full items-center'}`}
                                             >
                                                 <textarea
                                                     ref={textareaRef}
