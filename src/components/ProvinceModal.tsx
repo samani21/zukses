@@ -76,7 +76,7 @@ function ProvinceModal({
             style={{ background: '#00000022' }}
         >
             <div
-                className="relative w-[620px]  bg-white shadow-2xl m-4"
+                className="relative w-[620px] h-[80vh]  bg-white shadow-2xl m-4"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -93,7 +93,7 @@ function ProvinceModal({
                 </div>
 
                 {/* Body */}
-                <div className="p-6 overflow-y-auto">
+                <div className="p-6 overflow-y-auto h-[60vh]">
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-6">
                         {provinces.map(province => {
                             const checked = tempSelected.includes(province);
@@ -132,11 +132,6 @@ function ProvinceModal({
                             );
                         })}
                     </div>
-                    {tempSelected.length >= MAX_SELECTED && (
-                        <p className="mt-4 text-xs text-red-600">
-                            Maksimal {MAX_SELECTED} provinsi dapat dipilih.
-                        </p>
-                    )}
                 </div>
 
                 {/* Footer */}
