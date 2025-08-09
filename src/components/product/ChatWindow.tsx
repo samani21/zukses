@@ -2,10 +2,11 @@ import { formatRupiah } from "components/Rupiah";
 import { Product, Seller, variant } from "components/types/Product";
 import { ChevronDown, FileIcon, Image as ImageIcon, PlusCircle, SendHorizonal } from "lucide-react";
 import { FC, useState, useEffect, useRef } from "react";
-// Pastikan Anda mengimpor Image jika menggunakan Next.js
-// import Image from "next/image";
 
-// Tipe data untuk pesan dan obrolan
+const BoxIcon = ({ className = "text-black" }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M5 7.808v10.577q0 .269.173.442t.443.173h12.769q.269 0 .442-.173t.173-.442V7.808h-4v5.47q0 .46-.379.7t-.783.028L12 13.096l-1.839.91q-.403.211-.782-.028q-.379-.24-.379-.7v-5.47zM5.616 20q-.672 0-1.144-.472T4 18.385V7.486q0-.292.093-.55t.28-.475l1.558-1.87q.217-.293.543-.442T7.173 4h9.616q.372 0 .708.149t.553.441l1.577 1.91q.187.217.28.485q.093.267.093.56v10.84q0 .67-.472 1.143q-.472.472-1.143.472zM5.38 6.808H18.6L17.27 5.21q-.097-.096-.222-.153T16.788 5H7.192q-.134 0-.26.058t-.22.154zm4.619 1v5.153l2-1l2 1V7.809zm-5 0h14z" stroke-width="0.5" stroke="currentColor" /></svg>
+);
+
 type Message = {
     id: number;
     type: 'system' | 'product' | 'quick-reply' | 'user' | 'seller';
@@ -286,7 +287,6 @@ const ChatWindow: FC<{
                                                         className="bg-gray-100 rounded-full hover:bg-gray-200 flex items-center"
                                                         onClick={() => {
                                                             setShowUploadMenu(prev => !prev);
-                                                            setIsMultiLine(false)
                                                         }}
                                                     >
                                                         <PlusCircle size={20} className="text-black" />
@@ -302,6 +302,15 @@ const ChatWindow: FC<{
                                                                 }}
                                                             >
                                                                 <ImageIcon size={18} /> Upload Gambar
+                                                            </button>
+                                                            <button
+                                                                className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
+                                                                onClick={() => {
+                                                                    document.getElementById("image-upload")?.click();
+                                                                    setShowUploadMenu(false);
+                                                                }}
+                                                            >
+                                                                <BoxIcon /> Link Produk
                                                             </button>
                                                             <button
                                                                 className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
