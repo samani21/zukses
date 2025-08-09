@@ -755,7 +755,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         />
                                         {showButton && (
                                             <button
-                                                className="mt-2 text-[16px] text-[#09824C] font-bold"
+                                                className="mt-2 text-[14px] text-[#09824C] font-bold"
                                                 onClick={() => setExpanded(prev => !prev)}
                                             >
                                                 {expanded ? 'Lihat lebih sedikit' : 'Lihat lebih banyak'}
@@ -835,9 +835,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 >
                                                     Chat Penjual
                                                 </button> */}
-                                                <p className='text-[#222222] font-bold text-[14px] tracking-[-0.02em]' style={{
+                                                <p className='text-[#222222] font-bold text-[14px] tracking-[-0.02em] cursor-pointer' style={{
                                                     lineHeight: "22px"
-                                                }}> Chat Penjual</p>
+                                                }} onClick={() => setChatOpen(!isChatOpen)}> Chat Penjual</p>
                                                 <div className='h-10 w-1 border-l border-[#CCCCCC]' />
                                                 <p className='text-[#222222] font-bold text-[14px] tracking-[-0.02em]' style={{
                                                     lineHeight: "22px"
