@@ -93,8 +93,8 @@ function ProvinceModal({
                 </div>
 
                 {/* Body */}
-                <div className="p-6 overflow-y-auto h-[60vh]">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-6">
+                <div className="p-6 overflow-y-auto h-[60vh] pt-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2.5 gap-x-6">
                         {provinces.map(province => {
                             const checked = tempSelected.includes(province);
                             const disableOthers =
@@ -122,7 +122,7 @@ function ProvinceModal({
                                             className="peer hidden"
                                             id="cod"
                                         />
-                                        <span className={`${checked ? 'w-[26px] h-[26px] rounded-[8px] border-2 border-[#52357B] bg-[#E7D6FF]' : 'w-[26px] h-[26px] border-2 border-[#000]'} flex items-center justify-center`}>
+                                        <span className={`${checked ? 'w-[18px] h-[18px] rounded-[4px] border-2 border-[#52357B] bg-[#E7D6FF]' : 'w-[18px] h-[18px] border-2 border-[#888]'} flex items-center justify-center`}>
                                             {checked ? <Check size={16} strokeWidth={4} /> : ''}
 
                                         </span>

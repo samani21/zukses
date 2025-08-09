@@ -254,7 +254,7 @@ const ChatWindow: FC<{
                                             <div
                                                 className={`flex justify-between w-full border border-[#CCCCCC] 
         p-2 focus-within:ring-2 focus-within:ring-green-500 px-4 transition-all
-        ${isMultiLine ? 'rounded-md items-end' : 'rounded-full items-center'}`}
+        ${isMultiLine ? 'rounded-md items-end pr-1' : 'rounded-full items-center pr-2'}`}
                                             >
                                                 <textarea
                                                     ref={textareaRef}
