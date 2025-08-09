@@ -750,11 +750,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
                                 }}>
-                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[5px]  py-2 px-3 bg-[#fff] text-[#1073F7] text-[16px] font-bold  flex items-center justify-center gap-2 hover:bg-blue-100">
+                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[5px]  py-2 px-3 bg-[#fff] text-[#1073F7] text-[14px] tracking-[0] font-bold  flex items-center justify-center gap-2 hover:bg-blue-100">
                                         <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                         <span>Masukkan Keranjang</span>
                                     </button>
-                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#FA6D01] rounded-[5px]  py-2 px-3 bg-[#FA6D01] text-[#fff] text-[16px]  font-bold flex items-center justify-center gap-2 hover:bg-[#FF7F1A]">
+                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#FA6D01] rounded-[5px] py-2 px-3 bg-[#FA6D01] text-[#fff] text-[14px] tracking-[0]  font-bold flex items-center justify-center gap-2 hover:bg-[#FF7F1A]">
                                         Beli Sekarang
                                     </button>
                                 </div>
