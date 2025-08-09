@@ -1,6 +1,6 @@
 import { formatRupiah } from "components/Rupiah";
 import { Product, Seller, variant } from "components/types/Product";
-import { Archive, ChevronDown, Image as ImageIcon, SendHorizonal } from "lucide-react";
+import { ChevronDown, FileIcon, Image as ImageIcon, PlusCircle, SendHorizonal } from "lucide-react";
 import { FC, useState, useEffect, useRef } from "react";
 // Pastikan Anda mengimpor Image jika menggunakan Next.js
 // import Image from "next/image";
@@ -36,10 +36,13 @@ const ChatWindow: FC<{
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const chatBodyRef = useRef<HTMLDivElement>(null);
-    console.log('variant', variant)
+    const [showUploadMenu, setShowUploadMenu] = useState(false);
     const activeChat = chats.find(c => c.id === activeChatId);
+    const [isMultiLine, setIsMultiLine] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // --- Fungsi untuk mendapatkan balasan penjual berdasarkan pesan pengguna ---
+
+
     const getSellerReply = (userMessage: string): string => {
         const lowerCaseMessage = userMessage.toLowerCase();
         if (lowerCaseMessage.includes("ready")) {
@@ -57,12 +60,11 @@ const ChatWindow: FC<{
         if (text.trim() === "" || !activeChat || isTyping) return;
 
         const newMessage: Message = {
-            id: Date.now(), // Gunakan timestamp untuk ID unik
+            id: Date.now(),
             type: "user",
-            text: text,
+            text: text, // biarkan ada \n
         };
 
-        // Perbarui state secara fungsional untuk menghindari race condition
         setChats(prevChats => prevChats.map(chat => {
             if (chat.id === activeChatId) {
                 const filteredMessages = chat.messages.filter(msg => msg.type !== 'quick-reply');
@@ -72,13 +74,17 @@ const ChatWindow: FC<{
         }));
 
         setInputValue("");
+        setIsMultiLine(false);
+        if (textareaRef.current) {
+            textareaRef.current.style.height = "auto";
+        }
+
         setIsTyping(true);
 
-        // Simulasi balasan dari penjual setelah 1.5 detik
         setTimeout(() => {
             const replyText = getSellerReply(text);
             const sellerReply: Message = {
-                id: Date.now() + 1, // Pastikan ID unik
+                id: Date.now() + 1,
                 type: 'seller',
                 text: replyText
             };
@@ -93,6 +99,7 @@ const ChatWindow: FC<{
             setIsTyping(false);
         }, 1500);
     };
+
 
     // --- Auto-scroll ke pesan terbaru ---
     useEffect(() => {
@@ -207,17 +214,25 @@ const ChatWindow: FC<{
 
                                                 {msg.type === 'user' && (
                                                     <div className="flex justify-end">
-                                                        <div className="bg-green-100 text-gray-800 p-3 rounded-lg max-w-xs">{msg.text}</div>
-                                                    </div>
-                                                )}
-                                                {/* --- Pesan dari Penjual --- */}
-                                                {msg.type === 'seller' && (
-                                                    <div className="flex justify-start">
-                                                        <div className="bg-white border border-gray-200 text-gray-800 p-3 rounded-lg max-w-xs">
+                                                        <div
+                                                            className="bg-green-100 text-gray-800 p-3 rounded-lg max-w-xs whitespace-pre-wrap"
+                                                        >
                                                             {msg.text}
                                                         </div>
                                                     </div>
                                                 )}
+
+                                                {/* --- Pesan dari Penjual --- */}
+                                                {msg.type === 'seller' && (
+                                                    <div className="flex justify-start">
+                                                        <div
+                                                            className="bg-white border border-gray-200 text-gray-800 p-3 rounded-lg max-w-xs whitespace-pre-wrap"
+                                                        >
+                                                            {msg.text}
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                             </div>
                                         ))}
                                         {/* --- Indikator Mengetik --- */}
@@ -232,13 +247,110 @@ const ChatWindow: FC<{
 
                                     <div className="p-3 bg-white space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <input type="text" placeholder="Tulis Pesan" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(inputValue)} className="flex-grow border border-[#CCCCCC] w-full p-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                                            <button onClick={() => handleSendMessage(inputValue)} className="p-2 bg-[#00AA5B] text-white rounded-full hover:bg-green-600 disabled:bg-gray-400" disabled={!inputValue.trim() || isTyping}><SendHorizonal size={20} /></button>
+                                            {/* ICON PLUS */}
+
+
+                                            {/* INPUT TEXT */}
+                                            <div
+                                                className={`flex items-center justify-between w-full border border-[#CCCCCC] 
+        p-2 focus-within:ring-2 focus-within:ring-green-500 px-4 transition-all
+        ${isMultiLine ? 'rounded-md' : 'rounded-full'}`}
+                                            >
+                                                <textarea
+                                                    ref={textareaRef}
+                                                    placeholder="Tulis Pesan"
+                                                    value={inputValue}
+                                                    onChange={(e) => {
+                                                        setInputValue(e.target.value);
+                                                        const lineHeight = 24;
+                                                        const maxHeight = lineHeight * 3;
+                                                        e.target.style.height = "auto";
+                                                        const newHeight = Math.min(e.target.scrollHeight, maxHeight);
+                                                        e.target.style.height = newHeight + "px";
+                                                        setIsMultiLine(e.target.scrollHeight > lineHeight);
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                            // e.preventDefault();
+                                                            // handleSendMessage(inputValue);
+                                                        }
+                                                    }}
+                                                    rows={1}
+                                                    className="outline-none w-full resize-none overflow-y-auto max-h-[72px] leading-6"
+                                                    style={{ lineHeight: "1.5rem" }}
+                                                />
+
+                                                <div className="relative flex-shrink-0">
+                                                    <button
+                                                        type="button"
+                                                        className="bg-gray-100 rounded-full hover:bg-gray-200 flex items-center"
+                                                        onClick={() => {
+                                                            setShowUploadMenu(prev => !prev);
+                                                            setIsMultiLine(false)
+                                                        }}
+                                                    >
+                                                        <PlusCircle size={20} className="text-black" />
+                                                    </button>
+
+                                                    {showUploadMenu && (
+                                                        <div className="absolute bottom-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-40">
+                                                            <button
+                                                                className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
+                                                                onClick={() => {
+                                                                    document.getElementById("image-upload")?.click();
+                                                                    setShowUploadMenu(false);
+                                                                }}
+                                                            >
+                                                                <ImageIcon size={18} /> Upload Gambar
+                                                            </button>
+                                                            <button
+                                                                className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
+                                                                onClick={() => {
+                                                                    document.getElementById("file-upload")?.click();
+                                                                    setShowUploadMenu(false);
+                                                                }}
+                                                            >
+                                                                <FileIcon size={18} /> Upload File
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* SEND BUTTON */}
+                                            <button
+                                                onClick={() => handleSendMessage(inputValue)}
+                                                className="p-2 bg-[#00AA5B] text-white rounded-full hover:bg-green-600 disabled:bg-gray-400"
+                                                disabled={!inputValue.trim() || isTyping}
+                                            >
+                                                <SendHorizonal size={20} />
+                                            </button>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <ImageIcon className="text-[#555555] cursor-pointer" size={32} />
-                                            <Archive className="text-[#555555] cursor-pointer" size={32} />
-                                        </div>
+
+                                        {/* FILE INPUT TERSEMBUNYI */}
+                                        <input
+                                            type="file"
+                                            id="image-upload"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    console.log("Image selected:", e.target.files[0]);
+                                                    // TODO: proses upload gambar di sini
+                                                }
+                                            }}
+                                        />
+                                        <input
+                                            type="file"
+                                            id="file-upload"
+                                            className="hidden"
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    console.log("File selected:", e.target.files[0]);
+                                                    // TODO: proses upload file di sini
+                                                }
+                                            }}
+                                        />
                                     </div>
                                 </>
                             ) : (
