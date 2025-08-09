@@ -42,7 +42,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     const [activeSelectionsArray, setActiveSelectionsArray] = useState<
         { groupId: string; name: string; value: string }[]
     >([]);
-    console.log('activeSelectionsArray', activeSelectionsArray)
     const [expanded, setExpanded] = useState(false);
     const [showButton, setShowButton] = useState(false);
     const descRef = useRef<HTMLDivElement>(null);
@@ -59,26 +58,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     // Tipenya adalah HTMLDivElement karena kita akan menempelkannya ke div.
     const menuRef = useRef<HTMLDivElement>(null);
     const [isChatOpen, setChatOpen] = useState(false);
-    const [isChatFixed, setChatFixed] = useState(false);
-
     const containerRef = useRef<HTMLDivElement>(null);
     const chatRef = useRef<HTMLDivElement>(null);
     const [isCompletedvariant, setIsCompletedVariant] = useState<boolean>(false)
-    useEffect(() => {
-        const handleScroll = () => {
-            if (containerRef.current) {
-                // Jika bagian atas container sudah tidak terlihat, buat chat jadi fixed
-                if (containerRef.current.getBoundingClientRect().top <= 0) {
-                    setChatFixed(true);
-                } else {
-                    setChatFixed(false);
-                }
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
 
     useEffect(() => {
         // Fungsi untuk menutup menu jika user mengklik di luar area menu
@@ -702,7 +684,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 <ChevronRightIcon />
                                             </div>
                                         }
-                                        {product?.variant_prices && (
+                                        {product?.variant_prices?.length > 0 && (
                                             <div className="tracking-[-0.02em]  text-[14px]" style={{
                                                 lineHeight: "150%"
                                             }}>
@@ -824,9 +806,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 </div>
                                                 <ChatWindow
                                                     isOpen={isChatOpen}
-                                                    isFixed={isChatFixed && isChatOpen} // Chat hanya fixed jika terbuka DAN container sudah di-scroll
                                                     onClose={() => setChatOpen(false)}
                                                     chatRef={chatRef}
+                                                    variant={activeVariant}
+                                                    seller={product?.seller}
+                                                    product={product}
                                                 />
                                                 {/* <button
                                                     onClick={() => setChatOpen(!isChatOpen)}
