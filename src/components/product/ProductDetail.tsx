@@ -596,7 +596,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         }
                                         <p className='tracking-[-0.02em] text-[#555555] text-[14px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
                                     </div>
-                                    <div className={`space-y-2 px-4 ${isCompletedvariant ? "bg-[#FFF5F5] -mt-2 pt-2 -mb-2 pb-3" : "bg-white px-4"}`}>
+                                    <div className={`space-y-2 px-4 ${isCompletedvariant ? "bg-[#FFF5F5] -mt-2 pt-2 -mb-2 pb-2" : "bg-white px-4"}`}>
                                         {product?.variant_prices.map((group) =>
                                             <div key={group.id} className='space-y-2 w-[50%]'>
                                                 <p className="text-[#555555] text-[14px] font-medium tracking-[-0.02em]">
