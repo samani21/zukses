@@ -145,9 +145,9 @@ const ChatWindow: FC<{
                 <div className="w-[1200px] flex items-center justify-end">
                     <div className="w-[580px] h-[470px] rounded-md shadow-2xl bg-white border border-gray-200 flex transition-all shadow-[0px_2px_30px_0px_#98A3B4] duration-300">
 
-                        <div className="w-1/3 border-r border-gray-200 flex flex-col">
-                            <div className="p-2 border-b">
-                                <p className="font-bold text-[20px] text-[#444444]">Chat</p>
+                        <div className="w-1/3 border-r border-[#dddddd] flex flex-col">
+                            <div className="p-2 border-b border-[#dddddd]">
+                                <p className="font-bold text-[18px] text-[#000]">Chat</p>
                             </div>
                             <div className="flex-grow overflow-y-auto">
                                 {chats.map(chat => (
@@ -169,10 +169,10 @@ const ChatWindow: FC<{
                         <div className="w-2/3 flex flex-col">
                             {activeChat ? (
                                 <>
-                                    <div className="p-2 flex items-center justify-between w-full border-b">
+                                    <div className="p-2 flex items-center justify-between w-full border-b border-[#dddddd]">
                                         <div className="flex items-center gap-3">
                                             <div>
-                                                <p className="font-bold text-[20px] text-[#444444]">{activeChat.name}</p>
+                                                <p className="font-bold text-[18px] text-[#000]">{activeChat.name}</p>
                                             </div>
                                         </div>
                                         <ChevronDown onClick={onClose} className="cursor-pointer text-gray-600" />
@@ -231,13 +231,13 @@ const ChatWindow: FC<{
                                     </div>
 
                                     <div className="p-3 bg-white space-y-2">
-                                        <div className="flex items-center">
-                                            <input type="text" placeholder="Tulis Pesan" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(inputValue)} className="flex-grow w-full p-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500" />
+                                        <div className="flex items-center gap-2">
+                                            <input type="text" placeholder="Tulis Pesan" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(inputValue)} className="flex-grow border border-[#CCCCCC] w-full p-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500" />
                                             <button onClick={() => handleSendMessage(inputValue)} className="p-2 bg-[#00AA5B] text-white rounded-full hover:bg-green-600 disabled:bg-gray-400" disabled={!inputValue.trim() || isTyping}><SendHorizonal size={20} /></button>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <ImageIcon className="text-[#555555] cursor-pointer"size={32} />
-                                            <Archive className="text-[#555555] cursor-pointer" size={32}/>
+                                            <ImageIcon className="text-[#555555] cursor-pointer" size={32} />
+                                            <Archive className="text-[#555555] cursor-pointer" size={32} />
                                         </div>
                                     </div>
                                 </>
