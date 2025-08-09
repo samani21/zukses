@@ -682,7 +682,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                             </div>)
                                         }
                                         {
-                                            isCompletedvariant && <p className='text-[#F94D63] tracking-[0] font-bold text-[16px]'>Silakan pilih variasi produk terlebih dahulu</p>
+                                            isCompletedvariant && <p className='text-[#F94D63] tracking-[0] font-bold text-[14px]'>Silakan pilih variasi produk terlebih dahulu</p>
                                         }
 
                                     </div>

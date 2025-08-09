@@ -76,7 +76,7 @@ function ProvinceModal({
             style={{ background: '#00000022' }}
         >
             <div
-                className="relative w-[620px] h-[80vh]  bg-white shadow-2xl m-4"
+                className="relative w-[620px]   bg-white shadow-2xl m-4"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -93,8 +93,8 @@ function ProvinceModal({
                 </div>
 
                 {/* Body */}
-                <div className="p-6 overflow-y-auto h-[60vh] pt-3">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2.5 gap-x-6">
+                <div className="p-6 overflow-y-auto max-h-[50vh] pt-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-6">
                         {provinces.map(province => {
                             const checked = tempSelected.includes(province);
                             const disableOthers =
