@@ -1,6 +1,6 @@
 import { formatRupiah } from "components/Rupiah";
 import { Product, Seller, variant } from "components/types/Product";
-import { ChevronDown, FileIcon, Image as ImageIcon, PlusCircle, SendHorizonal } from "lucide-react";
+import { ChevronDown, FileIcon, Image as ImageIcon, PlusCircle, ScrollText, SendHorizonal } from "lucide-react";
 import { FC, useState, useEffect, useRef } from "react";
 
 const BoxIcon = () => (
@@ -293,7 +293,7 @@ const ChatWindow: FC<{
                                                     </button>
 
                                                     {showUploadMenu && (
-                                                        <div className="absolute bottom-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-40">
+                                                        <div className="absolute bottom-12 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-40 w-[120px]">
                                                             <button
                                                                 className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
                                                                 onClick={() => {
@@ -301,16 +301,16 @@ const ChatWindow: FC<{
                                                                     setShowUploadMenu(false);
                                                                 }}
                                                             >
-                                                                <ImageIcon size={18} /> Upload Gambar
+                                                                <ImageIcon size={18} /> Gambar
                                                             </button>
                                                             <button
                                                                 className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
-                                                                onClick={() => {
-                                                                    document.getElementById("image-upload")?.click();
-                                                                    setShowUploadMenu(false);
-                                                                }}
+                                                                // onClick={() => {
+                                                                //     document.getElementById("image-upload")?.click();
+                                                                //     setShowUploadMenu(false);
+                                                                // }}
                                                             >
-                                                                <BoxIcon /> Link Produk
+                                                                <BoxIcon /> Produk
                                                             </button>
                                                             <button
                                                                 className="flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-100 text-sm"
@@ -319,7 +319,7 @@ const ChatWindow: FC<{
                                                                     setShowUploadMenu(false);
                                                                 }}
                                                             >
-                                                                <FileIcon size={18} /> Upload File
+                                                                <ScrollText size={18} /> Invoices
                                                             </button>
                                                         </div>
                                                     )}

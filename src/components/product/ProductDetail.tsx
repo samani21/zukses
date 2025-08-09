@@ -491,7 +491,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                             {product?.name}
                         </h1>
 
-                        <div className='space-y-[20px] mt-4'>
+                        <div className='space-y-[20px] mt-4' ref={variantSectionRef}>
                             <div className="space-y-2 px-4">
                                 {/* <span className="text-gray-500 text-sm line-through">{formatRupiah(product?.originalPrice || 100000)}</span> */}
 
@@ -572,7 +572,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     </div>
                                 </div>
                                 <div className='space-y-2 mt-[16px]'>
-                                    <div className='space-y-2 px-4' ref={variantSectionRef}>
+                                    <div className='space-y-2 px-4' >
                                         {
                                             product?.voucher || product?.delivery.subsidy ?
                                                 <div className='py-2 flex items-center gap-2'>
