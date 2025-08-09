@@ -389,6 +389,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     const renderPriceDiscountDisplay = () => {
         if (activeVariant) {
             return formatRupiah(activeVariant.discount_price || activeVariant?.price);
+        } else {
+
         }
         if (priceDiscountRange) {
             if (priceDiscountRange.isRange) {
@@ -397,7 +399,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
             return formatRupiah(priceDiscountRange.min);
         }
 
-        return formatRupiah(product?.price);
+        return formatRupiah(product?.discount_percent != 0 ? product?.discount_price : product?.price);
     };
     const ProductStock = () => {
         if (activeVariant) {
@@ -440,6 +442,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
             if (activeVariant) {
                 if (activeSelectionsArray?.length != product.variant_prices?.length) {
                     setIsCompletedVariant(true)
+                    return
                 }
                 console.log("Membeli Varian:", {
                     variantId: activeVariant.id,
@@ -504,16 +507,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                 <div className='text-black text-[30px] font-[800]'>
                                     <p className='leading-none tracking-[0.5px]'>{renderPriceDiscountDisplay()}</p>
                                 </div>
-
-
-                                {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() && (
+                                {highestDiscountVariant && renderPriceDiscountDisplay() != renderPriceDisplay() ? (
                                     <div className='flex items-center gap-2 mt-3'>
                                         <div className=''>
                                             <span className='bg-[#F94D63] border border-[#F94D63] text-[#fff] rounded-[15px] px-[10px] py-[4px] text-[14px] font-bold'>Diskon: {highestDiscountVariant.discount_percent}%</span>
                                         </div>
                                         <div className="text-[#98A3B4] text-[14px] font-[700] line-through tracking-[-0.02em]">{renderPriceDisplay()}</div>
                                     </div>
-                                )}
+                                ) : product?.discount_percent > 0 ? <div className='flex items-center gap-2 mt-3'>
+                                    <div className=''>
+                                        <span className='bg-[#F94D63] border border-[#F94D63] text-[#fff] rounded-[15px] px-[10px] py-[4px] text-[14px] font-bold'>Diskon: {product?.discount_percent}%</span>
+                                    </div>
+                                    <div className="text-[#98A3B4] text-[14px] font-[700] line-through tracking-[-0.02em]">{renderPriceDisplay()}</div>
+                                </div> : ''}
 
                             </div>
 
@@ -660,7 +666,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                                     }}
                                                                     className={`relative border text-[14px] font-[500] h-[35px] flex items-center justify-center px-4 transition-all
                     ${isActive
-                                                                            ? 'border-[#09824C] bg-[#C4EDDD] text-black font-semibold '
+                                                                            ? 'border-[#09824C] bg-[#C4EDDD] text-[#09824C] '
                                                                             : 'border-[#bbb] bg-white text-black'}
                 `}
                                                                     style={{ letterSpacing: "-0.04em" }}
@@ -696,17 +702,21 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 <ChevronRightIcon />
                                             </div>
                                         }
-                                        {activeSelectionsArray.length > 0 && (
-                                            <div className="tracking-[-0.02em]  text-[16px]" style={{
+                                        {product?.variant_prices && (
+                                            <div className="tracking-[-0.02em]  text-[14px]" style={{
                                                 lineHeight: "150%"
                                             }}>
                                                 <p className='text-[#555555] font-medium'>Variasi yang dipilih :</p>
-                                                <p className='font-bold text-[#09824C]'>{activeSelectionsArray.map(sel => `${sel.name} ${sel.value}`).join(', ')}</p>
+                                                {
+                                                    activeSelectionsArray?.length > 0 ?
+                                                        <p className=' text-[#09824C]'>{activeSelectionsArray.map(sel => `${sel.name} ${sel.value}`).join(', ')}</p> :
+                                                        <p className=' text-[#DE4A53]'>Belum ada variasi yang dipilih</p>
+                                                }
                                             </div>
                                         )}
                                     </div>
                                 </div>
-                                <div className="grid md:flex items-center gap-4 px-4">
+                                <div className="grid md:flex items-center gap-4 px-4 py-4">
                                     <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em] py-[5px]">Kuantitas</span>
                                     <button
                                         onClick={() => setQuantity(q => Math.max(1, q - 1))}
@@ -758,11 +768,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                     lineHeight: "22px",
                                     letterSpacing: "-0.04em"
                                 }}>
-                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#E7F2FF] text-[#1073F7] text-[14px]  font-semibold flex items-center justify-center gap-2 hover:bg-blue-100">
+                                    <button className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[5px]  py-2 px-3 bg-[#fff] text-[#1073F7] text-[16px] font-bold  flex items-center justify-center gap-2 hover:bg-blue-100">
                                         <ShoppingCartIcon className='w-[24px] h-[24px]' />
                                         <span>Masukkan Keranjang</span>
                                     </button>
-                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#1073F7] rounded-[10px]  py-2 px-3 bg-[#1073F7] text-[#fff] text-[14px]  font-semibold flex items-center justify-center gap-2 hover:bg-[#0251ba]">
+                                    <button onClick={handleBuyNow} className="mt-[5px] w-[240px] h-[48px] border border-[#FA6D01] rounded-[5px]  py-2 px-3 bg-[#FA6D01] text-[#fff] text-[16px]  font-bold flex items-center justify-center gap-2 hover:bg-[#FF7F1A]">
                                         Beli Sekarang
                                     </button>
                                 </div>
@@ -807,30 +817,37 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='border-r border-l px-4 border-[#CCCCCC] text-left'>
-                                                <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
-                                                <p className='text-[#333333] text-[17px] tracking-[-0.02em] font-bold'>284</p>
-                                            </div>
                                             <div ref={containerRef} className='p-3 px-6 flex items-center justify-center gap-4'>
+                                                <div className='border-r border-l px-8 border-[#CCCCCC] text-left'>
+                                                    <p className='text-[#06894E] text-[17px] tracking-[-0.02em] font-bold'>Produk</p>
+                                                    <p className='text-[#333333] text-[17px] tracking-[-0.02em] font-bold'>284</p>
+                                                </div>
                                                 <ChatWindow
                                                     isOpen={isChatOpen}
                                                     isFixed={isChatFixed && isChatOpen} // Chat hanya fixed jika terbuka DAN container sudah di-scroll
                                                     onClose={() => setChatOpen(false)}
                                                     chatRef={chatRef}
                                                 />
-                                                <button
+                                                {/* <button
                                                     onClick={() => setChatOpen(!isChatOpen)}
-                                                    className='bg-[#C4EDDD] h-[40px] px-8 rounded-[10px] text-[14px] font-semibold text-[#09824C] hover:bg-green-200 transition-colors duration-200'
+                                                    className=' h-[40px] px-8 rounded-[10px] text-[14px] font-bold text-[#222222] hover:bg-green-200 transition-colors duration-200'
                                                     style={{ lineHeight: "22px" }}
                                                 >
                                                     Chat Penjual
-                                                </button>
-                                                <button
+                                                </button> */}
+                                                <p className='text-[#222222] font-bold text-[14px] tracking-[-0.02em]' style={{
+                                                    lineHeight: "22px"
+                                                }}> Chat Penjual</p>
+                                                <div className='h-10 w-1 border-l border-[#CCCCCC]' />
+                                                <p className='text-[#222222] font-bold text-[14px] tracking-[-0.02em]' style={{
+                                                    lineHeight: "22px"
+                                                }}> Kunjungi Toko</p>
+                                                {/* <button
                                                     className='bg-[#09824C] h-[40px] px-8 rounded-[10px] text-[14px]  font-semibold text-[#fff] hover:bg-green-600 transition-colors duration-200'
                                                     style={{ lineHeight: "22px" }}
                                                 >
                                                     Kunjungi Toko
-                                                </button>
+                                                </button> */}
                                             </div>
                                         </div>
                                     </div>
