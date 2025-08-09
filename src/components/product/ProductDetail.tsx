@@ -42,6 +42,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
     const [activeSelectionsArray, setActiveSelectionsArray] = useState<
         { groupId: string; name: string; value: string }[]
     >([]);
+    console.log('activeSelectionsArray', activeSelectionsArray)
     const [expanded, setExpanded] = useState(false);
     const [showButton, setShowButton] = useState(false);
     const descRef = useRef<HTMLDivElement>(null);
@@ -432,12 +433,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
         }
     };
 
-
     const handleBuyNow = () => {
         // Cek jika produk memiliki varian
         if (product.variants && product.variants.length > 0) {
             // Cek jika varian aktif sudah terpilih (artinya semua opsi sudah diisi)
             if (activeVariant) {
+                if (activeSelectionsArray?.length != product.variant_prices?.length) {
+                    setIsCompletedVariant(true)
+                }
                 console.log("Membeli Varian:", {
                     variantId: activeVariant.id,
                     details: activeVariant,
@@ -596,7 +599,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         }
                                         <p className='tracking-[-0.02em] text-[#555555] text-[14px]'>Kondisi <span className='text-[#1073F7] font-bold'>{Number(product?.is_used) ? 'Bekas Dipakai' : "Baru"}</span></p>
                                     </div>
-                                    <div className={`space-y-2 px-4 ${isCompletedvariant ? "bg-[#FFF5F5] -mt-2 pt-2 -mb-2 pb-2" : "bg-white px-4"}`}>
+                                    <div className={`space-y-2 px-4 ${isCompletedvariant ? "bg-[#FFF5F5] -mt-2 pt-2  pb-2" : "bg-white px-4"}`}>
                                         {product?.variant_prices.map((group) =>
                                             <div key={group.id} className='space-y-2 w-[50%]'>
                                                 <p className="text-[#555555] text-[14px] font-medium tracking-[-0.02em]">
@@ -604,6 +607,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                 </p>
                                                 <div className="flex flex-wrap gap-2 mt-2">
                                                     {group?.options.map((option, idx) => {
+                                                        const isActive = activeSelections[group.id] === option;
+
                                                         return (
                                                             option !== "" && (
                                                                 <button
@@ -612,26 +617,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                                         const isSameSelection = activeSelections[group.id] === option;
 
                                                                         if (isSameSelection) {
-                                                                            // Unselect jika klik varian yang sama
                                                                             const newSelections = { ...activeSelections };
                                                                             delete newSelections[group.id];
-
                                                                             const updatedSelectionsArray = activeSelectionsArray.filter(
                                                                                 sel => sel.groupId !== String(group.id)
                                                                             );
-
                                                                             setActiveSelections(newSelections);
                                                                             setActiveSelectionsArray(updatedSelectionsArray);
                                                                             setIsCompletedVariant(false);
                                                                             return;
                                                                         }
 
-                                                                        // Kalau klik varian baru
-                                                                        const newSelections = {
-                                                                            ...activeSelections,
-                                                                            [group.id]: option
-                                                                        };
-
+                                                                        const newSelections = { ...activeSelections, [group.id]: option };
                                                                         const existingIdx = activeSelectionsArray.findIndex(
                                                                             sel => sel.groupId === String(group.id)
                                                                         );
@@ -653,40 +650,34 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                                                         setActiveSelections(newSelections);
                                                                         setIsCompletedVariant(false);
 
-                                                                        // Cek apakah semua kombinasi sudah dipilih
                                                                         const selectedLabels = Object.values(newSelections).join(" - ");
                                                                         const matchedVariant = product?.variants?.find(
                                                                             v => v.combination_label === selectedLabels
                                                                         );
-
                                                                         if (matchedVariant) {
                                                                             handleVariantSelect(matchedVariant);
                                                                         }
                                                                     }}
-                                                                    className={`border text-[14px] font-[500] h-[35px] flex items-center transition-all ${activeSelections[group.id] === option
-                                                                        ? 'border-none text-white'
-                                                                        : 'border-[#bbb] bg-white text-black py-1 px-4'
-                                                                        }`}
-                                                                    style={{
-                                                                        letterSpacing: "-0.04em"
-                                                                    }}
+                                                                    className={`relative border text-[14px] font-[500] h-[35px] flex items-center justify-center px-4 transition-all
+                    ${isActive
+                                                                            ? 'border-[#09824C] bg-[#C4EDDD] text-black font-semibold '
+                                                                            : 'border-[#bbb] bg-white text-black'}
+                `}
+                                                                    style={{ letterSpacing: "-0.04em" }}
                                                                 >
-                                                                    {activeSelections[group.id] === option ? (
-                                                                        <>
-                                                                            <div className='bg-[#09824C] h-[35px] flex items-center px-2 border border-[#09824C]'>
-                                                                                <Check className='h-[20px] w-[20px]' />
-                                                                            </div>
-                                                                            <span className="bg-[#C4EDDD] text-[#333333] font-bold text-[14px] border border-[#09824C] h-[35px] flex items-center px-4">
-                                                                                {option}
-                                                                            </span>
-                                                                        </>
-                                                                    ) : (
-                                                                        option
+                                                                    {option}
+
+                                                                    {/* Segitiga pojok kanan bawah */}
+                                                                    {isActive && (
+                                                                        <span className="absolute bottom-0 right-0 w-0 h-0 w-[17px] h-[14.5px] border-l-[18px] border-l-transparent border-t-[18px] border-t-[#09824C] rotate-[90deg]">
+                                                                            <Check className="absolute -top-[18px] right-[0px] text-white rotate-[270deg]" size={11} strokeWidth={3} />
+                                                                        </span>
                                                                     )}
                                                                 </button>
                                                             )
                                                         );
                                                     })}
+
                                                 </div>
                                                 {/* <div className="mt-1 text-end">
                                         <button className="text-[#4A52B2] text-[16px] font-bold text-right">Lihat Lebih Banyak</button>
@@ -696,6 +687,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                         {
                                             isCompletedvariant && <p className='text-[#F94D63] tracking-[-0.02em] font-bold text-[16px]'>Silakan pilih variasi produk terlebih dahulu</p>
                                         }
+
+                                    </div>
+                                    <div className='space-y-2 px-4'>
                                         {hasImageGuide &&
                                             <div className='text-[16px] font-bold text-[#DE4A53] flex gap-1 items-center cursor-pointer' onClick={() => setOpenModalGuide(true)}>
                                                 Lihat Panduan Ukuran
@@ -711,7 +705,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, setOpenModalGuid
                                             </div>
                                         )}
                                     </div>
-
                                 </div>
                                 <div className="grid md:flex items-center gap-4 px-4">
                                     <span className="text-[16px] font-[500] text-[#555555] tracking-[-0.02em] py-[5px]">Kuantitas</span>
